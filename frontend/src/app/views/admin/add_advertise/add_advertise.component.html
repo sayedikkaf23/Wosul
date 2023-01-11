@@ -1,0 +1,496 @@
+<footer [myLoading]="myLoading"></footer>
+<form
+  #advertiseForm="ngForm"
+  (ngSubmit)="AddAdvertisement(advertiseForm.value)"
+  enctype="multipart/form-data"
+>
+  <div
+    class="row wrapper col-sm-12 col-md-12 col-xs-12 col-lg-12 fix_search_bar border-bottom white-bg page-heading"
+  >
+    <div class="row">
+      <div
+        *ngIf="type == 'add'"
+        class="col-md-3 col-sm-12 pull-right new_submit_button"
+      >
+        <input
+          type="submit"
+          id="submit"
+          name="submit"
+          class="btn btn-primary"
+          value="{{ button.submit }}"
+        />
+      </div>
+      <div
+        *ngIf="type == 'edit'"
+        class="col-md-3 col-sm-12 pull-right new_submit_button"
+      >
+        <input
+          type="submit"
+          id="update"
+          name="update"
+          class="btn btn-primary"
+          value="{{ button.update }}"
+        />
+      </div>
+    </div>
+  </div>
+  <div
+    class="wrapper wrapper-content content_top_bar_view animated fadeInRight"
+  >
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="col-lg-6 col-sm-9">
+          <div class="ibox">
+            <div class="ibox-title">
+              <label class="control-label">{{
+                heading_title.advertise_data
+              }}</label>
+            </div>
+            <div class="ibox-content">
+              <div class="row">
+                <input
+                  type="hidden"
+                  class="form-control"
+                  [(ngModel)]="advertise_id"
+                  name="advertise_id"
+                />
+                <!--                                <input type="hidden" class="form-control" [(ngModel)]="add_advertise.city_id" #city_id="ngModel" name="city_id"    />-->
+                <div class="form-group">
+                  <label class="col-lg-4 control-label">{{
+                    title.country
+                  }}</label>
+                  <div class="col-lg-8 form-group add">
+                    <select
+                      chosen
+                      class="chosen-select"
+                      id="country"
+                      [(ngModel)]="add_advertise.country_id"
+                      #country_id="ngModel"
+                      name="country_id"
+                      data-placeholder="Select Country"
+                      tabindex="4"
+                      required
+                    >
+                      <option
+                        *ngFor="let i of country_list"
+                        value="{{ i._id }}"
+                      >
+                        {{ i.country_name }}
+                      </option>
+                    </select>
+                    <div *ngIf="country_id.errors">
+                      <div
+                        style="color: red"
+                        [hidden]="!country_id.errors.required"
+                      >
+                        {{ validation_message.select_country_required }}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div *ngIf="type == 'edit'" class="col-lg-8 form-group">
+                    <input
+                      type="text"
+                      class="form-control"
+                      [(ngModel)]="add_advertise.country_name"
+                      #country_name="ngModel"
+                      name="country_name"
+                      readonly
+                    />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-md-4 control-label">{{ title.city }}</label>
+                  <div class="col-lg-8 form-group add">
+                    <select
+                      chosen
+                      class="chosen-select"
+                      id="city"
+                      [(ngModel)]="add_advertise.city_id"
+                      #city_id="ngModel"
+                      name="city_id"
+                      data-placeholder="Select City"
+                      tabindex="4"
+                    >
+                      <option value="000000000000000000000000">
+                        {{ title.all }}
+                      </option>
+                      <option *ngFor="let i of city_list" value="{{ i._id }}">
+                        {{ i.city_name }}
+                      </option>
+                    </select>
+                    <div *ngIf="city_id.errors">
+                      <div
+                        style="color: red"
+                        [hidden]="!city_id.errors.required"
+                      >
+                        {{ validation_message.select_city_required }}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div *ngIf="type == 'edit'" class="col-lg-8 form-group">
+                    <input
+                      type="text"
+                      class="form-control"
+                      [(ngModel)]="add_advertise.city_name"
+                      #city_name="ngModel"
+                      name="city_name"
+                      readonly
+                    />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-md-4 control-label">{{
+                    title.detail
+                  }}</label>
+                  <div class="col-lg-8 form-group">
+                    <textarea
+                      class="form-control"
+                      [(ngModel)]="add_advertise.ads_detail"
+                      #ads_detail="ngModel"
+                      name="ads_detail"
+                      required
+                    ></textarea>
+                    <!--                                        <input type="text" class="form-control" [(ngModel)]="add_advertise.ads_detail" #ads_detail="ngModel"  name="ads_detail" required/>-->
+                  </div>
+                </div>
+
+                <!-- <div class="form-group">
+                                    <label class="col-md-4 control-label">{{title.ads_type }}</label>
+                                    <div class="col-lg-8 form-group">
+                                        <select chosen class="form-control chosen-select" id="ads_type" [(ngModel)]="add_advertise.ads_type" #ads_type="ngModel"  name="ads_type" >
+
+                                            <option value="1">{{title.banner}}</option>
+                                            <option value="2">{{title.fullscreen}}</option>
+                                        </select>
+                                    </div> 
+                                </div>  -->
+
+                <div class="form-group">
+                  <label class="col-md-4 control-label">{{
+                    title.ads_for
+                  }}</label>
+                  <div class="col-lg-8 form-group">
+                    <select
+                      chosen
+                      class="form-control chosen-select"
+                      id="ads_for"
+                      [(ngModel)]="add_advertise.ads_for"
+                      #ads_for="ngModel"
+                      name="ads_for"
+                    >
+                      <option value="1">{{ title.delivery_list }}</option>
+                      <option value="2" selected>{{ title.store_list }}</option>
+                      <!--                                            <option value="3">{{title.in_store}}</option>-->
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-md-4 control-label">{{
+                    title.visible
+                  }}</label>
+                  <div class="col-lg-8 form-group">
+                    <ui-switch
+                      [(ngModel)]="add_advertise.is_ads_visible"
+                      #is_ads_visible="ngModel"
+                      name="is_ads_visible"
+                    ></ui-switch>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-md-4 control-label">{{
+                    title.approved
+                  }}</label>
+                  <div class="col-lg-8 form-group">
+                    <ui-switch
+                      [(ngModel)]="add_advertise.is_ads_approve_by_admin"
+                      #is_ads_approve_by_admin="ngModel"
+                      name="is_ads_approve_by_admin"
+                    ></ui-switch>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-md-4 control-label"
+                    >In App Notification</label
+                  >
+                  <div class="col-lg-8 form-group">
+                    <ui-switch
+                      [(ngModel)]="add_advertise.in_app_notification"
+                      name="in_app_notification"
+                    ></ui-switch>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-md-4 control-label">{{
+                    title.expiry_date
+                  }}</label>
+                  <div class="col-lg-8 form-group">
+                    <ui-switch
+                      [(ngModel)]="add_advertise.is_ads_have_expiry_date"
+                      #is_ads_have_expiry_date="ngModel"
+                      name="is_ads_have_expiry_date"
+                    ></ui-switch>
+                  </div>
+                </div>
+
+                <div
+                  class="form-group"
+                  *ngIf="add_advertise.is_ads_have_expiry_date == true"
+                >
+                  <label class="col-md-4 control-label">{{
+                    title.expiry_date
+                  }}</label>
+                  <div class="col-lg-8 form-group">
+                    <my-date-picker
+                      [options]="helper.promocodeStartDatePickerOptions"
+                      placeholder="{{ title.select_date }}"
+                      [(ngModel)]="add_advertise.expiry_date"
+                      #expiry_date="ngModel"
+                      name="expiry_date"
+                      (dateChanged)="helper.promocodeOnStartDateChanged($event)"
+                      required
+                    >
+                    </my-date-picker>
+                    <!--                                        <my-date-picker [(ngModel)]="add_advertise.expiry_date" #expiry_date="ngModel"  name="expiry_date"  value="" [options]="helper.ExpiryDatePickerOptions" placeholder="{{title.exp_date }}"></my-date-picker>-->
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-md-4 control-label">{{
+                    title.redirect_to_store
+                  }}</label>
+                  <div class="col-lg-8 form-group">
+                    <ui-switch
+                      [(ngModel)]="add_advertise.is_ads_redirect_to_store"
+                      #is_ads_redirect_to_store="ngModel"
+                      name="is_ads_redirect_to_store"
+                    ></ui-switch>
+                  </div>
+                </div>
+
+                <div
+                  class="form-group"
+                  [hidden]="add_advertise.is_ads_redirect_to_store == false"
+                >
+                  <label class="col-lg-4 control-label">{{
+                    title.store
+                  }}</label>
+                  <div class="col-lg-8 form-group">
+                    <select
+                      chosen
+                      class="chosen-select"
+                      id="store"
+                      [(ngModel)]="add_advertise.store_id"
+                      #store_id="ngModel"
+                      name="store_id"
+                      data-placeholder="Select Store"
+                      tabindex="4"
+                    >
+                      <option *ngFor="let i of store_list" value="{{ i._id }}">
+                        {{ i.email }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-lg-4 control-label">Delivery</label>
+                  <div class="col-lg-8 form-group">
+                    <select
+                      chosen
+                      class="chosen-select"
+                      id="delivery"
+                      [(ngModel)]="add_advertise.store_delivery_id"
+                      #store_id="ngModel"
+                      name="store_delivery_id"
+                      data-placeholder="Select Delivery"
+                      tabindex="4"
+                    >
+                      <option
+                        *ngFor="let i of delivery_list"
+                        value="{{ i._id }}"
+                      >
+                        {{ i.delivery_name }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <div class="row">
+                    <label
+                      class="col-lg-6 control-label"
+                      *ngIf="add_advertise.ads_type == 1"
+                      >{{ title.image_for_banner }}</label
+                    >
+                    <label
+                      class="col-lg-6 control-label"
+                      *ngIf="add_advertise.ads_type == 2"
+                      >{{ title.image_for_fullscreen }}</label
+                    >
+                  </div>
+
+                  <div class="row">
+                    <div class="form-group col-lg-6 col-md-6 col-xs-6">
+                      <div style="width: 100%; height: 131px">
+                        <div class="col-lg-12 profile-images center">
+                          <span class="btn-file" *ngIf="web_image"
+                            ><img
+                              style="width: 110px; height: 110px"
+                              src="{{
+                                add_advertise.image_url != ''
+                                  ? add_advertise.image_url
+                                  : 'plus_box.png'
+                              }}"
+                              alt="" /><input
+                              type="file"
+                              accept="image/*"
+                              (change)="web_image_update($event)"
+                              name="image_url"
+                          /></span>
+
+                          <span class="btn-file" *ngIf="!web_image"
+                            ><img
+                              style="width: 110px; height: 110px"
+                              src="{{
+                                add_advertise.image_url != ''
+                                  ? helper.CONSTANT.IMAGE_BASE_URL +
+                                    add_advertise.image_url
+                                  : 'plus_box.png'
+                              }}"
+                              alt="" /><input
+                              type="file"
+                              accept="image/*"
+                              (change)="web_image_update($event)"
+                              name="image_url"
+                          /></span>
+
+                          <!-- <span class="btn-file" *ngIf="add_advertise.ads_type==2 && full_image"><img style="width: 110px;height: 110px;" src="{{add_advertise.image_url != '' ? add_advertise.image_url : 'plus_box.png'}}" alt=""><input type="file" accept="image/*"  (change)="full_image_update($event);"   name="image_url"></span>                                                    
+                                                    <span class="btn-file" *ngIf="add_advertise.ads_type==2 && !full_image"><img style="width: 110px;height: 110px;" src="{{add_advertise.image_url != '' ? helper.CONSTANT.IMAGE_BASE_URL + add_advertise.image_url : 'plus_box.png'}}" alt=""><input type="file" accept="image/*"  (change)="full_image_update($event);"   name="image_url"></span> -->
+                        </div>
+                      </div>
+                      <div class="col-lg-12 text_center">
+                        <span style="color: red">{{ image_error }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-12">
+                  <div class="row">
+                    <label class="control-label" style="color: #bc202b"
+                      >{{ title.note_for_image }}:-</label
+                    >
+                  </div>
+                  <div class="row">
+                    <label
+                      class="control-label"
+                      *ngIf="add_advertise.ads_type == 1"
+                      >{{ title.image_note1 }}
+                      {{ image_setting.image_min_width }}x{{
+                        image_setting.image_min_height
+                      }}
+                      {{ title.image_note2 }}
+                      {{ image_setting.image_max_width }}x{{
+                        image_setting.image_max_height
+                      }}),</label
+                    ><br />
+                    <label
+                      class="control-label"
+                      *ngIf="add_advertise.ads_type == 2"
+                      >{{ title.image_note1 }}
+                      {{ image_setting.image_min_width_full }}x{{
+                        image_setting.image_min_height_full
+                      }}
+                      {{ title.image_note2 }}
+                      {{ image_setting.image_max_width_full }}x{{
+                        image_setting.image_max_height_full
+                      }}),</label
+                    ><br />
+                    <label
+                      class="control-label"
+                      *ngIf="add_advertise.ads_type == 1"
+                      >{{ title.image_note3 }}
+                      {{ image_setting.image_ratio }}
+                      {{ title.image_note4 }}
+                    </label>
+                    <label
+                      class="control-label"
+                      *ngIf="add_advertise.ads_type == 2"
+                      >{{ title.image_note3 }}
+                      {{ image_setting.image_ratio_full }}
+                      {{ title.image_note4 }}
+                    </label>
+                    <label
+                      *ngFor="
+                        let i of image_setting.image_type;
+                        let last = last
+                      "
+                    >
+                      {{ i.split("/")[1] }}<label [hidden]="last">,</label>
+                    </label>
+                    <label class="control-label">
+                      {{ title.image_note5 }}</label
+                    >
+
+                    <!--                                        <p>{{image_note}}</p>
+                                                                                <p>{{image_note_ratio}}</p>-->
+                  </div>
+                </div>
+              </div>
+              <!--                            <div class="row">   
+                                                            <div class="col-lg-4">
+                                                            </div>
+                                                            <div *ngIf="type=='add'" class="col-lg-4" style="text-align: center;">
+                                                                <input type="submit"  name="submit" style="width: 60%;" class="btn btn-primary" value="{{button.submit }}" >
+                                                            </div>
+                                                            <div *ngIf="type=='edit'" class="col-lg-4" style="text-align: center;">
+                                                                <input type="submit"  id="update" name="update" style="width: 60%;" class="btn btn-primary" value="{{button.update }}" >
+                                                            </div>
+                            
+                                                        </div>-->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+<ng-template #myModal let-modal>
+  <div class="modal-header">
+    <button
+      type="button"
+      class="close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    >
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <img-cropper
+      #cropper_full
+      [image]="data"
+      [settings]="cropperSettingsFull"
+    ></img-cropper
+    ><br />
+    {{ cropperSettingsFull.croppedWidth }}
+    {{ cropperSettingsFull.croppedHeight }}
+    <div class="col-lg-12 text_center">
+      <span style="color: red">{{ image_error }}</span>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div style="text-align: center">
+      <button type="button" (click)="cropFull($event)" class="btn btn-primary">
+        {{ button.done }}
+      </button>
+    </div>
+  </div>
+</ng-template>

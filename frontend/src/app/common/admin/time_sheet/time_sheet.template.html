@@ -1,0 +1,32 @@
+<div class="chat-button" id="chat-button" (click)="timer_launch()">
+  <span><i class="fa fa-clock-o" aria-hidden="true"></i> </span>
+</div>
+<div [class.active]="is_open" class="ibox container col-md-3">
+  <div class="ibox-title" style="display: flex; justify-content: space-between">
+    <h4>Timer</h4>
+    <i class="fa fa-times" aria-hidden="true" (click)="timer_close()"></i>
+  </div>
+  <div class="ibox-content" style="height: calc(100vh - 400px); overflow: auto">
+    <div
+      class="play-pause"
+      style="
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        margin-top: 30px;
+      "
+    >
+      <div class="itm">
+        <div *ngIf="is_play" class="itm-btn" (click)="play_pause()">
+          <i class="fa fa-play" aria-hidden="true"></i>
+        </div>
+        <div *ngIf="is_pause" class="itm-btn" (click)="play_pause()">
+          <i class="fa fa-pause" aria-hidden="true"></i>
+        </div>
+      </div>
+      <div class="duration" style="margin-top: 15px">
+        Duration : {{duration1}}
+      </div>
+    </div>
+  </div>
+</div>

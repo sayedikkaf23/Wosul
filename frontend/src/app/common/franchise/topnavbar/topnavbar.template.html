@@ -1,0 +1,49 @@
+<button id="button" hidden></button>
+
+<div class="row border-bottom">
+  <nav
+    class="navbar navbar-static-top white-bg full_menu"
+    role="navigation"
+    style="
+      margin-bottom: 0;
+      background-color: #f1f1f1 !important;
+      transition: all 0.4s;
+    "
+  >
+    <span class="navbar-header">
+      <a class="minimalize-styl-2 btn btn-primary" (click)="toggleNavigation()"
+        ><i class="fa fa-bars"></i>
+      </a>
+    </span>
+    <ul class="nav navbar-top-links navbar-right">
+      <li style="float: right">
+        <a [routerLink]="['/franchise/logout']" style="color: #222222"
+          ><i class="fa fa-sign-out"></i>{{menu_title.logout }}</a
+        >
+      </li>
+    </ul>
+  </nav>
+</div>
+
+<ng-template #myModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">
+      {{heading_title.you_are_decline }}
+    </h4>
+    <button
+      type="button"
+      class="close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <label style="color: black">{{title.please_contact_to_admin }}</label>
+  </div>
+  <div class="modal-footer">
+    <a [routerLink]="['/franchise/logout']">
+      <i class="fa fa-sign-out"></i>{{menu_title.logout }}
+    </a>
+  </div>
+</ng-template>

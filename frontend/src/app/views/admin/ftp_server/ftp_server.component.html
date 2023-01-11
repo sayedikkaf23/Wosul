@@ -1,0 +1,336 @@
+<form #ftpserverForm="ngForm">
+  <div
+    class="wrapper wrapper-content content_top_bar_view1 animated fadeInRight"
+  >
+    <div class="row">
+      <div class="col-lg-6 col-sm-9">
+        <div class="ibox">
+          <div class="ibox-title">
+            <label class="control-label">FTP Server Data</label>
+          </div>
+          <div class="ibox-content">
+            <div class="row">
+              <div class="form-group" id="search_fields">
+                <label class="col-lg-4 control-label">Store</label>
+                <div class="col-lg-8 form-group">
+                  <ng-multiselect-dropdown
+                    [placeholder]="'Select Store'"
+                    [settings]="dropdownSettings"
+                    [data]="store_list"
+                    [(ngModel)]="selectedItems"
+                    [ngModelOptions]="{ standalone: true }"
+                    (onSelect)="onItemSelect($event)"
+                  >
+                  </ng-multiselect-dropdown>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-lg-4 control-label">Host</label>
+                <div class="col-lg-8 form-group">
+                  <input
+                    type="text"
+                    class="form-control"
+                    [(ngModel)]="add_ftp_server.host"
+                    #host="ngModel"
+                    name="host"
+                    autocomplete="off"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-lg-4 control-label">Port</label>
+                <div class="col-lg-8 form-group">
+                  <input
+                    type="number"
+                    class="form-control"
+                    [(ngModel)]="add_ftp_server.port"
+                    #port="ngModel"
+                    name="port"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 col-sm-9">
+        <div class="ibox">
+          <div class="ibox-title"></div>
+          <div class="ibox-content">
+            <div class="row">
+              <!-- {{ add_ftp_server | json }} -->
+
+              <div class="form-group">
+                <label class="col-lg-4 control-label">User</label>
+                <div class="col-lg-8 form-group">
+                  <input
+                    type="text"
+                    class="form-control"
+                    [(ngModel)]="add_ftp_server.user"
+                    #user="ngModel"
+                    name="user"
+                    autocomplete="off"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-lg-4 control-label">Password</label>
+                <div class="col-lg-8 form-group">
+                  <input
+                    type="password"
+                    class="form-control"
+                    [(ngModel)]="add_ftp_server.password"
+                    #password="ngModel"
+                    name="password"
+                    autocomplete="off"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-lg-8 form-group pull-right">
+                  <input
+                    type="button"
+                    class="btn btn-primary"
+                    name="submit"
+                    value="Submit"
+                    [disabled]="disableSubmit"
+                    (click)="saveFTPServer(ftpserverForm.value)"
+                  />
+                  <button
+                    style="margin-left: 13px"
+                    class="btn btn-primary"
+                    (click)="import_data()"
+                  >
+                    Set Mapping
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="ibox">
+        <div class="ibox-title">
+          <h5>FTP Server Detail</h5>
+        </div>
+        <div class="ibox-content">
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Host</th>
+                  <th>Port</th>
+                  <th>User</th>
+                  <th>Edit</th>
+                  <th>Delete</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  *ngFor="
+                    let i of ftp_server_list;
+                    let index = index;
+                    let last = last
+                  "
+                >
+                  <td>{{ i.host }}</td>
+                  <td>{{ i.port }}</td>
+                  <td>{{ i.user }}</td>
+                  <td>
+                    <button
+                      class="btn btn-default btn-sm"
+                      (click)="editFTPServer(i._id)"
+                    >
+                      <i class="glyphicon glyphicon-edit"></i>
+                    </button>
+                  </td>
+                  <td>
+                    <button
+                      class="btn btn-default btn-sm"
+                      (click)="deleteFTPServer(i._id)"
+                    >
+                      <i class="glyphicon glyphicon-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+<form #mappingForm="ngForm">
+  <ng-template
+    let-modal
+    keyboard="false"
+    backdrop="static"
+    cssClass="modal-xl animated fadeInDownBig"
+    #import_data_modal
+  >
+    <div class="modal-header">
+      <h4 class="modal-title">Import Data</h4>
+    </div>
+    <div class="modal-body">
+      <div class="row">
+        <div class="form-group col-md-12">
+          <label class="col-sm-3 control-label">Select File:</label>
+          <div
+            class="col-sm-3"
+            *ngIf="header_value.length == 0"
+            style="color: red; font-size: 15px"
+          >
+            *Please Select File
+          </div>
+          <div class="col-sm-9">
+            <div
+              class="fileinput fileinput-new input-group"
+              data-provides="fileinput"
+            >
+              <div
+                class="form-control"
+                data-trigger="fileinput"
+                style="overflow-x: hidden"
+              >
+                <i class="glyphicon glyphicon-file fileinput-exists"></i>
+                <span class="fileinput-filename"></span>
+              </div>
+              <span class="input-group-addon btn btn-default btn-file"
+                ><span class="fileinput-new">Select File</span
+                ><span class="fileinput-exists">{{
+                  helper.button.change
+                }}</span>
+                <input
+                  type="file"
+                  (change)="upload_excel($event)"
+                  name="logo_image"
+                  placeholder="Select Logo Image"
+              /></span>
+              <a
+                href="#"
+                id="remove"
+                class="input-group-addon btn btn-default fileinput-exists"
+                data-dismiss="fileinput"
+                >{{ helper.button.remove_file }}</a
+              >
+            </div>
+          </div>
+          <!-- <div class="col-sm-3"></div> -->
+        </div>
+
+        <div *ngIf="myLoading == true" style="text-align: center">
+          Loading..
+        </div>
+        <div class="form-group col-lg-12" id="search_fields">
+          <label class="col-lg-2 control-label">Filter</label>
+          <div class="col-lg-3 form-group">
+            <ng-multiselect-dropdown
+              [placeholder]="'Select Key...'"
+              [settings]="dropdownSettings"
+              [data]="item_barcode_key"
+              [(ngModel)]="selectedItemKey"
+              [ngModelOptions]="{ standalone: true }"
+              (onSelect)="onItemKeySelect($event)"
+            >
+            </ng-multiselect-dropdown>
+          </div>
+          <div class="col-lg-3 form-group">
+            <ng-multiselect-dropdown
+              [placeholder]="'Select Value...'"
+              [settings]="dropdownSettings"
+              [data]="item_barcode_value"
+              [(ngModel)]="selectedItemValue"
+              [ngModelOptions]="{ standalone: true }"
+              (onSelect)="onItemValueSelect($event)"
+            >
+            </ng-multiselect-dropdown>
+          </div>
+
+          <div class="col-lg-3 form-group">
+            <ng-multiselect-dropdown
+              [placeholder]="'Select Type...'"
+              [settings]="dropdownSettings"
+              [data]="header_type"
+              [(ngModel)]="selectedItemType"
+              [ngModelOptions]="{ standalone: true }"
+              (onSelect)="onItemTypeSelect($event)"
+            >
+            </ng-multiselect-dropdown>
+          </div>
+        </div>
+        <div
+          *ngFor="let head of headers_data; let i = index"
+          class="form-group col-lg-12"
+          id="search_fields"
+        >
+          <label class="col-lg-2 control-label">Headers</label>
+          <div class="col-lg-3 form-group">
+            <ng-multiselect-dropdown
+              [(ngModel)]="head.key"
+              [ngModelOptions]="{ standalone: true }"
+              [placeholder]="'Select Key...'"
+              [settings]="dropdownSettings"
+              [data]="header_list"
+              (onSelect)="onHeaderKeySelect($event)"
+            >
+            </ng-multiselect-dropdown>
+          </div>
+          <div class="col-lg-3 form-group">
+            <ng-multiselect-dropdown
+              [(ngModel)]="head.value"
+              [ngModelOptions]="{ standalone: true }"
+              [placeholder]="'Select Value...'"
+              [settings]="dropdownSettings"
+              [data]="header_value"
+              (onSelect)="onHeaderValueSelect($event)"
+            >
+            </ng-multiselect-dropdown>
+          </div>
+
+          <div class="col-lg-3 form-group">
+            <ng-multiselect-dropdown
+              [(ngModel)]="head.type"
+              [ngModelOptions]="{ standalone: true }"
+              [placeholder]="'Select Type...'"
+              [settings]="dropdownSettings"
+              [data]="header_type"
+              (onSelect)="onHeaderTypeSelect($event)"
+            >
+            </ng-multiselect-dropdown>
+          </div>
+
+          <button class="btn btn-primary" (click)="addHeaders()">Add</button>
+          <button
+            *ngIf="headers_data.length > 1"
+            class="btn btn-success"
+            (click)="removeHeaders(index)"
+          >
+            Remove
+          </button>
+        </div>
+      </div>
+
+      <div class="form-group col-md-12 text-center">
+        <button
+          type="submit"
+          (click)="add_mapping_details()"
+          id="submit"
+          name="submit"
+          class="btn btn-primary"
+        >
+          Submit
+        </button>
+      </div>
+    </div>
+  </ng-template>
+</form>

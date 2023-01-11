@@ -1,0 +1,7 @@
+File from: [./temp/5ff0a4e99baff04dec502b38yG9I.png]
+
+File to: [uploads/store_profiles/5ff0a4e99baff04dec502b38yG9I.png]
+
+Compression algorithm: [pngquant]
+
+Description: Error: spawn /root/yeepeeyAdminStorePanel/node_modules/pngquant-bin/vendor/pngquant ENOENT

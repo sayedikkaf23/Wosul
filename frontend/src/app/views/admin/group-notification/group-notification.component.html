@@ -1,0 +1,226 @@
+<footer [myLoading]="myLoading"></footer>
+
+<div class="wrapper wrapper-content content_top_bar animated fadeInRight">
+  <div class="row">
+    <div class="col-md-4">
+      <div class="ibox">
+        <div class="ibox-title">
+          <h5>Notification Group</h5>
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-3 remove_right_padding">
+          <button
+            (click)="open_modal()"
+            type="button"
+            class="btn btn-light_black btn-sm btn-block"
+          >
+            <i class="fa fa-plus"></i>
+          </button>
+        </div>
+        <div class="ibox-content">
+
+          <div class="lable_center" *ngIf="group_list?.length == 0">
+            <label>No Records</label>
+          </div>
+          <div
+            [hidden]="group_list?.length == 0"
+            class="table-responsive scrollbar"
+            style="height: calc(100vh - 285px); overflow: auto"
+          >
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Group Name</th>
+                  <th class="pull-right">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let group of group_list">
+                  <td>{{ group.group_name }}</td>
+                  <td>
+                    <span class="fa fa-pencil pull-right" (click)="openEdit(group)"></span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="ibox">
+        <div class="ibox-title">
+          <h5>Create Group Notification</h5>
+        </div>
+
+          <form #add_news_form="ngForm" (ngSubmit)="send_group_notification(add_news_form)">
+            <div class="ibox-content">
+              <div class="full-height-scroll">
+                <ul class="list-group clear-list">
+                  <li class="list-group-item form_padding">
+                    <label style="font-weight: normal"
+                    ><strong>Select Group</strong></label
+                  >
+                    <select
+                      chosen
+                      class="form-control chosen-select"
+                      placeholder="Select Group"
+                      id="group_id"
+                      [(ngModel)]="create_group_notification.group_id"
+                      name="group_id"
+                      required
+                    >
+                      <option *ngFor="let group of group_list" value="{{ group._id }}">
+                        {{ group.group_name }}
+                      </option>
+                    </select>
+                  </li>
+     
+                  <li class="list-group-item form_padding">
+                    <textarea
+                      class="form-control text_area_news"
+                      style="font-weight: bold; font-family: sans-serif"
+                      placeholder="Enter Heading"
+                      [(ngModel)]="create_group_notification.message_title"
+                      maxlength="500"
+                      #message_title="ngModel"
+                      name="message_title"
+                      required
+                    ></textarea>
+                    <div
+                      *ngIf="message_title.errors && (message_title.dirty || message_title.touched)"
+                    >
+                      <div
+                        class="error_message"
+                        [hidden]="!message_title.errors.required"
+                      >
+                        {{ validation_message.field_required }}
+                      </div>
+                    </div>
+                  </li>
+  
+                  <li class="list-group-item form_padding">
+                    <textarea
+                      class="form-control text_area_news"
+                      placeholder="Enter Message"
+                      [(ngModel)]="create_group_notification.message_body"
+                      maxlength="500"
+                      #message_body="ngModel"
+                      name="message_body"
+                      required
+                    ></textarea>
+                    <div
+                      *ngIf="message_body.errors && (message_body.dirty || message_body.touched)"
+                    >
+                      <div
+                        class="error_message"
+                        [hidden]="!message_body.errors.required"
+                      >
+                        {{ validation_message.field_required }}
+                      </div>
+                    </div>
+                  </li>
+  
+                  <li class="list-group-item form_padding">
+                    <div class="row">
+                      <div class="form-group col-lg-6 col-md-6 col-xs-6">
+                        <div style="width: 100%; height: 131px">
+                          <div class="col-lg-12 profile-images center">
+  
+  
+                            <span class="btn-file"
+                              ><img
+                                style="width: 110px; height: 110px"
+                                src="{{
+                                  image_url != ''
+                                    ? image_url
+                                    : 'plus_box.png'
+                                }}"
+                                alt="" /><input
+                                type="file"
+                                accept="image/*"
+                                (change)="image_update($event, 'wallet')"
+                                name="image_url"
+                            /></span>
+  
+                          </div>
+                        </div>
+                        <div class="col-lg-12 text_center">
+                          <span style="color: red">{{ image_error }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                  <li class="list-group-item form_padding">
+                    <button
+                      [disabled]="!add_news_form.valid"
+                      class="btn btn-orange btn-block"
+                      type="submit"
+                    >
+                      {{ button.submit }}
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<ng-template let-modal keyboard="false" backdrop="static" cssClass="modal-sm" #myModal>
+    <form #modalForm="ngForm" (ngSubmit)="addGroup(modalForm)">
+      <div class="modal-header">
+        <h4 class="modal-title">
+            {{modal_title}}
+        </h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="col-md-12 col-sm-12">
+              <div class="form-group">
+                <label style="font-weight: normal"
+                  ><strong>Group Name</strong></label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  [(ngModel)]="group_name"
+                  name="group_name"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label style="font-weight: normal"
+                  ><strong>Group Members</strong></label
+                >
+                <textarea
+                  type="text"
+                  class="form-control"
+                  [(ngModel)]="users_no"
+                  name="users_no"
+                  required
+                ></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div style="text-align: center">
+          <button type="submit" class="btn btn-primary" *ngIf="!isEdit">
+              Add
+          </button>
+          <button type="submit" class="btn btn-primary" *ngIf="isEdit">
+            Update
+        </button>
+        </div>
+      </div>
+    </form>
+  </ng-template>
+

@@ -1,0 +1,76 @@
+<div class="row border-bottom">
+  <nav
+    class="navbar navbar-static-top white-bg full_menu"
+    role="navigation"
+    style="
+      margin-bottom: 0;
+      background-color: #f1f1f1 !important;
+      transition: all 0.4s;
+    "
+  >
+    <span class="navbar-header">
+      <a class="minimalize-styl-2 btn btn-primary" (click)="toggleNavigation()"
+        ><i class="fa fa-bars"></i>
+      </a>
+    </span>
+    <ul class="nav navbar-top-links navbar-right">
+      <li *ngIf="helper.router_id.admin.back_url_show">
+        <a (click)="back()" style="color: #222222"
+          ><i class="fa fa-backward"></i
+        ></a>
+      </li>
+      <li style="float: right">
+        <a (click)="logout()" style="color: #222222"
+          ><i class="fa fa-sign-out"></i>Logout</a
+        >
+      </li>
+    </ul>
+
+    <div class="navbar-header" style="margin-top: 15px;width: 35%;" [hidden]="admin_detail.admin_type!=4">
+      <div class="col-md-12 col-sm-10 col-10">
+        <div
+        class="form-group"
+        >
+        <div class="form-group">
+          <select
+            chosen
+            class="chosen-select"
+            id="store_redirect"
+            [(ngModel)]="store_redirect"
+            #store_detail="ngModel"
+            name="store_detail"
+            data-placeholder="Select Store To Redirect"
+            tabindex="4"
+          >
+            <option *ngFor="let i of store_redirect_list" [(value)]="i._id">
+              {{ i?.email }} - {{i?.storeDetails?.branch_name}}
+              <!-- <div (click)="redirectToStore(i.store_detail)"></div> -->
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+    </div>
+
+  </nav>
+  
+
+</div>
+<!--<div class="row border-bottom">
+    <nav class="navbar navbar-static-top white-bg" role="navigation" style="margin-bottom: 0">
+        <span class="navbar-header">
+            <a class="minimalize-styl-2 btn btn-primary " (click)="toggleNavigation()"><i class="fa fa-bars"></i> </a>
+            
+        </span>
+        {{message}}
+        
+        <ul class="nav navbar-top-links navbar-right">
+            <li>
+                <a (click)="logout()">
+                    <i class="fa fa-sign-out" ></i> Log out
+                </a>
+            </li>
+        </ul>
+
+    </nav>
+</div>-->

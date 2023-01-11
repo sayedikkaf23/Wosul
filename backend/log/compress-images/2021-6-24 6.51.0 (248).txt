@@ -1,0 +1,7 @@
+File from: [./temp/store_items/60dc11aea09b390901c86714/60dc195aa09b390901c86723BVzk.jpg]
+
+File to: [uploads/store_items/60dc195aa09b390901c86723BVzk.jpg]
+
+Compression algorithm: [-]
+
+Description: File does not exist!

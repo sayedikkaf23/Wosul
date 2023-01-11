@@ -1,0 +1,97 @@
+<!--<div class="row wrapper content_top_bar border-bottom white-bg page-heading">
+    <div class="col-lg-12">
+        <div class="title-action">
+            <a target="_blank" class="btn btn-primary"><i class="fa fa-print"></i> Print Invoice </a>
+        </div>
+    </div>
+</div>-->
+<div class="row">
+  <div class="col-lg-12">
+    <div class="wrapper wrapper-content animated fadeInRight content_top_bar">
+      <div class="ibox-content p-xl">
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="row">
+              <h4>Store Address:</h4>
+              <address>
+                {{ source_address }}
+              </address>
+            </div>
+            <div class="row">
+              <h4>User Address:</h4>
+              <address>
+                {{ destination_address }}
+              </address>
+            </div>
+          </div>
+
+          <div class="col-sm-6 text-right">
+            <h4>Invoice No.</h4>
+            <h4 class="text-navy">{{ invoice_number }}</h4>
+
+            <p>
+              <span
+                ><strong>Invoice Date:</strong
+                >{{ completed_at | date: "dd MMM yyyy" }}</span
+              ><br />
+            </p>
+          </div>
+        </div>
+        <div *ngFor="let products of order_detail; let product_index = index">
+          <div class="table-responsive m-t">
+            <table class="table invoice-table">
+              <thead>
+                <tr>
+                  <th width="200px">{{ products.product_name }}</th>
+                  <th>Quantity</th>
+                  <th>Price</th>
+                  <th>Total Price</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of products.items">
+                  <td width="200px">
+                    <div>
+                      <strong>{{ item.item_name }}</strong>
+                    </div>
+                    <small>{{ item.details }}</small>
+                  </td>
+                  <td>{{ item.quantity }}</td>
+                  <td>{{ currency_sign }}{{ item.item_price }}</td>
+                  <td>
+                    {{ currency_sign
+                    }}{{ (item.item_price * item.quantity).toFixed() }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- /table-responsive -->
+
+        <table class="table invoice-total">
+          <tbody>
+            <tr>
+              <td><strong>Sub Total :</strong></td>
+              <td>{{ currency_sign }}{{ total_delivery_price }}</td>
+            </tr>
+            <tr>
+              <td><strong>TAX :</strong></td>
+              <td>{{ currency_sign }}{{ total_store_tax_price }}</td>
+            </tr>
+            <tr>
+              <td><strong>TOTAL :</strong></td>
+              <td>{{ currency_sign }}{{ total_order_price }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="text-right">
+          <button class="btn btn-primary">
+            {{ currency_sign }}{{ total_order_price }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

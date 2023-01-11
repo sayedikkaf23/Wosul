@@ -1,0 +1,99 @@
+<footer [myLoading]="myLoading"></footer>
+<div class="row wrapper fix_search_bar border-bottom white-bg page-heading" style="margin-top: 8px;">
+  <div class="row">
+    <div class="col-md-4 col-sm-6 remove_padding">
+      <div class="col-md-12 form-group">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control search_box"
+            placeholder="Search..."
+            [(ngModel)]="search_value"
+            #store_open_time="ngModel"
+            name="search_value"
+          />
+          <span
+            class="input-group-addon search_icon"
+            (click)="searchItems()"
+            ><span class="fa fa-search"></span
+          ></span>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <label class="col-md-6 col-sm-6">Page</label>
+      <div class="input-group col-md-6 col-sm-6">
+        <input
+          type="text"
+          class="form-control search_box"
+          [(ngModel)]="page"
+          #page_no="ngModel"
+          (keypress)="helper.number_validation($event)"
+          name="page_no"
+        />
+      </div>
+    </div>
+    <div class="col-md-6 col-sm-6">
+      <div class="col-md-2 form-group">
+        <ui-switch
+          class="pull-right"
+          [(ngModel)]="isAddTag"
+          #is_add_tag="ngModel"
+          name="is_add_tag"
+        ></ui-switch>
+      </div>
+      <div class="col-md-6 form-group">
+        <input
+          type="text"
+          [disabled]="!isAddTag"
+          placeholder="Tag Name..."
+          class="form-control"
+          [(ngModel)]="newTags"
+          #new_tags="ngModel"
+          name="new_tags"
+          required
+        />
+        <div
+          *ngIf="new_tags.errors && (new_tags.dirty || new_tags.touched)"
+        >
+          <div style="color: red" [hidden]="!new_tags.errors.required">
+            Please add a suitable tags
+          </div>
+        </div>
+      </div>
+      <label class="col-md-4 control-label">
+        <button
+          class="btn btn-primary"
+          [disabled]="!isAddTag"
+          (click)="updatTag()"
+        >
+          Add Tag
+        </button>
+      </label>
+    </div>
+  </div>
+</div>
+<div class="wrapper wrapper-content content_top_bar_view1 animated fadeInRight">
+  <div class="row">
+    <div class="ibox">
+      <div class="ibox-title">
+        <h5>Add Tags</h5>
+      </div>
+
+      <div class="ibox-content">
+        <label >Item Tag Name</label>
+        <div class="ibox-content">
+          <ng-multiselect-dropdown
+            [placeholder]="'Selcet Items To add Tags'"
+            [settings]="dropdownSettings"
+            [data]="dropdownList"
+            [(ngModel)]="selectedItems"
+            (onSelect)="onItemSelect($event)"
+            (onSelectAll)="onSelectAll($event)"
+          >
+          </ng-multiselect-dropdown>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

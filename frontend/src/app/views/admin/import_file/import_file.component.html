@@ -1,0 +1,69 @@
+<footer [myLoading]="myLoading"></footer>
+<form #vehicleForm="ngForm" (ngSubmit)="addVehicle(vehicleForm.value)">
+  <div
+    class="
+      row
+      wrapper
+      col-sm-12 col-md-12 col-xs-12 col-lg-12
+      fix_search_bar
+      border-bottom
+      white-bg
+      page-heading
+    "
+  >
+    <div class="row">
+      <div class="col-md-3 col-sm-12 pull-right new_submit_button">
+        <input
+          type="submit"
+          id="submit"
+          name="submit"
+          class="btn btn-primary"
+          value="{{ button.submit }}"
+        />
+      </div>
+    </div>
+  </div>
+  <div
+    class="wrapper wrapper-content content_top_bar_view animated fadeInRight"
+  >
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="col-lg-6 col-sm-9">
+          <div class="ibox">
+            <div class="ibox-title">
+              <label class="control-label">Product Image Assignments</label>
+            </div>
+            <div class="ibox-content">
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="row">
+                    <label class="col-lg-6 control-label">Select File</label>
+                  </div>
+                  <div class="row">
+                    <div class="form-group col-lg-6 col-md-6 col-xs-6">
+                      <div style="width: 100%; height: 131px">
+                        <div class="col-lg-12 profile-images center">
+                          <input
+                            type="file"
+                            accept=".xlsx, .xls"
+                            (change)="main_image_update($event)"
+                            name="image_url"
+                          />
+                        </div>
+                        <div class="col-lg-12 text_center">
+                          <span style="color: red">{{ image_error }}</span>
+                          <span style="color: red">{{ error }}</span>
+                          <span style="color: green">{{ success }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

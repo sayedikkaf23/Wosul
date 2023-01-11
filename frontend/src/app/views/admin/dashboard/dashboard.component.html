@@ -1,0 +1,1989 @@
+<footer [myLoading]="myLoading"></footer>
+<div class="row wrapper fix_search_bar border-bottom white-bg page-heading">
+  <div class="row">
+    <div class="col-md-4 col-sm-12">
+      <div class="col-md-12 remove_padding">
+        <div class="form-group" id="search_fields">
+          <select
+            chosen
+            class="chosen-select"
+            [(ngModel)]="selected_country"
+            name="selected_country"
+            id="selected_country"
+            tabindex="4"
+          >
+            <option value="all">{{ title.all }}</option>
+            <option
+              *ngFor="let country of country_list"
+              value="{{ country._id }}"
+            >
+              {{ country.country_name }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 col-sm-12">
+      <div class="col-md-12 remove_padding">
+        <div class="form-group">
+          <div class="input-group">
+            <my-date-picker
+              id="start_date"
+              [options]="helper.myStartDatePickerOptions"
+              placeholder="{{ title.start_date }}"
+              [(ngModel)]="start_date"
+              (dateChanged)="helper.onStartDateChanged($event)"
+              readonly
+            ></my-date-picker>
+            <span class="input-group-addon date_filter_icon">To</span>
+
+            <my-date-picker
+              id="end_date"
+              [options]="helper.myEndDatePickerOptions"
+              placeholder="{{ title.end_date }}"
+              [(ngModel)]="end_date"
+              (dateChanged)="helper.onEndDateChanged($event)"
+              readonly
+            ></my-date-picker>
+          </div>
+          <div [ngSwitch]="date_error">
+            <div *ngSwitchCase="1">
+              <label style="color: red">{{
+                validation_message.start_date_required
+              }}</label>
+            </div>
+            <div *ngSwitchCase="2">
+              <label style="color: red">{{
+                validation_message.end_date_required
+              }}</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 col-sm-12">
+      <div class="col-md-6 col-sm-6 filter_btn_div" style="margin-top: 0"></div>
+      <div class="col-md-6 col-sm-6 filter_btn_div" style="margin-top: 0">
+        <input
+          type="button"
+          (click)="date_filter()"
+          class="btn filter_apply_btn pull-right"
+          value="{{ button.apply }}"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+<div class="wrapper content_top_bar_view wrapper-content animated fadeInRight">
+  <div class="row">
+    <div class="col-lg-4" [hidden]="admin_detail.admin_type == 4">
+      <div class="ibox">
+        <div class="ibox-title">
+          <h5>{{ heading_title.dashboard_register_detail }}</h5>
+        </div>
+        <div class="ibox-content">
+          <div class="row">
+            <div class="col-md-6 col-sm-6 col-xs-12 dashboard_margin">
+              <div class="col-md-4 col-sm-4 col-xs-4">
+                <img
+                  class="dashboard_icon_width"
+                  src="assets/dashboard_graphics/register_details/users.png"
+                />
+              </div>
+              <div class="col-md-8 col-sm-8 col-xs-8">
+                <span>{{ title.user }}</span
+                ><br />
+                <span class="dashboard_total_lable">{{
+                  list.total_users
+                }}</span>
+              </div>
+            </div>
+
+            <div class="col-md-6 col-sm-6 col-xs-12 dashboard_margin">
+              <div class="col-md-4 col-sm-4 col-xs-4">
+                <img
+                  class="dashboard_icon_width"
+                  src="assets/dashboard_graphics/register_details/store.png"
+                />
+              </div>
+              <div class="col-md-8 col-sm-8 col-xs-8">
+                <span>{{ title.store }}</span
+                ><br />
+                <span class="dashboard_total_lable">{{
+                  list.total_store
+                }}</span>
+              </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-12 dashboard_margin">
+              <div class="col-md-4 col-sm-4 col-xs-4">
+                <img
+                  class="dashboard_icon_width"
+                  src="assets/dashboard_graphics/register_details/deliveryman.png"
+                />
+              </div>
+              <div class="col-md-8 col-sm-8 col-xs-8">
+                <span>{{ title.provider }}</span
+                ><br />
+                <span class="dashboard_total_lable">{{
+                  list.total_providers
+                }}</span>
+              </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-12 dashboard_margin">
+              <div class="col-md-4 col-sm-4 col-xs-4">
+                <img
+                  class="dashboard_icon_width"
+                  src="assets/dashboard_graphics/register_details/country.png"
+                />
+              </div>
+              <div class="col-md-8 col-sm-8 col-xs-8">
+                <span>{{ title.country }}</span
+                ><br />
+                <span class="dashboard_total_lable">{{
+                  list.total_countries
+                }}</span>
+              </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-12 dashboard_margin">
+              <div class="col-md-4 col-sm-4 col-xs-4">
+                <img
+                  class="dashboard_icon_width"
+                  src="assets/dashboard_graphics/register_details/city.png"
+                />
+              </div>
+              <div class="col-md-8 col-sm-8 col-xs-8">
+                <span>{{ title.city }}</span
+                ><br />
+                <span class="dashboard_total_lable">{{
+                  list.total_cities
+                }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="ibox">
+        <div class="ibox-title">
+          <h5>{{ heading_title.dashboard_order_detail }}</h5>
+        </div>
+        <!-- <button style="background-color: #bc1a2b;border: 0;height: 41px;width: 41px;border-radius: 4px;"><span style="font-size: 20px;color: #fff;" class="fa fa-user-o"></span></button> -->
+        <div class="ibox-content">
+          <div class="row">
+            <div class="col-md-6 col-sm-6 col-xs-12 dashboard_margin">
+              <div class="col-md-4 col-sm-4 col-xs-4">
+                <img
+                  class="dashboard_icon_width"
+                  src="assets/dashboard_graphics/order_details/total_orders.png"
+                />
+              </div>
+              <div class="col-md-8 col-sm-8 col-xs-8">
+                <span>{{ title.orders }}</span
+                ><br />
+                <span class="dashboard_total_lable">{{
+                  order_detail1.total_orders
+                }}</span>
+              </div>
+            </div>
+
+            <div class="col-md-6 col-sm-6 col-xs-12 dashboard_margin">
+              <div class="col-md-4 col-sm-4 col-xs-4">
+                <img
+                  class="dashboard_icon_width"
+                  src="assets/dashboard_graphics/order_details/cancelled.png"
+                />
+              </div>
+              <div class="col-md-8 col-sm-8 col-xs-8">
+                <span>{{ title.cancelled }}</span
+                ><br />
+                <span class="dashboard_total_lable">{{
+                  order_detail1.cancelled_order
+                }}</span>
+              </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-12 dashboard_margin">
+              <div class="col-md-4 col-sm-4 col-xs-4">
+                <img
+                  class="dashboard_icon_width"
+                  src="assets/dashboard_graphics/order_details/deliveries.png"
+                />
+              </div>
+              <div class="col-md-8 col-sm-8 col-xs-8">
+                <span>{{ title.deliveries }}</span
+                ><br />
+                <span class="dashboard_total_lable">{{
+                  order_detail1.total_deliveries
+                }}</span>
+              </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-12 dashboard_margin">
+              <div class="col-md-4 col-sm-4 col-xs-4">
+                <img
+                  class="dashboard_icon_width"
+                  src="assets/dashboard_graphics/order_details/sold_items.png"
+                />
+              </div>
+              <div class="col-md-8 col-sm-8 col-xs-8">
+                <span>{{ title.total_item_sold }}</span
+                ><br />
+                <span class="dashboard_total_lable">{{
+                  order_detail.total_item_sold
+                }}</span>
+              </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-12 dashboard_margin">
+              <div class="col-md-4 col-sm-4 col-xs-4">
+                <img
+                  class="dashboard_icon_width"
+                  src="assets/dashboard_graphics/order_details/completed.png"
+                />
+              </div>
+              <div class="col-md-8 col-sm-8 col-xs-8">
+                <span>{{ title.completed }}</span
+                ><br />
+                <span class="dashboard_total_lable">{{
+                  order_detail.completed_order
+                }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4" [hidden]="admin_detail.admin_type != 4">
+      <div class="ibox">
+        <div class="ibox-title">
+          <h5>{{ heading_title.dashboard_store_payment }}</h5>
+        </div>
+        <div class="ibox-content">
+          <div class="row">
+            <div class="col-md-12" style="display: block">
+              <div id="b1" class="c3"></div>
+              <div
+                id="b2"
+                class="c3"
+                style="position: absolute; height: 0px; top: -100px"
+              ></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12" style="margin-top: 28px">
+              <div class="col-md-1 col-xs-1 col-sm-1" style="padding-right: 0">
+                <span
+                  class="fa fa-square"
+                  style="font-size: 20px; color: #bb212b"
+                ></span>
+              </div>
+              <div class="col-md-5 col-xs-5 col-sm-5">
+                <span style="font-size: 15px"
+                  >YeePeey Earning <br /><span
+                    style="font-size: 20px; color: black"
+                    >{{ order_detail?.yeep_earning }}</span
+                  ></span
+                >
+              </div>
+              <div class="col-md-1 col-xs-1 col-sm-1" style="padding: 0">
+                <span
+                  class="fa fa-square"
+                  style="font-size: 20px; color: #1e1e1e"
+                ></span>
+              </div>
+              <div class="col-md-5 col-xs-5 col-sm-5" style="padding: 0">
+                <span style="font-size: 15px"
+                  >{{ title.store_earn }}<br /><span
+                    style="font-size: 20px; color: black"
+                    >{{ order_detail.store_earning.toFixed(2) }}</span
+                  ></span
+                >
+              </div>
+              <!-- <div class="col-md-1 col-xs-1 col-sm-1" style="padding-right : 0">
+                <span
+                  class="fa fa-square"
+                  style="font-size: 20px; color: #1e1e1e"
+                ></span>
+              </div>
+              <div class="col-md-10 col-xs-10 col-sm-1" >
+                <span style="font-size: 15px"
+                  >YeePeey Earning<br /><span
+                    style="font-size: 20px; color: black"
+                    >{{ order_detail?.yeep_earning }}</span
+                  ></span
+                >
+              </div> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="ibox">
+        <div class="ibox-title">
+          <h5>{{ heading_title.dashboard_payment_detail }}</h5>
+        </div>
+
+        <div class="ibox-content">
+          <div class="row">
+            <div class="col-md-6 col-sm-6 col-xs-12 dashboard_margin">
+              <div class="col-md-4 col-sm-4 col-xs-4">
+                <img
+                  class="dashboard_icon_width"
+                  src="assets/dashboard_graphics/payment_details/total.png"
+                />
+              </div>
+              <div class="col-md-8 col-sm-8 col-xs-8">
+                <span>{{ title.total }}</span
+                ><br />
+                <span class="dashboard_total_lable">{{
+                  order_detail.total_payments.toFixed(2)
+                }}</span>
+              </div>
+            </div>
+
+            <div class="col-md-6 col-sm-6 col-xs-12 dashboard_margin">
+              <div class="col-md-4 col-sm-4 col-xs-4">
+                <img
+                  class="dashboard_icon_width"
+                  src="assets/dashboard_graphics/payment_details/wallet.png"
+                />
+              </div>
+              <div class="col-md-8 col-sm-8 col-xs-8">
+                <span>{{ title.wallet }}</span
+                ><br />
+                <span class="dashboard_total_lable">{{
+                  order_detail.wallet_payment.toFixed(2)
+                }}</span>
+              </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-12 dashboard_margin">
+              <div class="col-md-4 col-sm-4 col-xs-4">
+                <img
+                  class="dashboard_icon_width"
+                  src="assets/dashboard_graphics/payment_details/other_payments.png"
+                />
+              </div>
+              <div class="col-md-8 col-sm-8 col-xs-8">
+                <span>{{ title.other }}</span
+                ><br />
+                <span class="dashboard_total_lable">{{
+                  order_detail.other_payment.toFixed(2)
+                }}</span>
+              </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-12 dashboard_margin">
+              <div class="col-md-4 col-sm-4 col-xs-4">
+                <img
+                  class="dashboard_icon_width"
+                  src="assets/dashboard_graphics/payment_details/promo.png"
+                />
+              </div>
+              <div class="col-md-8 col-sm-8 col-xs-8">
+                <span>{{ title.promo }}</span
+                ><br />
+                <span class="dashboard_total_lable">{{
+                  order_detail.promo_payment.toFixed(2)
+                }}</span>
+              </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-12 dashboard_margin">
+              <div class="col-md-4 col-sm-4 col-xs-4">
+                <img
+                  class="dashboard_icon_width"
+                  src="assets/dashboard_graphics/payment_details/cash_payments.png"
+                />
+              </div>
+              <div class="col-md-8 col-sm-8 col-xs-8">
+                <span>{{ title.cash }}</span
+                ><br />
+                <span class="dashboard_total_lable">{{
+                  order_detail.cash_payment.toFixed(2)
+                }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row" [hidden]="admin_detail.admin_type == 4">
+    <div class="col-lg-4">
+      <div class="ibox" [hidden]="admin_detail.admin_type == 4">
+        <div class="ibox-title">
+          <h5>{{ heading_title.dashboard_admin_payment }}</h5>
+        </div>
+        <div class="ibox-content">
+          <div class="row">
+            <div class="col-md-12" style="display: block">
+              <div id="a" class="c3"></div>
+            </div>
+            <div class="col-md-12" style="margin-top: 28px">
+              <div class="col-md-1 col-xs-1 col-sm-1" style="padding-right: 0">
+                <span
+                  class="fa fa-square"
+                  style="font-size: 20px; color: #e0e0e0"
+                ></span>
+              </div>
+              <div class="col-md-5 col-xs-5 col-sm-5">
+                <span style="font-size: 15px"
+                  >{{ title.total }}<br /><span
+                    style="font-size: 20px; color: black"
+                    >{{ order_detail.total_payments.toFixed(2) }}</span
+                  ></span
+                >
+              </div>
+              <div class="col-md-1 col-xs-1 col-sm-1" style="padding: 0">
+                <span
+                  class="fa fa-square"
+                  style="font-size: 20px; color: #1e1e1e"
+                ></span>
+              </div>
+              <div class="col-md-5 col-xs-5 col-sm-5" style="padding: 0">
+                <span style="font-size: 15px"
+                  >{{ title.admin_earn }}<br /><span
+                    style="font-size: 20px; color: black"
+                    >{{ order_detail.admin_earning.toFixed(2) }}</span
+                  ></span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="ibox">
+        <div class="ibox-title">
+          <h5>{{ heading_title.dashboard_store_payment }}</h5>
+        </div>
+        <div class="ibox-content">
+          <div class="row">
+            <div class="col-md-12" style="display: block">
+              <div id="q1" class="c3"></div>
+              <div
+                id="q2"
+                class="c3"
+                style="position: absolute; height: 0px; top: -100px"
+              ></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12" style="margin-top: 28px">
+              <div class="col-md-1 col-xs-1 col-sm-1" style="padding-right: 0">
+                <span
+                  class="fa fa-square"
+                  style="font-size: 20px; color: #bb212b"
+                ></span>
+              </div>
+              <div class="col-md-5 col-xs-5 col-sm-5">
+                <span style="font-size: 15px"
+                  >YeePeey Earning <br /><span
+                    style="font-size: 20px; color: black"
+                    >{{ order_detail?.yeep_earning }}</span
+                  ></span
+                >
+              </div>
+              <div class="col-md-1 col-xs-1 col-sm-1" style="padding: 0">
+                <span
+                  class="fa fa-square"
+                  style="font-size: 20px; color: #1e1e1e"
+                ></span>
+              </div>
+              <div class="col-md-5 col-xs-5 col-sm-5" style="padding: 0">
+                <span style="font-size: 15px"
+                  >{{ title.store_earn }}<br /><span
+                    style="font-size: 20px; color: black"
+                    >{{ order_detail.store_earning.toFixed(2) }}</span
+                  ></span
+                >
+              </div>
+              <!-- <div class="col-md-1 col-xs-1 col-sm-1" style="padding-right : 0">
+                <span
+                  class="fa fa-square"
+                  style="font-size: 20px; color: #1e1e1e"
+                ></span>
+              </div>
+              <div class="col-md-10 col-xs-10 col-sm-1" >
+                <span style="font-size: 15px"
+                  >YeePeey Earning<br /><span
+                    style="font-size: 20px; color: black"
+                    >{{ order_detail?.yeep_earning }}</span
+                  ></span
+                >
+              </div> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="ibox" [hidden]="admin_detail.admin_type == 4">
+        <div class="ibox-title">
+          <h5>{{ heading_title.dashboard_provider_payment }}</h5>
+        </div>
+        <div class="ibox-content">
+          <div class="row">
+            <div class="col-md-12" style="display: block">
+              <div id="c1" class="c3"></div>
+              <div
+                id="c2"
+                class="c3"
+                style="position: absolute; height: 0px; top: -100px"
+              ></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12" style="margin-top: 28px">
+              <div class="col-md-1 col-xs-1 col-sm-1" style="padding-right: 0">
+                <span
+                  class="fa fa-square"
+                  style="font-size: 20px; color: #bb212b"
+                ></span>
+              </div>
+              <div class="col-md-5 col-xs-5 col-sm-5">
+                <span style="font-size: 15px"
+                  >{{ title.delivery_payment }}<br /><span
+                    style="font-size: 20px; color: black"
+                    >{{ order_detail.delivery_payment.toFixed(2) }}</span
+                  ></span
+                >
+              </div>
+              <div class="col-md-1 col-xs-1 col-sm-1" style="padding: 0">
+                <span
+                  class="fa fa-square"
+                  style="font-size: 20px; color: #1e1e1e"
+                ></span>
+              </div>
+              <div class="col-md-5 col-xs-5 col-sm-5" style="padding: 0">
+                <span style="font-size: 15px"
+                  >{{ title.provider_earn }}<br /><span
+                    style="font-size: 20px; color: black"
+                    >{{ order_detail.provider_earning.toFixed(2) }}</span
+                  ></span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <!--For Store Setting-->
+    <!-- <div class="col-lg-12">
+      <form
+        #settingUpdateForm="ngForm"
+        (ngSubmit)="UpdateSetting(settingUpdateForm.value)"
+      >
+        <input
+          type="hidden"
+          class="form-control"
+          [(ngModel)]="store_setting.store_id"
+          #store_id="ngModel"
+          name="store_id"
+        />
+        <input
+          type="hidden"
+          class="form-control"
+          [(ngModel)]="store_setting.server_token"
+          #server_token="ngModel"
+          name="server_token"
+        />
+        <input
+          type="hidden"
+          class="form-control"
+          [(ngModel)]="store_setting.store_time"
+          #store_time="ngModel"
+          name="store_time"
+        />
+        <div class="ibox">
+          <div class="ibox-title">
+            <h5>Store Setting</h5>
+          </div>
+          <div class="ibox-content">
+            <div class="row">
+              <div class="col-md-6">
+                <label>Select Store</label>
+                <ng-multiselect-dropdown
+                  [placeholder]="'Select Store'"
+                  [settings]="dropdownSettings"
+                  [data]="store_list"
+                  [(ngModel)]="selectedStore"
+                  [ngModelOptions]="{ standalone: true }"
+                  (onSelect)="onItemSelect($event)"
+                >
+                </ng-multiselect-dropdown>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-6 col-md-12 col-sm-12 col-12" *ngIf="isSettingShow">
+              <div class="ibox">
+                <div
+                  class="ibox-title"
+                  style="padding: 0; min-height: 35px !important"
+                >
+                  <label
+                    style="margin-left: 15px; margin-top: 9px"
+                    class="control-label"
+                    >Operation Time Settings</label
+                  >
+                  <div class="pull-right">
+                    <button
+                      *ngIf="!edit"
+                      type="button"
+                      (click)="edit = true"
+                      style="background-color: #e5e5e5; border: 0; margin-top: 5px"
+                    >
+                      <span class="fa fa-pencil"></span>
+                    </button>
+                    <button
+                      *ngIf="edit"
+                      type="button"
+                      (click)="updateStoreTime()"
+                      style="background-color: #e5e5e5; border: 0; margin-top: 5px"
+                    >
+                      <span class="fa fa-check"></span>
+                    </button>
+                  </div>
+                </div>
+                <div class="ibox-content general_setting scrollbar">
+                  <div class="row" style="margin: 0">
+                    <div
+                      class="col-lg-12"
+                      style="
+                        border-bottom: 1px solid;
+                        padding-left: 0;
+                        padding-right: 0;
+                      "
+                    >
+                      <div
+                        class="wizard"
+                        style="
+                          border-bottom: 1px solid;
+                          padding-left: 0;
+                          padding-right: 0;
+                        "
+                      >
+                        <div class="steps clearfix">
+                          <ul style="display: table; padding: 0px">
+                            <li
+                              (click)="change_day(0)"
+                              style="width: unset !important"
+                              [style.border-bottom]="
+                                curren_selected_day == 0 ? '1px solid #bc202b' : null
+                              "
+                              class="day_li"
+                            >
+                              <a
+                                style="
+                                  border-bottom-right-radius: 0px;
+                                  border-bottom-left-radius: 0px;
+                                  border: 0px;
+                                "
+                                class="btn-default"
+                                ><span
+                                  style="
+                                    margin-left: -5px;
+                                    font-weight: bold;
+                                    display: block;
+                                  "
+                                  [style.color]="
+                                    curren_selected_day == 0 ? '#bc202b' : null
+                                  "
+                                  class="nav-label"
+                                  >{{ title.sunday  }}</span
+                                ></a
+                              >
+                            </li>
+                            <li
+                              (click)="change_day(1)"
+                              style="width: unset !important"
+                              [style.border-bottom]="
+                                curren_selected_day == 1 ? '1px solid #bc202b' : null
+                              "
+                              class="day_li"
+                            >
+                              <a
+                                style="
+                                  border-bottom-right-radius: 0px;
+                                  border-bottom-left-radius: 0px;
+                                  border: 0px;
+                                "
+                                class="btn-default"
+                                ><span
+                                  style="
+                                    margin-left: -5px;
+                                    font-weight: bold;
+                                    display: block;
+                                  "
+                                  [style.color]="
+                                    curren_selected_day == 1 ? '#bc202b' : null
+                                  "
+                                  class="nav-label"
+                                  >{{ title.monday  }}</span
+                                ></a
+                              >
+                            </li>
+                            <li
+                              (click)="change_day(2)"
+                              style="width: unset !important"
+                              [style.border-bottom]="
+                                curren_selected_day == 2 ? '1px solid #bc202b' : null
+                              "
+                              class="day_li"
+                            >
+                              <a
+                                style="
+                                  border-bottom-right-radius: 0px;
+                                  border-bottom-left-radius: 0px;
+                                  border: 0px;
+                                "
+                                class="btn-default"
+                                ><span
+                                  style="
+                                    margin-left: -5px;
+                                    font-weight: bold;
+                                    display: block;
+                                  "
+                                  [style.color]="
+                                    curren_selected_day == 2 ? '#bc202b' : null
+                                  "
+                                  class="nav-label"
+                                  >{{ title.tuesday  }}</span
+                                ></a
+                              >
+                            </li>
+                            <li
+                              (click)="change_day(3)"
+                              style="width: unset !important"
+                              [style.border-bottom]="
+                                curren_selected_day == 3 ? '1px solid #bc202b' : null
+                              "
+                              class="day_li"
+                            >
+                              <a
+                                style="
+                                  border-bottom-right-radius: 0px;
+                                  border-bottom-left-radius: 0px;
+                                  border: 0px;
+                                "
+                                class="btn-default"
+                                ><span
+                                  style="
+                                    margin-left: -5px;
+                                    font-weight: bold;
+                                    display: block;
+                                  "
+                                  [style.color]="
+                                    curren_selected_day == 3 ? '#bc202b' : null
+                                  "
+                                  class="nav-label"
+                                  >{{ title.wednesday  }}</span
+                                ></a
+                              >
+                            </li>
+                            <li
+                              (click)="change_day(4)"
+                              style="width: unset !important"
+                              [style.border-bottom]="
+                                curren_selected_day == 4 ? '1px solid #bc202b' : null
+                              "
+                              class="day_li"
+                            >
+                              <a
+                                style="
+                                  border-bottom-right-radius: 0px;
+                                  border-bottom-left-radius: 0px;
+                                  border: 0px;
+                                "
+                                class="btn-default"
+                                ><span
+                                  style="
+                                    margin-left: -5px;
+                                    font-weight: bold;
+                                    display: block;
+                                  "
+                                  [style.color]="
+                                    curren_selected_day == 4 ? '#bc202b' : null
+                                  "
+                                  class="nav-label"
+                                  >{{ title.thursday  }}</span
+                                ></a
+                              >
+                            </li>
+                            <li
+                              (click)="change_day(5)"
+                              style="width: unset !important"
+                              [style.border-bottom]="
+                                curren_selected_day == 5 ? '1px solid #bc202b' : null
+                              "
+                              class="day_li"
+                            >
+                              <a
+                                style="
+                                  border-bottom-right-radius: 0px;
+                                  border-bottom-left-radius: 0px;
+                                  border: 0px;
+                                "
+                                class="btn-default"
+                                ><span
+                                  style="
+                                    margin-left: -5px;
+                                    font-weight: bold;
+                                    display: block;
+                                  "
+                                  [style.color]="
+                                    curren_selected_day == 5 ? '#bc202b' : null
+                                  "
+                                  class="nav-label"
+                                  >{{ title.friday  }}</span
+                                ></a
+                              >
+                            </li>
+                            <li
+                              (click)="change_day(6)"
+                              style="width: unset !important"
+                              [style.border-bottom]="
+                                curren_selected_day == 6 ? '1px solid #bc202b' : null
+                              "
+                              class="day_li"
+                            >
+                              <a
+                                style="
+                                  border-bottom-right-radius: 0px;
+                                  border-bottom-left-radius: 0px;
+                                  border: 0px;
+                                "
+                                class="btn-default"
+                                ><span
+                                  style="
+                                    margin-left: -5px;
+                                    font-weight: bold;
+                                    display: block;
+                                  "
+                                  [style.color]="
+                                    curren_selected_day == 6 ? '#bc202b' : null
+                                  "
+                                  class="nav-label"
+                                  >{{ title.saturday  }}</span
+                                ></a
+                              >
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                      <div class="row" style="margin-top: 9px; margin-bottom: 9px">
+                        <div class="col-md-6 col-sm-6">
+                          <label
+                            class="col-md-9 col-sm-9 col-xs-9 control-label"
+                            style="padding-top: 8px"
+                            >Open Full Time</label
+                          >
+      
+                          <div
+                            class="col-md-3 col-sm-3 col-xs-3"
+                            style="padding-top: 6px"
+                          >
+                            <ui-switch
+                              (change)="store_full_time_open($event)"
+                              [disabled]="!edit"
+                              [(ngModel)]="is_store_open_full_time"
+                              name="is_store_open_full_time"
+                            ></ui-switch>
+                          </div>
+                        </div>
+                        <div class="col-md-6 col-sm-6">
+                          <label
+                            class="col-md-9 col-sm-9 col-xs-9 control-label"
+                            style="padding-top: 8px"
+                            >{{ title.open  }}</label
+                          >
+      
+                          <div
+                            class="col-md-3 col-sm-3 col-xs-3"
+                            style="padding-top: 6px"
+                          >
+                            <ui-switch
+                              (change)="store_open($event)"
+                              [disabled]="is_store_open_full_time || !edit"
+                              [(ngModel)]="is_store_open"
+                              name="is_store_open"
+                            ></ui-switch>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row" style="margin-top: 9px; margin-bottom: 9px">
+                        <div class="col-md-12">
+                          <div class="text-center">
+                            <button
+                              type="button"
+                              [disabled]="is_store_open_full_time || !edit"
+                              (click)="open_add_time_modal()"
+                              class="btn add_btn"
+                            > Add Time
+                              <span
+                                class="fa fa-plus pull-right"
+                                style="margin-top: 2px"
+                              ></span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+      
+                  <div class="">
+                    <table class="table">
+                      <tr>
+                        <td>Open</td>
+                        <td>Close</td>
+                        <td>Action</td>
+                      </tr>
+                      <tr *ngFor="let i of selected_store_time_array">
+                        <td>{{ i.store_open_time }}</td>
+                        <td>{{ i.store_close_time }}</td>
+                        <td>
+                          <span
+                            (click)="remove_store_time(i)"
+                            class="fa fa-times"
+                          ></span>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div> -->
+
+    <div class="col-lg-12">
+      <div class="ibox">
+        <div class="ibox-title">
+          <h5>{{ heading_title.dashboard_title }}</h5>
+        </div>
+        <div class="ibox-content">
+          <div class="row">
+            <div class="col-md-12" style="display: block">
+              <canvas
+                baseChart
+                [datasets]="lineChartData"
+                [labels]="lineChartLabels"
+                [options]="lineChartOptions"
+                [colors]="lineChartColors"
+                [legend]="lineChartLegend"
+                [chartType]="lineChartType"
+              >
+              </canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-12" [hidden]="admin_detail.admin_type == 4">
+      <div class="ibox">
+        <div class="ibox-title">
+          <h5>{{ heading_title.dashboard_order_chart }}</h5>
+        </div>
+        <div class="ibox-content">
+          <div class="row">
+            <div class="col-md-12" style="display: block">
+              <canvas
+                baseChart
+                [datasets]="barChartData"
+                [labels]="barChartLabels"
+                [options]="barChartOptions"
+                [legend]="barChartLegend"
+                [chartType]="barChartType"
+                [colors]="barChartColors"
+              ></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-lg-6">
+      <div class="ibox">
+        <div class="ibox-title">
+          <h5>
+            {{ heading_title.dashboard_last_six_month_payment_detail }}
+          </h5>
+        </div>
+        <div class="ibox-content">
+          <div class="row">
+            <div class="col-md-6 col-sm-6 col-xs-12" style="display: block">
+              <canvas
+                baseChart
+                [data]="pieChartData"
+                [labels]="pieChartLabels"
+                [legend]="pieChartLegend"
+                [colors]="pieChartColors"
+                [chartType]="pieChartType"
+              >
+              </canvas>
+            </div>
+
+            <div class="col-md-6 col-sm-6 col-xs-12">
+              <ul
+                style="margin-top: 10%; margin-left: 10%; list-style-type: none"
+              >
+                <li
+                  *ngFor="
+                    let pieChartLabel of pieChartLabels;
+                    let index = index
+                  "
+                >
+                  <span
+                    class="fa fa-square"
+                    style="font-size: 20px"
+                    [style.color]="pieChartColors[0].backgroundColor[index]"
+                  ></span
+                  ><span style="margin-left: 10px; font-size: 15px">{{
+                    pieChartLabel
+                  }}</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="ibox">
+        <div class="ibox-title">
+          <h5>
+            {{ heading_title.dashboard_last_six_month_payment_detail }}
+          </h5>
+        </div>
+        <div class="ibox-content">
+          <div class="row">
+            <div id="bar_chart_group" class="c3"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="ibox">
+        <div class="ibox-title">
+          <h5>
+            {{ heading_title.dashboard_last_six_month_payment_detail }}
+          </h5>
+        </div>
+        <div class="ibox-content">
+          <div class="row">
+            <div id="country_chart" class="c3"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row" [hidden]="admin_detail.admin_type == 4">
+    <div class="col-md-6">
+      <div class="ibox">
+        <div class="ibox-title">
+          <h5>Top Users</h5>
+        </div>
+        <div class="ibox-content" style="padding-bottom: 20px">
+          <div class="row">
+            <div class="col-md-6 col-sm-6 remove_padding">
+              <div class="form-group">
+                <div class="input-group">
+                  <input
+                    type="text"
+                    class="form-control search_box"
+                    [(ngModel)]="no_of_user"
+                    #no_of_user1="ngModel"
+                    (keypress)="helper.number_validation($event)"
+                    name="no_of_user"
+                    placeholder="No. Of Top Users"
+                  />
+                  <span
+                    class="input-group-addon search_icon"
+                    (click)="top_user_and_item('user', no_of_user)"
+                    ><span class="fa fa-search"></span
+                  ></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="table-responsive scrollbar"
+            style="height: calc(100vh - 255px); overflow: auto"
+          >
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th>ID</th>
+                  <th>User Name</th>
+                  <th>No. of Orders</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  *ngFor="
+                    let top_user of top_user_list;
+                    let index = index;
+                    let last = last
+                  "
+                >
+                  <td>{{ index + 1 }}</td>
+                  <td>{{ top_user.unique_id }}</td>
+                  <td>{{ top_user.first_name }} {{ top_user.last_name }}</td>
+                  <td>{{ top_user.count }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="ibox">
+        <div class="ibox-title">
+          <h5>Top Ordered Items</h5>
+        </div>
+
+        <div class="ibox-content" style="padding-bottom: 20px">
+          <div class="row">
+            <div class="col-md-6 col-sm-6 remove_padding">
+              <div class="form-group">
+                <div class="input-group">
+                  <input
+                    type="text"
+                    class="form-control search_box"
+                    [(ngModel)]="no_of_item"
+                    #no_of_item1="ngModel"
+                    (keypress)="helper.number_validation($event)"
+                    name="no_of_item"
+                    placeholder="No. Of Top Item"
+                  />
+                  <span
+                    class="input-group-addon search_icon"
+                    (click)="top_user_and_item('item', no_of_item)"
+                    ><span class="fa fa-search"></span
+                  ></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="table-responsive scrollbar"
+            style="height: calc(100vh - 255px); overflow: auto"
+          >
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th>ID</th>
+                  <th>Item Name</th>
+                  <th>No. of Orders</th>
+                  <th>Overall Ordered Quantity</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  *ngFor="
+                    let top_item of top_item_list;
+                    let index = index;
+                    let last = last
+                  "
+                >
+                  <td>{{ index + 1 }}</td>
+                  <td>{{ top_item.unique_id }}</td>
+                  <td>{{ top_item.item_name }}</td>
+                  <td>{{ top_item.count }}</td>
+                  <td>{{ top_item.total_ordered_quantity }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row" [hidden]="admin_detail.admin_type == 4">
+    <div class="col-md-12">
+      <div class="ibox">
+        <div class="ibox-title">
+          <h5>Last Week Carts</h5>
+        </div>
+        <div class="ibox-content" style="padding-bottom: 20px">
+          <div class="row">
+            <div class="col-md-6 col-sm-6 remove_padding">
+              <div class="form-group">
+                <input
+                  type="date"
+                  class="form-control search_box"
+                  [(ngModel)]="startDate"
+                  name="startDate"
+                  placeholder="Start Date"
+                />
+              </div>
+            </div>
+            <div class="col-md-6 col-sm-6 remove_padding">
+              <div class="form-group">
+                <div class="input-group">
+                  <input
+                    type="date"
+                    class="form-control search_box"
+                    [(ngModel)]="endDate"
+                    name="endDate"
+                    placeholder="End Date"
+                  />
+                  <span
+                    class="input-group-addon search_icon"
+                    (click)="getCarts()"
+                    ><span class="fa fa-search"></span
+                  ></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="table-responsive scrollbar"
+            style="height: calc(100vh - 255px); overflow: auto"
+          >
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>User Name</th>
+                  <th>Store Name</th>
+                  <th>Total Cart Price</th>
+                  <th>Total Item Count</th>
+                  <th>Action</th>
+                  <th>Last Updated At</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let cart of carts">
+                  <td>{{ cart?.userName }}</td>
+                  <td>{{ cart?.store_id?.name }}</td>
+                  <td>{{ cart?.totalCartPrice | currency }}</td>
+                  <td>{{ cart?.totalItemCount }}</td>
+                  <div class="btn-group">
+                    <button
+                      style="margin-top: 5px"
+                      (click)="openCartDetailsModal(cart)"
+                      class="btn btn-xs btn-light_black mt-1"
+                    >
+                      Detail
+                    </button>
+                  </div>
+                  <td>{{ cart?.updatedAt | amDateFormat: "LLL" }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6"></div>
+  </div>
+</div>
+<ng-template let-modal cssClass="modal-invoice" #order_detail_modal>
+  <div class="modal-header">
+    <label>ORDER DETAILS</label>
+    <button
+      type="button"
+      class="close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    >
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="row" *ngIf="cartDetails">
+      <div class="col-md-12">
+        <div class="ibox remove_ibox_margin">
+          <div class="ibox-title">
+            <h4 class="pull-right">
+              {{ cartDetails?.total_cart_price | currency }}
+            </h4>
+            <span style="position: absolute; left: 48%"
+              >(<strong
+                >{{ getTotalItemCount(cartDetails.order_details) }} </strong
+              >) Items
+            </span>
+            <h5>ORDER DETAILS</h5>
+          </div>
+          <div class="ibox-content invoice_popup_box scrollbar">
+            <div
+              *ngFor="
+                let products of cartDetails.order_details;
+                let product_index = index
+              "
+            >
+              <div style="border-bottom: 1px solid brown">
+                <h4 class="pull-right"></h4>
+                <span style="position: absolute; left: 48%"
+                  >(<strong>{{ products.items.length }}</strong
+                  >) Items</span
+                >
+                <h5>{{ products.product_name }}</h5>
+              </div>
+
+              <div
+                id="spec_list{{ product_index }}"
+                class="table-responsive"
+                style="width: 100%"
+              >
+                <table class="table">
+                  <thead style="border-bottom: 1px solid">
+                    <tr>
+                      <th></th>
+                      <th>{{ title.item }}</th>
+                      <th>{{ title.price }}</th>
+                      <th>{{ title.qty }}</th>
+                      <th class="text-center">Barcode</th>
+                      <th>{{ title.total }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      style="cursor: pointer"
+                      *ngFor="
+                        let item of products.items;
+                        let odd = odd;
+                        let item_index = index
+                      "
+                    >
+                      <td>
+                        <img
+                          [src]="
+                            item.image_url != ''
+                              ? item.image_url
+                              : 'web_images/storeplaceholder.png'
+                          "
+                          style="
+                            border-radius: 10%;
+                            width: 50px;
+                            height: 50px;
+                            padding-right: 0px;
+                          "
+                        />
+                      </td>
+                      <td style="padding-top: 20px">
+                        <ng-container *ngIf="item?.original_item?.length">
+                          <p class="strike">
+                            {{ item?.original_item[1] }}(Out Of Stock)
+                          </p>
+                        </ng-container>
+                        <p
+                          *ngIf="
+                            !(
+                              item?.original_item?.length &&
+                              !cartDetails?.is_user_confirmed
+                            )
+                          "
+                          [class.red]="
+                            item?.original_item?.length &&
+                            !cartDetails?.is_user_confirmed
+                          "
+                          [class.green]="
+                            item?.original_item?.length &&
+                            cartDetails?.is_user_confirmed
+                          "
+                        >
+                          {{ item.item_name }}
+                        </p>
+                        <span
+                          *ngIf="
+                            item?.subs_items?.length &&
+                            !cartDetails?.is_user_confirmed
+                          "
+                          [class.red]="!cartDetails?.is_user_confirmed"
+                          [class.green]="cartDetails?.is_user_confirmed"
+                        >
+                          <ng-container
+                            *ngFor="let substitute of item.subs_items"
+                          >
+                            <p>{{ substitute?.name }}&nbsp;(Substituted)</p>
+                          </ng-container>
+                        </span>
+                      </td>
+                      <td style="padding-top: 20px">
+                        <ng-container *ngIf="item?.original_item?.length">
+                          <p class="strike">
+                            {{ item?.original_item[4] }}(Out Of Stock)
+                          </p>
+                        </ng-container>
+                        <span
+                          *ngIf="
+                            !(
+                              item?.original_item?.length &&
+                              !cartDetails?.is_user_confirmed
+                            )
+                          "
+                          [class.red]="
+                            item?.original_item?.length &&
+                            !cartDetails?.is_user_confirmed
+                          "
+                          [class.green]="
+                            item?.original_item?.length &&
+                            cartDetails?.is_user_confirmed
+                          "
+                        >
+                          {{ currency_sign }}{{ item.item_price
+                          }}{{
+                            item?.original_item?.length ? "(Substituted)" : ""
+                          }}
+                        </span>
+                        <br />
+                        <span
+                          *ngIf="
+                            item?.original_item?.length &&
+                            !cartDetails?.is_user_confirmed
+                          "
+                          [class.red]="!cartDetails?.is_user_confirmed"
+                          [class.green]="cartDetails?.is_user_confirmed"
+                        >
+                          <ng-container
+                            *ngFor="let substitute of item.subs_items"
+                          >
+                            <p>
+                              {{ currency_sign
+                              }}{{ substitute?.price }}&nbsp;(Substituted)
+                            </p>
+                          </ng-container>
+                        </span>
+                      </td>
+                      <td style="padding-top: 20px">
+                        <span>
+                          {{ item.quantity }}
+                        </span>
+                      </td>
+                      <td style="padding-top: 20px">
+                        {{ item.unique_id_for_store_data }}
+                      </td>
+                      <td style="padding-top: 20px">
+                        {{ currency_sign
+                        }}{{
+                          (
+                            (item.item_price +
+                              (item.total_specification_price
+                                ? item.total_specification_price
+                                : 0)) *
+                            item.quantity
+                          ).toFixed(2)
+                        }}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- right column -->
+      <!-- <div class="col-md-3">
+        <div class="ibox remove_ibox_margin">
+          <div class="ibox-title" style="background-color: #d4d8d8">
+            <h5>ED OE 21042022 0004550</h5>
+            <h5 class="pull-right">20.00</h5>
+          </div>
+          <div class="ibox-content invoice_popup_box scrollbar">
+            <div class="row" style="margin-bottom: 20px">
+              <div class="col-md-6" style="padding-right: 4px">
+                <div class="invoice_box">
+                  <div><span>Cash</span></div>
+                  <div><label>20.00</label></div>
+                </div>
+              </div>
+              <div class="col-md-6" style="padding-left: 4px">
+                <div class="invoice_box">
+                  <div><span>Wallet</span></div>
+                  <div><label>0.00</label></div>
+                </div>
+              </div>
+            </div>
+            <div class="row" style="margin-bottom: 20px">
+              <div class="col-md-6" style="padding-right: 4px">
+                <div class="invoice_box">
+                  <div><span>Other</span></div>
+                  <div><label>0.00</label></div>
+                </div>
+              </div>
+              <div class="col-md-6" style="padding-left: 4px">
+                <div class="invoice_box">
+                  <div><span>Promo Bonus</span></div>
+                  <div><label>2.70</label></div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12 col-sm-12 col-xs-12" style="padding: 0px">
+                <div class="row invoice_seperator">
+                  <div class="col-md-12 order_invoice_row">
+                    <div class="col-md-8 col-sm-8 col-xs-8">
+                      <h5 style="margin-bottom: 0">Delivery Price</h5>
+                    </div>
+                    <div class="col-md-4 col-sm-4 col-xs-4">
+                      <h5 style="float: right; margin-bottom: 0">3.00</h5>
+                    </div>
+                  </div>
+                  <div class="col-md-12 order_invoice_row">
+                    <div class="col-md-8 col-sm-8 col-xs-8">
+                      <span>Delivery Price</span>
+                    </div>
+                    <div class="col-md-4 col-sm-4 col-xs-4">
+                      <span style="float: right">0.00</span>
+                    </div>
+                  </div>
+                  <div class="col-md-12 order_invoice_row">
+                    <div class="col-md-8 col-sm-8 col-xs-8">
+                      <span>Tax Price</span>
+                    </div>
+                    <div class="col-md-4 col-sm-4 col-xs-4">
+                      <span style="float: right">0.00</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="row invoice_seperator">
+                  <div
+                    class="col-md-12 order_invoice_row"
+                    style="margin-top: 10px"
+                  >
+                    <div class="col-md-8 col-sm-8 col-xs-8">
+                      <h5 style="margin-bottom: 0">Order Price</h5>
+                    </div>
+                    <div class="col-md-4 col-sm-4 col-xs-4">
+                      <h5 style="float: right; margin-bottom: 0">20.00</h5>
+                    </div>
+                  </div>
+                  <div class="col-md-12 order_invoice_row">
+                    <div class="col-md-8 col-sm-8 col-xs-8">
+                      <span>Order Price</span>
+                    </div>
+                    <div class="col-md-4 col-sm-4 col-xs-4">
+                      <span style="float: right">20.00</span>
+                    </div>
+                  </div>
+                  <div class="col-md-12 order_invoice_row">
+                    <div class="col-md-8 col-sm-8 col-xs-8">
+                      <span>Tax Price</span>
+                    </div>
+                    <div class="col-md-4 col-sm-4 col-xs-4">
+                      <span style="float: right">0.00</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="row invoice_seperator">
+                  <div
+                    class="col-md-12 order_invoice_row"
+                    style="margin-top: 10px"
+                  >
+                    <div class="col-md-8 col-sm-8 col-xs-8">
+                      <span>Store bear delivery fee?</span>
+                    </div>
+                    <div class="col-md-4 col-sm-4 col-xs-4">
+                      <span style="float: right">NO</span>
+                    </div>
+                  </div>
+                  <div class="col-md-12 order_invoice_row">
+                    <div class="col-md-8 col-sm-8 col-xs-8">
+                      <span>Deliveryman paid order cash to store?</span>
+                    </div>
+                    <div class="col-md-4 col-sm-4 col-xs-4">
+                      <span style="float: right">NO</span>
+                    </div>
+                  </div>
+                  <div class="col-md-12 order_invoice_row">
+                    <div class="col-md-8 col-sm-8 col-xs-8">
+                      <span>Promo Apply On</span>
+                    </div>
+                    <div class="col-md-4 col-sm-4 col-xs-4">
+                      <span style="float: right"></span>
+                    </div>
+                  </div>
+                </div>
+                <div class="row invoice_seperator">
+                  <div
+                    class="col-md-12 order_invoice_row"
+                    style="margin-top: 10px"
+                  >
+                    <div class="col-md-8 col-sm-8 col-xs-8">
+                      <span>Store Profit</span>
+                    </div>
+                    <div class="col-md-4 col-sm-4 col-xs-4">
+                      <span style="float: right">20.00</span>
+                    </div>
+                  </div>
+                  <div class="col-md-12 order_invoice_row">
+                    <div class="col-md-8 col-sm-8 col-xs-8">
+                      <span>
+                        <span style="color: red"
+                          >Sattlement with store</span
+                        ></span
+                      >
+                    </div>
+                    <div class="col-md-4 col-sm-4 col-xs-4">
+                      <span style="float: right">
+                        <span style="color: red">0.00</span></span
+                      >
+                    </div>
+                  </div>
+                </div>
+                <div class="row invoice_seperator">
+                  <div
+                    class="col-md-12 order_invoice_row"
+                    style="margin-top: 10px"
+                  >
+                    <div class="col-md-8 col-sm-8 col-xs-8">
+                      <span>Deliveryman Profit</span>
+                    </div>
+                    <div class="col-md-4 col-sm-4 col-xs-4">
+                      <span style="float: right">0.00</span>
+                    </div>
+                  </div>
+                  <div class="col-md-12 order_invoice_row">
+                    <div class="col-md-8 col-sm-8 col-xs-8">
+                      <span>
+                        <span style="color: red"
+                          >Sattlement with deliveryman</span
+                        ></span
+                      >
+                    </div>
+                    <div class="col-md-4 col-sm-4 col-xs-4">
+                      <span style="float: right">
+                        <span style="color: red">0.00</span></span
+                      >
+                    </div>
+                  </div>
+                </div>
+                <div class="row invoice_seperator">
+                  <div
+                    class="col-md-12 order_invoice_row"
+                    style="margin-top: 10px"
+                  >
+                    <div class="col-md-8 col-sm-8 col-xs-8">
+                      <span>Admin Order Profit</span>
+                    </div>
+                    <div class="col-md-4 col-sm-4 col-xs-4">
+                      <span style="float: right">0.00</span>
+                    </div>
+                  </div>
+                  <div class="col-md-12 order_invoice_row">
+                    <div class="col-md-8 col-sm-8 col-xs-8">
+                      <span>Admin Delivery Profit</span>
+                    </div>
+                    <div class="col-md-4 col-sm-4 col-xs-4">
+                      <span style="float: right">0.00</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> -->
+
+      <!-- end right column -->
+    </div>
+  </div>
+</ng-template>
+
+
+<ng-template
+  let-modal
+  keyboard="false"
+  backdrop="static"
+  style="top: 25%"
+  size="md"
+  cssClass="modal-md"
+  #myModal
+>
+  <form #storeTimeForm="ngForm" novalidate (ngSubmit)="add_store_time()">
+    <div class="modal-header">
+      <h4 class="modal-title">
+        {{ heading_title.add_store_time }}
+      </h4>
+    </div>
+    <div class="modal-body" style="min-width: 300px">
+      <div class="row">
+        <div class="col-12">
+          <label class="col-lg-6 col-xs-6" style="margin-top: 40px">{{
+            title.open
+          }}</label>
+          <ngb-timepicker
+            [(ngModel)]="store_setting.store_open_time"
+            #store_open_time="ngModel"
+            name="store_open_time"
+            class="col-lg-6 col-xs-6"
+          ></ngb-timepicker>
+          <div
+            *ngIf="
+              store_open_time.errors &&
+              (store_open_time.dirty || store_open_time.touched)
+            "
+          >
+            <div style="color: red" [hidden]="!store_open_time.errors.required">
+              {{ validation_message.store_open_time_required }}
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <label class="col-lg-6 col-xs-6" style="margin-top: 40px">
+            Close
+          </label>
+          <ngb-timepicker
+            [(ngModel)]="store_setting.store_close_time"
+            #store_close_time="ngModel"
+            name="store_close_time"
+            class="col-lg-6 col-xs-6"
+          ></ngb-timepicker>
+          <div
+            *ngIf="
+              store_close_time.errors &&
+              (store_close_time.dirty || store_close_time.touched)
+            "
+          >
+            <div
+              style="color: red"
+              [hidden]="!store_close_time.errors.required"
+            >
+              {{ validation_message.store_close_time_required }}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div [ngSwitch]="store_open_time_error">
+        <div *ngSwitchCase="1">
+          <label style="color: red">{{
+            validation_message.open_time_not_greater_close_time
+          }}</label>
+        </div>
+        <div *ngSwitchCase="2">
+          <label style="color: red">{{
+            validation_message.invalid_open_time
+          }}</label>
+        </div>
+      </div>
+      <div [ngSwitch]="store_close_time_error">
+        <div *ngSwitchCase="1">
+          <label style="color: red">{{
+            validation_message.close_time_not_less_open_time
+          }}</label>
+        </div>
+        <div *ngSwitchCase="2">
+          <label style="color: red">{{
+            validation_message.invalid_close_time
+          }}</label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <div style="text-align: center">
+        <button
+          type="submit"
+          [disabled]="
+            !storeTimeForm.valid ||
+            store_close_time_error != '' ||
+            store_open_time_error != ''
+          "
+          class="btn btn-primary"
+        >
+          {{ button.add }}
+        </button>
+      </div>
+    </div>
+  </form>
+</ng-template>
+<!-- <ng-template
+  let-modal
+  keyboard="false"
+  backdrop="static"
+  style="top: 25%"
+  size="sm"
+  cssClass="modal-sm"
+  #myModal
+>
+  <form #storeTimeForm="ngForm" novalidate (ngSubmit)="add_store_time()">
+    <div class="modal-header">
+      <h4 class="modal-title">
+        Add Store Time
+      </h4>
+    </div>
+    <div class="modal-body">
+      <div class="row">
+        <div class="form-group">
+          <label class="col-lg-6 col-xs-6 control-label">Open</label>
+          <div
+            class="col-lg-6 col-xs-6 input-group clock-picker"
+            id="clock-picker"
+            data-autoclose="true"
+          >
+            <input
+              type="text"
+              class="form-control"
+              id="open"
+              [(ngModel)]="store_setting.store_open_time"
+              #store_open_time="ngModel"
+              name="store_open_time"
+              readonly
+              required
+            />
+            <span class="input-group-addon">
+              <span class="fa fa-clock-o"></span>
+            </span>
+          </div>
+
+          <div
+            *ngIf="
+              store_open_time.errors &&
+              (store_open_time.dirty || store_open_time.touched)
+            "
+          >
+            <div style="color: red" [hidden]="!store_open_time.errors.required">
+              {{ validation_message.store_open_time_required }}
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="col-lg-6 col-xs-6 control-label">Close</label>
+          <div
+            class="col-lg-6 col-xs-6 input-group clock-picker"
+            id="clock-picker"
+            data-autoclose="true"
+          >
+            <input
+              type="text"
+              class="form-control"
+              id="close"
+              [(ngModel)]="store_setting.store_close_time"
+              #store_close_time="ngModel"
+              name="store_close_time"
+              readonly
+              required
+            />
+            <span class="input-group-addon">
+              <span class="fa fa-clock-o"></span>
+            </span>
+          </div>
+
+          <div
+            *ngIf="
+              store_close_time.errors &&
+              (store_close_time.dirty || store_close_time.touched)
+            "
+          >
+            <div
+              style="color: red"
+              [hidden]="!store_close_time.errors.required"
+            >
+              {{ validation_message.store_close_time_required }}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div [ngSwitch]="store_open_time_error">
+        <div *ngSwitchCase="1">
+          <label style="color: red">{{
+            validation_message.open_time_not_greater_close_time
+          }}</label>
+        </div>
+        <div *ngSwitchCase="2">
+          <label style="color: red">{{
+            validation_message.invalid_open_time
+          }}</label>
+        </div>
+      </div>
+      <div [ngSwitch]="store_close_time_error">
+        <div *ngSwitchCase="1">
+          <label style="color: red">{{
+            validation_message.close_time_not_less_open_time
+          }}</label>
+        </div>
+        <div *ngSwitchCase="2">
+          <label style="color: red">{{
+            validation_message.invalid_close_time
+          }}</label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <div style="text-align: center">
+        <button
+          type="submit"
+          [disabled]="
+            !storeTimeForm.valid ||
+            store_close_time_error != '' ||
+            store_open_time_error != ''
+          "
+          class="btn btn-primary"
+        >
+          {{ button.add }}
+        </button>
+      </div>
+    </div>
+  </form>
+</ng-template> -->
+
+<ng-template
+  let-modal
+  keyboard="false"
+  backdrop="static"
+  style="top: 25%"
+  cssClass="modal-sm"
+  #oldPasswordModal
+  id="old_passwrod"
+>
+  <form
+    #oldPasswordForm="ngForm"
+    (ngSubmit)="old_password_update(oldPasswordForm.value)"
+  >
+    <div class="modal-header">
+      <h4 class="modal-title">{{ title.password }}</h4>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <input
+          type="password"
+          class="form-control"
+          automoplete="off"
+          [(ngModel)]="store_setting.old_password"
+          #old_password="ngModel"
+          minlength="6"
+          name="old_password"
+          required
+        />
+
+        <div
+          *ngIf="
+            old_password.errors && (old_password.dirty || old_password.touched)
+          "
+        >
+          <div style="color: red" [hidden]="!old_password.errors.required">
+            {{ validation_message.password_required }}
+          </div>
+          <div style="color: red" [hidden]="!old_password.errors.minlength">
+            {{ validation_message.password_minlength }}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <div style="text-align: center">
+        <button type="submit" class="btn btn-primary">
+          {{ button.submit }}
+        </button>
+      </div>
+    </div>
+  </form>
+</ng-template>

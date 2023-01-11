@@ -1,0 +1,8 @@
+File from: [./temp/5fdfa5131264fb467be634c4hzUi.jpg]
+
+File to: [uploads/store_profiles/5fdfa5131264fb467be634c4hzUi.jpg]
+
+Compression algorithm: [mozjpeg]
+
+Description: Error: Command failed: /home/dell/projects/yeepeeyAdminStorePanel/backend/node_modules/mozjpeg/vendor/cjpeg -quality 60 -outfile uploads/store_profiles/5fdfa5131264fb467be634c4hzUi.jpg ./temp/5fdfa5131264fb467be634c4hzUi.jpg
+GIF input is unsupported for legal reasons.  Sorry.

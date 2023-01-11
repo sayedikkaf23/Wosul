@@ -1,0 +1,648 @@
+<footer [myLoading]="myLoading"></footer>
+
+<div class="wrapper wrapper-content content_top_bar animated fadeInRight">
+  <div class="row">
+    <div class="col-md-3">
+      <form
+        #add_news_form="ngForm"
+        (ngSubmit)="user_notification(add_news_form)"
+      >
+        <div class="ibox">
+          <div class="ibox-title">
+            <h5>Notification to New User</h5>
+          </div>
+
+          <div class="ibox-content">
+            <div class="full-height-scroll">
+              <ul class="list-group clear-list">
+                <li class="list-group-item form_padding">
+                  <label for="">Interval in Minute</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Notification Interval in Minute"
+                    [(ngModel)]="set_user_notification.user_interval"
+                    #user_interval="ngModel"
+                    name="user_interval"
+                    required
+                  />
+                  <div
+                    *ngIf="
+                      user_interval.errors &&
+                      (user_interval.dirty || user_interval.touched)
+                    "
+                  >
+                    <div
+                      class="error_message"
+                      [hidden]="!user_interval.errors.required"
+                    >
+                      {{ validation_message.field_required }}
+                    </div>
+                  </div>
+                </li>
+                <li class="list-group-item form_padding">
+                  <label for="">Title</label>
+
+                  <textarea
+                    class="form-control text_area_news"
+                    style="font-weight: bold; font-family: sans-serif"
+                    placeholder="Enter Heading"
+                    [(ngModel)]="set_user_notification.user_heading"
+                    maxlength="500"
+                    #user_heading="ngModel"
+                    name="user_heading"
+                    required
+                  ></textarea>
+                  <div
+                    *ngIf="
+                      user_heading.errors &&
+                      (user_heading.dirty || user_heading.touched)
+                    "
+                  >
+                    <div
+                      class="error_message"
+                      [hidden]="!user_heading.errors.required"
+                    >
+                      {{ validation_message.field_required }}
+                    </div>
+                  </div>
+                </li>
+
+                <li class="list-group-item form_padding">
+                  <label for="">Body</label>
+                  <textarea
+                    class="form-control text_area_news"
+                    placeholder="{{ title.message }}"
+                    [(ngModel)]="set_user_notification.user_message"
+                    maxlength="500"
+                    #user_message="ngModel"
+                    name="user_message"
+                    required
+                  ></textarea>
+                  <div
+                    *ngIf="
+                      user_message.errors &&
+                      (user_message.dirty || user_message.touched)
+                    "
+                  >
+                    <div
+                      class="error_message"
+                      [hidden]="!user_message.errors.required"
+                    >
+                      {{ validation_message.field_required }}
+                    </div>
+                  </div>
+                </li>
+                <li class="list-group-item form_padding">
+                  <div class="row">
+                    <div class="form-group col-lg-6 col-md-6 col-xs-6">
+                      <div style="width: 100%; height: 131px">
+                        <div class="col-lg-12 profile-images center">
+
+
+                          <span class="btn-file"
+                            ><img
+                              style="width: 110px; height: 110px"
+                              src="{{
+                                set_user_notification?.image_url != ''
+                                  ? set_user_notification?.image_url
+                                  : 'plus_box.png'
+                              }}"
+                              alt="" /><input
+                              type="file"
+                              accept="image/*"
+                              (change)="image_update($event, 'user')"
+                              name="image_url"
+                          /></span>
+
+                        </div>
+                      </div>
+                      <div class="col-lg-12 text_center">
+                        <span style="color: red">{{ image_error }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+
+                <li class="list-group-item form_padding">
+                  <button
+                    [disabled]="!add_news_form.valid"
+                    class="btn btn-orange btn-block"
+                    type="submit"
+                  >
+                    {{ button.submit }}
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="col-md-3">
+      <form
+        #cart_setting_form="ngForm"
+        (ngSubmit)="cart_notification(cart_setting_form)"
+      >
+        <div class="ibox">
+          <div class="ibox-title">
+            <h5>Cart Pending Notification</h5>
+          </div>
+
+          <div class="ibox-content">
+            <div class="full-height-scroll">
+              <ul class="list-group clear-list">
+                <li class="list-group-item form_padding">
+                  <label for="">Interval in Minute</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Notification Interval in Minute"
+                    [(ngModel)]="set_cart_notification.cart_interval"
+                    #cart_interval="ngModel"
+                    name="cart_interval"
+                    required
+                  />
+                  <div
+                    *ngIf="
+                      cart_interval.errors &&
+                      (cart_interval.dirty || cart_interval.touched)
+                    "
+                  >
+                    <div
+                      class="error_message"
+                      [hidden]="!cart_interval.errors.required"
+                    >
+                      {{ validation_message.field_required }}
+                    </div>
+                  </div>
+                </li>
+                <li class="list-group-item form_padding">
+                  <label for="">Title</label>
+
+                  <textarea
+                    class="form-control text_area_news"
+                    style="font-weight: bold; font-family: sans-serif"
+                    placeholder="Enter Heading"
+                    [(ngModel)]="set_cart_notification.cart_heading"
+                    maxlength="500"
+                    #cart_heading="ngModel"
+                    name="cart_heading"
+                    required
+                  ></textarea>
+                  <div
+                    *ngIf="
+                      cart_heading.errors &&
+                      (cart_heading.dirty || cart_heading.touched)
+                    "
+                  >
+                    <div
+                      class="error_message"
+                      [hidden]="!cart_heading.errors.required"
+                    >
+                      {{ validation_message.field_required }}
+                    </div>
+                  </div>
+                </li>
+
+                <li class="list-group-item form_padding">
+                  <label for="">Body</label>
+
+                  <textarea
+                    class="form-control text_area_news"
+                    placeholder="{{ title.message }}"
+                    [(ngModel)]="set_cart_notification.cart_message"
+                    maxlength="500"
+                    #cart_message="ngModel"
+                    name="cart_message"
+                    required
+                  ></textarea>
+                  <div
+                    *ngIf="
+                      cart_message.errors &&
+                      (cart_message.dirty || cart_message.touched)
+                    "
+                  >
+                    <div
+                      class="error_message"
+                      [hidden]="!cart_message.errors.required"
+                    >
+                      {{ validation_message.field_required }}
+                    </div>
+                  </div>
+                </li>
+                <li class="list-group-item form_padding">
+                  <div class="row">
+                    <div class="form-group col-lg-6 col-md-6 col-xs-6">
+                      <div style="width: 100%; height: 131px">
+                        <div class="col-lg-12 profile-images center">
+
+
+                          <span class="btn-file"
+                            ><img
+                              style="width: 110px; height: 110px"
+                              src="{{
+                                set_cart_notification?.image_url != ''
+                                  ? set_cart_notification?.image_url
+                                  : 'plus_box.png'
+                              }}"
+                              alt="" /><input
+                              type="file"
+                              accept="image/*"
+                              (change)="image_update($event, 'cart')"
+                              name="image_url"
+                          /></span>
+
+                        </div>
+                      </div>
+                      <div class="col-lg-12 text_center">
+                        <span style="color: red">{{ image_error }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <li class="list-group-item form_padding">
+                  <button
+                    [disabled]="!cart_setting_form.valid"
+                    class="btn btn-orange btn-block"
+                    type="submit"
+                  >
+                    {{ button.submit }}
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="col-md-3">
+      <form
+        #wallet_notification_form="ngForm"
+        (ngSubmit)="wallet_notification(wallet_notification_form)"
+      >
+        <div class="ibox">
+          <div class="ibox-title">
+            <h5>Wallet Notification</h5>
+          </div>
+
+          <div class="ibox-content">
+            <div class="full-height-scroll">
+              <ul class="list-group clear-list">
+                <li class="list-group-item form_padding" style="border: none;">
+                  
+                  <label for="" class="col-md-9">Is Send Notification</label>
+                  <div class="form-group">
+                    <ui-switch
+                      class="pull-right"
+                      [(ngModel)]="set_wallet_notification.is_send_wallet_notification"
+                      #is_send_wallet_notification="ngModel"
+                      name="is_send_wallet_notification"
+                    ></ui-switch>
+                  </div>
+                </li>
+                <li class="list-group-item form_padding" style="border: none;">
+
+                  <label for="">Interval in Day</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Notification Interval in Days"
+                    [(ngModel)]="set_wallet_notification.interval"
+                    #wallet_notification_interval="ngModel"
+                    name="wallet_notification_interval"
+                    required
+                  />
+                  <div
+                    *ngIf="
+                    wallet_notification_interval.errors &&
+                      (wallet_notification_interval.dirty || wallet_notification_interval.touched)
+                    "
+                  >
+                    <div
+                      class="error_message"
+                      [hidden]="!wallet_notification_interval.errors.required"
+                    >
+                      {{ validation_message.field_required }}
+                    </div>
+                  </div>
+                </li>
+                <li class="list-group-item form_padding">
+
+                  <label for="">Time</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Notification Interval in Days"
+                    [(ngModel)]="set_wallet_notification.time"
+                    #wallet_notification_time="ngModel"
+                    name="wallet_notification_time"
+                    required
+                  />
+                  <div
+                    *ngIf="
+                    wallet_notification_time.errors &&
+                      (wallet_notification_time.dirty || wallet_notification_time.touched)
+                    "
+                  >
+                    <div
+                      class="error_message"
+                      [hidden]="!wallet_notification_time.errors.required"
+                    >
+                      {{ validation_message.field_required }}
+                    </div>
+                  </div>
+                </li>
+                <li class="list-group-item form_padding">
+                  <label for="">Title</label>
+                  <textarea
+                    class="form-control text_area_news"
+                    style="font-weight: bold; font-family: sans-serif"
+                    placeholder="Enter Heading"
+                    [(ngModel)]="set_wallet_notification.title"
+                    maxlength="500"
+                    #wallet_notification_tital="ngModel"
+                    name="wallet_notification_tital"
+                    required
+                  ></textarea>
+                  <div
+                    *ngIf="
+                    wallet_notification_tital.errors &&
+                      (wallet_notification_tital.dirty || wallet_notification_tital.touched)
+                    "
+                  >
+                    <div
+                      class="error_message"
+                      [hidden]="!wallet_notification_tital.errors.required"
+                    >
+                      {{ validation_message.field_required }}
+                    </div>
+                  </div>
+                </li>
+
+                <li class="list-group-item form_padding">
+                  <label for="">Body</label>
+                  <textarea
+                    class="form-control text_area_news"
+                    placeholder="{{ title.message }}"
+                    [(ngModel)]="set_wallet_notification.body"
+                    maxlength="500"
+                    #wallet_notification_body="ngModel"
+                    name="wallet_notification_body"
+                    required
+                  ></textarea>
+                  <div
+                    *ngIf="
+                    wallet_notification_body.errors &&
+                      (wallet_notification_body.dirty || wallet_notification_body.touched)
+                    "
+                  >
+                    <div
+                      class="error_message"
+                      [hidden]="!wallet_notification_body.errors.required"
+                    >
+                      {{ validation_message.field_required }}
+                    </div>
+                  </div>
+                </li>
+                <li class="list-group-item form_padding">
+                  <div class="row">
+                    <div class="form-group col-lg-6 col-md-6 col-xs-6">
+                      <div style="width: 100%; height: 131px">
+                        <div class="col-lg-12 profile-images center">
+
+
+                          <span class="btn-file"
+                            ><img
+                              style="width: 110px; height: 110px"
+                              src="{{
+                                set_wallet_notification?.image_url != ''
+                                  ? set_wallet_notification?.image_url
+                                  : 'plus_box.png'
+                              }}"
+                              alt="" /><input
+                              type="file"
+                              accept="image/*"
+                              (change)="image_update($event, 'wallet')"
+                              name="image_url"
+                          /></span>
+
+                        </div>
+                      </div>
+                      <div class="col-lg-12 text_center">
+                        <span style="color: red">{{ image_error }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <li class="list-group-item form_padding">
+                  <button
+                    [disabled]="!wallet_notification_form.valid"
+                    class="btn btn-orange btn-block"
+                    type="submit"
+                  >
+                    {{ button.submit }}
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="col-md-3">
+      <form
+        #step_notification_form="ngForm"
+        (ngSubmit)="step_notification(step_notification_form)"
+      >
+        <div class="ibox">
+          <div class="ibox-title">
+            <h5>Step Notification</h5>
+          </div>
+
+          <div class="ibox-content">
+            <div class="full-height-scroll">
+              <ul class="list-group clear-list">
+                <li class="list-group-item form_padding">
+                    <div class="form-group" id="search_fields">
+                      <select
+                        chosen
+                        class="chosen-select"
+                        id="search_field"
+                        [(ngModel)]="search_field"
+                        name="search_field"
+                        tabindex="4"
+                      >
+                        <option value="1">First</option>
+                        <option value="2">
+                          Second
+                        </option>
+                        <option value="3">
+                          Third
+                        </option>
+                      </select>
+                    </div>
+                </li>
+                <li class="list-group-item form_padding" style="border: none;">
+                  
+                  <label for="" class="col-md-9">Is Send Notification</label>
+                  <div class="form-group">
+                    <ui-switch
+                      class="pull-right"
+                      [(ngModel)]="set_step_notification.is_send_wallet_notification"
+                      #is_send_step_notification="ngModel"
+                      name="is_send_step_notification"
+                    ></ui-switch>
+                  </div>
+                </li>
+                <li class="list-group-item form_padding" style="border: none;">
+
+                  <label for="">Interval in Day</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Notification Interval in Days"
+                    [(ngModel)]="set_step_notification.interval"
+                    #step_notification_interval="ngModel"
+                    name="step_notification_interval"
+                    required
+                  />
+                  <div
+                    *ngIf="
+                    step_notification_interval.errors &&
+                      (step_notification_interval.dirty || step_notification_interval.touched)
+                    "
+                  >
+                    <div
+                      class="error_message"
+                      [hidden]="!step_notification_interval.errors.required"
+                    >
+                      {{ validation_message.field_required }}
+                    </div>
+                  </div>
+                </li>
+                <li class="list-group-item form_padding">
+
+                  <label for="">Time</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Notification Interval in Days"
+                    [(ngModel)]="set_step_notification.time"
+                    #step_notification_time="ngModel"
+                    name="step_notification_time"
+                    required
+                  />
+                  <div
+                    *ngIf="
+                    step_notification_time.errors &&
+                      (step_notification_time.dirty || step_notification_time.touched)
+                    "
+                  >
+                    <div
+                      class="error_message"
+                      [hidden]="!step_notification_time.errors.required"
+                    >
+                      {{ validation_message.field_required }}
+                    </div>
+                  </div>
+                </li>
+                <li class="list-group-item form_padding">
+                  <label for="">Title</label>
+                  <textarea
+                    class="form-control text_area_news"
+                    style="font-weight: bold; font-family: sans-serif"
+                    placeholder="Enter Heading"
+                    [(ngModel)]="set_step_notification.title"
+                    maxlength="500"
+                    #step_notification_tital="ngModel"
+                    name="step_notification_tital"
+                    required
+                  ></textarea>
+                  <div
+                    *ngIf="
+                    step_notification_tital.errors &&
+                      (step_notification_tital.dirty || step_notification_tital.touched)
+                    "
+                  >
+                    <div
+                      class="error_message"
+                      [hidden]="!step_notification_tital.errors.required"
+                    >
+                      {{ validation_message.field_required }}
+                    </div>
+                  </div>
+                </li>
+
+                <li class="list-group-item form_padding">
+                  <label for="">Body</label>
+                  <textarea
+                    class="form-control text_area_news"
+                    placeholder="{{ title.message }}"
+                    [(ngModel)]="set_step_notification.body"
+                    maxlength="500"
+                    #step_notification_body="ngModel"
+                    name="step_notification_body"
+                    required
+                  ></textarea>
+                  <div
+                    *ngIf="
+                    step_notification_body.errors &&
+                      (step_notification_body.dirty || step_notification_body.touched)
+                    "
+                  >
+                    <div
+                      class="error_message"
+                      [hidden]="!step_notification_body.errors.required"
+                    >
+                      {{ validation_message.field_required }}
+                    </div>
+                  </div>
+                </li>
+                <li class="list-group-item form_padding">
+                  <div class="row">
+                    <div class="form-group col-lg-6 col-md-6 col-xs-6">
+                      <div style="width: 100%; height: 131px">
+                        <div class="col-lg-12 profile-images center">
+
+
+                          <span class="btn-file"
+                            ><img
+                              style="width: 110px; height: 110px"
+                              src="{{
+                                set_step_notification?.image_url != ''
+                                  ? set_step_notification?.image_url
+                                  : 'plus_box.png'
+                              }}"
+                              alt="" /><input
+                              type="file"
+                              accept="image/*"
+                              (change)="image_update($event, 'step')"
+                              name="image_url"
+                          /></span>
+
+                        </div>
+                      </div>
+                      <div class="col-lg-12 text_center">
+                        <span style="color: red">{{ image_error }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <li class="list-group-item form_padding">
+                  <button
+                    [disabled]="!step_notification_form.valid"
+                    class="btn btn-orange btn-block"
+                    type="submit"
+                  >
+                    {{ button.submit }}
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,7 @@
+File from: [./temp/store_items/5fb39060acf8e248f85cafcc/5fb39738acf8e248f85cb1f1yc1E.jpg]
+
+File to: [uploads/store_items/5fb39738acf8e248f85cb1f1yc1E.jpg]
+
+Compression algorithm: [-]
+
+Description: File does not exist!

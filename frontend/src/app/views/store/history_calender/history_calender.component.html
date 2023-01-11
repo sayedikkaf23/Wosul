@@ -1,0 +1,67 @@
+<footer [myLoading]="myLoading"></footer>
+
+<div class="wrapper wrapper-content">
+  <div class="col-md-4">
+    <div class="ibox">
+      <div class="ibox-content">
+        <div class="row">
+          <div class="form-group">
+            <select
+              chosen
+              class="chosen-select"
+              id="type"
+              [(ngModel)]="type"
+              name="type"
+            >
+              <option value="1">New Order</option>
+              <option value="2">Accepted Order</option>
+              <option value="3">Assigned Order</option>
+              <option value="4">Completed Order</option>
+            </select>
+          </div>
+        </div>
+
+        <!--<div class="row">-->
+        <!--<div class="col-md-6 col-xs-6">-->
+        <!--<div class="btn-group">-->
+        <!--<div-->
+        <!--class="btn btn-orange"-->
+        <!--mwlCalendarPreviousView-->
+        <!--[view]="view"-->
+        <!--[(viewDate)]="viewDate"-->
+        <!--(viewDateChange)="activeDayIsOpen = false">-->
+        <!--<span class="fa fa-angle-left"></span>-->
+        <!--</div>-->
+        <!--<div-->
+        <!--class="btn btn-outline-secondary"-->
+        <!--mwlCalendarToday-->
+        <!--[(viewDate)]="viewDate">-->
+        <!--Today-->
+        <!--</div>-->
+        <!--<div-->
+        <!--class="btn btn-orange"-->
+        <!--mwlCalendarNextView-->
+        <!--[view]="view"-->
+        <!--[(viewDate)]="viewDate"-->
+        <!--(viewDateChange)="activeDayIsOpen = false">-->
+        <!--<span class="fa fa-angle-right"></span>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="col-md-6 col-xs-6">-->
+        <!--<h3>{{ viewDate | calendarDate:(view + 'ViewTitle'):'en' }}</h3>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="row">-->
+        <!--<mwl-calendar-month-view-->
+        <!--[viewDate]="viewDate"-->
+        <!--[events]="events"-->
+        <!--[refresh]="refresh"-->
+        <!--[activeDayIsOpen]="activeDayIsOpen"-->
+        <!--(dayClicked)="dayClicked($event.day)">-->
+        <!--</mwl-calendar-month-view>-->
+        <!--</div>-->
+      </div>
+    </div>
+  </div>
+</div>

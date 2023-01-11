@@ -1,0 +1,38 @@
+<footer [myLoading]="myLoading"></footer>
+<div
+  *ngIf="order_id !== ''"
+  class="wrapper wrapper-content animated fadeInRight content_top_bar"
+>
+  <div class="row">
+    <div class="ibox">
+      <div class="ibox-content ibox-content-map">
+        <agm-map
+          [latitude]="latitude"
+          [longitude]="longitude"
+          [draggable]="false"
+          [disableDoubleClickZoom]="false"
+          [scrollwheel]="false"
+          [zoom]="zoom"
+        >
+          <agm-marker
+            [iconUrl]="'map_pin_images/Deliveryman/deliveryman_online.png'"
+            [latitude]="latitude"
+            [longitude]="longitude"
+          >
+            <agm-marker>
+              <p style="font-weight: bold">
+                {{ title.name }}: {{ provider_name }}
+              </p>
+              <p style="font-weight: bold">
+                {{ title.email }}: {{ provider_email }}
+              </p>
+              <p style="font-weight: bold">
+                {{ title.phone }}: {{ provider_phone }}
+              </p>
+            </agm-marker>
+          </agm-marker>
+        </agm-map>
+      </div>
+    </div>
+  </div>
+</div>

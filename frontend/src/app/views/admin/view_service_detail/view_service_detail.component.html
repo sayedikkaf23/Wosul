@@ -1,0 +1,61 @@
+<footer [myLoading]="myLoading"></footer>
+<div class="row">
+  <div class="col-lg-9">
+    <div class="wrapper wrapper-content animated fadeInRight content_top_bar">
+      <div class="ibox">
+        <div class="ibox-content">
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="m-b-md">
+                <h2>
+                  <strong>{{ heading_title.service_detail }}</strong>
+                </h2>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-5">
+              <dl class="dl-horizontal">
+                <dt>{{ title.country }}:</dt>
+                <dd>{{ country_name }}</dd>
+                <dt>{{ title.city }}:</dt>
+                <dd>{{ city_name }}</dd>
+                <dt>{{ title.delivery_type }}:</dt>
+                <dd>{{ name }}</dd>
+
+                <dt>{{ title.base_price }}:</dt>
+                <dd>{{ base_price }}</dd>
+
+                <dt>{{ title.base_price_distance }}:</dt>
+                <dd>{{ base_price_distance }}</dd>
+
+                <dt>{{ title.price_per_unit_distance }}:</dt>
+                <dd>{{ price_per_unit_distance }}</dd>
+
+                <dt>{{ title.price_per_unit_time }}:</dt>
+                <dd>{{ price_per_unit_time }}</dd>
+
+                <dt>{{ title.service_tax }}:</dt>
+                <dd>{{ service_tax }}</dd>
+
+                <dt>{{ title.min_fare }}:</dt>
+                <dd>{{ min_fare }}</dd>
+
+                <dt>{{ title.cancellation_fee }}:</dt>
+                <dd>{{ cancellation_fee }}</dd>
+              </dl>
+            </div>
+            <div class="col-lg-7" id="cluster_info">
+              <dl class="dl-horizontal">
+                <dt>{{ title.last_updated }}:</dt>
+                <dd>{{ updated_at | date: "dd MMM yyyy hh:mm a" }}</dd>
+                <dt>{{ title.created }}:</dt>
+                <dd>{{ created_at | date: "dd MMM yyyy hh:mm a" }}</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

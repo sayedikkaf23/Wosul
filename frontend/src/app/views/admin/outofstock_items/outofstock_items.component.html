@@ -1,0 +1,160 @@
+<footer [myLoading]="myLoading"></footer>
+<div class="row wrapper fix_search_bar border-bottom white-bg page-heading">
+  <div class="row">
+    <div class="col-md-4 col-sm-12">
+      <div>
+        <label>{{ title.search }}</label>
+      </div>
+      <div class="col-md-6 col-sm-6 remove_padding">
+        <div class="form-group" id="search_fields">
+          <select
+            chosen
+            class="chosen-select"
+            id="search_field"
+            [(ngModel)]="search_field"
+            name="search_field"
+            tabindex="4"
+          >
+            <option value="name">{{ title.item }}</option>
+            <option value="store_detail.name">
+              {{ title.store }}
+            </option>
+            <option value="category_detail.name">
+              {{ title.category }}
+            </option>
+            <option value="product_detail.name">
+              {{ title.product }}
+            </option>
+          </select>
+        </div>
+      </div>
+      <div class="col-md-6 col-sm-6 remove_padding">
+        <div class="form-group">
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control search_box"
+              [(ngModel)]="search_value"
+              #store_open_time="ngModel"
+              name="search_value"
+            />
+            <span class="input-group-addon search_icon"
+              ><span class="fa fa-search" (click)="admin_history(1)"></span
+            ></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-sm-12">
+      <label> </label>
+    </div>
+    <div class="col-md-2 col-sm-12">
+      <div class="col-md-6 col-sm-6 filter_btn_div">
+        <button
+          type="button"
+          (click)="admin_history(1)"
+          class="btn filter_apply_btn pull-right"
+        >
+          <span class="fa fa-search"></span>
+        </button>
+      </div>
+      <div class="col-md-6 col-sm-6 filter_btn_div">
+        <button
+          type="button"
+          (click)="item_export_csv(1)"
+          class="btn export_excel_btn pull-right"
+        >
+          <span class="fa fa-file-excel-o"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="wrapper wrapper-content content_top_bar_view1 animated fadeInRight">
+  <div class="ibox" *ngIf="items.length == 0">
+    <div class="ibox-content">
+      <div class="lable_center">
+        <label>No Records</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="ibox" *ngIf="items.length > 0">
+        <div class="ibox-content" style="padding-bottom: 40px">
+          <div
+            class="table-responsive scrollbar"
+            style="height: calc(100vh - 255px); overflow: auto"
+          >
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Item Name</th>
+                  <th>Store Name</th>
+                  <th>Category</th>
+                  <th>Sub Category</th>
+                  <th>Quantity</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of items">
+                  <td>{{ item.name }}</td>
+                  <td>{{ item.store_detail.name }}</td>
+                  <td>{{ item.category_detail.name }}</td>
+                  <td>{{ item.product_detail.name }}</td>
+                  <td>{{ item.total_quantity }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="col-md-12 col-sm-12" style="margin-top: 6px">
+            <div class="lable_center">
+              <ul class="pagination">
+                <li *ngIf="page !== 1">
+                  <a class="btn" (click)="admin_history(page - 1)">{{
+                    button.pre
+                  }}</a>
+                </li>
+                <li
+                  *ngFor="let index of total_pages"
+                  [class.active]="page == index"
+                >
+                  <a
+                    *ngIf="
+                      index == 1 ||
+                      index == total_page ||
+                      index == page ||
+                      index == page - 1 ||
+                      index == page + 1
+                    "
+                    (click)="admin_history(index)"
+                    class="btn"
+                    >{{ index }}</a
+                  >
+                  <a
+                    *ngIf="
+                      (index == 1 && page !== 1 && page !== 2 && page !== 3) ||
+                      (index == total_page - 1 &&
+                        page !== total_page &&
+                        page !== total_page - 1 &&
+                        page !== total_page - 2)
+                    "
+                    class="btn"
+                    >...</a
+                  >
+                </li>
+                <li *ngIf="page !== total_page && items.length !== 0">
+                  <a class="btn" (click)="admin_history(page + 1)">{{
+                    button.next
+                  }}</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

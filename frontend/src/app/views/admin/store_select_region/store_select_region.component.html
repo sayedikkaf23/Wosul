@@ -1,0 +1,220 @@
+<!-- <footer [myLoading]="myLoading" ></footer> -->
+<div
+  class="row wrapper border-bottom white-bg page-heading"
+  style="padding: 80px 20px 10px !important"
+>
+  <div class="row">
+    <button type="button" class="btn add_btn ml-auto" (click)="onSave()">
+      Save
+    </button>
+    <button type="button" class="btn add_btn ml-auto" (click)="onCancel()">
+      Cancel
+    </button>
+  </div>
+  <!--
+    <div class="row">
+        <div class="col-md-7">
+            <div class="col-md-3 col-sm-4">
+                <div class="form-group">
+                    <input type="text" class="form-control" style="border-color: #222222;height: 30px;border-radius: 5px;" placeholder="Enter Address" id="search">
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-4">
+                <div class="form-group" id="search_fields">
+                    <select chosen class="chosen-select" id="selected_country" [(ngModel)]="selected_country" name="selected_country" tabindex="4">
+
+                        <option value="All">{{title.all }}</option>
+                        <option *ngFor="let i of country_list" value="{{i._id}}">{{i.country_name}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-4">
+                <div class="form-group" id="search_fields">
+                    <select chosen class="chosen-select" id="type" [(ngModel)]="type" name="type" tabindex="4">
+                        <option value="All">{{title.all }}</option>
+                        <option value="open">{{title.open }}</option>
+                        <option value="close">{{title.close }}</option>
+                        <option value="businessoff">{{title.business_off }}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-4">
+                <div class="form-group" id="search_fields">
+                    <select chosen class="chosen-select" id="selected_delivery" [(ngModel)]="selected_delivery" name="selected_delivery" tabindex="4">
+
+                        <option value="All">{{title.all }}</option>
+                        <option *ngFor="let i of delivery_list" value="{{i._id}}">{{i.delivery_name}}</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="col-md-6 col-sm-12 col-xs-12"><img src="/map_pin_images/Store/store_open.png" style="height:25px;"/>{{title.open }}</div>
+            <div class="col-md-6 col-sm-12 col-xs-12"><img src="/map_pin_images/Store/store_close.png" style="height:25px;"/>{{title.close }}</div>
+            <div class="col-md-6 col-sm-12 col-xs-12"><img src="/map_pin_images/Store/store_business_off.png" style="height:25px;"/>{{title.business_off }}</div>
+        </div>
+    </div>
+    -->
+</div>
+<div
+  class="wrapper wrapper-content animated fadeInRight"
+  style="padding: 0px 0px 0px !important"
+>
+    <div style="margin-left: -16px; margin-right: -16px">
+     m<div id="map" style="width: 100%; min-height: 600px"></div>
+    <!-- <div id="map" style="height: calc(100vh - 141px);" ></div> -->
+    </div>
+    <!-- <div class="col-md-3 form-group" style="min-height: 415px;max-height: 415px;overflow-y:auto">
+        <div class="row" *ngFor="let city_zone_detail of city_zone;">
+            <div class="col-md-3 form-group">
+                <div [ngStyle]="{ 'width':'30px','height': '30px','background-color':city_zone_detail.color }"></div>
+            </div>
+            <div class="col-md-9 form-group">
+                {{city_zone_detail.title}}
+            </div>
+        </div>
+    </div> -->
+
+    <div class="ibox">
+        <div class="ibox-content">
+            <table class="table">
+                <thead>
+                  <tr>
+                    <th>S. No.</th>
+                    <th>Title</th>
+                    <th>Price</th>
+                    <th>Delivery Fees</th>
+                    <th>Maximum Time</th>
+                    <th>Minimum Time</th>
+                    <th>Action</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    *ngFor="let radius_region of store_setting?.radius_regions; let i = index"
+                    [class.selected_tr]="radius_region.index == current_index"
+                  
+                    >
+                    <td>{{ radius_region.index + 1 }}</td>
+                    <td>{{ radius_region.title }}</td>
+                    <td>{{ radius_region.price }}</td>
+                    <td>{{ radius_region.delivery_fees }}</td>
+                    <td>{{ radius_region.timeMax }}</td>
+                    <td>{{ radius_region.timeMin }}</td>
+                    <td>
+                        <div class="btn-group">
+                            <button
+                              class="btn btn-xs btn-light_black"
+                              (click)="openUpdate(radius_region, i)"
+                            >
+                              Update
+                            </button>
+                        </div>
+                    </td>
+                    <td>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+        </div>
+    </div>
+</div>
+<ng-template let-modal keyboard="false" backdrop="static" cssClass="modal-sm" #myModal>
+    <form #modalForm="ngForm" (ngSubmit)="upDateRegion(modalForm.value)">
+      <div class="modal-header">
+        <h4 class="modal-title">
+          Update Region
+        </h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="col-md-12 col-sm-12">
+                <input
+                type="hidden"
+                class="form-control"
+                [(ngModel)]="upDateValue.index"
+                name="index"
+              />
+              <div class="form-group">
+                <label style="font-weight: normal"
+                  ><strong>Title</strong></label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  [(ngModel)]="upDateValue.title"
+                  name="title"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label style="font-weight: normal"
+                  ><strong>Delivery Fees</strong></label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  [(ngModel)]="upDateValue.delivery_fees"
+                  (keypress)="helper.number_validation($event)"
+                  maxlength="6"
+                  name="delivery_fees"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label style="font-weight: normal"
+                  ><strong>Price</strong></label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  [(ngModel)]="upDateValue.price"
+                  (keypress)="helper.number_validation($event)"
+                  maxlength="6"
+                  name="price"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label style="font-weight: normal"
+                  ><strong>Maximum Time</strong></label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  [(ngModel)]="upDateValue.timeMax"
+                  (keypress)="helper.number_validation($event)"
+                  maxlength="6"
+                  name="timeMax"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label style="font-weight: normal"
+                  ><strong>Minimum Time</strong></label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  [(ngModel)]="upDateValue.timeMin"
+                  (keypress)="helper.number_validation($event)"
+                  maxlength="6"
+                  name="timeMin"
+                  required
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div style="text-align: center">
+          <button type="submit" class="btn btn-primary">
+            {{ button.save }}
+          </button>
+        </div>
+      </div>
+    </form>
+  </ng-template>

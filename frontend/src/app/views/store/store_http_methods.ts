@@ -1,0 +1,95 @@
+import { environment } from "src/environments/environment.prod";
+
+let http_url = environment.serverUrl
+
+export var GET_METHOD = {
+  GET_COUNTRY_LIST: http_url + '/api/admin/get_country_list',
+};
+ 
+export var POST_METHOD = {
+  REMOVE_SUBSTITUTE: http_url + '/api/store/remove_item_substitute',
+  
+  GET_SETTING_DETAIL: http_url + '/api/admin/get_setting_detail',
+  
+  ADMIN_OTP_VERIFICATION: http_url + '/api/admin/otp_verification',
+  FORGOT_PASSWORD: http_url + '/api/admin/forgot_password',
+  CHECK_DETAIL: http_url + '/api/admin/check_detail',
+  NEW_PASSWORD: http_url + '/api/admin/new_password',
+  CHECK_REFERRAL: http_url + '/api/admin/check_referral',
+  GET_CITY_LIST: http_url + '/api/admin/get_city_list',
+  GET_DELIVERY_LIST_FOR_CITY: http_url + '/api/admin/get_delivery_list_for_city',
+  GET_DOCUMENT_LIST: http_url + '/api/admin/get_document_list',
+  UPLOAD_DOCUMENT: http_url + '/api/admin/upload_document',
+  ADD_ITEM_IN_CART: http_url + '/api/user/add_item_in_cart',
+  GET_ORDER_CART_INVOICE: http_url + '/api/user/get_order_cart_invoice',
+  GET_STORE_ORDER_INVOICE: http_url + '/api/store/get_order_invoice',
+  GET_USER: http_url + '/api/store/get_user',
+  PAY_ORDER_PAYMENT: http_url + '/api/user/pay_order_payment',
+  STORE_PAY_ORDER_PAYMENT: http_url + '/api/store/pay_order_payment',
+  CREATE_ORDER: http_url + '/api/user/create_order',
+  STORE_CREATE_ORDER: http_url + '/api/store/create_order',
+  APPLY_PROMO_CODE: http_url + '/api/user/apply_promo_code',
+  VERIFY_PASSWORD: http_url + '/api/store/verify_password',
+  GET_COUNTRY_PHONE_NUMBER_LENGTH: http_url + '/api/store/get_country_phone_number_length',
+
+  GET_PRODUCT_LIST: http_url + '/api/store/get_product_list',
+
+  GET_CATEGORY_LIST: http_url + '/api/store/get_category_list', /////////
+  UPDATE_CATEGORY: http_url + '/api/store/update_category', /////////
+  ADD_CATEGORY: http_url + '/api/store/add_category',
+  GET_CATEGORY_DETAIL: http_url + '/api/store/get_category_data',
+
+  GET_SOECIFICATION_LIST: http_url + '/api/store/get_specification_lists',
+  ADD_ITEM: http_url + '/api/store/add_item',
+  UPLOAD_ITEM_IMAGE: http_url + '/api/store/upload_item_image',
+  DAILY_EARNING: http_url + '/api/store/daily_earning',
+  DELIVERY_LIST_SEARCH_SORT: http_url + '/api/store/delivery_list_search_sort',
+  STORE_CANCEL_OR_REJECT_ORDER: http_url + '/api/store/store_cancel_or_reject_order',
+  CANCEL_REQUEST: http_url + '/api/store/cancel_request',
+  CREATE_REQUEST: http_url + '/api/store/create_request',
+  GET_VEHICLE_LIST: http_url + '/api/store/get_vehicle_list',
+  STORE_COMPLETE_ORDER: http_url + '/api/store/complete_order',
+  ORDER_PAYMENT_STATUS_SET_ON_CASH_ON_DELIVERY: http_url +
+    '/api/store/order_payment_status_set_on_cash_on_delivery',
+  GET_STORE_EARNING: http_url + '/api/store/get_store_earning',
+  GET_ITEM_DATA: http_url + '/api/store/get_item_data',
+  GET_SPECIFICATION_LISTS: http_url + '/api/store/get_specification_lists',
+  UPDATE_ITEM: http_url + '/api/store/update_item',
+  CHANGE_DELIVERY_ADDRESS: http_url + '/api/user/change_delivery_address',
+  STORE_CHANGE_DELIVERY_ADDRESS: http_url + '/api/store/store_change_delivery_address',
+  UPDATE_ITEM_IMAGE: http_url + '/api/store/update_item_image',
+  DELETE_ITEM_IMAGE: http_url + '/api/store/delete_item_image',
+  GET_PRODUCT_DATA: http_url + '/api/store/get_product_data',
+  UPDATE_PRODUCT: http_url + '/api/store/update_product',
+  DELETE_PRODUCT: http_url + '/api/store/delete_product',
+  HISTORY: http_url + '/api/store/history',
+  GET_STORE_PRODUCT_ITEM_LIST: http_url + '/api/store/get_store_product_item_list',
+  IS_ITEM_IN_STOCK: http_url + '/api/store/is_item_in_stock',
+  ORDER_LIST_SEARCH_SORT: http_url + '/api/store/order_list_search_sort',
+  SET_ORDER_STATUS: http_url + '/api/store/set_order_status',
+  GET_ORDER_DATA: http_url + '/api/store/get_order_data',
+  ADD_PRODUCT: http_url + '/api/store/add_product',
+  GET_STORE_DATA: http_url + '/api/store/get_store_data',
+  UPDATE: http_url + '/api/store/update',
+  OTP_VERIFICATION: http_url + '/api/store/otp_verification',
+  UPDATE_STORE_TIME: http_url + '/api/store/update_store_time',
+  GET_SPECIFICATION_GROUP: http_url + '/api/store/get_specification_group',
+  ADD_SPECIFICATION_GROUP: http_url + '/api/store/add_specification_group',
+  DELETE_ITEM: http_url + '/api/store/delete_item',
+  DELETE_SPECIFICATION_GROUP: http_url + '/api/store/delete_specification_group',
+  ADD_SPECIFICATION: http_url + '/api/store/add_specification',
+  DELETE_SPECIFICATION: http_url + '/api/store/delete_specification',
+  LOGIN: http_url + '/api/store/login',
+  LOGOUT: http_url + '/api/store/logout',
+  REGISTER: http_url + '/api/store/register',
+  PROVIDER_LOCATION_TRACK: http_url + '/api/store/provider_location_track',
+  GET_ORDER_DETAIL: http_url + '/api/store/get_order_detail',
+  STORE_UPDATE_ORDER: http_url + '/api/store/update_order',
+  WEEKLY_EARNING: http_url + '/api/store/weekly_earning',
+  STORE_RATING_TO_USER: http_url + '/api/store/rating_to_user',
+  STORE_RATING_TO_PROVIDER: http_url + '/api/store/rating_to_provider',
+
+  GET_IMAGE_SETTING: http_url + '/api/admin/get_image_setting',
+  UPDATE_SEQUENCE_NMBER: http_url + '/api/store/update_sequence_number',
+  COMPLETE_REQUEST: http_url + '/api/provider/complete_request',
+};

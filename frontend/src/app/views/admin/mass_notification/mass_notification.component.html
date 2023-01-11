@@ -1,0 +1,392 @@
+<footer [myLoading]="myLoading"></footer>
+
+<div class="wrapper wrapper-content content_top_bar animated fadeInRight">
+  <div class="row">
+    <div class="col-sm-8">
+      <div class="ibox">
+        <div class="ibox-content">
+          <div class="row">
+            <div class="col-md-12 col-sm-12">
+              <div class="col-md-4">
+                <select
+                  chosen
+                  class="form-control chosen-select"
+                  id="user_type1"
+                  [(ngModel)]="create_mass_notification.user_type"
+                  #user_type="ngModel"
+                  name="user_type"
+                >
+                  <!--<option value="0">{{helper.title.all }}</option>-->
+                  <option value="">{{ title.all }}</option>
+                  <option value="7">{{ title.user }}</option>
+                  <option value="8">{{ title.provider }}</option>
+                  <option value="2">{{ title.store }}</option>
+                </select>
+              </div>
+              <div class="lable_center col-md-8">
+                <ul class="pagination">
+                  <li *ngIf="page !== 1">
+                    <a
+                      class="btn"
+                      (click)="get_mass_notification_list(page - 1)"
+                      >{{ button.pre }}</a
+                    >
+                  </li>
+                  <li
+                    *ngFor="let index of total_pages"
+                    [class.active]="page == index"
+                  >
+                    <a
+                      *ngIf="
+                        index == 1 ||
+                        index == total_page ||
+                        index == page ||
+                        index == page - 1 ||
+                        index == page + 1
+                      "
+                      (click)="get_mass_notification_list(index)"
+                      class="btn"
+                      >{{ index }}</a
+                    >
+                    <a
+                      *ngIf="
+                        (index == 1 &&
+                          page !== 1 &&
+                          page !== 2 &&
+                          page !== 3) ||
+                        (index == total_page - 1 &&
+                          page !== total_page &&
+                          page !== total_page - 1 &&
+                          page !== total_page - 2)
+                      "
+                      class="btn"
+                      >...</a
+                    >
+                  </li>
+                  <li
+                    *ngIf="
+                      page !== total_page && mass_notification_list.length !== 0
+                    "
+                  >
+                    <a
+                      class="btn"
+                      (click)="get_mass_notification_list(page + 1)"
+                      >{{ button.next }}</a
+                    >
+                  </li>
+                  <li *ngIf="total_page > 1">
+                    <a
+                      class="btn"
+                      style="margin-left: 15px"
+                      (click)="get_mass_notification_list(page_number)"
+                      >{{ button.goto }}</a
+                    >
+                  </li>
+                  <div *ngIf="total_page > 1" class="col-md-2">
+                    <input
+                      type="text"
+                      placeholder="Page Number"
+                      style="height: 29px"
+                      class="form-control"
+                      name="page_number"
+                      [(ngModel)]="page_number"
+                    />
+                  </div>
+                </ul>
+              </div>
+            </div>
+            <div class="col-md-12 table-responsive">
+              <table class="table table-striped table-hover">
+                <thead>
+                  <tr>
+                    <th>{{ title.id }}</th>
+                    <th>{{ title.user }}</th>
+                    <th>{{ title.device_type }}</th>
+                    <th>{{ title.country }}</th>
+                    <th>{{ title.city }}</th>
+                    <th>{{ title.message }}</th>
+                    <th>{{ title.date }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let mass_notification of mass_notification_list">
+                    <td>{{ mass_notification.unique_id }}</td>
+                    <td>
+                      <div *ngIf="mass_notification.user_type == 7">
+                        {{ title.user }}
+                      </div>
+                      <div *ngIf="mass_notification.user_type == 8">
+                        {{ title.provider }}
+                      </div>
+                      <div *ngIf="mass_notification.user_type == 2">
+                        {{ title.store }}
+                      </div>
+                    </td>
+                    <td>
+                      {{ mass_notification.device_type }}
+                      <div *ngIf="mass_notification.device_type == 5">
+                        {{ title.device_type_both }}
+                      </div>
+                      <div *ngIf="mass_notification.device_type == 0">
+                        {{ title.device_type_android }}
+                      </div>
+                      <div *ngIf="mass_notification.device_type == 1">
+                        {{ title.device_type_ios }}
+                      </div>
+                    </td>
+                    <td>
+                      <div *ngIf="mass_notification.country_detail">
+                        {{ mass_notification.country_detail.country_name }}
+                      </div>
+                      <div *ngIf="!mass_notification.country_detail">
+                        {{ title.all }}
+                      </div>
+                    </td>
+                    <td>
+                      <div *ngIf="mass_notification.city_detail">
+                        {{ mass_notification.city_detail.city_name }}
+                      </div>
+                      <div *ngIf="!mass_notification.city_detail">
+                        {{ title.all }}
+                      </div>
+                    </td>
+                    <td>{{ mass_notification.message }}</td>
+                    <td>
+                      {{
+                        mass_notification.created_at
+                          | date: DATE_FORMAT.DD_MMM_YYYY_HH_MM_A
+                      }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <form #add_news_form="ngForm" (ngSubmit)="generate_mass_notification()">
+        <div class="ibox">
+          <div class="ibox-title">
+            <h5>{{ heading_title.create_mass_notification }}</h5>
+          </div>
+
+          <div class="ibox-content">
+            <div class="full-height-scroll">
+              <ul class="list-group clear-list">
+                <li class="list-group-item form_padding">
+                  <select
+                    chosen
+                    class="form-control chosen-select"
+                    id="user_type"
+                    [(ngModel)]="create_mass_notification.user_type"
+                    #user_type="ngModel"
+                    name="user_type"
+                  >
+                    <!--<option value="0">{{helper.title.all }}</option>-->
+                    <option value="7">{{ title.user }}</option>
+                    <option value="8">{{ title.provider }}</option>
+                    <option value="2">{{ title.store }}</option>
+                  </select>
+                </li>
+
+                <li class="list-group-item form_padding">
+                  <select
+                    chosen
+                    class="form-control chosen-select"
+                    id="device_type"
+                    [(ngModel)]="create_mass_notification.device_type"
+                    #device_type="ngModel"
+                    name="device_type"
+                  >
+                    <option value="both">{{ title.both }}</option>
+                    <option value="android">
+                      {{ title.device_type_android }}
+                    </option>
+                    <option value="ios">
+                      {{ title.device_type_ios }}
+                    </option>
+                  </select>
+                </li>
+
+                <li
+                  class="list-group-item form_padding"
+                  [hidden]="create_mass_notification.user_type == 2"
+                >
+                  <select
+                    chosen
+                    class="form-control chosen-select"
+                    data-placeholder="Select Delivery"
+                    id="delivery"
+                    [(ngModel)]="create_mass_notification.delivery"
+                    #delivery="ngModel"
+                    name="delivery"
+                  >
+                    <option *ngFor="let i of delivery_list" value="{{ i._id }}">
+                      {{ i.delivery_name }}
+                    </option>
+                  </select>
+                </li>
+
+                <li class="list-group-item form_padding">
+                  <select
+                    chosen
+                    class="form-control chosen-select"
+                    data-placeholder="Select Country"
+                    id="country"
+                    [(ngModel)]="create_mass_notification.country"
+                    #country="ngModel"
+                    name="country"
+                    required
+                  >
+                    <option value="all">{{ title.all }}</option>
+                    <option *ngFor="let i of country_list" value="{{ i._id }}">
+                      {{ i.country_name }}
+                    </option>
+                  </select>
+                </li>
+
+                <li
+                  class="list-group-item form_padding"
+                  [hidden]="create_mass_notification.user_type != 7"
+                >
+                  <select
+                    chosen
+                    class="form-control chosen-select"
+                    data-placeholder="Select City"
+                    id="city"
+                    [(ngModel)]="create_mass_notification.city"
+                    #city="ngModel"
+                    name="city"
+                  >
+                    <option value="all">{{ title.all }}</option>
+                    <option *ngFor="let i of city_list" value="{{ i._id }}">
+                      {{ i.city_name }}
+                    </option>
+                  </select>
+                </li>
+
+                <li class="list-group-item form_padding">
+                  <textarea
+                    class="form-control text_area_news"
+                    style="font-weight: bold; font-family: sans-serif"
+                    placeholder="Enter Heading"
+                    [(ngModel)]="create_mass_notification.heading"
+                    maxlength="500"
+                    #heading="ngModel"
+                    name="heading"
+                    required
+                  ></textarea>
+                  <div
+                    *ngIf="message.errors && (message.dirty || message.touched)"
+                  >
+                    <div
+                      class="error_message"
+                      [hidden]="!message.errors.required"
+                    >
+                      {{ validation_message.field_required }}
+                    </div>
+                  </div>
+                </li>
+
+                <li class="list-group-item form_padding">
+                  <textarea
+                    class="form-control text_area_news"
+                    placeholder="{{ title.message }}"
+                    [(ngModel)]="create_mass_notification.message"
+                    maxlength="500"
+                    #message="ngModel"
+                    name="message"
+                    required
+                  ></textarea>
+                  <div
+                    *ngIf="message.errors && (message.dirty || message.touched)"
+                  >
+                    <div
+                      class="error_message"
+                      [hidden]="!message.errors.required"
+                    >
+                      {{ validation_message.field_required }}
+                    </div>
+                  </div>
+                </li>
+
+                <!-- <li class="list-group-item form_padding">
+                  <input
+                    type="file"
+                    id="img"
+                    name="img"
+                    accept="image/*"
+                    #message="ngModel"
+                    [(ngModel)]="create_mass_notification.img"
+                  />
+                  <div
+                    *ngIf="message.errors && (message.dirty || message.touched)"
+                  >
+                    <div
+                      class="error_message"
+                      [hidden]="!message.errors.required"
+                    >
+                      {{ validation_message.field_required }}
+                    </div>
+                  </div>
+                </li> -->
+                <li class="list-group-item form_padding">
+                  <div class="row">
+                    <div class="form-group col-lg-6 col-md-6 col-xs-6">
+                      <div style="width: 100%; height: 131px">
+                        <div class="col-lg-12 profile-images center">
+
+
+                          <span class="btn-file"
+                            ><img
+                              style="width: 110px; height: 110px"
+                              src="{{
+                                create_mass_notification.img != ''
+                                  ? create_mass_notification.img
+                                  : 'plus_box.png'
+                              }}"
+                              alt="" /><input
+                              type="file"
+                              accept="image/*"
+                              (change)="image_update($event, 'wallet')"
+                              name="image_url"
+                          /></span>
+                          <div
+                          *ngIf="message.errors && (message.dirty || message.touched)"
+                        >
+                          <div
+                            class="error_message"
+                            [hidden]="!message.errors.required"
+                          >
+                            {{ validation_message.field_required }}
+                          </div>
+                        </div>
+                        </div>
+                      </div>
+                      <div class="col-lg-12 text_center">
+                        <span style="color: red">{{ image_error }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+
+                <li class="list-group-item form_padding">
+                  <button
+                    [disabled]="!add_news_form.valid"
+                    class="btn btn-orange btn-block"
+                    type="submit"
+                  >
+                    {{ button.submit }}
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
