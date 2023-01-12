@@ -1,10 +1,11 @@
 require("../utils/message_code");
 require("../utils/error_code");
 require("../utils/constants");
-var utils = require("../utils/utils");
-var Admin = require("mongoose").model("admin");
-var mongoose = require("mongoose");
-var schema = mongoose.Schema;
+const utils = require("../utils/utils");
+const Admin = require("mongoose").model("admin");
+const mongoose = require("mongoose");
+const schema = mongoose.Schema;
+const { getToken } = require("../middleware/checkAuth");
 
 // add_admin
 exports.add_admin = function (request_data, response_data) {
@@ -234,96 +235,62 @@ exports.delete_admin = function (request_data, response_data) {
 };
 
 // login
-exports.login = function (request_data, response_data) {
+exports.login = (req, res) => {
   utils.check_request_params(
-    request_data.body,
+    req.body,
     [
       { name: "username", type: "string" },
       { name: "password", type: "string" },
     ],
-    function (response) {
-      if (response.success) {
-        var request_data_body = request_data.body;
-        var hash = utils.encryptPassword(request_data_body.password);
-        var u_name = request_data_body.username.trim().toLowerCase();
-        var username = {};
-        username["username"] = u_name;
-        var email = {};
-        email["email"] = u_name;
-        var password = {};
-        password["password"] = hash;
-        Admin.findOne({ $and: [{ $or: [username, email] }, password] }).then(
-          (admin) => {
-            if (!admin) {
-              response_data.json({
-                success: false,
-                error_code: ADMIN_ERROR_CODE.DETAIL_NOT_FOUND,
-              });
-            } else {
-              admin.server_token = utils.generateServerToken(32);
-              admin.save();
-              response_data.json({
-                success: true,
-                message: ADMIN_MESSAGE_CODE.LOGIN_SUCCESSFULLY,
-                admin_data: admin,
-              });
-            }
-          },
-          (error) => {
-            console.log(error);
-            response_data.json({
-              success: false,
-              error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-            });
-          }
-        );
-      } else {
-        response_data.json(response);
+    async function (response) {
+      try {
+        if (!response.success) res.json(response);
+
+        let password = utils.encryptPassword(req.body.password);
+        let email = req.body.username.trim().toLowerCase();
+
+        const admin = await Admin.findOne({
+          $and: [{ $or: [{ username: email }, { email }] }, { password }],
+        });
+
+        if (!admin) {
+          res.json({
+            success: false,
+            error_code: ADMIN_ERROR_CODE.DETAIL_NOT_FOUND,
+          });
+          return;
+        }
+
+        const token = getToken(admin._id, email, "admin");
+
+        admin.server_token = token;
+        admin.save();
+        res.json({
+          success: true,
+          message: ADMIN_MESSAGE_CODE.LOGIN_SUCCESSFULLY,
+          admin_data: admin,
+          token: token,
+        });
+      } catch (error) {
+        console.log("error: ", error);
+        res.json({
+          success: false,
+          error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+        });
       }
     }
   );
 };
 
 //check_auth
-exports.check_auth = function (request_data, response_data) {
-  utils.check_request_params(
-    request_data.body,
-    [{ name: "admin_id", type: "string" }],
-    function (response) {
-      if (response.success) {
-        var request_data_body = request_data.body;
-        Admin.findOne({
-          _id: request_data_body.admin_id,
-          server_token: request_data_body.admin_token,
-        }).then(
-          (admin) => {
-            if (!admin) {
-              response_data.json({
-                success: false,
-                error_code: ADMIN_ERROR_CODE.DETAIL_NOT_FOUND,
-              });
-            } else {
-              response_data.json({
-                success: true,
-                message: ADMIN_MESSAGE_CODE.GET_DETAIL_SUCCESSFULLY,
-                admin: admin,
-              });
-            }
-          },
-          (error) => {
-            console.log(error);
-            response_data.json({
-              success: false,
-              error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-            });
-          }
-        );
-      } else {
-        response_data.json(response);
-      }
-    }
-  );
+exports.check_auth = function (req, res) {
+  res.json({
+    success: true,
+    message: ADMIN_MESSAGE_CODE.GET_DETAIL_SUCCESSFULLY,
+    admin: req.user,
+  });
 };
+
 exports.add_update_subscription = async function (req, res) {
   try {
     const { subscription, admin_id } = req.body;
@@ -352,4 +319,3 @@ exports.add_update_subscription = async function (req, res) {
     });
   }
 };
-

@@ -1,4 +1,5 @@
 var admin = require("../admin_controllers/admin"); // include admin controller ////
+const { authMiddleware } = require("../middleware/checkAuth");
 
 module.exports = function (app) {
   app.route("/admin/add").post(admin.add_admin);
@@ -8,6 +9,9 @@ module.exports = function (app) {
   app.route("/admin/update").post(admin.update_admin);
   app.route("/admin/delete").post(admin.delete_admin);
   app.route("/login").post(admin.login);
-  app.route("/admin/add_update_subscription").post(admin.add_update_subscription);
-  app.route("/admin/check_auth").post(admin.check_auth);
+  app
+    .route("/admin/add_update_subscription")
+    .post(admin.add_update_subscription);
+
+  app.post("/admin/check_auth", authMiddleware, admin.check_auth);
 };

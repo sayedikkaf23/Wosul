@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DEFAULT_CURRENCY_CODE, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { MetismenuAngularModule } from '@metismenu/angular';
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
@@ -221,7 +221,7 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { SocketService } from './services/socket.service';
 import { FtpServerComponent } from './views/admin/ftp_server/ftp_server.component';
-
+import { TokenInterceptor } from './services/token.interceptor';
 
 @NgModule({
   declarations: [AppComponent, CommonInfoModalComponent, FtpServerComponent],
@@ -422,6 +422,8 @@ import { FtpServerComponent } from './views/admin/ftp_server/ftp_server.componen
       useClass: PathLocationStrategy,
     },
     { provide: DEFAULT_CURRENCY_CODE, useValue: 'AED ' },
+    
+    { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
     Helper,
     Data,
     Router_id,
