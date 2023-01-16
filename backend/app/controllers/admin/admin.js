@@ -1644,7 +1644,6 @@ function update_specifications_group_in_items(
 
 exports.get_time_sheet = async function (request_data, response_data) {
   var admin_id = request_data.body.admin_id;
-  var server_token = request_data.body.server_token;
   var date = request_data.body.date;
   const admin = await Admin.findOne({ _id: admin_id });
   console.log(request_data.body);

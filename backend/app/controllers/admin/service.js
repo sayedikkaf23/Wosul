@@ -22,63 +22,54 @@ exports.get_service_list = function (request_data, response_data) {
         Store.findOne({ _id: request_data_body.store_id }).then(
           (store) => {
             if (store) {
-              if (
-                request_data_body.server_token !== null &&
-                store.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                var server_time = new Date();
+              // test 
+              var server_time = new Date();
 
-                var city_type_to_type_query = {
-                  $lookup: {
-                    from: "vehicles",
-                    localField: "vehicle_id",
-                    foreignField: "_id",
-                    as: "vehicle_details",
-                  },
-                };
-                var array_to_json = { $unwind: "$vehicle_details" };
+              var city_type_to_type_query = {
+                $lookup: {
+                  from: "vehicles",
+                  localField: "vehicle_id",
+                  foreignField: "_id",
+                  as: "vehicle_details",
+                },
+              };
+              var array_to_json = { $unwind: "$vehicle_details" };
 
-                var cityid_condition = {
-                  $match: {
-                    city_id: {
-                      $eq: mongoose.Types.ObjectId(request_data_body.city_id),
-                    },
+              var cityid_condition = {
+                $match: {
+                  city_id: {
+                    $eq: mongoose.Types.ObjectId(request_data_body.city_id),
                   },
-                };
-                Service.aggregate([
-                  cityid_condition,
-                  city_type_to_type_query,
-                  array_to_json,
-                ]).then(
-                  (service) => {
-                    if (service.length != 0) {
-                      response_data.json({
-                        success: true,
-                        message: SERVICE_MESSAGE_CODE.SERVICE_LIST_SUCCESSFULLY,
-                        server_time: server_time,
-                        service: service,
-                      });
-                    } else {
-                      response_data.json({
-                        success: false,
-                        error_code: SERVICE_ERROR_CODE.SERVICE_DATA_NOT_FOUND,
-                      });
-                    }
-                  },
-                  (error) => {
-                    console.log(error);
+                },
+              };
+              Service.aggregate([
+                cityid_condition,
+                city_type_to_type_query,
+                array_to_json,
+              ]).then(
+                (service) => {
+                  if (service.length != 0) {
+                    response_data.json({
+                      success: true,
+                      message: SERVICE_MESSAGE_CODE.SERVICE_LIST_SUCCESSFULLY,
+                      server_time: server_time,
+                      service: service,
+                    });
+                  } else {
                     response_data.json({
                       success: false,
-                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                      error_code: SERVICE_ERROR_CODE.SERVICE_DATA_NOT_FOUND,
                     });
                   }
-                );
-              }
+                },
+                (error) => {
+                  console.log(error);
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
             } else {
               response_data.json({
                 success: false,

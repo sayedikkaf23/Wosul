@@ -1,4 +1,5 @@
 var store = require("../admin_controllers/store"); // include store controller ////
+const { authMiddleware } = require("../middleware/checkAuth");
 
 module.exports = function (app) {
   //app.route('/admin/store_list').get(store.store_list);
@@ -15,9 +16,10 @@ module.exports = function (app) {
     .post(store.get_store_list_for_city);
   app.route("/admin/get_store_list").get(store.get_store_list);
 
-  app
-    .route("/admin/get_store_list_for_country")
-    .post(store.get_store_list_for_country);
+  app.post(
+    "/admin/get_store_list_for_country",
+    store.get_store_list_for_country
+  );
 
   app.route("/admin/product_for_city_store").post(store.product_for_city_store);
   app.route("/admin/item_for_city_store").post(store.item_for_city_store);

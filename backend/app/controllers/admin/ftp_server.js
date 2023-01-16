@@ -114,19 +114,11 @@ exports.update_ftp_server_details = async function (req, res) {
         $set: ftpDetails,
       });
 
-      if (ftp_server) {
-        res.json({
-          success: true,
-          message: "Updated Successfully",
-        });
-        return;
-      } else {
-        res.json({
-          success: false,
-          message: "Something Went Wrong",
-        });
-        return;
-      }
+      res.json({
+        success: !!ftp_server,
+        message: ftp_server ? "Updated Successfully" : "Something Went Wrong",
+      });
+      return;
     }
   } catch (error) {
     res.statusCode = 500;
@@ -140,33 +132,25 @@ exports.update_ftp_server_details = async function (req, res) {
 //for delete ftp server detail
 exports.delete_ftp_server = async function (req, res) {
   try {
-    const { ftp_server_id, server_token } = req.body;
+    const ftp_server_id = req.body;
 
-    const user = await admin.findOne({ server_token });
-    if (!user) {
+    const ftp_server = await ftp_server_details.findOneAndDelete({
+      _id: ftp_server_id,
+    });
+
+    if (!ftp_server) {
       res.json({
         success: false,
-      });
-      return;
-    } else {
-      const ftp_server = await ftp_server_details.findOneAndDelete({
-        _id: ftp_server_id,
+        message: "Something Went Wrong",
       });
 
-      if (ftp_server) {
-        res.json({
-          success: true,
-          message: "Delete Successfully",
-        });
-        return;
-      } else {
-        res.json({
-          success: false,
-          message: "Something Went Wrong",
-        });
-        return;
-      }
+      return;
     }
+
+    res.json({
+      success: true,
+      message: "Delete Successfully",
+    });
   } catch (error) {
     res.statusCode = 500;
     res.json({

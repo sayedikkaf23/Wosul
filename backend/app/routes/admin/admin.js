@@ -7,6 +7,7 @@ var service = require("../../controllers/admin/service"); // include service con
 var vehicle = require("../../controllers/admin/vehicle"); // include vehicle controller ////
 var document = require("../../controllers/admin/document"); // include document controller ////
 var ftp_server = require("../../controllers/admin/ftp_server"); // include ftp_server controller ////
+const { authMiddleware } = require("../../middleware/checkAuth");
 
 module.exports = function (app) {
   // START AUTO UPDATE DB QUERY API.
@@ -28,7 +29,8 @@ module.exports = function (app) {
   app.route("/api/admin/check_detail").post(admin.check_detail);
   app.route("/api/admin/new_password").post(admin.new_password);
   app.route("/api/admin/check_referral").post(admin.check_referral);
-  app.route("/api/admin/get_setting_detail").post(admin.get_setting_detail);
+  // add middleware
+  app.post("/api/admin/get_setting_detail", admin.get_setting_detail);
   app
     .route("/api/admin/update_item_subcategory")
     .post(admin.update_item_subcategory);
@@ -37,7 +39,8 @@ module.exports = function (app) {
     .route("/api/admin/get_setting_detail_for_mail_config")
     .post(admin.get_setting_detail_for_mail_config);
 
-  app.route("/api/admin/get_time_sheet").post(admin.get_time_sheet);
+  app.post("/api/admin/get_time_sheet", admin.get_time_sheet);
+
   app.route("/api/admin/set_play_pause").post(admin.set_play_pause);
   app.route("/api/admin/get_time_sheet_data").post(admin.get_time_sheet_data);
   app.route("/api/admin/get_app_keys").post(installation_setting.get_app_keys);
@@ -57,7 +60,12 @@ module.exports = function (app) {
 
   app.route("/api/admin/get_vehicle_list").post(vehicle.get_vehicle_list);
   app.route("/api/admin/get_city_lists").post(vehicle.get_city_lists);
-  app.route("/api/admin/get_service_list").post(service.get_service_list);
+  app.post(
+    "/api/admin/get_service_list",
+    authMiddleware,
+    service.get_service_list
+  );
+
   app.route("/api/admin/get_delivery_list").get(delivery.get_delivery_list);
   app
     .route("/api/admin/get_delivery_list_for_city")
@@ -83,7 +91,11 @@ module.exports = function (app) {
     .route("/api/admin/get_ftp_server_detail_by_id")
     .post(ftp_server.get_ftp_server_detail_by_id);
 
-  app.route("/api/admin/delete_ftp_server").post(ftp_server.delete_ftp_server);
+  app.post(
+    "/api/admin/delete_ftp_server",
+    authMiddleware,
+    ftp_server.delete_ftp_server
+  );
 
   app
     .route("/api/admin/upload_header_data_excel")

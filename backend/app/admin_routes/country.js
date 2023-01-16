@@ -1,8 +1,11 @@
 var country = require("../admin_controllers/country"); // include country controller ////
+const { authMiddleware } = require("../middleware/checkAuth");
 
 module.exports = function (app) {
   app.route("/admin/get_country_data_list").get(country.get_country_data_list);
-  app.route("/admin/get_country_list").get(country.get_country_list);
+
+  app.get("/admin/get_country_list", country.get_country_list);
+
   app.route("/admin/get_timezone_list").get(country.get_timezone_list);
 
   app.route("/admin/get_country_data").post(country.get_country_data);
