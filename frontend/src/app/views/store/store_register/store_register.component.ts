@@ -37,6 +37,7 @@ export interface StoreRegister {
 @Component({
   selector: 'store_register',
   templateUrl: 'store_register.template.html',
+  // styleUrls: ['./store_login.component.css'],
   providers: [Helper, FacebookService],
 })
 export class store_registerComponent {
