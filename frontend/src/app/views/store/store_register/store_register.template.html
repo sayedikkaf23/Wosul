@@ -472,22 +472,71 @@
     </a>
   </div>
   <div class="form-wrap">
-    <form class="form-tag">
+    <form class="form-tag" #storForm="ngForm" (ngSubmit)="storeRegister(storForm.value)">
       <div class="text text-center">
         <h2>Register</h2>
       </div>
+
       <div class="form">
         <div class="form-feild">
+          <label>
+            Company name
+            <em>*</em></label
+          >
+          <input
+            [(ngModel)]="store_register.name"
+            name="name"
+            required
+            type="text"
+            placeholder="Company name"
+            class="form-control"
+          />
+        </div>
+        <div class="form-feild">
+          <label>Company email<em>*</em></label>
+          <input
+            [(ngModel)]="store_register.email"
+            name="email"
+            required
+            type="text"
+            placeholder="Company Email"
+            class="form-control"
+          />
+        </div>
+        <div class="form-feild">
+          <label>Company phone<em>*</em></label>
+          <div class="display">
+            <div>
+              <input
+                type=""
+                [(ngModel)]="phoneCode"
+                name="phoneCode"
+                placeholder="+971"
+                class="form-control width"
+              />
+            </div>
+            <input
+              type=""
+              placeholder="Company phone"
+              class="form-control border-left"
+              [(ngModel)]="store_register.phone"
+              name="phone"
+              minlength="{{minimum_phone_number_length}}"
+              maxlength="{{maximum_phone_number_length}}"
+              required
+            />
+          </div>
+        </div>
+        
+        <div class="form-feild">
           <label>Business Type<em>*</em></label>
-          <input type="text" placeholder="Cafe" class="form-control" />
-        </div>
-        <div class="form-feild">
-          <label>Company Email<em>*</em></label>
-          <input type="text" placeholder="Company Email" class="form-control" />
-        </div>
-        <div class="form-feild">
-          <label>Company Name<em>*</em></label>
-          <input type="text" placeholder="Company Name" class="form-control" />
+          <input
+            [(ngModel)]="store_register.name_type"
+            name="name_type"
+            type="text"
+            placeholder="Cafe"
+            class="form-control"
+          />
         </div>
         <div class="form-feild">
           <label>Password<em>*</em></label>
@@ -495,6 +544,10 @@
             type="password"
             placeholder="********* "
             class="form-control"
+            [(ngModel)]="store_register.password"
+            name="password"
+            minlength="6"
+            required
           />
           <div class="eye-btn">
             <span>
@@ -535,10 +588,14 @@
           </div>
         </div>
         <div class="form-submit-wrap">
-          <button class="btn btn-secondary w-100" type="submit">Sign in</button>
+          <button class="btn btn-secondary w-100 color" type="submit">
+            Sign in
+          </button>
         </div>
         <p class="text-center login-link-text">
-          Don’t have an account?<a href="login.html"><b> Login</b></a>
+          Don’t have an account?<a [routerLink]="['/store/login']"
+            ><b> Login</b></a
+          >
         </p>
       </div>
       <div class="copyright-text text-center">

@@ -37,13 +37,13 @@ export interface StoreRegister {
 @Component({
   selector: 'store_register',
   templateUrl: 'store_register.template.html',
-  // styleUrls: ['./store_login.component.css'],
+  styleUrls: ['./store_register.component.css'],
   providers: [Helper, FacebookService],
 })
 export class store_registerComponent {
   @ViewChild('myModal')
   modal: any;
-
+  phoneCode: any = '+971';
   public store_register: StoreRegister;
   title: any;
   button: any;
@@ -148,6 +148,7 @@ export class store_registerComponent {
       .post(this.helper.POST_METHOD.GET_SETTING_DETAIL, {})
       .subscribe(
         (res_data: any) => {
+          console.log('res_data: ', res_data);
           this.myLoading = false;
           this.setting_data = res_data.setting;
 
@@ -461,66 +462,71 @@ export class store_registerComponent {
   }
 
   storeRegister(stordata) {
+    this.register(stordata);
+    return;
+
     var reg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
 
+    // if (
+    //   this.store_register.latitude == null ||
+    //   this.store_register.longitude == null
+    // ) {
+    //   this.store_register.address = '';
+    // } else {
     if (
-      this.store_register.latitude == null ||
-      this.store_register.longitude == null
+      reg.test(stordata.email.trim()) &&
+      stordata.password
+      // .trim()
+      //  === stordata.confirm_password.trim()
     ) {
-      this.store_register.address = '';
-    } else {
-      if (
-        reg.test(stordata.email.trim()) &&
-        stordata.password.trim() === stordata.confirm_password.trim()
-      ) {
-        this.myLoading = true;
-        this.stor_data = stordata;
-        if (
-          this.setting_data.is_store_sms_verification == true ||
-          this.setting_data.is_store_mail_verification == true
-        ) {
-          this.helper.http
-            .post(this.helper.POST_METHOD.ADMIN_OTP_VERIFICATION, {
-              type: 2,
-              email: stordata.email,
-              country_phone_code: stordata.country_phone_code,
-              phone: stordata.phone,
-            })
-            .subscribe(
-              (res_data: any) => {
-                this.myLoading = false;
-                if (res_data.success == true) {
-                  this.helper.string_log('email', res_data.otp_for_email);
-                  this.helper.string_log('sms', res_data.otp_for_sms);
-                  this.modalService.open(this.modal);
-                  this.otp_for_email = res_data.otp_for_email;
-                  this.otp_for_sms = res_data.otp_for_sms;
-                  if (this.setting_data.is_store_sms_verification == false) {
-                    jQuery('#otp_for_sms').css('display', 'none');
-                  }
-
-                  if (this.setting_data.is_store_mail_verification == false) {
-                    jQuery('#otp_for_email').css('display', 'none');
-                  }
-                } else {
-                  this.helper.data.storage = {
-                    code: res_data.error_code,
-                    message: this.helper.ERROR_CODE[res_data.error_code],
-                    class: 'alert-danger',
-                  };
-                  this.helper.message();
-                }
-              },
-              (error: any) => {
-                this.myLoading = false;
-                this.helper.http_status(error);
+      this.myLoading = true;
+      this.stor_data = stordata;
+      // if (
+      //   this.setting_data.is_store_sms_verification == true ||
+      //   this.setting_data.is_store_mail_verification == true
+      // ) {
+      this.helper.http
+        .post(this.helper.POST_METHOD.ADMIN_OTP_VERIFICATION, {
+          type: 2,
+          email: stordata.email,
+          country_phone_code: stordata.country_phone_code,
+          phone: stordata.phone,
+        })
+        .subscribe(
+          (res_data: any) => {
+            this.myLoading = false;
+            if (res_data.success == true) {
+              this.helper.string_log('email', res_data.otp_for_email);
+              this.helper.string_log('sms', res_data.otp_for_sms);
+              this.modalService.open(this.modal);
+              this.otp_for_email = res_data.otp_for_email;
+              this.otp_for_sms = res_data.otp_for_sms;
+              if (this.setting_data.is_store_sms_verification == false) {
+                jQuery('#otp_for_sms').css('display', 'none');
               }
-            );
-        } else {
-          this.register(stordata);
-        }
-      }
+
+              if (this.setting_data.is_store_mail_verification == false) {
+                jQuery('#otp_for_email').css('display', 'none');
+              }
+            } else {
+              this.helper.data.storage = {
+                code: res_data.error_code,
+                message: this.helper.ERROR_CODE[res_data.error_code],
+                class: 'alert-danger',
+              };
+              this.helper.message();
+            }
+          },
+          (error: any) => {
+            this.myLoading = false;
+            this.helper.http_status(error);
+          }
+        );
+      // } else {
+      this.register(stordata);
+      // }
     }
+    // }
   }
 
   otp_var(otp) {
@@ -569,10 +575,10 @@ export class store_registerComponent {
     this.formData.append('country_phone_code', store_data.country_phone_code);
     this.formData.append('name', store_data.name.trim());
     this.formData.append('email', store_data.email.trim());
-    this.formData.append('address', store_data.address.trim());
-    this.formData.append('latitude', this.store_register.latitude);
-    this.formData.append('longitude', this.store_register.longitude);
-    this.formData.append('website_url', store_data.website_url.trim());
+    // this.formData.append('address', store_data.address.trim());
+    // this.formData.append('latitude', this.store_register.latitude);
+    // this.formData.append('longitude', this.store_register.longitude);
+    // this.formData.append('website_url', store_data.website_url.trim());
     this.formData.append('slogan', store_data.slogan);
     this.formData.append(
       'referral_code',
