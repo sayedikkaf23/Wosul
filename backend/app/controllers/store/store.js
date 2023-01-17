@@ -43,8 +43,8 @@ exports.store_register = function (request_data, response_data) {
       { name: "store_delivery_id", type: "string" },
       { name: "phone", type: "string" },
       { name: "country_phone_code", type: "string" },
-      { name: "latitude" },
-      { name: "longitude" },
+      // { name: "latitude" },
+      // { name: "longitude" },
     ],
     function (response) {
       if (response.success) {
