@@ -12,12 +12,12 @@ export class AuthService {
   constructor(private http: HttpClient, private router: Router) {}
 
   get token() {
-    return localStorage.getItem('hash');
+    return localStorage.getItem('admin_token');
   }
 
   setAuthStorage(adminDetails: any) {
-    localStorage.setItem('id', adminDetails.admin_data._id);
-    localStorage.setItem('hash', adminDetails.admin_data.server_token);
+    localStorage.setItem('admin_id', adminDetails.admin_data._id);
+    localStorage.setItem('admin_token', adminDetails.admin_data.server_token);
   }
 
   getToken() {

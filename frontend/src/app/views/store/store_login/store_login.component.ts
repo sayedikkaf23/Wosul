@@ -28,6 +28,7 @@ export interface StoreLogin {
 @Component({
   selector: 'store_login',
   templateUrl: 'store_login.template.html',
+  styleUrls: ['./store_login.component.css'],
   providers: [Helper, FacebookService],
 })
 export class store_loginComponent implements OnInit {

@@ -49,7 +49,7 @@ export class SmsComponent implements OnInit {
   }
 
   ngOnInit() {
-    debugger;
+    // debugger;
     this.sms_configuration = {
       name: '',
       sms_api_key: '',
