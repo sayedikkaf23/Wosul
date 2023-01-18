@@ -472,7 +472,11 @@
     </a>
   </div>
   <div class="form-wrap">
-    <form class="form-tag" #storForm="ngForm" (ngSubmit)="storeRegister(storForm.value)">
+    <form
+      class="form-tag"
+      #storForm="ngForm"
+      (ngSubmit)="storeRegister(storForm.value)"
+    >
       <div class="text text-center">
         <h2>Register</h2>
       </div>
@@ -503,6 +507,21 @@
             class="form-control"
           />
         </div>
+
+        <div class="form-feild">
+          <label>Company address<em>*</em></label>
+          <input
+            (focus)="blank_address()"
+            [(ngModel)]="store_register.address"
+            name="address"
+            required
+            id="address"
+            type="text"
+            placeholder="Company address"
+            class="form-control"
+          />
+        </div>
+
         <div class="form-feild">
           <label>Company phone<em>*</em></label>
           <div class="display">
@@ -527,7 +546,7 @@
             />
           </div>
         </div>
-        
+
         <div class="form-feild">
           <label>Business Type<em>*</em></label>
           <input

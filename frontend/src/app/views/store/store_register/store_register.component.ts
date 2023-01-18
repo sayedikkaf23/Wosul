@@ -191,6 +191,8 @@ export class store_registerComponent {
       .on('change', (evnt, res_data) => {
         this.store_register.store_delivery_id = res_data.selected;
       });
+
+    this.setAddressEvent('AE');
   }
   public formData = new FormData();
 
@@ -395,22 +397,7 @@ export class store_registerComponent {
               this.is_country_referral = res_data.is_referral_store;
               let country_code = res_data.country_code;
 
-              let autocompleteElm = <HTMLInputElement>(
-                document.getElementById('address')
-              );
-              let autocomplete = new google.maps.places.Autocomplete(
-                autocompleteElm,
-                { componentRestrictions: { country: country_code } }
-              );
-
-              autocomplete.addListener('place_changed', () => {
-                var place = autocomplete.getPlace();
-                var lat = place.geometry.location.lat();
-                var lng = place.geometry.location.lng();
-                this.store_register.address = place.formatted_address;
-                this.store_register.latitude = lat;
-                this.store_register.longitude = lng;
-              });
+              this.setAddressEvent(country_code);
             } else {
               this.store_register.country_phone_code = '';
             }
@@ -453,6 +440,23 @@ export class store_registerComponent {
           this.helper.http_status(error);
         }
       );
+  }
+
+  setAddressEvent(country_code) {
+    let autocompleteElm = <HTMLInputElement>document.getElementById('address');
+    console.log('autocompleteElm: ', autocompleteElm);
+    let autocomplete = new google.maps.places.Autocomplete(autocompleteElm, {
+      componentRestrictions: { country: country_code },
+    });
+
+    autocomplete.addListener('place_changed', () => {
+      var place = autocomplete.getPlace();
+      var lat = place.geometry.location.lat();
+      var lng = place.geometry.location.lng();
+      this.store_register.address = place.formatted_address;
+      this.store_register.latitude = lat;
+      this.store_register.longitude = lng;
+    });
   }
 
   blank_address() {
@@ -564,6 +568,12 @@ export class store_registerComponent {
       this.store_register.confirm_password = '';
     }
     this.myLoading = true;
+
+    store_data.country_id = '5d6791abc01cf5683d14c418';
+    store_data.city_id = '5e63564145b47f5e7e315c2c';
+    store_data.country_phone_code='+971'
+    store_data.store_delivery_id = '5d9f4b3f37ec2d0e12ecbc4d'
+
     this.formData.append('image_url', this.image_url);
     this.formData.append('phone', store_data.phone.trim());
     this.formData.append('password', this.store_register.password.trim());
@@ -575,9 +585,9 @@ export class store_registerComponent {
     this.formData.append('country_phone_code', store_data.country_phone_code);
     this.formData.append('name', store_data.name.trim());
     this.formData.append('email', store_data.email.trim());
-    // this.formData.append('address', store_data.address.trim());
-    // this.formData.append('latitude', this.store_register.latitude);
-    // this.formData.append('longitude', this.store_register.longitude);
+    this.formData.append('address', store_data.address.trim());
+    this.formData.append('latitude', this.store_register.latitude);
+    this.formData.append('longitude', this.store_register.longitude);
     // this.formData.append('website_url', store_data.website_url.trim());
     this.formData.append('slogan', store_data.slogan);
     this.formData.append(
