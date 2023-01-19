@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1674032229924,
+  "timestamp": 1674134045999,
   "index": "/index.html",
   "assetGroups": [
     {
@@ -96,6 +96,8 @@
         "/assets/images/checkout-card-border.svg",
         "/assets/images/dummy-invoice.jpg",
         "/assets/images/empty-image.svg",
+        "/assets/images/eye-off.svg",
+        "/assets/images/eye.svg",
         "/assets/images/flag.png",
         "/assets/images/form-bg.png",
         "/assets/images/google-logo.png",
@@ -398,6 +400,8 @@
     "/assets/images/checkout-card-border.svg": "ad18e32b592965a49f5aa82299be69817ddde4a0",
     "/assets/images/dummy-invoice.jpg": "7deb20e7c8368aa642d004545a7e3ff97100fff7",
     "/assets/images/empty-image.svg": "bf4543d2825dc74e8125d8fb307b6c429048bacd",
+    "/assets/images/eye-off.svg": "962cbd1c93520c36e44f3eaf13397fd35ba4c066",
+    "/assets/images/eye.svg": "6ec20ea73a2528618e3d37cc21a96d9e1e2544d0",
     "/assets/images/flag.png": "91bf729b3cadc88a831ec002d365d00333a2ffd2",
     "/assets/images/form-bg.png": "d1961fd40d815120546c7151f27b4af097e35cf5",
     "/assets/images/google-logo.png": "95a1817e5c42db66da4d59a2982e0cd36627ebd3",
@@ -457,7 +461,7 @@
     "/assets/styles/animate.css": "74170be977990c29433e7b37b70492e61b25afd0",
     "/assets/styles/bootstrap.css": "49cfb70fe8c6250c6aeae4512955deab1e6d1824",
     "/assets/styles/c3.css": "7ca0b544f1cec0a5200d756c93dd4a088770a8a9",
-    "/assets/styles/chosen/bootstrap-chosen.css": "859357706bf8b5eef91639726fdc3eebe06c5bd6",
+    "/assets/styles/chosen/bootstrap-chosen.css": "0f1026ee414af4398c92c11a0313e712fdee3b23",
     "/assets/styles/chosen/chosen-sprite.png": "64abba2ec159f1f01385f8e73a6c3574c6b49fb8",
     "/assets/styles/chosen/chosen-sprite@2x.png": "2447c029f1dade4c43513a8d65e8f68a9edf20d7",
     "/assets/styles/chosen/chosen-sprite@2x_old.png": "ac1d3dd7af917de06f285b5d10221d51a00d7a68",
