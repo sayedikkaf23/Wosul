@@ -66,6 +66,10 @@ export class store_registerComponent {
   referral_code: string = '';
   is_referral_apply: Boolean = false;
   validation_message: any;
+  is_eye_icon_show: Boolean = false;
+  password = 'password';
+  error_message: any = '';
+  is_show_error_message: Boolean = false;
 
   myLoading: boolean = true;
   constructor(
@@ -192,7 +196,7 @@ export class store_registerComponent {
         this.store_register.store_delivery_id = res_data.selected;
       });
 
-    this.setAddressEvent('AE');
+    // this.setAddressEvent('AE');
   }
   public formData = new FormData();
 
@@ -459,6 +463,10 @@ export class store_registerComponent {
     });
   }
 
+  togglePassword() {
+    this.is_eye_icon_show = !this.is_eye_icon_show;
+  }
+
   blank_address() {
     this.store_register.latitude = null;
     this.store_register.longitude = null;
@@ -571,8 +579,8 @@ export class store_registerComponent {
 
     store_data.country_id = '5d6791abc01cf5683d14c418';
     store_data.city_id = '5e63564145b47f5e7e315c2c';
-    store_data.country_phone_code='+971'
-    store_data.store_delivery_id = '5d9f4b3f37ec2d0e12ecbc4d'
+    store_data.country_phone_code = '+971';
+    store_data.store_delivery_id = '5d9f4b3f37ec2d0e12ecbc4d';
 
     this.formData.append('image_url', this.image_url);
     this.formData.append('phone', store_data.phone.trim());
@@ -609,10 +617,14 @@ export class store_registerComponent {
         (res_data: any) => {
           this.myLoading = false;
           if (res_data.success == false) {
-            this.helper.data.storage = {
-              message: this.helper.ERROR_CODE[res_data.error_code],
-              class: 'alert-danger',
-            };
+            // this.helper.data.storage = {
+            //   message: this.helper.ERROR_CODE[res_data.error_code],
+            //   class: 'alert-danger',
+            // };
+            this.error_message =
+              this.helper.ERROR_CODE[res_data.error_code] ||
+              'Something went wrong';
+            this.is_show_error_message = true;
             this.helper.message();
             this.formData = new FormData();
             if (this.store_register.login_by == this.title.social) {

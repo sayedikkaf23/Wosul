@@ -45,7 +45,7 @@ p:last-child {
   margin-bottom: 0;
 }
 ::selection {
-  color: #fff;
+  /* color: #fff; */
   background: var(--primary);
 }
 img {

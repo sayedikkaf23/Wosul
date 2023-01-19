@@ -33,6 +33,8 @@ export var validation_message = {
   select_city_required: 'Select City First',
   select_delivery_type_required: 'Select Delivery Type First',
 
+  select_business_type_required:'Select Business Type First',
+
   email_otp_wrong: 'Email Otp Wrong',
   sms_otp_erong: 'Sms Otp Wrong',
   otp_wrong: 'Opt Wrong',
