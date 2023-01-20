@@ -3,6 +3,7 @@ import { smoothlyMenu } from '../../../app.helpers';
 import jQuery from 'jquery';
 import { Helper } from '../../../views/store_helper';
 import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { Router } from '@angular/router';
 // import { PushNotificationComponent } from 'ng2-notifications';
 
 @Component({
@@ -26,11 +27,13 @@ export class TopnavbarComponent implements OnInit {
   no_provider_audio: any;
   admin_phone: string = '';
   admin_email: string = '';
+  adminModalRef: any = null;
 
   constructor(
     public helper: Helper,
     private modalService: NgbModal,
-    private activeModal: NgbActiveModal
+    private activeModal: NgbActiveModal,
+    private router: Router
   ) {}
 
   toggleNavigation(): void {
@@ -161,16 +164,15 @@ export class TopnavbarComponent implements OnInit {
       });
   }
 
-  get storeId(){
+  get storeId() {
     try {
-      return JSON.parse(localStorage.store)._id
+      return JSON.parse(localStorage.store)._id;
     } catch (error) {
-      return this.store_id;      
+      return this.store_id;
     }
   }
 
   new_order() {
-
     this.helper.http
       .post('/api/store/store_notify_new_order', {
         store_id: this.storeId,
@@ -228,7 +230,11 @@ export class TopnavbarComponent implements OnInit {
                 this.admin_phone =
                   res_data.setting_detail.admin_contact_phone_number;
                 this.admin_email = res_data.setting_detail.admin_contact_email;
-                this.modalService.open(this.modal);
+
+                this.adminModalRef = this.modalService.open(this.modal, {
+                  backdrop: 'static',
+                  keyboard: false,
+                });
               } else if (
                 res_data.store_detail.is_approved == true &&
                 (display == 'block' || 'inline')
@@ -291,7 +297,10 @@ export class TopnavbarComponent implements OnInit {
                     res_data.setting_detail.admin_contact_phone_number;
                   this.admin_email =
                     res_data.setting_detail.admin_contact_email;
-                  this.modalService.open(this.modal);
+                  this.adminModalRef = this.modalService.open(this.modal, {
+                    backdrop: 'static',
+                    keyboard: false,
+                  });
                 } else if (
                   res_data.store_detail.is_approved == true &&
                   (display == 'block' || 'inline')
@@ -319,5 +328,11 @@ export class TopnavbarComponent implements OnInit {
           this.helper.http_status(error);
         }
       );
+  }
+
+  logout() {
+    this.adminModalRef.close();
+    
+    this.router.navigate(['/store/logout']);
   }
 }

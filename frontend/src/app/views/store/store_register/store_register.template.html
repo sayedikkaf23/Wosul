@@ -581,13 +581,12 @@
         <div class="form-feild">
           <label>Company phone<em>*</em></label>
           <div class="display">
-            <div style="width: 42px">
+            <div style="width: 45px">
               <input
                 type="text"
                 [(ngModel)]="store_register.country_phone_code"
                 #country_phone_code="ngModel"
                 name="phoneCode"
-                placeholder="+971"
                 class="form-control width"
                 readonly
               />
@@ -655,14 +654,14 @@
                 alt=""
                 width="20"
                 height="20"
-                *ngIf="!is_eye_icon_show"
+                *ngIf="is_eye_icon_show"
               />
               <img
                 src="assets/images/eye-off.svg"
                 alt=""
                 width="20"
                 height="20"
-                *ngIf="is_eye_icon_show"
+                *ngIf="!is_eye_icon_show"
               />
             </span>
           </div>

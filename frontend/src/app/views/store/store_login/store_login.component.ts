@@ -47,6 +47,7 @@ export class store_loginComponent implements OnInit {
   opt_error_message: number = 0;
   validation_message: any;
   myLoading: boolean = true;
+  is_eye_icon_show: Boolean = false;
   constructor(
     public helper: Helper,
     private fb: FacebookService,
@@ -109,6 +110,10 @@ export class store_loginComponent implements OnInit {
           this.helper.http_status(error);
         }
       );
+  }
+
+  togglePassword() {
+    this.is_eye_icon_show = !this.is_eye_icon_show;
   }
 
   google_register() {

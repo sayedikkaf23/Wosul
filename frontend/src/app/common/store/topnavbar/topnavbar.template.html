@@ -145,7 +145,7 @@
       <!--</ul>-->
       <!--</li>-->
       <li style="float: right">
-        <a [routerLink]="['/store/logout']" style="color: #222222"
+        <a (click)="logout()" style="color: #222222"
           ><i class="fa fa-sign-out"></i>{{menu_title.logout }}</a
         >
       </li>
@@ -158,14 +158,14 @@
     <h4 class="modal-title" style="color: black">
       {{heading_title.you_are_decline }}
     </h4>
-    <button
+    <!-- <button
       type="button"
       class="close"
       aria-label="Close"
       (click)="modal.dismiss('Cross click')"
     >
       <span aria-hidden="true">&times;</span>
-    </button>
+    </button> -->
   </div>
   <div class="modal-body">
     <label style="color: black">{{title.please_contact_to_admin }} </label>
@@ -179,7 +179,7 @@
     </div>
   </div>
   <div class="modal-footer">
-    <a [routerLink]="['/store/logout']"
+    <a (click)="logout()"
       ><i class="fa fa-sign-out"></i>{{menu_title.logout }}</a
     >
   </div>

@@ -127,7 +127,7 @@ export class store_registerComponent {
       country_id: '',
       city_id: '',
       address: '',
-      country_phone_code: '',
+      country_phone_code:'+966',
       phone: null,
       store_delivery_id: '',
       latitude: null,
