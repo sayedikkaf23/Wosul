@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1674134045999,
+  "timestamp": 1674204743390,
   "index": "/index.html",
   "assetGroups": [
     {
@@ -36,6 +36,7 @@
         "/assets/dashboard_graphics/register_details/deliveryman.png",
         "/assets/dashboard_graphics/register_details/store.png",
         "/assets/dashboard_graphics/register_details/users.png",
+        "/assets/favicon.ico",
         "/assets/fonts/DMSans-Bold.woff",
         "/assets/fonts/DMSans-Bold.woff2",
         "/assets/fonts/DMSans-Medium.woff",
@@ -340,6 +341,7 @@
     "/assets/dashboard_graphics/register_details/deliveryman.png": "27b565b43999117881e57ee8863b03b17073807e",
     "/assets/dashboard_graphics/register_details/store.png": "1731bae1a1a78412548dae0cc3f62d259576208f",
     "/assets/dashboard_graphics/register_details/users.png": "f71b90e4048c0b71f65da37b1c8eb944ff41afc1",
+    "/assets/favicon.ico": "cd8d0ff7dd786f85cafd67bb7b6054dfaeb1d068",
     "/assets/fonts/DMSans-Bold.woff": "90f7044269058f721adf348d2afabfb3ab2ec55d",
     "/assets/fonts/DMSans-Bold.woff2": "66fc0eb284a7cc3ffce5b6284b660f287180b335",
     "/assets/fonts/DMSans-Medium.woff": "87af71cfde8a73910fc4c537a4a9c7d6a850859b",
