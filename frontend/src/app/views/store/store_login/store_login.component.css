@@ -6,6 +6,7 @@
   --text: #525252;
   --arabic: "DIN Next LT Arabic";
 }
+
 body {
   font-size: 22px;
   color: var(--text);
@@ -14,15 +15,18 @@ body {
   overflow-x: hidden;
   font-weight: 300;
 }
+
 main {
   overflow-x: hidden;
 }
+
 img,
 svg {
   height: auto;
   width: auto;
   max-width: 100%;
 }
+
 h1,
 h2,
 h3,
@@ -32,22 +36,27 @@ h6 {
   margin-top: 0;
   font-weight: 700;
 }
+
 a {
   color: var(--primary);
   text-decoration: none;
   transition: all 0.4s;
 }
+
 a:hover {
   color: var(--dark);
   text-decoration: none;
 }
+
 p:last-child {
   margin-bottom: 0;
 }
+
 ::selection {
   /* color: #fff; */
   background: var(--primary);
 }
+
 img {
   max-width: 100%;
   width: auto;
@@ -62,23 +71,28 @@ img {
   min-height: 100vh;
   position: relative;
 }
+
 .login-form .logo {
   position: absolute;
   top: 30px;
   left: 30px;
 }
+
 .login-form .logo a {
   display: block;
   width: 155px;
 }
+
 .login-form .logo a img {
   display: block;
   width: 100%;
   transition: all 04s;
 }
+
 .login-form .logo a img:hover {
   transform: scale(0.9);
 }
+
 .login-form .form-wrap {
   width: 100%;
   background-image: url("../../../../assets/images/form-bg.png");
@@ -86,34 +100,41 @@ img {
   background-repeat: no-repeat;
   padding: 30px 0;
 }
+
 .login-form .form-wrap .text {
   margin-bottom: 30px;
   color: #000;
 }
+
 .login-form .form-wrap .text h2 {
   font-weight: 700;
   margin-bottom: 12px;
   font-size: 40px;
 }
+
 .login-form .form-wrap .text p {
   margin-bottom: 0;
   font-size: 16px;
 }
+
 .login-form .form-wrap .form-tag {
   width: 460px;
   margin: 0 auto;
   max-width: 100%;
 }
+
 .login-form .form-wrap .form-tag .form {
   background: #ffffff;
   box-shadow: 0px 4px 27px rgba(0, 0, 0, 0.08);
   border-radius: 30px;
   padding: 35px;
 }
+
 .login-form .form-wrap .form .form-feild {
   margin-bottom: 12px;
   position: relative;
 }
+
 .login-form .form-wrap .form label {
   font-size: 16px;
   margin-bottom: 0;
@@ -121,10 +142,12 @@ img {
   color: #000;
   font-weight: 400;
 }
+
 .login-form .form-wrap .form label em {
   font-style: normal;
   color: #bf3083;
 }
+
 .form-feild .form-control {
   background: #f8f5f9;
   border: 1px solid #dbdbdb;
@@ -141,12 +164,15 @@ img {
   padding-left: 22px;
   cursor: pointer;
 }
+
 .custom-checkbox label input {
   display: none;
 }
+
 html .form-tag .custom-checkbox label {
   font-size: 14px;
 }
+
 .custom-checkbox label span:before {
   content: "";
   display: block;
@@ -160,10 +186,12 @@ html .form-tag .custom-checkbox label {
   border-radius: 2px;
   transition: all 0.3s;
 }
-.custom-checkbox label input:checked ~ span:before {
+
+.custom-checkbox label input:checked~span:before {
   border-color: transparent;
   background: #000;
 }
+
 .custom-checkbox label span:after {
   content: "";
   display: block;
@@ -176,6 +204,7 @@ html .form-tag .custom-checkbox label {
   border-bottom: 2px solid #fff;
   transform: rotate(-45deg);
 }
+
 html .forgot-password-link {
   font-size: 14px;
   font-weight: 500;
@@ -186,6 +215,7 @@ html .forgot-password-link {
 .form-submit-wrap {
   margin: 25px 0;
 }
+
 .form-submit-wrap .btn {
   line-height: 48px;
   border: 1px solid #bf3083;
@@ -201,27 +231,33 @@ html .forgot-password-link {
 .form-submit-wrap .btn img {
   margin-right: 10px;
 }
+
 .form-submit-wrap .btn.btn-outline-dark {
   background: transparent;
   border-color: #dbdbdb;
 }
+
 .form-submit-wrap .btn:hover {
   background: #000;
   border-color: #000;
   color: #fff;
 }
+
 .login-link-text {
   font-size: 15px;
   font-weight: 400;
   color: #000;
 }
+
 .login-link-text a {
   position: relative;
   color: #000;
 }
+
 .login-link-text a:hover {
   color: #79398e;
 }
+
 .login-link-text a::after {
   content: "";
   display: block;
@@ -234,17 +270,20 @@ html .forgot-password-link {
   right: 0;
   background: url("../../../../assets/images/link-line.svg");
 }
+
 .copyright-text p {
   color: #000;
   font-size: 15px;
   font-weight: 500;
   margin-top: 26px;
 }
+
 .eye-btn {
   position: absolute;
   bottom: 0;
   right: 0;
 }
+
 .eye-btn span {
   margin: 0px 8px 12px 0px;
   width: 22px;
@@ -254,6 +293,7 @@ html .forgot-password-link {
   justify-content: center;
   cursor: pointer;
 }
+
 .register-form .login-link-text a::after {
   left: 0;
   width: 57px;
@@ -271,55 +311,75 @@ html .forgot-password-link {
     margin: auto;
     top: 20px;
   }
+
   .login-form .form-wrap {
     background-image: none;
     padding-top: 100px;
   }
+
   .login-form .form-wrap .text {
     margin-bottom: 10px;
   }
+
   .login-form .form-wrap .form-tag {
     width: 340px;
   }
+
   .login-form .form-wrap .text h2 {
     margin-bottom: 0px;
     font-size: 32px;
   }
+
   .login-form .form-wrap .form-tag .form {
     border-radius: 10px;
     padding: 20px;
   }
+
+  .login-form .form-wrap .form-tag .form .eye-btn img {
+    height: 20px !important;
+    width: 20px !important;
+    margin: 25px 0 0 15px;
+  }
+
   .login-form .form-wrap .form .form-feild {
     margin-bottom: 10px;
   }
+
   .form-feild .form-control {
     height: 40px;
     font-size: 14px;
   }
+
   .login-form .form-wrap .form label {
     font-size: 14px;
   }
+
   .form-submit-wrap {
     margin: 15px 0;
   }
+
   .form-submit-wrap .btn {
     line-height: 38px;
     padding: 0 30px;
     font-size: 16px;
   }
+
   .form-submit-wrap .btn img {
     width: 20px;
     height: 20px;
   }
+
   .copyright-text p {
     font-size: 13px;
     margin-top: 16px;
   }
+
   .eye-btn span {
     width: 40px;
     height: 40px;
   }
 }
+
 .color {
   color: #fff;
 }
