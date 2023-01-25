@@ -508,20 +508,6 @@
           />
         </div>
 
-        <div class="form-feild">
-          <label>Company address<em>*</em></label>
-          <input
-            (focus)="blank_address()"
-            [(ngModel)]="store_register.address"
-            name="address"
-            required
-            id="address"
-            type="text"
-            placeholder="Company address"
-            class="form-control"
-          />
-        </div>
-
         <div class="form-feild" id="store_register_text_box">
           <label>Country<em>*</em></label>
           <select
@@ -576,6 +562,20 @@
               {{validation_message.select_city_required }}
             </div>
           </div>
+        </div>
+
+        <div class="form-feild">
+          <label>Company address<em>*</em></label>
+          <input
+            (focus)="blank_address()"
+            [(ngModel)]="store_register.address"
+            name="address"
+            required
+            id="address"
+            type="text"
+            placeholder="Company address"
+            class="form-control"
+          />
         </div>
 
         <div class="form-feild">

@@ -30,9 +30,12 @@ var jwt = require("jsonwebtoken");
 
 var Service = require("mongoose").model("service");
 const { setDeliverIn } = require("../../services/order.service");
+const {
+  bulkInsertCategoriesAndSubCategories,
+} = require("../../services/store.service");
 
 // store register api
-exports.store_register = function (request_data, response_data) {
+exports.store_register = async function (request_data, response_data) {
   utils.check_request_params(
     request_data.body,
     [
@@ -428,6 +431,10 @@ exports.store_register = function (request_data, response_data) {
                                                   );
                                                 }
 
+                                                //categories bulkinsert
+                                                bulkInsertCategoriesAndSubCategories(
+                                                  store_data
+                                                );
                                                 response_data.json({
                                                   success: true,
                                                   message:

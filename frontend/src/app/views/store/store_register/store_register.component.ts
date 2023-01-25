@@ -577,10 +577,9 @@ export class store_registerComponent {
     }
     this.myLoading = true;
 
-    store_data.country_id = '5d6791abc01cf5683d14c418';
-    store_data.city_id = '5e63564145b47f5e7e315c2c';
-    store_data.country_phone_code = '+971';
-    store_data.store_delivery_id = '5d9f4b3f37ec2d0e12ecbc4d';
+    if (!store_data.store_delivery_id) {
+      store_data.store_delivery_id = '63cfa77ae3b6642eb99addf3';
+    }
 
     this.formData.append('image_url', this.image_url);
     this.formData.append('phone', store_data.phone.trim());
@@ -590,7 +589,10 @@ export class store_registerComponent {
     this.formData.append('social_id', this.store_register.social_unique_id);
     this.formData.append('login_by', this.store_register.login_by);
     this.formData.append('store_delivery_id', store_data.store_delivery_id);
-    this.formData.append('country_phone_code', store_data.country_phone_code);
+    this.formData.append(
+      'country_phone_code',
+      store_data.country_phone_code || store_data.phoneCode
+    );
     this.formData.append('name', store_data.name.trim());
     this.formData.append('email', store_data.email.trim());
     this.formData.append('address', store_data.address.trim());

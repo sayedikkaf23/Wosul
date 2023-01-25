@@ -120,7 +120,7 @@ var store = new schema(
 
     // naming tags for stores
 
-    name_type: { type: String, default: "Supermarket" },
+    name_type: { type: String, default: "Groceries" },
 
     max_bill_amount: { type: String, default: "" },
 
