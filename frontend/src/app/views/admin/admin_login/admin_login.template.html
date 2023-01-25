@@ -1,4 +1,4 @@
-<div class="row full_height">
+<!-- <div class="row full_height">
   <div class="col-md-5 col-xs-12 col-sm-5 full_height login_left_background">
     <div
       class="
@@ -71,5 +71,102 @@
         </form>
       </div>
     </div>
+  </div>
+</div> -->
+
+<!-- admin login html -->
+<div class="login-form">
+  <div class="logo">
+    <a href="login.html">
+      <img src="assets/images/logo.png" alt="" />
+    </a>
+  </div>
+  <div class="form-wrap">
+    <form
+      #adminForm="ngForm"
+      (ngSubmit)="check_verify(adminForm.value)"
+      class="form-tag"
+    >
+      <div class="text text-center">
+        <h2>Sign In</h2>
+        <p>Welcome back! Please enter your details.</p>
+      </div>
+      <div class="form">
+        <div class="form-feild">
+          <label>Email<em>*</em></label>
+          <input
+            type="text"
+            placeholder="Enter your email"
+            class="form-control"
+            [(ngModel)]="username"
+            name="username"
+          />
+        </div>
+        <div class="form-feild">
+          <label>Password<em>*</em></label>
+          <input
+            [type]="is_eye_icon_show ? 'text' : 'password'"
+            placeholder="********* "
+            class="form-control"
+            [(ngModel)]="password"
+            minlength="6"
+            name="password"
+            required
+          />
+          <div class="eye-btn">
+            <span (click)="togglePassword()">
+              <img
+                src="assets/images/eye.svg"
+                alt=""
+                width="20"
+                height="20"
+                *ngIf="is_eye_icon_show"
+              />
+              <img
+                src="assets/images/eye-off.svg"
+                alt=""
+                width="20"
+                height="20"
+                *ngIf="!is_eye_icon_show"
+              />
+            </span>
+          </div>
+        </div>
+        <div class="display">
+          <div class="col-auto remember">
+            <div class="custom-checkbox">
+              <label>
+                <input type="checkbox" />
+                <span class="font-size">Remember</span>
+              </label>
+            </div>
+          </div>
+          <div class="col-auto forgot-password">
+            <a
+              [routerLink]="['/admin/forgot_password']"
+              class="text-link-dark forgot-password-link"
+              >Forgot Password?</a
+            >
+          </div>
+        </div>
+        <div class="form-submit-wrap">
+          <button class="btn btn-secondary w-100 mb-3 color" type="submit">
+            Sign in
+          </button>
+          <!-- <a href="#" class="btn btn-outline-dark w-100">
+            <img src="assets/images/google-logo.png" />
+            Sign in with Google
+          </a> -->
+        </div>
+        <!-- <p class="text-center login-link-text">
+          Don’t have an account?<a [routerLink]="['/store/register']"
+            ><b> Sign up for free</b></a
+          >
+        </p> -->
+      </div>
+      <div class="copyright-text text-center">
+        <p>© Copyright 2023. Wosul.sa. All Rights Reserved.</p>
+      </div>
+    </form>
   </div>
 </div>

@@ -7,6 +7,7 @@ import { Helper } from '../../helper';
 @Component({
   selector: 'admin_login',
   templateUrl: 'admin_login.template.html',
+  styleUrls: ['./admin_login.component.css'],
   providers: [Helper],
 })
 export class admin_loginComponent implements OnInit {
@@ -14,6 +15,7 @@ export class admin_loginComponent implements OnInit {
   button: any;
 
   myLoading: boolean = true;
+  is_eye_icon_show: Boolean = false;
   constructor(
     public helper: Helper,
     public vcr: ViewContainerRef,
@@ -87,5 +89,9 @@ export class admin_loginComponent implements OnInit {
       .catch((err) =>
         console.error('Could not subscribe to notifications', err)
       );
+  }
+
+  togglePassword() {
+    this.is_eye_icon_show = !this.is_eye_icon_show;
   }
 }
