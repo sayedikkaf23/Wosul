@@ -39,7 +39,7 @@
             alt="image"
             class=""
             style="height: 50px; width: 50px"
-            src="assets/web_images/logo.png"
+            src="assets/images/min-logo.svg"
           />
           <span class="block m-t-xs">
             <strong class="font-bold" style="color: #fff">{{app_name}}</strong>
@@ -50,7 +50,7 @@
             alt="image"
             class=""
             style="height: 50px; width: 50px"
-            src="assets/web_images/logo.png"
+            src="assets/images/min-logo.svg"
           />
         </div>
       </li>
@@ -71,7 +71,7 @@
       >
         <a href="#" class="has-arrow"
           ><i class="fa fa-history"></i>
-          <span class="nav-label">{{title.orders  }}</span>
+          <span class="nav-label">{{title.orders }}</span>
         </a>
         <ul class="nav nav-second-level">
           <li
@@ -86,18 +86,14 @@
             *ngIf="admin_type==3  && urls_array.indexOf('/admin/deliveries')>=0 || admin_type==1"
             [ngClass]="{active: activeRoute('deliveries')}"
           >
-            <a [routerLink]="['/admin/deliveries']"
-              >{{title.deliveries }}</a
-            >
+            <a [routerLink]="['/admin/deliveries']">{{title.deliveries }}</a>
           </li>
           <li
             (click)="toggle()"
             *ngIf="(admin_type==3 || admin_type==4)  && urls_array.indexOf('/admin/history')>=0 || admin_type==1"
             [ngClass]="{active: activeRoute('history')}"
           >
-            <a [routerLink]="['/admin/history']"
-              >{{title.history }}</a
-            >
+            <a [routerLink]="['/admin/history']">{{title.history }}</a>
           </li>
           <li
             (click)="toggle()"
@@ -150,7 +146,7 @@
       >
         <a href="#"
           ><i class="fa fa-map"></i>
-          <span class="nav-label">{{title.map_view  }}</span>
+          <span class="nav-label">{{title.map_view }}</span>
           <span class="fa arrow"></span
         ></a>
         <ul class="nav nav-second-level">
@@ -191,7 +187,7 @@
       >
         <a href="#" class="has-arrow"
           ><i class="fa fa-money"></i>
-          <span class="nav-label">{{title.payments  }}</span>
+          <span class="nav-label">{{title.payments }}</span>
         </a>
         <ul class="nav nav-second-level">
           <!--<li (click)="toggle()" *ngIf="admin_type==3  && urls_array.indexOf('/admin/earnings')>=0 || admin_type==1" [ngClass]="{active: activeRoute('earnings')}"><a [routerLink]="['/admin/earnings']">{{title.earning }}</a></li>-->
@@ -258,35 +254,29 @@
       >
         <a href="#" class="has-arrow"
           ><i class="fa fa-truck"></i>
-          <span class="nav-label">{{title.delivery_info  }}</span>
-         </a>
+          <span class="nav-label">{{title.delivery_info }}</span>
+        </a>
         <ul class="nav nav-second-level">
           <li
             (click)="toggle()"
             *ngIf="admin_type==3  && urls_array.indexOf('/admin/delivery')>=0 || admin_type==1"
             [ngClass]="{active: activeRoute('delivery')}"
           >
-            <a [routerLink]="['/admin/delivery']"
-              >{{title.delivery }}</a
-            >
+            <a [routerLink]="['/admin/delivery']">{{title.delivery }}</a>
           </li>
           <li
             (click)="toggle()"
             *ngIf="admin_type==3  && urls_array.indexOf('/admin/vehicle')>=0 || admin_type==1"
             [ngClass]="{active: activeRoute('vehicle')}"
           >
-            <a [routerLink]="['/admin/vehicle']"
-              >{{title.vehicle }}</a
-            >
+            <a [routerLink]="['/admin/vehicle']">{{title.vehicle }}</a>
           </li>
           <li
             (click)="toggle()"
             *ngIf="admin_type==3  && urls_array.indexOf('/admin/country')>=0 || admin_type==1"
             [ngClass]="{active: activeRoute('country')}"
           >
-            <a [routerLink]="['/admin/country']"
-              >{{title.country }}</a
-            >
+            <a [routerLink]="['/admin/country']">{{title.country }}</a>
           </li>
           <li
             (click)="toggle()"
@@ -313,7 +303,7 @@
       >
         <a href="#" class="has-arrow"
           ><i class="fa fa-cog"></i>
-          <span class="nav-label">{{title.settings  }}</span>
+          <span class="nav-label">{{title.settings }}</span>
         </a>
         <ul class="nav nav-second-level">
           <li
@@ -338,9 +328,7 @@
             *ngIf="admin_type==3  && urls_array.indexOf('/admin/promotions')>=0 || admin_type==1"
             [ngClass]="{active: activeRoute('promotions')}"
           >
-            <a [routerLink]="['/admin/promotions']"
-              >{{title.promo_code }}</a
-            >
+            <a [routerLink]="['/admin/promotions']">{{title.promo_code }}</a>
           </li>
           <li
             (click)="toggle()"
@@ -356,9 +344,7 @@
             *ngIf="admin_type==3  && urls_array.indexOf('/admin/document')>=0 || admin_type==1"
             [ngClass]="{active: activeRoute('document')}"
           >
-            <a [routerLink]="['/admin/document']"
-              >{{title.documents }}</a
-            >
+            <a [routerLink]="['/admin/document']">{{title.documents }}</a>
           </li>
           <li
             (click)="toggle()"
@@ -385,22 +371,19 @@
             >
           </li>
           <li
-          (click)="toggle()"
-          *ngIf="admin_type==1"
-          [ngClass]="{active: activeRoute('add_tags')}"
-        >
-          <a [routerLink]="['/admin/add_tags']"
-            >{{title.add_tags }}</a
+            (click)="toggle()"
+            *ngIf="admin_type==1"
+            [ngClass]="{active: activeRoute('add_tags')}"
           >
-        </li>         
-       <!-- <li
+            <a [routerLink]="['/admin/add_tags']">{{title.add_tags }}</a>
+          </li>
+          <!-- <li
         (click)="toggle()"
         *ngIf="admin_type==1"
         [ngClass]="{active: activeRoute('ftp_server')}"
       >
         <a [routerLink]="['/admin/ftp_server']">FTP Server Details</a>
       </li> -->
-
         </ul>
       </li>
 
@@ -410,7 +393,7 @@
       >
         <a href="#" class="has-arrow"
           ><i class="fa fa-envelope"></i>
-          <span class="nav-label">{{title.templates  }}</span>
+          <span class="nav-label">{{title.templates }}</span>
         </a>
         <ul class="nav nav-second-level">
           <li
@@ -439,14 +422,14 @@
             >
           </li>
           <li
-          (click)="toggle()"
-          *ngIf="admin_type==3  && urls_array.indexOf('/admin/group_notification')>=0 || admin_type==1"
-          [ngClass]="{active: activeRoute('group_notification')}"
-        >
-          <a [routerLink]="['/admin/group_notification']"
-            >{{title.send_group_notification }}</a
+            (click)="toggle()"
+            *ngIf="admin_type==3  && urls_array.indexOf('/admin/group_notification')>=0 || admin_type==1"
+            [ngClass]="{active: activeRoute('group_notification')}"
           >
-        </li>
+            <a [routerLink]="['/admin/group_notification']"
+              >{{title.send_group_notification }}</a
+            >
+          </li>
           <li
             (click)="toggle()"
             *ngIf="admin_type==3  && urls_array.indexOf('/admin/notification_settings')>=0 || admin_type==1"
@@ -458,9 +441,7 @@
           </li>
         </ul>
       </li>
-      <li [ngClass]="{active:activeRoute('reports')}"
-        [hidden] = "admin_type==4"
-      >
+      <li [ngClass]="{active:activeRoute('reports')}" [hidden]="admin_type==4">
         <a href="#" class="has-arrow"
           ><i class="fa fa-envelope"></i>
           <span class="nav-label">Reports</span>

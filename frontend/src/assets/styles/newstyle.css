@@ -181,7 +181,7 @@ ul.nav-second-level {
     background: #293846;
 }
 .nav > li.active {
-    border-left: 4px solid #bc202b;
+    border-left: 4px solid #bf3083;
     background: #293846;
 }
 .nav.nav-second-level > li.active {
@@ -8219,7 +8219,7 @@ body.md-skin {
     color: #ffffff;
 }
 .md-skin .nav > li.active > a {
-    color: #bc202b !important;
+    color: #bf3083 !important;
     font-weight: 700;
 }
 .md-skin .navbar-default .nav > li > a:hover,
@@ -8646,8 +8646,8 @@ body.md-skin {
 .export_excel_btn{
     width: 100%;
     height: 30px;
-    background-color: #bc202b;
-    border-color: #bc202b;
+    background-color: #bf3083;
+    border-color: #bf3083;
     color:#fff;
 }
 
@@ -8656,8 +8656,8 @@ body.md-skin {
 .export_excel_btn:active,
 .export_excel_btn.active,
 .export_excel_btn:hover{
-    background-color: #bc202b;
-    border-color: #bc202b;
+    background-color: #bf3083;
+    border-color: #bf3083;
     color:#fff;
 }
 
@@ -8727,8 +8727,8 @@ body.md-skin {
 
 .add_btn{
     height: 30px;
-    background-color: #bc202b;
-    border-color: #bc202b;
+    background-color: #bf3083;
+    border-color: #bf3083;
     color:#fff;
 }
 
@@ -8738,8 +8738,8 @@ body.md-skin {
 .add_btn:active,
 .add_btn.active
 {
-    background-color: #bc202b;
-    border-color: #bc202b;
+    background-color: #bf3083;
+    border-color: #bf3083;
     color:#fff;
 }
 .action_btn{
@@ -8788,7 +8788,7 @@ body.md-skin {
 }
 
 .login_submit_button{
-    width: 50%; height: 45px; color: #FFFFFF;background-color: #bc202b; font-size: 20px;
+    width: 50%; height: 45px; color: #FFFFFF;background-color: #bf3083; font-size: 20px;
 }
 
 .login_right_title{
@@ -8796,7 +8796,7 @@ body.md-skin {
 }
 
 .login_hr{
-    border-color:#bc202b;float: left;width: 65%;border-bottom: 0;border-width: 2px;
+    border-color:#bf3083;float: left;width: 65%;border-bottom: 0;border-width: 2px;
 }
 
 .login_text_box{
@@ -9594,9 +9594,9 @@ body.md-skin {
 }
 
 .btn-light_red{
-    background-color: #bc202b !important;
+    background-color: #bf3083 !important;
     color: #fff !important;
-    border-color: #bc202b !important;
+    border-color: #bf3083 !important;
 }
 
 .btn-gray{

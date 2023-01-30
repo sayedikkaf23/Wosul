@@ -5,7 +5,7 @@
   height: 50px;
   width: 50px;
   border-radius: 50%;
-  background-color: #bc202b;
+  background-color: #bf3083;
   box-shadow: 3px 3px 3px rgba(218, 215, 215, 0.925);
   padding: 10px;
   cursor: pointer;
@@ -33,7 +33,7 @@
 }
 
 .itm .itm-btn {
-  background-color: #bc202b;
+  background-color: #bf3083;
   padding: 10px;
   padding-left: 15px;
   border-radius: 10px;
