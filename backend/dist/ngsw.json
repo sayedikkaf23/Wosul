@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1674645828963,
+  "timestamp": 1675072024108,
   "index": "/index.html",
   "assetGroups": [
     {
@@ -482,8 +482,8 @@
     "/assets/styles/iCheck/green@2x.png": "1d35b5665a9a367c6b0fd843f697b765fffa5b65",
     "/assets/styles/iCheck/green@2x1.png": "263dcd6f7578bc382df39af99a844b9186b4ebf7",
     "/assets/styles/jasny/jasny-bootstrap.min.css": "857f5d440583ee7c6a075478fc55e55511a78619",
-    "/assets/styles/newstyle.css": "70e9f6ee0dc7d135abca04b448dc4cf191b6a910",
-    "/assets/styles/ng-multiselect-dropdown.theme.scss": "14f79c436d61071f7188b333a80aa50fc3f2e13c",
+    "/assets/styles/newstyle.css": "3b568d622ee81bbcd7f12b71b5a4d35cfe21eb43",
+    "/assets/styles/ng-multiselect-dropdown.theme.scss": "3d7b0f081d66b067e2c51595620c0b6b77a2ac3f",
     "/assets/styles/patterns/1.png": "12b1d7b79e25b99de39a6642cda9b6bcb4cf5848",
     "/assets/styles/patterns/2.png": "ab04859a9daff67dd7bf5f7d026446964f8a604d",
     "/assets/styles/patterns/3.png": "48686a0e0aba7c6788d330da84e8263cc4bb523b",
