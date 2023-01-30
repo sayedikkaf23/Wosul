@@ -75,21 +75,27 @@ module.exports = function (app) {
   app.route("/api/admin/upload_document").post(document.upload_document);
 
   //Define routes for ftp_server
-  app
-    .route("/api/admin/add_ftp_server_details")
-    .post(ftp_server.add_ftp_server_details);
+  app.route(
+    "/api/admin/add_ftp_server_details",
+    authMiddleware,
+    ftp_server.add_ftp_server_details
+  );
 
-  app
-    .route("/api/admin/update_ftp_server_details")
-    .post(ftp_server.update_ftp_server_details);
+  app.post(
+    "/api/admin/update_ftp_server_details",
+    authMiddleware,
+    ftp_server.update_ftp_server_details
+  );
 
   app
     .route("/api/admin/get_ftp_server_details")
     .get(ftp_server.get_ftp_server_details);
 
-  app
-    .route("/api/admin/get_ftp_server_detail_by_id")
-    .post(ftp_server.get_ftp_server_detail_by_id);
+  app.post(
+    "/api/admin/get_ftp_server_detail_by_id",
+    authMiddleware,
+    ftp_server.get_ftp_server_detail_by_id
+  );
 
   app.post(
     "/api/admin/delete_ftp_server",

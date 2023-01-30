@@ -1670,7 +1670,7 @@ exports.get_time_sheet = async function (request_data, response_data) {
 };
 exports.get_time_sheet_data = async function (request_data, response_data) {
   var admin_id = request_data.body.admin_id;
-  var server_token = request_data.body.server_token;
+  // var server_token = request_data.body.server_token;
   var end_date = new Date();
   var start_date = new Date();
   start_date.setMonth(end_date.getMonth() - 1);

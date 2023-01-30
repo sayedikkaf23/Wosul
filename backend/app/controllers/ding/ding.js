@@ -257,7 +257,7 @@ exports.ding_order_payment = async function (req, res) {
     card_id,
     user_id,
     order_type,
-    server_token,
+
     payment_by = "card",
   } = req.body;
   console.log("ding_order_payment: >> " + JSON.stringify(req.body));
@@ -270,17 +270,7 @@ exports.ding_order_payment = async function (req, res) {
     });
     return;
   }
-  if (
-    order_type == ADMIN_DATA_ID.USER &&
-    server_token !== null &&
-    user.server_token !== server_token
-  ) {
-    res.json({
-      success: false,
-      error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-    });
-    return;
-  }
+
   const order_payment = await Order_payment.findOne({ _id: order_payment_id });
   if (!order_payment) {
     res.json({
@@ -461,7 +451,7 @@ exports.ding_order_payment = async function (req, res) {
           note: "",
           user_id,
           delivery_type: "1",
-          server_token,
+          
         },
       },
       {

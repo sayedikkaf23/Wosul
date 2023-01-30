@@ -1,5 +1,7 @@
 var ding = require("../../controllers/ding/ding");
 
+const { authMiddleware } = require("../../middleware/checkAuth");
+
 module.exports = function (app) {
   app.route("/api/ding/get_currencies").post(ding.get_currencies);
   app.route("/api/ding/get_countries").post(ding.get_countries);
@@ -10,6 +12,12 @@ module.exports = function (app) {
   app
     .route("/api/ding/get_product_description")
     .post(ding.get_product_description);
-  app.route("/api/ding/ding_order_payment").post(ding.ding_order_payment);
+
+  app.post(
+    "/api/ding/ding_order_payment",
+    authMiddleware,
+    ding.ding_order_payment
+  );
+
   app.route("/api/ding/get_number").post(ding.get_number);
 };
