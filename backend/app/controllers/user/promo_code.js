@@ -747,17 +747,6 @@ exports.apply_promo = function (req, res, _, byPassToken = false) {
           });
           return;
         }
-        if (
-          server_token !== null &&
-          user.server_token !== server_token &&
-          !byPassToken
-        ) {
-          res.json({
-            success: false,
-            error_message: "Invalid server token.",
-          });
-          return;
-        }
         let promo = await Promo_code.findOne({
           $or: [
             { promo_code_name: promo_code_name },
@@ -963,7 +952,12 @@ exports.apply_promo = function (req, res, _, byPassToken = false) {
   );
 };
 
-exports.get_timeslot_delivery_fees = function (req, res, _, byPassToken = false) {
+exports.get_timeslot_delivery_fees = function (
+  req,
+  res,
+  _,
+  byPassToken = false
+) {
   console.log("get_timeslot_delivery_fees:>>>> " + JSON.stringify(req.body));
   utils.check_request_params(
     req.body,
@@ -995,17 +989,6 @@ exports.get_timeslot_delivery_fees = function (req, res, _, byPassToken = false)
           res.json({
             success: false,
             error_message: "User not found!",
-          });
-          return;
-        }
-        if (
-          server_token !== null &&
-          user.server_token !== server_token &&
-          !byPassToken
-        ) {
-          res.json({
-            success: false,
-            error_message: "Invalid server token.",
           });
           return;
         }
@@ -1053,7 +1036,7 @@ exports.get_timeslot_delivery_fees = function (req, res, _, byPassToken = false)
           order_payment: {
             ...order_payment.toJSON(),
             is_delivery_fees_from_store_timing: is_store_delivery_fees,
-            store_time:store_time
+            store_time: store_time,
           },
           message: "",
         });

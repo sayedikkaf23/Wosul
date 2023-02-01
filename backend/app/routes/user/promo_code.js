@@ -1,9 +1,19 @@
+const { authMiddleware } = require("../../middleware/checkAuth");
+
 var promo_code = require("../../controllers/user/promo_code"); // include promo_code controller ////
 
 module.exports = function (app) {
   // app.route("/api/user/apply_promo_code").post(promo_code.apply_promo_code);
-  app.route("/api/user/apply_promo_code").post(promo_code.apply_promo);
-  app.route("/api/user/get_timeslot_delivery_fees").post(promo_code.get_timeslot_delivery_fees);
+  app.post(
+    "/api/user/apply_promo_code",
+    authMiddleware,
+    promo_code.apply_promo
+  );
+  app.post(
+    "/api/user/get_timeslot_delivery_fees",
+    authMiddleware,
+    promo_code.get_timeslot_delivery_fees
+  );
   // app.route("/api/v2/user/apply_promo").post(promo_code.apply_promo);
   app
     .route("/api/user/apply_loyalty_points")

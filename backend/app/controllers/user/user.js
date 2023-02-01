@@ -330,7 +330,7 @@ const capitalize = (s) => {
 
 // USER REGISTER API
 exports.user_register = function (request_data, response_data) {
-  console.log('user_register: >>>>' + JSON.stringify(request_data.body));
+  console.log("user_register: >>>>" + JSON.stringify(request_data.body));
   utils.check_request_params(
     request_data.body,
     [
@@ -352,15 +352,15 @@ exports.user_register = function (request_data, response_data) {
       var cart_unique_token = request_data_body.cart_unique_token;
       const setting = await Setting.findOne({});
       var social_id_array = [];
-       
-      if(!social_id && !email && !phoneNumber){
+
+      if (!social_id && !email && !phoneNumber) {
         response_data.json({
           success: false,
           error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
           error_message: "email,phone or social_id any one is required",
         });
         return;
-      } 
+      }
       if (social_id == undefined || social_id == null || social_id == "") {
         social_id = null;
       } else {
@@ -688,7 +688,7 @@ exports.user_register = function (request_data, response_data) {
 
 //USER LOGIN API
 exports.user_login = function (request_data, response_data) {
-  console.log('user_login: >>>>' + JSON.stringify(request_data.body));
+  console.log("user_login: >>>>" + JSON.stringify(request_data.body));
   utils.check_request_params(
     request_data.body,
     [{ name: "email", type: "string" }],
@@ -880,14 +880,6 @@ exports.user_update = function (request_data, response_data) {
         (user) => {
           if (user) {
             if (
-              request_data_body.server_token !== null &&
-              user.server_token !== request_data_body.server_token
-            ) {
-              response_data.json({
-                success: false,
-                error_code: USER_ERROR_CODE.INVALID_SERVER_TOKEN,
-              });
-            } else if (
               social_id == null &&
               old_password != "" &&
               old_password != user.password
@@ -1477,15 +1469,7 @@ exports.get_detail = function (request_data, response_data) {
       User.findOne({ _id: request_data_body.user_id }).then(
         async (user) => {
           if (user) {
-            if (
-              request_data_body.server_token !== null &&
-              user.server_token != request_data_body.server_token
-            ) {
-              response_data.json({
-                success: false,
-                error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              });
-            } else {
+            {
               const default_address = await User_favourite_address.findOne({
                 user_id: request_data_body.user_id,
                 is_default_address: true,
@@ -1556,34 +1540,23 @@ exports.update_device_token = function (request_data, response_data) {
         User.findOne({ _id: request_data_body.user_id }).then(
           (user) => {
             if (user) {
-              if (
-                request_data_body.server_token !== null &&
-                user.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                user.device_token = request_data_body.device_token;
-                user.save().then(
-                  () => {
-                    response_data.json({
-                      success: true,
-                      message:
-                        USER_MESSAGE_CODE.DEVICE_TOKEN_UPDATE_SUCCESSFULLY,
-                    });
-                    return;
-                  },
-                  (error) => {
-                    response_data.json({
-                      success: false,
-                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                    });
-                    return;
-                  }
-                );
-              }
+              user.device_token = request_data_body.device_token;
+              user.save().then(
+                () => {
+                  response_data.json({
+                    success: true,
+                    message: USER_MESSAGE_CODE.DEVICE_TOKEN_UPDATE_SUCCESSFULLY,
+                  });
+                  return;
+                },
+                (error) => {
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                  return;
+                }
+              );
             } else {
               response_data.json({
                 success: false,
@@ -1613,66 +1586,56 @@ exports.user_otp_verification = function (request_data, response_data) {
       User.findOne({ _id: request_data_body.user_id }).then(
         (user) => {
           if (user) {
-            if (
-              request_data_body.server_token !== null &&
-              user.server_token !== request_data_body.server_token
-            ) {
-              response_data.json({
-                success: false,
-                error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              });
-            } else {
-              if (request_data_body.is_phone_number_verified != undefined) {
-                user.is_phone_number_verified =
-                  request_data_body.is_phone_number_verified;
-                if (user.phone != request_data_body.phone) {
-                  User.findOne({ phone: request_data_body.phone }).then(
-                    (user_phone_detail) => {
-                      if (user_phone_detail) {
-                        user_phone_detail.phone =
-                          utils.getNewPhoneNumberFromOldNumber(
-                            user_phone_detail.phone
-                          );
-                        user_phone_detail.is_phone_number_verified = false;
-                        user_phone_detail.save();
-                      }
+            if (request_data_body.is_phone_number_verified != undefined) {
+              user.is_phone_number_verified =
+                request_data_body.is_phone_number_verified;
+              if (user.phone != request_data_body.phone) {
+                User.findOne({ phone: request_data_body.phone }).then(
+                  (user_phone_detail) => {
+                    if (user_phone_detail) {
+                      user_phone_detail.phone =
+                        utils.getNewPhoneNumberFromOldNumber(
+                          user_phone_detail.phone
+                        );
+                      user_phone_detail.is_phone_number_verified = false;
+                      user_phone_detail.save();
                     }
-                  );
-                  user.phone = request_data_body.phone;
-                }
+                  }
+                );
+                user.phone = request_data_body.phone;
               }
-              if (request_data_body.is_email_verified != undefined) {
-                user.is_email_verified = request_data_body.is_email_verified;
-                if (user.email != request_data_body.email) {
-                  User.findOne({ email: request_data_body.email }).then(
-                    (user_email_detail) => {
-                      if (user_email_detail) {
-                        user_email_detail.email =
-                          "notverified" + user_email_detail.email;
-                        user_email_detail.is_email_verified = false;
-                        user_email_detail.save();
-                      }
-                    }
-                  );
-                  user.email = request_data_body.email;
-                }
-              }
-
-              user.save().then(
-                () => {
-                  response_data.json({
-                    success: true,
-                    message: USER_MESSAGE_CODE.OTP_VERIFICATION_SUCCESSFULLY,
-                  });
-                },
-                (error) => {
-                  response_data.json({
-                    success: false,
-                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                  });
-                }
-              );
             }
+            if (request_data_body.is_email_verified != undefined) {
+              user.is_email_verified = request_data_body.is_email_verified;
+              if (user.email != request_data_body.email) {
+                User.findOne({ email: request_data_body.email }).then(
+                  (user_email_detail) => {
+                    if (user_email_detail) {
+                      user_email_detail.email =
+                        "notverified" + user_email_detail.email;
+                      user_email_detail.is_email_verified = false;
+                      user_email_detail.save();
+                    }
+                  }
+                );
+                user.email = request_data_body.email;
+              }
+            }
+
+            user.save().then(
+              () => {
+                response_data.json({
+                  success: true,
+                  message: USER_MESSAGE_CODE.OTP_VERIFICATION_SUCCESSFULLY,
+                });
+              },
+              (error) => {
+                response_data.json({
+                  success: false,
+                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                });
+              }
+            );
           } else {
             response_data.json({
               success: false,
@@ -1701,32 +1664,22 @@ exports.logout = function (request_data, response_data) {
       User.findOne({ _id: request_data_body.user_id }).then(
         (user) => {
           if (user) {
-            if (
-              request_data_body.server_token !== null &&
-              user.server_token !== request_data_body.server_token
-            ) {
-              response_data.json({
-                success: false,
-                error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              });
-            } else {
-              user.device_token = "";
-              user.server_token = "";
-              user.save().then(
-                () => {
-                  response_data.json({
-                    success: true,
-                    message: USER_MESSAGE_CODE.LOGOUT_SUCCESSFULLY,
-                  });
-                },
-                (error) => {
-                  response_data.json({
-                    success: false,
-                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                  });
-                }
-              );
-            }
+            user.device_token = "";
+            user.server_token = "";
+            user.save().then(
+              () => {
+                response_data.json({
+                  success: true,
+                  message: USER_MESSAGE_CODE.LOGOUT_SUCCESSFULLY,
+                });
+              },
+              (error) => {
+                response_data.json({
+                  success: false,
+                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                });
+              }
+            );
           } else {
             response_data.json({
               success: false,
@@ -3130,8 +3083,8 @@ exports.get_store_list = function (req, res) {
           // else{
           //   store.rating_type='Top Rated';
           // }
-          if(!store.rating_type){
-             store.rating_type='';
+          if (!store.rating_type) {
+            store.rating_type = "";
           }
           store.distance = utils.getDistanceFromTwoLocation(
             [latitude, longitude],
@@ -4531,72 +4484,62 @@ exports.store_list_for_item = function (request_data, response_data) {
         User.findOne({ _id: request_data_body.user_id }).then(
           (user_detail) => {
             if (user_detail) {
-              if (
-                request_data_body.server_token !== null &&
-                user_detail.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                var item_condition = { $match: { name: { $eq: item_name } } };
+              var item_condition = { $match: { name: { $eq: item_name } } };
 
-                Item.aggregate([
-                  item_condition,
-                  {
-                    $lookup: {
-                      from: "stores",
-                      localField: "store_id",
-                      foreignField: "_id",
-                      as: "store_detail",
-                    },
+              Item.aggregate([
+                item_condition,
+                {
+                  $lookup: {
+                    from: "stores",
+                    localField: "store_id",
+                    foreignField: "_id",
+                    as: "store_detail",
                   },
+                },
 
-                  {
-                    $match: {
-                      $and: [
-                        { "store_detail.city_id": { $eq: Schema(city_id) } },
-                        {
-                          "store_detail.store_delivery_id": {
-                            $eq: Schema(store_delivery_id),
-                          },
+                {
+                  $match: {
+                    $and: [
+                      { "store_detail.city_id": { $eq: Schema(city_id) } },
+                      {
+                        "store_detail.store_delivery_id": {
+                          $eq: Schema(store_delivery_id),
                         },
-                      ],
-                    },
+                      },
+                    ],
                   },
+                },
 
-                  { $unwind: "$store_detail" },
+                { $unwind: "$store_detail" },
 
-                  {
-                    $group: {
-                      _id: "$name",
-                      stores: { $push: "$store_detail" },
-                    },
+                {
+                  $group: {
+                    _id: "$name",
+                    stores: { $push: "$store_detail" },
                   },
-                ]).then(
-                  (item) => {
-                    if (item.length == 0) {
-                      response_data.json({
-                        success: false,
-                        error_code: USER_ERROR_CODE.STORE_LIST_NOT_FOUND,
-                      });
-                    } else {
-                      response_data.json({
-                        success: true,
-                        message: USER_MESSAGE_CODE.GET_STORE_LIST_SUCCESSFULLY,
-                        item: item[0],
-                      });
-                    }
-                  },
-                  (error) => {
+                },
+              ]).then(
+                (item) => {
+                  if (item.length == 0) {
                     response_data.json({
                       success: false,
-                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                      error_code: USER_ERROR_CODE.STORE_LIST_NOT_FOUND,
+                    });
+                  } else {
+                    response_data.json({
+                      success: true,
+                      message: USER_MESSAGE_CODE.GET_STORE_LIST_SUCCESSFULLY,
+                      item: item[0],
                     });
                   }
-                );
-              }
+                },
+                (error) => {
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
             } else {
               response_data.json({
                 success: false,
@@ -4629,59 +4572,49 @@ exports.get_provider_location = function (request_data, response_data) {
         User.findOne({ _id: request_data_body.user_id }).then(
           (user_detail) => {
             if (user_detail) {
-              if (
-                request_data_body.server_token !== null &&
-                user_detail.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                Provider.findOne({ _id: request_data_body.provider_id }).then(
-                  (provider) => {
-                    var provider_location = [];
-                    var bearing = 0;
-                    var map_pin_image_url = "";
+              Provider.findOne({ _id: request_data_body.provider_id }).then(
+                (provider) => {
+                  var provider_location = [];
+                  var bearing = 0;
+                  var map_pin_image_url = "";
 
-                    if (provider) {
-                      provider_location = provider.location;
-                      bearing = provider.bearing;
+                  if (provider) {
+                    provider_location = provider.location;
+                    bearing = provider.bearing;
 
-                      Vehicle.findOne({ _id: provider.vehicle_id }).then(
-                        (vehicle) => {
-                          if (vehicle) {
-                            map_pin_image_url = vehicle.map_pin_image_url;
-                          }
-
-                          response_data.json({
-                            success: true,
-                            message:
-                              USER_MESSAGE_CODE.GET_PROVIDER_LOCATION_SUCCESSFULLY,
-                            provider_location: provider_location,
-                            bearing: bearing,
-                            map_pin_image_url: map_pin_image_url,
-                          });
-                        },
-                        (error) => {
-                          response_data.json({
-                            success: false,
-                            error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                          });
+                    Vehicle.findOne({ _id: provider.vehicle_id }).then(
+                      (vehicle) => {
+                        if (vehicle) {
+                          map_pin_image_url = vehicle.map_pin_image_url;
                         }
-                      );
-                    } else {
-                      response_data.json({ success: false });
-                    }
-                  },
-                  (error) => {
-                    response_data.json({
-                      success: false,
-                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                    });
+
+                        response_data.json({
+                          success: true,
+                          message:
+                            USER_MESSAGE_CODE.GET_PROVIDER_LOCATION_SUCCESSFULLY,
+                          provider_location: provider_location,
+                          bearing: bearing,
+                          map_pin_image_url: map_pin_image_url,
+                        });
+                      },
+                      (error) => {
+                        response_data.json({
+                          success: false,
+                          error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                        });
+                      }
+                    );
+                  } else {
+                    response_data.json({ success: false });
                   }
-                );
-              }
+                },
+                (error) => {
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
             } else {
               response_data.json({
                 success: false,
@@ -4712,190 +4645,178 @@ exports.get_orders = function (request_data, response_data) {
       User.findOne({ _id: request_data_body.user_id }).then(
         (user_detail) => {
           if (user_detail) {
-            if (
-              request_data_body.server_token !== null &&
-              user_detail.server_token !== request_data_body.server_token
-            ) {
-              response_data.json({
-                success: false,
-                error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              });
-            } else {
-              var user_condition = {
-                $match: {
-                  user_id: {
-                    $eq: mongoose.Types.ObjectId(request_data_body.user_id),
-                  },
+            var user_condition = {
+              $match: {
+                user_id: {
+                  $eq: mongoose.Types.ObjectId(request_data_body.user_id),
                 },
-              };
-              var order_invoice_condition = {
-                $match: { is_user_show_invoice: false },
-              };
+              },
+            };
+            var order_invoice_condition = {
+              $match: { is_user_show_invoice: false },
+            };
 
-              var order_status_condition = {
-                $match: {
-                  $and: [
-                    { order_status: { $ne: ORDER_STATE.STORE_REJECTED } },
-                    { order_status: { $ne: ORDER_STATE.CANCELED_BY_USER } },
-                    { order_status: { $ne: ORDER_STATE.STORE_CANCELLED } },
-                  ],
-                },
-              };
+            var order_status_condition = {
+              $match: {
+                $and: [
+                  { order_status: { $ne: ORDER_STATE.STORE_REJECTED } },
+                  { order_status: { $ne: ORDER_STATE.CANCELED_BY_USER } },
+                  { order_status: { $ne: ORDER_STATE.STORE_CANCELLED } },
+                ],
+              },
+            };
 
-              Order.aggregate([
-                user_condition,
-                order_invoice_condition,
-                order_status_condition,
-                {
-                  $lookup: {
-                    from: "stores",
-                    localField: "store_id",
-                    foreignField: "_id",
-                    as: "store_detail",
-                  },
+            Order.aggregate([
+              user_condition,
+              order_invoice_condition,
+              order_status_condition,
+              {
+                $lookup: {
+                  from: "stores",
+                  localField: "store_id",
+                  foreignField: "_id",
+                  as: "store_detail",
                 },
-                {
-                  $unwind: {
-                    path: "$store_detail",
-                    preserveNullAndEmptyArrays: true,
-                  },
+              },
+              {
+                $unwind: {
+                  path: "$store_detail",
+                  preserveNullAndEmptyArrays: true,
                 },
+              },
 
-                {
-                  $lookup: {
-                    from: "cities",
-                    localField: "city_id",
-                    foreignField: "_id",
-                    as: "city_detail",
-                  },
+              {
+                $lookup: {
+                  from: "cities",
+                  localField: "city_id",
+                  foreignField: "_id",
+                  as: "city_detail",
                 },
-                { $unwind: "$city_detail" },
+              },
+              { $unwind: "$city_detail" },
 
-                {
-                  $lookup: {
-                    from: "countries",
-                    localField: "city_detail.country_id",
-                    foreignField: "_id",
-                    as: "country_detail",
-                  },
+              {
+                $lookup: {
+                  from: "countries",
+                  localField: "city_detail.country_id",
+                  foreignField: "_id",
+                  as: "country_detail",
                 },
-                { $unwind: "$country_detail" },
+              },
+              { $unwind: "$country_detail" },
 
-                {
-                  $lookup: {
-                    from: "order_payments",
-                    localField: "order_payment_id",
-                    foreignField: "_id",
-                    as: "order_payment_detail",
-                  },
+              {
+                $lookup: {
+                  from: "order_payments",
+                  localField: "order_payment_id",
+                  foreignField: "_id",
+                  as: "order_payment_detail",
                 },
-                {
-                  $unwind: "$order_payment_detail",
+              },
+              {
+                $unwind: "$order_payment_detail",
+              },
+              {
+                $lookup: {
+                  from: "requests",
+                  localField: "request_id",
+                  foreignField: "_id",
+                  as: "request_detail",
                 },
-                {
-                  $lookup: {
-                    from: "requests",
-                    localField: "request_id",
-                    foreignField: "_id",
-                    as: "request_detail",
-                  },
+              },
+              {
+                $unwind: {
+                  path: "$request_detail",
+                  preserveNullAndEmptyArrays: true,
                 },
-                {
-                  $unwind: {
-                    path: "$request_detail",
-                    preserveNullAndEmptyArrays: true,
-                  },
+              },
+              {
+                $lookup: {
+                  from: "carts",
+                  localField: "cart_id",
+                  foreignField: "_id",
+                  as: "cart_detail",
                 },
-                {
-                  $lookup: {
-                    from: "carts",
-                    localField: "cart_id",
-                    foreignField: "_id",
-                    as: "cart_detail",
-                  },
-                },
-                {
-                  $unwind: "$cart_detail",
-                },
-                {
-                  $project: {
-                    _id: "$_id",
-                    unique_id: "$unique_id",
-                    currency: "$country_detail.currency_sign",
-                    request_unique_id: "$request_detail.unique_id",
-                    request_id: "$request_detail._id",
-                    delivery_status: "$request_detail.delivery_status",
-                    estimated_time_for_delivery_in_min:
-                      "$request_detail.estimated_time_for_delivery_in_min",
-                    total_time: "$order_payment_detail.total_time",
-                    total_order_price:
-                      "$order_payment_detail.total_order_price",
-                    confirmation_code_for_complete_delivery:
-                      "$confirmation_code_for_complete_delivery",
-                    created_at: "$created_at",
-                    image_url: "$image_url",
-                    order_status: "$order_status",
-                    is_user_show_invoice: "$is_user_show_invoice",
-                    order_status_id: "$order_status_id",
-                    user_pay_payment: "$order_payment_detail.user_pay_payment",
-                    checkout_amount: "$order_payment_detail.checkout_amount",
-                    is_payment_mode_online_payment:
-                      "$order_payment_detail.is_payment_mode_online_payment",
-                    cart_id: "$cart_detail._id",
-                    pickup_addresses: "$cart_detail.pickup_addresses",
-                    destination_addresses: "$cart_detail.destination_addresses",
-                    store_id: "$store_detail._id",
-                    store_name: "$store_detail.name",
-                    store_delivery_id: "$store_detail.store_delivery_id",
-                    store_image: "$store_detail.image_url",
-                    store_country_phone_code:
-                      "$store_detail.country_phone_code",
-                    store_phone: "$store_detail.phone",
-                    delivery_type: "$delivery_type",
-                    delivery_time_max: "$store_detail.delivery_time_max",
-                    order_details: "$cart_detail.order_details",
-                    deliver_in: "$deliver_in",
-                    order_status_details: "$date_time",
-                    payment_gateway_name: {
-                      $switch: {
-                        branches: [
-                          {
-                            case: "$order_payment_detail.is_payment_mode_online_payment",
-                            then: "Online",
-                          },
-                          {
-                            case: "$order_payment_detail.is_payment_mode_card_on_delivery",
-                            then: "Card on Delivery",
-                          },
-                        ],
-                        default: "Cash",
-                      },
+              },
+              {
+                $unwind: "$cart_detail",
+              },
+              {
+                $project: {
+                  _id: "$_id",
+                  unique_id: "$unique_id",
+                  currency: "$country_detail.currency_sign",
+                  request_unique_id: "$request_detail.unique_id",
+                  request_id: "$request_detail._id",
+                  delivery_status: "$request_detail.delivery_status",
+                  estimated_time_for_delivery_in_min:
+                    "$request_detail.estimated_time_for_delivery_in_min",
+                  total_time: "$order_payment_detail.total_time",
+                  total_order_price: "$order_payment_detail.total_order_price",
+                  confirmation_code_for_complete_delivery:
+                    "$confirmation_code_for_complete_delivery",
+                  created_at: "$created_at",
+                  image_url: "$image_url",
+                  order_status: "$order_status",
+                  is_user_show_invoice: "$is_user_show_invoice",
+                  order_status_id: "$order_status_id",
+                  user_pay_payment: "$order_payment_detail.user_pay_payment",
+                  checkout_amount: "$order_payment_detail.checkout_amount",
+                  is_payment_mode_online_payment:
+                    "$order_payment_detail.is_payment_mode_online_payment",
+                  cart_id: "$cart_detail._id",
+                  pickup_addresses: "$cart_detail.pickup_addresses",
+                  destination_addresses: "$cart_detail.destination_addresses",
+                  store_id: "$store_detail._id",
+                  store_name: "$store_detail.name",
+                  store_delivery_id: "$store_detail.store_delivery_id",
+                  store_image: "$store_detail.image_url",
+                  store_country_phone_code: "$store_detail.country_phone_code",
+                  store_phone: "$store_detail.phone",
+                  delivery_type: "$delivery_type",
+                  delivery_time_max: "$store_detail.delivery_time_max",
+                  order_details: "$cart_detail.order_details",
+                  deliver_in: "$deliver_in",
+                  order_status_details: "$date_time",
+                  payment_gateway_name: {
+                    $switch: {
+                      branches: [
+                        {
+                          case: "$order_payment_detail.is_payment_mode_online_payment",
+                          then: "Online",
+                        },
+                        {
+                          case: "$order_payment_detail.is_payment_mode_card_on_delivery",
+                          then: "Card on Delivery",
+                        },
+                      ],
+                      default: "Cash",
                     },
                   },
                 },
-              ]).then(
-                (orders) => {
-                  if (orders.length == 0) {
-                    response_data.json({
-                      success: false,
-                      // error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
-                    });
-                  } else {
-                    response_data.json({
-                      success: true,
-                      message: ORDER_MESSAGE_CODE.ORDER_LIST_SUCCESSFULLY,
-                      order_list: orders,
-                    });
-                  }
-                },
-                (error) => {
+              },
+            ]).then(
+              (orders) => {
+                if (orders.length == 0) {
                   response_data.json({
                     success: false,
-                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                    // error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
+                  });
+                } else {
+                  response_data.json({
+                    success: true,
+                    message: ORDER_MESSAGE_CODE.ORDER_LIST_SUCCESSFULLY,
+                    order_list: orders,
                   });
                 }
-              );
-            }
+              },
+              (error) => {
+                response_data.json({
+                  success: false,
+                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                });
+              }
+            );
           } else {
             response_data.json({
               success: false,
@@ -4928,280 +4849,265 @@ exports.get_order_status = function (request_data, response_data) {
         User.findOne({ _id: request_data_body.user_id }).then(
           (user_detail) => {
             if (user_detail) {
-              if (
-                false &&
-                request_data_body.server_token !== null &&
-                user_detail.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                Order.findOne({ _id: request_data_body.order_id }).then(
-                  (order) => {
-                    Store.findOne({ _id: order.store_id }).then(
-                      (store) => {
-                        // if (store) {
-                        var country_id = order.country_id;
+              Order.findOne({ _id: request_data_body.order_id }).then(
+                (order) => {
+                  Store.findOne({ _id: order.store_id }).then(
+                    (store) => {
+                      // if (store) {
+                      var country_id = order.country_id;
 
-                        Country.findOne({ _id: country_id }).then(
-                          (country) => {
-                            var currency = country.currency_sign;
+                      Country.findOne({ _id: country_id }).then(
+                        (country) => {
+                          var currency = country.currency_sign;
 
-                            Order_payment.findOne({
-                              _id: order.order_payment_id,
-                            }).then(
-                              (order_payment) => {
-                                if (order_payment) {
-                                  var is_order_cancellation_charge_apply = false;
-                                  var order_cancellation_charge = 0;
-                                  var order_status = order.order_status;
-                                  var order_status_details = order.date_time;
-                                  if (store) {
-                                    is_order_cancellation_charge_apply =
-                                      store.is_order_cancellation_charge_apply;
-                                  }
-
-                                  if (is_order_cancellation_charge_apply) {
-                                    var order_cancellation_charge_for_above_order_price =
-                                      store.order_cancellation_charge_for_above_order_price;
-                                    var order_cancellation_charge_type =
-                                      store.order_cancellation_charge_type;
-                                    var order_cancellation_charge_value =
-                                      store.order_cancellation_charge_value;
-                                    switch (order_cancellation_charge_type) {
-                                      case ORDER_CANCELLATION_CHARGE_TYPE.PERCENTAGE /* 1 - percentage */:
-                                        order_cancellation_charge_value =
-                                          order_payment.total_order_price *
-                                          order_cancellation_charge_value *
-                                          0.01;
-                                        break;
-                                      case ORDER_CANCELLATION_CHARGE_TYPE.ABSOLUTE /* 2 - absolute */:
-                                        order_cancellation_charge_value =
-                                          order_cancellation_charge_value;
-                                        break;
-                                      default:
-                                        /* 1- percentage */
-                                        order_cancellation_charge_value =
-                                          order_payment.total_order_price *
-                                          order_cancellation_charge_value *
-                                          0.01;
-                                        break;
-                                    }
-                                    order_cancellation_charge_value =
-                                      utils.precisionRoundTwo(
-                                        Number(order_cancellation_charge_value)
-                                      );
-                                    if (
-                                      order_status >= ORDER_STATE.ORDER_READY &&
-                                      order_payment.total_order_price >
-                                        order_cancellation_charge_for_above_order_price
-                                    ) {
-                                      order_cancellation_charge =
-                                        order_cancellation_charge_value;
-                                    }
-                                  }
-
-                                  Cart.findOne({ _id: order.cart_id }).then(
-                                    (cart) => {
-                                      Request.findOne({
-                                        _id: order.request_id,
-                                      }).then(
-                                        (request) => {
-                                          var request_id = null;
-                                          var request_unique_id = 0;
-                                          var delivery_status = 0;
-                                          var current_provider = null;
-                                          var destination_addresses = [];
-                                          var estimated_time_for_delivery_in_min = 0;
-                                          var delivery_status_details = [];
-
-                                          if (cart) {
-                                            destination_addresses =
-                                              cart.destination_addresses;
-                                          }
-
-                                          if (request) {
-                                            request_id = request._id;
-                                            request_unique_id =
-                                              request.unique_id;
-                                            delivery_status =
-                                              request.delivery_status;
-                                            current_provider =
-                                              request.current_provider;
-                                            estimated_time_for_delivery_in_min =
-                                              request.estimated_time_for_delivery_in_min;
-                                            delivery_status_details =
-                                              request.date_time;
-                                          }
-
-                                          Provider.findOne({
-                                            _id: current_provider,
-                                          }).then(
-                                            (provider) => {
-                                              var provider_id = null;
-                                              var provider_first_name = "";
-                                              var provider_last_name = "";
-                                              var provider_image = "";
-                                              var provider_country_phone_code =
-                                                "";
-                                              var provider_phone = "";
-                                              var user_rate = 0;
-                                              if (provider) {
-                                                provider_id = provider._id;
-                                                provider_first_name =
-                                                  provider.first_name;
-                                                provider_last_name =
-                                                  provider.last_name;
-                                                provider_image =
-                                                  provider.image_url;
-                                                provider_country_phone_code =
-                                                  provider.country_phone_code;
-                                                provider_phone = provider.phone;
-                                                user_rate = provider.user_rate;
-                                              }
-
-                                              console.log(
-                                                "order_status: " + order_status
-                                              );
-                                              let payment_gateway_name =
-                                                order_payment.is_payment_mode_cash
-                                                  ? "Cash"
-                                                  : order_payment.is_payment_mode_card_on_delivery
-                                                  ? "Card on Delivery"
-                                                  : "Online";
-                                              response_data.json({
-                                                success: true,
-                                                message:
-                                                  ORDER_MESSAGE_CODE.GET_ORDER_STATUS_SUCCESSFULLY,
-                                                unique_id: order.unique_id,
-                                                order_id: order._id,
-                                                store_id: order.store_id,
-                                                total_cart_price:
-                                                  order_payment.total_cart_price,
-                                                request_id: request_id,
-                                                request_unique_id:
-                                                  request_unique_id,
-                                                delivery_status:
-                                                  delivery_status,
-                                                order_status: order_status,
-                                                is_user_confirmed:
-                                                  order.is_user_confirmed,
-                                                order_status_details:
-                                                  order_status_details,
-                                                delivery_status_details:
-                                                  delivery_status_details,
-                                                currency: currency,
-                                                estimated_time_for_delivery_in_min:
-                                                  estimated_time_for_delivery_in_min,
-                                                total_time:
-                                                  order_payment.total_time,
-                                                order_cancellation_charge:
-                                                  order_cancellation_charge,
-                                                is_confirmation_code_required_at_pickup_delivery:
-                                                  setting_detail.is_confirmation_code_required_at_pickup_delivery,
-                                                is_confirmation_code_required_at_complete_delivery:
-                                                  setting_detail.is_confirmation_code_required_at_complete_delivery,
-                                                is_user_pick_up_order:
-                                                  order_payment.is_user_pick_up_order,
-                                                confirmation_code_for_complete_delivery:
-                                                  order.confirmation_code_for_complete_delivery,
-                                                confirmation_code_for_pick_up_delivery:
-                                                  order.confirmation_code_for_pick_up_delivery,
-                                                delivery_type:
-                                                  order.delivery_type,
-                                                destination_addresses:
-                                                  destination_addresses,
-                                                provider_id: provider_id,
-                                                provider_first_name:
-                                                  provider_first_name,
-                                                provider_last_name:
-                                                  provider_last_name,
-                                                provider_image: provider_image,
-                                                provider_country_phone_code:
-                                                  provider_country_phone_code,
-                                                provider_phone: provider_phone,
-                                                user_rate: user_rate,
-                                                user_pay_payment:
-                                                  order_payment.user_pay_payment,
-                                                checkout_amount:
-                                                  order_payment.checkout_amount,
-                                                store_id:
-                                                  order_payment.store_id,
-                                                order_id:
-                                                  order_payment.order_id,
-                                                store_delivery_id:
-                                                  store.store_delivery_id,
-                                                delivery_time_max:
-                                                  store.delivery_time_max,
-                                                created_at: order.created_at,
-                                                deliver_in: order.deliver_in,
-                                                payment_gateway_name:
-                                                  payment_gateway_name,
-                                              });
-                                            },
-                                            (error) => {
-                                              response_data.json({
-                                                success: false,
-                                                error_code:
-                                                  ERROR_CODE.SOMETHING_WENT_WRONG,
-                                              });
-                                            }
-                                          );
-                                        },
-                                        (error) => {
-                                          response_data.json({
-                                            success: false,
-                                            error_code:
-                                              ERROR_CODE.SOMETHING_WENT_WRONG,
-                                          });
-                                        }
-                                      );
-                                    },
-                                    (error) => {
-                                      response_data.json({
-                                        success: false,
-                                        error_code:
-                                          ERROR_CODE.SOMETHING_WENT_WRONG,
-                                      });
-                                    }
-                                  );
+                          Order_payment.findOne({
+                            _id: order.order_payment_id,
+                          }).then(
+                            (order_payment) => {
+                              if (order_payment) {
+                                var is_order_cancellation_charge_apply = false;
+                                var order_cancellation_charge = 0;
+                                var order_status = order.order_status;
+                                var order_status_details = order.date_time;
+                                if (store) {
+                                  is_order_cancellation_charge_apply =
+                                    store.is_order_cancellation_charge_apply;
                                 }
-                              },
-                              (error) => {
-                                response_data.json({
-                                  success: false,
-                                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                                });
+
+                                if (is_order_cancellation_charge_apply) {
+                                  var order_cancellation_charge_for_above_order_price =
+                                    store.order_cancellation_charge_for_above_order_price;
+                                  var order_cancellation_charge_type =
+                                    store.order_cancellation_charge_type;
+                                  var order_cancellation_charge_value =
+                                    store.order_cancellation_charge_value;
+                                  switch (order_cancellation_charge_type) {
+                                    case ORDER_CANCELLATION_CHARGE_TYPE.PERCENTAGE /* 1 - percentage */:
+                                      order_cancellation_charge_value =
+                                        order_payment.total_order_price *
+                                        order_cancellation_charge_value *
+                                        0.01;
+                                      break;
+                                    case ORDER_CANCELLATION_CHARGE_TYPE.ABSOLUTE /* 2 - absolute */:
+                                      order_cancellation_charge_value =
+                                        order_cancellation_charge_value;
+                                      break;
+                                    default:
+                                      /* 1- percentage */
+                                      order_cancellation_charge_value =
+                                        order_payment.total_order_price *
+                                        order_cancellation_charge_value *
+                                        0.01;
+                                      break;
+                                  }
+                                  order_cancellation_charge_value =
+                                    utils.precisionRoundTwo(
+                                      Number(order_cancellation_charge_value)
+                                    );
+                                  if (
+                                    order_status >= ORDER_STATE.ORDER_READY &&
+                                    order_payment.total_order_price >
+                                      order_cancellation_charge_for_above_order_price
+                                  ) {
+                                    order_cancellation_charge =
+                                      order_cancellation_charge_value;
+                                  }
+                                }
+
+                                Cart.findOne({ _id: order.cart_id }).then(
+                                  (cart) => {
+                                    Request.findOne({
+                                      _id: order.request_id,
+                                    }).then(
+                                      (request) => {
+                                        var request_id = null;
+                                        var request_unique_id = 0;
+                                        var delivery_status = 0;
+                                        var current_provider = null;
+                                        var destination_addresses = [];
+                                        var estimated_time_for_delivery_in_min = 0;
+                                        var delivery_status_details = [];
+
+                                        if (cart) {
+                                          destination_addresses =
+                                            cart.destination_addresses;
+                                        }
+
+                                        if (request) {
+                                          request_id = request._id;
+                                          request_unique_id = request.unique_id;
+                                          delivery_status =
+                                            request.delivery_status;
+                                          current_provider =
+                                            request.current_provider;
+                                          estimated_time_for_delivery_in_min =
+                                            request.estimated_time_for_delivery_in_min;
+                                          delivery_status_details =
+                                            request.date_time;
+                                        }
+
+                                        Provider.findOne({
+                                          _id: current_provider,
+                                        }).then(
+                                          (provider) => {
+                                            var provider_id = null;
+                                            var provider_first_name = "";
+                                            var provider_last_name = "";
+                                            var provider_image = "";
+                                            var provider_country_phone_code =
+                                              "";
+                                            var provider_phone = "";
+                                            var user_rate = 0;
+                                            if (provider) {
+                                              provider_id = provider._id;
+                                              provider_first_name =
+                                                provider.first_name;
+                                              provider_last_name =
+                                                provider.last_name;
+                                              provider_image =
+                                                provider.image_url;
+                                              provider_country_phone_code =
+                                                provider.country_phone_code;
+                                              provider_phone = provider.phone;
+                                              user_rate = provider.user_rate;
+                                            }
+
+                                            console.log(
+                                              "order_status: " + order_status
+                                            );
+                                            let payment_gateway_name =
+                                              order_payment.is_payment_mode_cash
+                                                ? "Cash"
+                                                : order_payment.is_payment_mode_card_on_delivery
+                                                ? "Card on Delivery"
+                                                : "Online";
+                                            response_data.json({
+                                              success: true,
+                                              message:
+                                                ORDER_MESSAGE_CODE.GET_ORDER_STATUS_SUCCESSFULLY,
+                                              unique_id: order.unique_id,
+                                              order_id: order._id,
+                                              store_id: order.store_id,
+                                              total_cart_price:
+                                                order_payment.total_cart_price,
+                                              request_id: request_id,
+                                              request_unique_id:
+                                                request_unique_id,
+                                              delivery_status: delivery_status,
+                                              order_status: order_status,
+                                              is_user_confirmed:
+                                                order.is_user_confirmed,
+                                              order_status_details:
+                                                order_status_details,
+                                              delivery_status_details:
+                                                delivery_status_details,
+                                              currency: currency,
+                                              estimated_time_for_delivery_in_min:
+                                                estimated_time_for_delivery_in_min,
+                                              total_time:
+                                                order_payment.total_time,
+                                              order_cancellation_charge:
+                                                order_cancellation_charge,
+                                              is_confirmation_code_required_at_pickup_delivery:
+                                                setting_detail.is_confirmation_code_required_at_pickup_delivery,
+                                              is_confirmation_code_required_at_complete_delivery:
+                                                setting_detail.is_confirmation_code_required_at_complete_delivery,
+                                              is_user_pick_up_order:
+                                                order_payment.is_user_pick_up_order,
+                                              confirmation_code_for_complete_delivery:
+                                                order.confirmation_code_for_complete_delivery,
+                                              confirmation_code_for_pick_up_delivery:
+                                                order.confirmation_code_for_pick_up_delivery,
+                                              delivery_type:
+                                                order.delivery_type,
+                                              destination_addresses:
+                                                destination_addresses,
+                                              provider_id: provider_id,
+                                              provider_first_name:
+                                                provider_first_name,
+                                              provider_last_name:
+                                                provider_last_name,
+                                              provider_image: provider_image,
+                                              provider_country_phone_code:
+                                                provider_country_phone_code,
+                                              provider_phone: provider_phone,
+                                              user_rate: user_rate,
+                                              user_pay_payment:
+                                                order_payment.user_pay_payment,
+                                              checkout_amount:
+                                                order_payment.checkout_amount,
+                                              store_id: order_payment.store_id,
+                                              order_id: order_payment.order_id,
+                                              store_delivery_id:
+                                                store.store_delivery_id,
+                                              delivery_time_max:
+                                                store.delivery_time_max,
+                                              created_at: order.created_at,
+                                              deliver_in: order.deliver_in,
+                                              payment_gateway_name:
+                                                payment_gateway_name,
+                                            });
+                                          },
+                                          (error) => {
+                                            response_data.json({
+                                              success: false,
+                                              error_code:
+                                                ERROR_CODE.SOMETHING_WENT_WRONG,
+                                            });
+                                          }
+                                        );
+                                      },
+                                      (error) => {
+                                        response_data.json({
+                                          success: false,
+                                          error_code:
+                                            ERROR_CODE.SOMETHING_WENT_WRONG,
+                                        });
+                                      }
+                                    );
+                                  },
+                                  (error) => {
+                                    response_data.json({
+                                      success: false,
+                                      error_code:
+                                        ERROR_CODE.SOMETHING_WENT_WRONG,
+                                    });
+                                  }
+                                );
                               }
-                            );
-                          },
-                          (error) => {
-                            response_data.json({
-                              success: false,
-                              error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                            });
-                          }
-                        );
-                        // }
-                      },
-                      (error) => {
-                        response_data.json({
-                          success: false,
-                          error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                        });
-                      }
-                    );
-                  },
-                  (error) => {
-                    response_data.json({
-                      success: false,
-                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                    });
-                  }
-                );
-              }
+                            },
+                            (error) => {
+                              response_data.json({
+                                success: false,
+                                error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                              });
+                            }
+                          );
+                        },
+                        (error) => {
+                          response_data.json({
+                            success: false,
+                            error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                          });
+                        }
+                      );
+                      // }
+                    },
+                    (error) => {
+                      response_data.json({
+                        success: false,
+                        error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                      });
+                    }
+                  );
+                },
+                (error) => {
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
             } else {
               response_data.json({
                 success: false,
@@ -5247,1098 +5153,1051 @@ exports.get_order_cart_invoice = function (request_data, response_data) {
 
         User.findOne({ _id: request_data_body.user_id }).then(
           (user) => {
-            if (
-              order_type != ADMIN_DATA_ID.STORE &&
-              user &&
-              request_data_body.server_token !== null &&
-              user.server_token != request_data_body.server_token
-            ) {
-              response_data.json({
-                success: false,
-                error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              });
-            } else {
-              var cart_id = null;
-              var user_id = null;
-              var wallet_currency_code = "";
-              if (user) {
-                cart_id = user.cart_id;
-                user_id = user._id;
-                cart_unique_token = null;
-                wallet_currency_code = user.wallet_currency_code;
-                var wallet = user.wallet;
-                is_payment_max = user.is_payment_max;
-                is_pay_valid = user.is_pay_valid;
-              }
-              Cart.findOne({
-                $or: [
-                  { _id: cart_id },
-                  { cart_unique_token: cart_unique_token },
-                ],
-              }).then(
-                (cart) => {
-                  if (cart) {
-                    var destination_location =
-                      cart.destination_addresses[0].location;
-                    Store.findOne({ _id: request_data_body.store_id }).then(
-                      (store) => {
-                        if (store) {
-                          var store_location = store.location;
-                          var city_id = store.city_id;
-                          var country_id = store.country_id;
+            var cart_id = null;
+            var user_id = null;
+            var wallet_currency_code = "";
+            if (user) {
+              cart_id = user.cart_id;
+              user_id = user._id;
+              cart_unique_token = null;
+              wallet_currency_code = user.wallet_currency_code;
+              var wallet = user.wallet;
+              is_payment_max = user.is_payment_max;
+              is_pay_valid = user.is_pay_valid;
+            }
+            Cart.findOne({
+              $or: [{ _id: cart_id }, { cart_unique_token: cart_unique_token }],
+            }).then(
+              (cart) => {
+                if (cart) {
+                  var destination_location =
+                    cart.destination_addresses[0].location;
+                  Store.findOne({ _id: request_data_body.store_id }).then(
+                    (store) => {
+                      if (store) {
+                        var store_location = store.location;
+                        var city_id = store.city_id;
+                        var country_id = store.country_id;
 
-                          Country.findOne({ _id: country_id }).then(
-                            (country) => {
-                              var is_distance_unit_mile = false;
-                              if (country) {
-                                var is_distance_unit_mile =
-                                  country.is_distance_unit_mile;
-                                if (!user) {
-                                  wallet_currency_code = country.currency_code;
-                                }
+                        Country.findOne({ _id: country_id }).then(
+                          (country) => {
+                            var is_distance_unit_mile = false;
+                            if (country) {
+                              var is_distance_unit_mile =
+                                country.is_distance_unit_mile;
+                              if (!user) {
+                                wallet_currency_code = country.currency_code;
                               }
+                            }
 
-                              if (wallet_currency_code == "") {
-                                wallet_currency_code =
-                                  store.wallet_currency_code;
-                              }
+                            if (wallet_currency_code == "") {
+                              wallet_currency_code = store.wallet_currency_code;
+                            }
 
-                              City.findOne({ _id: city_id }).then(
-                                (city_detail) => {
-                                  if (city_detail) {
-                                    var admin_profit_mode_on_delivery =
-                                      city_detail.admin_profit_mode_on_delivery;
-                                    var admin_profit_value_on_delivery =
-                                      city_detail.admin_profit_value_on_delivery;
+                            City.findOne({ _id: city_id }).then(
+                              (city_detail) => {
+                                if (city_detail) {
+                                  var admin_profit_mode_on_delivery =
+                                    city_detail.admin_profit_mode_on_delivery;
+                                  var admin_profit_value_on_delivery =
+                                    city_detail.admin_profit_value_on_delivery;
 
-                                    var delivery_price_used_type =
-                                      ADMIN_DATA_ID.ADMIN;
-                                    var delivery_price_used_type_id = null;
-                                    var is_order_payment_status_set_by_store = false;
-                                    if (
-                                      store.is_store_can_add_provider ||
-                                      store.is_store_can_complete_order
-                                    ) {
-                                      delivery_price_used_type =
-                                        ADMIN_DATA_ID.STORE;
-                                      delivery_price_used_type_id = store._id;
-                                      is_order_payment_status_set_by_store = true;
-                                    }
+                                  var delivery_price_used_type =
+                                    ADMIN_DATA_ID.ADMIN;
+                                  var delivery_price_used_type_id = null;
+                                  var is_order_payment_status_set_by_store = false;
+                                  if (
+                                    store.is_store_can_add_provider ||
+                                    store.is_store_can_complete_order
+                                  ) {
+                                    delivery_price_used_type =
+                                      ADMIN_DATA_ID.STORE;
+                                    delivery_price_used_type_id = store._id;
+                                    is_order_payment_status_set_by_store = true;
+                                  }
 
-                                    var delivery_type = DELIVERY_TYPE.STORE;
+                                  var delivery_type = DELIVERY_TYPE.STORE;
 
-                                    var query = {};
-                                    if (request_data_body.vehicle_id) {
-                                      var vehicle_id =
-                                        request_data_body.vehicle_id;
-                                      query = {
-                                        city_id: city_id,
-                                        delivery_type: delivery_type,
-                                        vehicle_id: vehicle_id,
-                                        type_id: delivery_price_used_type_id,
-                                      };
-                                    } else {
-                                      query = {
-                                        city_id: city_id,
-                                        delivery_type: delivery_type,
-                                        type_id: delivery_price_used_type_id,
-                                      };
-                                    }
+                                  var query = {};
+                                  if (request_data_body.vehicle_id) {
+                                    var vehicle_id =
+                                      request_data_body.vehicle_id;
+                                    query = {
+                                      city_id: city_id,
+                                      delivery_type: delivery_type,
+                                      vehicle_id: vehicle_id,
+                                      type_id: delivery_price_used_type_id,
+                                    };
+                                  } else {
+                                    query = {
+                                      city_id: city_id,
+                                      delivery_type: delivery_type,
+                                      type_id: delivery_price_used_type_id,
+                                    };
+                                  }
 
-                                    Service.find(query).then(
-                                      (service_list) => {
-                                        var service = null;
-                                        var default_service_index =
-                                          service_list.findIndex(
-                                            (service) =>
-                                              service.is_default == true
-                                          );
-                                        if (
-                                          default_service_index !== -1 &&
-                                          !vehicle_id
-                                        ) {
-                                          service =
-                                            service_list[default_service_index];
-                                        } else if (service_list.length > 0) {
-                                          service = service_list[0];
-                                        }
+                                  Service.find(query).then(
+                                    (service_list) => {
+                                      var service = null;
+                                      var default_service_index =
+                                        service_list.findIndex(
+                                          (service) =>
+                                            service.is_default == true
+                                        );
+                                      if (
+                                        default_service_index !== -1 &&
+                                        !vehicle_id
+                                      ) {
+                                        service =
+                                          service_list[default_service_index];
+                                      } else if (service_list.length > 0) {
+                                        service = service_list[0];
+                                      }
 
-                                        if (service) {
-                                          utils.check_zone(
-                                            city_id,
-                                            delivery_type,
-                                            delivery_price_used_type_id,
-                                            service.vehicle_id,
-                                            city_detail.zone_business,
-                                            store_location,
-                                            destination_location,
-                                            function (zone_response) {
-                                              /* HERE USER PARAM */
+                                      if (service) {
+                                        utils.check_zone(
+                                          city_id,
+                                          delivery_type,
+                                          delivery_price_used_type_id,
+                                          service.vehicle_id,
+                                          city_detail.zone_business,
+                                          store_location,
+                                          destination_location,
+                                          function (zone_response) {
+                                            /* HERE USER PARAM */
 
-                                              var total_distance =
-                                                request_data_body.total_distance;
-                                              var total_time =
-                                                request_data_body.total_time;
+                                            var total_distance =
+                                              request_data_body.total_distance;
+                                            var total_time =
+                                              request_data_body.total_time;
 
-                                              var is_user_pick_up_order = false;
+                                            var is_user_pick_up_order = false;
 
+                                            if (
+                                              request_data_body.is_user_pick_up_order !=
+                                              undefined
+                                            ) {
+                                              is_user_pick_up_order =
+                                                request_data_body.is_user_pick_up_order;
+                                            }
+
+                                            var total_item_count =
+                                              request_data_body.total_item_count;
+
+                                            /* SERVICE DATA HERE */
+                                            var base_price = 0;
+                                            var base_price_distance = 0;
+                                            var price_per_unit_distance = 0;
+                                            var price_per_unit_time = 0;
+                                            var service_tax = 0;
+                                            var min_fare = 0;
+                                            var is_min_fare_applied = false;
+
+                                            if (service) {
                                               if (
-                                                request_data_body.is_user_pick_up_order !=
-                                                undefined
+                                                service.admin_profit_mode_on_delivery
                                               ) {
-                                                is_user_pick_up_order =
-                                                  request_data_body.is_user_pick_up_order;
+                                                admin_profit_mode_on_delivery =
+                                                  service.admin_profit_mode_on_delivery;
+                                                admin_profit_value_on_delivery =
+                                                  service.admin_profit_value_on_delivery;
                                               }
 
-                                              var total_item_count =
-                                                request_data_body.total_item_count;
+                                              base_price = service.base_price;
+                                              base_price_distance =
+                                                service.base_price_distance;
+                                              price_per_unit_distance =
+                                                service.price_per_unit_distance;
+                                              price_per_unit_time =
+                                                service.price_per_unit_time;
+                                              service_tax = service.service_tax;
+                                              min_fare = service.min_fare;
+                                            }
+                                            var admin_profit_mode_on_store =
+                                              store.admin_profit_mode_on_store;
+                                            var admin_profit_value_on_store =
+                                              store.admin_profit_value_on_store;
+                                            // STORE DATA HERE //
 
-                                              /* SERVICE DATA HERE */
-                                              var base_price = 0;
-                                              var base_price_distance = 0;
-                                              var price_per_unit_distance = 0;
-                                              var price_per_unit_time = 0;
-                                              var service_tax = 0;
-                                              var min_fare = 0;
-                                              var is_min_fare_applied = false;
+                                            var item_tax = store.item_tax;
+                                            // DELIVERY CALCULATION START //
+                                            var distance_price = 0;
+                                            var total_base_price = 0;
+                                            var total_distance_price = 0;
+                                            var total_time_price = 0;
+                                            var total_service_price = 0;
+                                            var total_admin_tax_price = 0;
+                                            var total_after_tax_price = 0;
+                                            var total_surge_price = 0;
+                                            var total_delivery_price_after_surge = 0;
+                                            var delivery_price = 0;
+                                            var total_delivery_price = 0;
+                                            var total_admin_profit_on_delivery = 0;
+                                            var total_provider_income = 0;
+                                            var promo_payment = 0;
 
-                                              if (service) {
-                                                if (
-                                                  service.admin_profit_mode_on_delivery
-                                                ) {
-                                                  admin_profit_mode_on_delivery =
-                                                    service.admin_profit_mode_on_delivery;
-                                                  admin_profit_value_on_delivery =
-                                                    service.admin_profit_value_on_delivery;
-                                                }
+                                            total_time = total_time / 60; // convert to mins
+                                            total_time =
+                                              utils.precisionRoundTwo(
+                                                Number(total_time)
+                                              );
 
-                                                base_price = service.base_price;
-                                                base_price_distance =
-                                                  service.base_price_distance;
-                                                price_per_unit_distance =
-                                                  service.price_per_unit_distance;
-                                                price_per_unit_time =
-                                                  service.price_per_unit_time;
-                                                service_tax =
-                                                  service.service_tax;
-                                                min_fare = service.min_fare;
-                                              }
-                                              var admin_profit_mode_on_store =
-                                                store.admin_profit_mode_on_store;
-                                              var admin_profit_value_on_store =
-                                                store.admin_profit_value_on_store;
-                                              // STORE DATA HERE //
+                                            if (is_distance_unit_mile) {
+                                              total_distance =
+                                                total_distance * 0.000621371;
+                                            } else {
+                                              total_distance =
+                                                total_distance * 0.001;
+                                            }
 
-                                              var item_tax = store.item_tax;
-                                              // DELIVERY CALCULATION START //
-                                              var distance_price = 0;
-                                              var total_base_price = 0;
-                                              var total_distance_price = 0;
-                                              var total_time_price = 0;
-                                              var total_service_price = 0;
-                                              var total_admin_tax_price = 0;
-                                              var total_after_tax_price = 0;
-                                              var total_surge_price = 0;
-                                              var total_delivery_price_after_surge = 0;
-                                              var delivery_price = 0;
-                                              var total_delivery_price = 0;
-                                              var total_admin_profit_on_delivery = 0;
-                                              var total_provider_income = 0;
-                                              var promo_payment = 0;
-
-                                              total_time = total_time / 60; // convert to mins
-                                              total_time =
-                                                utils.precisionRoundTwo(
-                                                  Number(total_time)
-                                                );
-
-                                              if (is_distance_unit_mile) {
-                                                total_distance =
-                                                  total_distance * 0.000621371;
-                                              } else {
-                                                total_distance =
-                                                  total_distance * 0.001;
-                                              }
-
-                                              if (!is_user_pick_up_order) {
-                                                if (
-                                                  service &&
-                                                  service.is_use_distance_calculation
-                                                ) {
-                                                  var delivery_price_setting =
-                                                    service.delivery_price_setting;
-                                                  delivery_price_setting.forEach(
-                                                    function (
-                                                      delivery_setting_detail
+                                            if (!is_user_pick_up_order) {
+                                              if (
+                                                service &&
+                                                service.is_use_distance_calculation
+                                              ) {
+                                                var delivery_price_setting =
+                                                  service.delivery_price_setting;
+                                                delivery_price_setting.forEach(
+                                                  function (
+                                                    delivery_setting_detail
+                                                  ) {
+                                                    if (
+                                                      delivery_setting_detail.to_distance >=
+                                                      total_distance
                                                     ) {
-                                                      if (
-                                                        delivery_setting_detail.to_distance >=
-                                                        total_distance
-                                                      ) {
-                                                        distance_price =
-                                                          distance_price +
-                                                          delivery_setting_detail.delivery_fee;
-                                                      }
+                                                      distance_price =
+                                                        distance_price +
+                                                        delivery_setting_detail.delivery_fee;
                                                     }
-                                                  );
-                                                  total_distance_price =
-                                                    distance_price;
-                                                  total_service_price =
-                                                    distance_price;
-                                                  delivery_price =
-                                                    distance_price;
-                                                  total_after_tax_price =
-                                                    distance_price;
-                                                  total_delivery_price_after_surge =
-                                                    distance_price;
-                                                } else {
-                                                  total_base_price = base_price;
-                                                  if (
-                                                    total_distance >
-                                                    base_price_distance
-                                                  ) {
-                                                    distance_price =
-                                                      (total_distance -
-                                                        base_price_distance) *
-                                                      price_per_unit_distance;
                                                   }
-
-                                                  total_base_price =
-                                                    utils.precisionRoundTwo(
-                                                      total_base_price
-                                                    );
-                                                  distance_price =
-                                                    utils.precisionRoundTwo(
-                                                      distance_price
-                                                    );
-                                                  total_time_price =
-                                                    price_per_unit_time *
-                                                    total_time;
-                                                  total_time_price =
-                                                    utils.precisionRoundTwo(
-                                                      Number(total_time_price)
-                                                    );
-
-                                                  total_distance_price =
-                                                    +total_base_price +
-                                                    +distance_price;
-                                                  total_distance_price =
-                                                    utils.precisionRoundTwo(
-                                                      total_distance_price
-                                                    );
-
-                                                  total_service_price =
-                                                    +total_distance_price +
-                                                    +total_time_price;
-                                                  total_service_price =
-                                                    utils.precisionRoundTwo(
-                                                      Number(
-                                                        total_service_price
-                                                      )
-                                                    );
-
-                                                  total_admin_tax_price =
-                                                    service_tax *
-                                                    total_service_price *
-                                                    0.01;
-                                                  total_admin_tax_price =
-                                                    utils.precisionRoundTwo(
-                                                      Number(
-                                                        total_admin_tax_price
-                                                      )
-                                                    );
-
-                                                  total_after_tax_price =
-                                                    +total_service_price +
-                                                    +total_admin_tax_price;
-                                                  total_after_tax_price =
-                                                    utils.precisionRoundTwo(
-                                                      Number(
-                                                        total_after_tax_price
-                                                      )
-                                                    );
-
-                                                  total_delivery_price_after_surge =
-                                                    +total_after_tax_price +
-                                                    +total_surge_price;
-                                                  total_delivery_price_after_surge =
-                                                    utils.precisionRoundTwo(
-                                                      Number(
-                                                        total_delivery_price_after_surge
-                                                      )
-                                                    );
-
-                                                  if (
-                                                    total_delivery_price_after_surge <=
-                                                    min_fare
-                                                  ) {
-                                                    delivery_price = min_fare;
-                                                    is_min_fare_applied = true;
-                                                  } else {
-                                                    delivery_price =
-                                                      total_delivery_price_after_surge;
-                                                  }
-                                                }
-
-                                                if (zone_response.success) {
-                                                  total_admin_tax_price = 0;
-                                                  total_base_price = 0;
-                                                  total_distance_price = 0;
-                                                  total_time_price = 0;
-                                                  total_service_price =
-                                                    zone_response.zone_price;
-                                                  delivery_price =
-                                                    zone_response.zone_price;
-                                                  total_after_tax_price =
-                                                    total_service_price;
-                                                  total_delivery_price_after_surge =
-                                                    total_service_price;
-                                                }
-
-                                                switch (
-                                                  admin_profit_mode_on_delivery
+                                                );
+                                                total_distance_price =
+                                                  distance_price;
+                                                total_service_price =
+                                                  distance_price;
+                                                delivery_price = distance_price;
+                                                total_after_tax_price =
+                                                  distance_price;
+                                                total_delivery_price_after_surge =
+                                                  distance_price;
+                                              } else {
+                                                total_base_price = base_price;
+                                                if (
+                                                  total_distance >
+                                                  base_price_distance
                                                 ) {
-                                                  case ADMIN_PROFIT_ON_DELIVERY_ID.PERCENTAGE /* 1- percentage */:
-                                                    total_admin_profit_on_delivery =
-                                                      delivery_price *
-                                                      admin_profit_value_on_delivery *
-                                                      0.01;
-                                                    break;
-                                                  case ADMIN_PROFIT_ON_DELIVERY_ID.PER_DELVIERY /* 2- absolute per delivery */:
-                                                    total_admin_profit_on_delivery =
-                                                      admin_profit_value_on_delivery;
-                                                    break;
-                                                  default:
-                                                    /* percentage */
-                                                    total_admin_profit_on_delivery =
-                                                      delivery_price *
-                                                      admin_profit_value_on_delivery *
-                                                      0.01;
-                                                    break;
+                                                  distance_price =
+                                                    (total_distance -
+                                                      base_price_distance) *
+                                                    price_per_unit_distance;
                                                 }
 
-                                                total_admin_profit_on_delivery =
+                                                total_base_price =
                                                   utils.precisionRoundTwo(
-                                                    Number(
-                                                      total_admin_profit_on_delivery
-                                                    )
+                                                    total_base_price
                                                   );
-                                                total_provider_income =
-                                                  delivery_price -
-                                                  total_admin_profit_on_delivery;
-                                                total_provider_income =
+                                                distance_price =
                                                   utils.precisionRoundTwo(
-                                                    Number(
-                                                      total_provider_income
-                                                    )
+                                                    distance_price
                                                   );
-                                              } else {
-                                                total_distance = 0;
-                                                total_time = 0;
-                                              }
+                                                total_time_price =
+                                                  price_per_unit_time *
+                                                  total_time;
+                                                total_time_price =
+                                                  utils.precisionRoundTwo(
+                                                    Number(total_time_price)
+                                                  );
 
-                                              // DELIVERY CALCULATION END //
-                                              // ORDER CALCULATION START //
+                                                total_distance_price =
+                                                  +total_base_price +
+                                                  +distance_price;
+                                                total_distance_price =
+                                                  utils.precisionRoundTwo(
+                                                    total_distance_price
+                                                  );
 
-                                              var order_price = 0;
-                                              var total_store_tax_price = 0;
-                                              var total_order_price = 0;
-                                              var total_admin_profit_on_store = 0;
-                                              var total_store_income = 0;
-                                              var total_cart_price = 0;
-                                              var is_store_pay_delivery_fees = false;
+                                                total_service_price =
+                                                  +total_distance_price +
+                                                  +total_time_price;
+                                                total_service_price =
+                                                  utils.precisionRoundTwo(
+                                                    Number(total_service_price)
+                                                  );
 
-                                              total_cart_price =
-                                                cart.total_cart_price;
-                                              if (
-                                                request_data_body.total_cart_price
-                                              ) {
-                                                total_cart_price =
-                                                  request_data_body.total_cart_price;
-                                              }
-
-                                              if (store.is_use_item_tax) {
-                                                total_store_tax_price =
-                                                  cart.total_item_tax;
-                                              } else {
-                                                total_store_tax_price =
-                                                  total_cart_price *
-                                                  item_tax *
+                                                total_admin_tax_price =
+                                                  service_tax *
+                                                  total_service_price *
                                                   0.01;
+                                                total_admin_tax_price =
+                                                  utils.precisionRoundTwo(
+                                                    Number(
+                                                      total_admin_tax_price
+                                                    )
+                                                  );
+
+                                                total_after_tax_price =
+                                                  +total_service_price +
+                                                  +total_admin_tax_price;
+                                                total_after_tax_price =
+                                                  utils.precisionRoundTwo(
+                                                    Number(
+                                                      total_after_tax_price
+                                                    )
+                                                  );
+
+                                                total_delivery_price_after_surge =
+                                                  +total_after_tax_price +
+                                                  +total_surge_price;
+                                                total_delivery_price_after_surge =
+                                                  utils.precisionRoundTwo(
+                                                    Number(
+                                                      total_delivery_price_after_surge
+                                                    )
+                                                  );
+
+                                                if (
+                                                  total_delivery_price_after_surge <=
+                                                  min_fare
+                                                ) {
+                                                  delivery_price = min_fare;
+                                                  is_min_fare_applied = true;
+                                                } else {
+                                                  delivery_price =
+                                                    total_delivery_price_after_surge;
+                                                }
                                               }
 
-                                              total_store_tax_price =
-                                                utils.precisionRoundTwo(
-                                                  Number(total_store_tax_price)
-                                                );
-                                              cart.total_item_tax =
-                                                total_store_tax_price;
-
-                                              // total_store_tax_price = total_cart_price * item_tax * 0.01;
-                                              // total_store_tax_price = utils.precisionRoundTwo(Number(total_store_tax_price));
-
-                                              order_price =
-                                                +total_cart_price +
-                                                +total_store_tax_price;
-                                              order_price =
-                                                utils.precisionRoundTwo(
-                                                  Number(order_price)
-                                                );
+                                              if (zone_response.success) {
+                                                total_admin_tax_price = 0;
+                                                total_base_price = 0;
+                                                total_distance_price = 0;
+                                                total_time_price = 0;
+                                                total_service_price =
+                                                  zone_response.zone_price;
+                                                delivery_price =
+                                                  zone_response.zone_price;
+                                                total_after_tax_price =
+                                                  total_service_price;
+                                                total_delivery_price_after_surge =
+                                                  total_service_price;
+                                              }
 
                                               switch (
-                                                admin_profit_mode_on_store
+                                                admin_profit_mode_on_delivery
                                               ) {
-                                                case ADMIN_PROFIT_ON_ORDER_ID.PERCENTAGE /* percentage */:
-                                                  total_admin_profit_on_store =
-                                                    order_price *
-                                                    admin_profit_value_on_store *
+                                                case ADMIN_PROFIT_ON_DELIVERY_ID.PERCENTAGE /* 1- percentage */:
+                                                  total_admin_profit_on_delivery =
+                                                    delivery_price *
+                                                    admin_profit_value_on_delivery *
                                                     0.01;
                                                   break;
-                                                case ADMIN_PROFIT_ON_ORDER_ID.PER_ORDER /* absolute per order */:
-                                                  total_admin_profit_on_store =
-                                                    admin_profit_value_on_store;
-                                                  break;
-                                                case ADMIN_PROFIT_ON_ORDER_ID.PER_ITEMS /* absolute value per items */:
-                                                  total_admin_profit_on_store =
-                                                    admin_profit_value_on_store *
-                                                    total_item_count;
+                                                case ADMIN_PROFIT_ON_DELIVERY_ID.PER_DELVIERY /* 2- absolute per delivery */:
+                                                  total_admin_profit_on_delivery =
+                                                    admin_profit_value_on_delivery;
                                                   break;
                                                 default:
                                                   /* percentage */
-                                                  total_admin_profit_on_store =
-                                                    order_price *
-                                                    admin_profit_value_on_store *
+                                                  total_admin_profit_on_delivery =
+                                                    delivery_price *
+                                                    admin_profit_value_on_delivery *
                                                     0.01;
                                                   break;
                                               }
 
-                                              total_admin_profit_on_store =
+                                              total_admin_profit_on_delivery =
                                                 utils.precisionRoundTwo(
                                                   Number(
-                                                    total_admin_profit_on_store
+                                                    total_admin_profit_on_delivery
                                                   )
                                                 );
-                                              total_store_income =
-                                                order_price -
-                                                total_admin_profit_on_store;
-
-                                              // if(delivery_price_used_type == ADMIN_DATA_ID.STORE){
-                                              //     total_store_income = total_store_income + total_provider_income;
-                                              //     total_provider_income = 0;
-                                              // }
-                                              total_store_income =
+                                              total_provider_income =
+                                                delivery_price -
+                                                total_admin_profit_on_delivery;
+                                              total_provider_income =
                                                 utils.precisionRoundTwo(
-                                                  Number(total_store_income)
+                                                  Number(total_provider_income)
                                                 );
-                                              /* ORDER CALCULATION END */
+                                            } else {
+                                              total_distance = 0;
+                                              total_time = 0;
+                                            }
 
-                                              /* FINAL INVOICE CALCULATION START */
-                                              total_delivery_price =
-                                                delivery_price;
-                                              total_order_price = order_price;
-                                              var total =
-                                                +total_delivery_price +
-                                                +total_order_price;
-                                              total = utils.precisionRoundTwo(
-                                                Number(total)
+                                            // DELIVERY CALCULATION END //
+                                            // ORDER CALCULATION START //
+
+                                            var order_price = 0;
+                                            var total_store_tax_price = 0;
+                                            var total_order_price = 0;
+                                            var total_admin_profit_on_store = 0;
+                                            var total_store_income = 0;
+                                            var total_cart_price = 0;
+                                            var is_store_pay_delivery_fees = false;
+
+                                            total_cart_price =
+                                              cart.total_cart_price;
+                                            if (
+                                              request_data_body.total_cart_price
+                                            ) {
+                                              total_cart_price =
+                                                request_data_body.total_cart_price;
+                                            }
+
+                                            if (store.is_use_item_tax) {
+                                              total_store_tax_price =
+                                                cart.total_item_tax;
+                                            } else {
+                                              total_store_tax_price =
+                                                total_cart_price *
+                                                item_tax *
+                                                0.01;
+                                            }
+
+                                            total_store_tax_price =
+                                              utils.precisionRoundTwo(
+                                                Number(total_store_tax_price)
                                               );
-                                              var user_pay_payment = total;
-                                              // Store Pay Delivery Fees Condition
+                                            cart.total_item_tax =
+                                              total_store_tax_price;
 
-                                              var distance_from_store =
-                                                utils.getDistanceFromTwoLocation(
-                                                  destination_location,
-                                                  store_location
-                                                );
+                                            // total_store_tax_price = total_cart_price * item_tax * 0.01;
+                                            // total_store_tax_price = utils.precisionRoundTwo(Number(total_store_tax_price));
+
+                                            order_price =
+                                              +total_cart_price +
+                                              +total_store_tax_price;
+                                            order_price =
+                                              utils.precisionRoundTwo(
+                                                Number(order_price)
+                                              );
+
+                                            switch (
+                                              admin_profit_mode_on_store
+                                            ) {
+                                              case ADMIN_PROFIT_ON_ORDER_ID.PERCENTAGE /* percentage */:
+                                                total_admin_profit_on_store =
+                                                  order_price *
+                                                  admin_profit_value_on_store *
+                                                  0.01;
+                                                break;
+                                              case ADMIN_PROFIT_ON_ORDER_ID.PER_ORDER /* absolute per order */:
+                                                total_admin_profit_on_store =
+                                                  admin_profit_value_on_store;
+                                                break;
+                                              case ADMIN_PROFIT_ON_ORDER_ID.PER_ITEMS /* absolute value per items */:
+                                                total_admin_profit_on_store =
+                                                  admin_profit_value_on_store *
+                                                  total_item_count;
+                                                break;
+                                              default:
+                                                /* percentage */
+                                                total_admin_profit_on_store =
+                                                  order_price *
+                                                  admin_profit_value_on_store *
+                                                  0.01;
+                                                break;
+                                            }
+
+                                            total_admin_profit_on_store =
+                                              utils.precisionRoundTwo(
+                                                Number(
+                                                  total_admin_profit_on_store
+                                                )
+                                              );
+                                            total_store_income =
+                                              order_price -
+                                              total_admin_profit_on_store;
+
+                                            // if(delivery_price_used_type == ADMIN_DATA_ID.STORE){
+                                            //     total_store_income = total_store_income + total_provider_income;
+                                            //     total_provider_income = 0;
+                                            // }
+                                            total_store_income =
+                                              utils.precisionRoundTwo(
+                                                Number(total_store_income)
+                                              );
+                                            /* ORDER CALCULATION END */
+
+                                            /* FINAL INVOICE CALCULATION START */
+                                            total_delivery_price =
+                                              delivery_price;
+                                            total_order_price = order_price;
+                                            var total =
+                                              +total_delivery_price +
+                                              +total_order_price;
+                                            total = utils.precisionRoundTwo(
+                                              Number(total)
+                                            );
+                                            var user_pay_payment = total;
+                                            // Store Pay Delivery Fees Condition
+
+                                            var distance_from_store =
+                                              utils.getDistanceFromTwoLocation(
+                                                destination_location,
+                                                store_location
+                                              );
+                                            if (
+                                              total_order_price >
+                                                store.free_delivery_for_above_order_price &&
+                                              distance_from_store <
+                                                store.free_delivery_within_radius &&
+                                              store.is_store_pay_delivery_fees ==
+                                                true
+                                            ) {
+                                              is_store_pay_delivery_fees = true;
+                                              user_pay_payment = order_price;
+                                            }
+                                            var user_radius_region;
+                                            const getMinOrderPrice = (
+                                              store
+                                            ) => {
                                               if (
-                                                total_order_price >
-                                                  store.free_delivery_for_above_order_price &&
-                                                distance_from_store <
-                                                  store.free_delivery_within_radius &&
-                                                store.is_store_pay_delivery_fees ==
-                                                  true
+                                                store &&
+                                                store.radius_regions &&
+                                                store.radius_regions.length
                                               ) {
-                                                is_store_pay_delivery_fees = true;
-                                                user_pay_payment = order_price;
-                                              }
-                                              var user_radius_region;
-                                              const getMinOrderPrice = (
-                                                store
-                                              ) => {
-                                                if (
-                                                  store &&
-                                                  store.radius_regions &&
-                                                  store.radius_regions.length
-                                                ) {
-                                                  let price = null;
-                                                  store.radius_regions.forEach(
-                                                    (c, idx) => {
-                                                      if (idx === 0) {
-                                                        price = c.price;
+                                                let price = null;
+                                                store.radius_regions.forEach(
+                                                  (c, idx) => {
+                                                    if (idx === 0) {
+                                                      price = c.price;
+                                                    }
+                                                    if (
+                                                      c &&
+                                                      c.kmlzone &&
+                                                      c.kmlzone.coordinates &&
+                                                      c.kmlzone.coordinates[0]
+                                                    ) {
+                                                      const coordinates =
+                                                        c.kmlzone.coordinates[0].map(
+                                                          ([lat, long]) => {
+                                                            return {
+                                                              latitude: lat,
+                                                              longitude: long,
+                                                            };
+                                                          }
+                                                        );
+                                                      if (
+                                                        !request_data_body.user_lat &&
+                                                        !request_data_body.user_lng
+                                                      ) {
+                                                        request_data_body.user_lat = 55.27467799999999;
+                                                        request_data_body.user_lng = 25.1781685;
                                                       }
                                                       if (
-                                                        c &&
-                                                        c.kmlzone &&
-                                                        c.kmlzone.coordinates &&
-                                                        c.kmlzone.coordinates[0]
+                                                        request_data_body.user_lat &&
+                                                        request_data_body.user_lng
                                                       ) {
-                                                        const coordinates =
-                                                          c.kmlzone.coordinates[0].map(
-                                                            ([lat, long]) => {
-                                                              return {
-                                                                latitude: lat,
-                                                                longitude: long,
-                                                              };
-                                                            }
+                                                        const isInside =
+                                                          geolib.isPointInPolygon(
+                                                            {
+                                                              latitude:
+                                                                request_data_body.user_lat,
+                                                              longitude:
+                                                                request_data_body.user_lng,
+                                                            },
+                                                            coordinates
                                                           );
-                                                        if (
-                                                          !request_data_body.user_lat &&
-                                                          !request_data_body.user_lng
-                                                        ) {
-                                                          request_data_body.user_lat = 55.27467799999999;
-                                                          request_data_body.user_lng = 25.1781685;
-                                                        }
-                                                        if (
-                                                          request_data_body.user_lat &&
-                                                          request_data_body.user_lng
-                                                        ) {
-                                                          const isInside =
-                                                            geolib.isPointInPolygon(
-                                                              {
-                                                                latitude:
-                                                                  request_data_body.user_lat,
-                                                                longitude:
-                                                                  request_data_body.user_lng,
-                                                              },
-                                                              coordinates
-                                                            );
 
-                                                          if (isInside) {
-                                                            price = c.price;
-                                                            user_radius_region =
-                                                              c;
-                                                          }
+                                                        if (isInside) {
+                                                          price = c.price;
+                                                          user_radius_region =
+                                                            c;
                                                         }
                                                       }
                                                     }
-                                                  );
-                                                  return price;
-                                                } else {
-                                                  return store.min_order_price;
-                                                }
-                                              };
-
-                                              const minOrderPrice =
-                                                getMinOrderPrice(store);
-                                              // ikkaf
-                                              if (order_price < minOrderPrice) {
-                                                response_data.json({
-                                                  success: false,
-                                                  min_order_price:
-                                                    getMinOrderPrice(store),
-                                                  // total_order_price,
-                                                  // total_delivery_price,
-                                                  // item_tax: item_tax,
-                                                  // total_item_count,
-                                                  // total_order_price,
-                                                  // total_service_price,
-                                                  // total_cart_price,
-                                                  // service_tax,
-                                                  // user_pay_payment,
-                                                  // total_store_tax_price,
-                                                  // is_order_payment_status_set_by_store,
-
-                                                  // item_tax,
-                                                  error_code:
-                                                    USER_ERROR_CODE.YOUR_ORDER_PRICE_LESS_THEN_STORE_MIN_ORDER_PRICE,
-                                                });
-                                              } else {
-                                                cart.total_item_count =
-                                                  total_item_count;
-
-                                                Vehicle.findOne({
-                                                  _id: service.vehicle_id,
-                                                }).then((vehicle_data) => {
-                                                  if (!vehicle_data) {
-                                                    vehicle_data = [];
-                                                  } else {
-                                                    vehicle_data = [
-                                                      vehicle_data,
-                                                    ];
                                                   }
-
-                                                  Order_payment.findOne({
-                                                    _id: cart.order_payment_id,
-                                                  }).then(
-                                                    async (order_payment) => {
-                                                      if (order_payment) {
-                                                        var promo_id =
-                                                          order_payment.promo_id;
-                                                        Promo_code.findOne({
-                                                          _id: promo_id,
-                                                        }).then(
-                                                          async (
-                                                            promo_code
-                                                          ) => {
-                                                            if (promo_code) {
-                                                              promo_code.used_promo_code =
-                                                                promo_code.used_promo_code -
-                                                                1;
-                                                              promo_code.payment_apply_on =
-                                                                promo_code.payment_apply_on.filter(
-                                                                  (id) =>
-                                                                    id.toString() !=
-                                                                    order_payment._id.toString()
-                                                                );
-                                                              console.log(
-                                                                ">>>>121" +
-                                                                  JSON.stringify(
-                                                                    order_payment._id
-                                                                  )
-                                                              );
-                                                              promo_code.save();
-                                                              user.promo_count =
-                                                                user.promo_count -
-                                                                1;
-                                                              user.save();
-                                                            }
-                                                          }
-                                                        );
-
-                                                        order_payment.cart_id =
-                                                          cart._id;
-                                                        order_payment.is_min_fare_applied =
-                                                          is_min_fare_applied;
-                                                        order_payment.order_id =
-                                                          null;
-                                                        order_payment.order_unique_id = 0;
-                                                        order_payment.store_id =
-                                                          store._id;
-                                                        order_payment.user_id =
-                                                          cart.user_id;
-                                                        order_payment.country_id =
-                                                          country_id;
-                                                        order_payment.city_id =
-                                                          city_id;
-                                                        order_payment.provider_id =
-                                                          null;
-                                                        order_payment.promo_id =
-                                                          null;
-                                                        order_payment.delivery_price_used_type =
-                                                          delivery_price_used_type;
-                                                        order_payment.delivery_price_used_type_id =
-                                                          delivery_price_used_type_id;
-                                                        order_payment.currency_code =
-                                                          wallet_currency_code;
-                                                        order_payment.admin_currency_code =
-                                                          "";
-                                                        order_payment.order_currency_code =
-                                                          store.wallet_currency_code;
-                                                        order_payment.current_rate = 1;
-                                                        order_payment.admin_profit_mode_on_delivery =
-                                                          admin_profit_mode_on_delivery;
-                                                        order_payment.admin_profit_value_on_delivery =
-                                                          admin_profit_value_on_delivery;
-                                                        order_payment.total_admin_profit_on_delivery =
-                                                          total_admin_profit_on_delivery;
-                                                        order_payment.total_provider_income =
-                                                          total_provider_income;
-                                                        order_payment.admin_profit_mode_on_store =
-                                                          admin_profit_mode_on_store;
-                                                        order_payment.admin_profit_value_on_store =
-                                                          admin_profit_value_on_store;
-                                                        order_payment.total_admin_profit_on_store =
-                                                          total_admin_profit_on_store;
-                                                        order_payment.total_store_income =
-                                                          total_store_income;
-                                                        order_payment.total_distance =
-                                                          total_distance;
-                                                        order_payment.total_time =
-                                                          total_time;
-                                                        order_payment.is_distance_unit_mile =
-                                                          is_distance_unit_mile;
-                                                        order_payment.total_service_price =
-                                                          total_service_price;
-                                                        order_payment.total_admin_tax_price =
-                                                          total_admin_tax_price;
-                                                        order_payment.total_after_tax_price =
-                                                          total_after_tax_price;
-                                                        order_payment.total_surge_price =
-                                                          total_surge_price;
-                                                        order_payment.total_delivery_price_after_surge =
-                                                          total_delivery_price_after_surge;
-                                                        order_payment.total_cart_price =
-                                                          total_cart_price;
-                                                        order_payment.total_delivery_price =
-                                                          total_delivery_price;
-                                                        order_payment.total_item_count =
-                                                          total_item_count;
-                                                        order_payment.service_tax =
-                                                          service_tax;
-                                                        order_payment.item_tax =
-                                                          item_tax;
-                                                        order_payment.total_store_tax_price =
-                                                          total_store_tax_price;
-                                                        order_payment.total_order_price =
-                                                          total_order_price;
-                                                        order_payment.promo_payment = 0;
-                                                        if (
-                                                          request_data_body.deduct_from_wallet &&
-                                                          order_payment.wallet_deduction
-                                                        ) {
-                                                          user_pay_payment -=
-                                                            order_payment.wallet_deduction;
-                                                        }
-                                                        order_payment.total =
-                                                          total;
-                                                        order_payment.wallet_payment = 0;
-                                                        order_payment.total_after_wallet_payment = 0;
-                                                        order_payment.cash_payment = 0;
-                                                        order_payment.card_payment = 0;
-                                                        order_payment.remaining_payment = 0;
-                                                        order_payment.delivered_at =
-                                                          null;
-                                                        order_payment.is_order_payment_status_set_by_store =
-                                                          is_order_payment_status_set_by_store;
-                                                        order_payment.is_user_pick_up_order =
-                                                          is_user_pick_up_order;
-                                                        var delivery_fees =
-                                                          user_radius_region &&
-                                                          user_radius_region.delivery_fees
-                                                            ? user_radius_region.delivery_fees
-                                                            : store.delivery_fees;
-                                                        //delivery
-                                                        if (
-                                                          user_pay_payment >
-                                                          store.free_delivery_for_above_order_price
-                                                        ) {
-                                                          delivery_fees = 0;
-                                                          is_store_pay_delivery_fees = true;
-                                                        }
-
-                                                        order_payment.user_pay_payment =
-                                                          user_pay_payment +
-                                                          delivery_fees;
-                                                        order_payment.is_store_pay_delivery_fees =
-                                                          is_store_pay_delivery_fees;
-                                                        order_payment.total_delivery_price =
-                                                          delivery_fees;
-                                                        // var is_payment_max =
-                                                        // user.is_payment_max;
-                                                        // var is_pay_valid =
-                                                        // user.is_pay_valid;
-                                                        var is_payment_max =
-                                                          user.is_payment_max;
-                                                        var is_pay_valid =
-                                                          user.is_pay_valid;
-                                                        order_payment.is_paid_from_wallet = true;
-                                                        await new Promise(
-                                                          (res, rej) => {
-                                                            remove_loyalty_points(
-                                                              {
-                                                                body: {
-                                                                  order_payment_id:
-                                                                    order_payment._id.toString(),
-                                                                  user_id:
-                                                                    order_payment.user_id.toString(),
-                                                                },
-                                                              },
-                                                              {
-                                                                json: (
-                                                                  data
-                                                                ) => {
-                                                                  res(data);
-                                                                },
-                                                              }
-                                                            );
-                                                          }
-                                                        );
-                                                        await new Promise(
-                                                          (res, rej) => {
-                                                            remove_promo_code(
-                                                              {
-                                                                body: {
-                                                                  order_payment_id:
-                                                                    order_payment._id.toString(),
-                                                                },
-                                                              },
-                                                              {
-                                                                json: (
-                                                                  data
-                                                                ) => {
-                                                                  res(data);
-                                                                },
-                                                              }
-                                                            );
-                                                          }
-                                                        );
-                                                        order_payment
-                                                          .save()
-                                                          .then(
-                                                            () => {
-                                                              order_payment.total_delivery_price =
-                                                                delivery_fees;
-                                                              response_data.json(
-                                                                {
-                                                                  success: true,
-                                                                  message:
-                                                                    USER_MESSAGE_CODE.FARE_ESTIMATE_SUCCESSFULLY,
-                                                                  // delivery_fees,
-                                                                  // wallet: wallet,
-                                                                  // is_payment_max:
-                                                                  //   is_payment_max,
-                                                                  // is_pay_valid:
-                                                                  //   is_pay_valid,
-                                                                  // server_time:
-                                                                  //   server_time,
-                                                                  // timezone:
-                                                                  //   city_detail.timezone,
-                                                                  order_payment:
-                                                                    order_payment,
-                                                                  // store: {...store,user_radius_region},
-                                                                  // vehicles:
-                                                                  //   vehicle_data,
-                                                                }
-                                                              );
-                                                            },
-                                                            (error) => {
-                                                              console.log(
-                                                                error
-                                                              );
-                                                              response_data.json(
-                                                                {
-                                                                  success: false,
-                                                                  error_code:
-                                                                    ERROR_CODE.SOMETHING_WENT_WRONG,
-                                                                }
-                                                              );
-                                                            }
-                                                          );
-                                                      } else {
-                                                        if (
-                                                          request_data_body.deduct_from_wallet &&
-                                                          order_payment.wallet_deduction
-                                                        ) {
-                                                          user_pay_payment -=
-                                                            order_payment.wallet_deduction;
-                                                        }
-                                                        var delivery_fees =
-                                                          user_radius_region &&
-                                                          user_radius_region.delivery_fees
-                                                            ? user_radius_region.delivery_fees
-                                                            : store.delivery_fees;
-                                                        if (
-                                                          user_pay_payment >
-                                                          store.free_delivery_for_above_order_price
-                                                        ) {
-                                                          delivery_fees = 0;
-                                                          is_store_pay_delivery_fees = true;
-                                                        }
-                                                        user_pay_payment =
-                                                          user_pay_payment +
-                                                          delivery_fees;
-                                                        /* ENTRY IN ORDER PAYMENT */
-                                                        var order_payment =
-                                                          new Order_payment({
-                                                            cart_id: cart._id,
-                                                            store_id: store._id,
-                                                            user_id:
-                                                              cart.user_id,
-                                                            country_id:
-                                                              country_id,
-                                                            city_id: city_id,
-                                                            delivery_price_used_type:
-                                                              delivery_price_used_type,
-                                                            delivery_price_used_type_id:
-                                                              delivery_price_used_type_id,
-                                                            currency_code:
-                                                              wallet_currency_code,
-                                                            order_currency_code:
-                                                              store.wallet_currency_code,
-                                                            current_rate: 1, // HERE current_rate MEANS ORDER TO ADMIN CONVERT RATE
-                                                            wallet_to_admin_current_rate: 1,
-                                                            wallet_to_order_current_rate: 1,
-                                                            total_distance:
-                                                              total_distance,
-                                                            total_time:
-                                                              total_time,
-                                                            service_tax:
-                                                              service_tax,
-                                                            is_min_fare_applied:
-                                                              is_min_fare_applied,
-                                                            item_tax: item_tax,
-                                                            total_service_price:
-                                                              total_service_price,
-                                                            total_admin_tax_price:
-                                                              total_admin_tax_price,
-                                                            total_delivery_price:
-                                                              total_delivery_price,
-                                                            is_store_pay_delivery_fees:
-                                                              is_store_pay_delivery_fees,
-                                                            total_item_count:
-                                                              total_item_count,
-                                                            total_cart_price:
-                                                              total_cart_price,
-                                                            total_store_tax_price:
-                                                              total_store_tax_price,
-                                                            user_pay_payment:
-                                                              user_pay_payment,
-                                                            total_order_price:
-                                                              total_order_price,
-                                                            promo_payment:
-                                                              promo_payment,
-                                                            total: total,
-                                                            admin_profit_mode_on_store:
-                                                              admin_profit_mode_on_store,
-                                                            admin_profit_value_on_store:
-                                                              admin_profit_value_on_store,
-                                                            total_admin_profit_on_store:
-                                                              total_admin_profit_on_store,
-                                                            total_store_income:
-                                                              total_store_income,
-                                                            admin_profit_mode_on_delivery:
-                                                              admin_profit_mode_on_delivery,
-                                                            admin_profit_value_on_delivery:
-                                                              admin_profit_value_on_delivery,
-                                                            total_admin_profit_on_delivery:
-                                                              total_admin_profit_on_delivery,
-                                                            total_provider_income:
-                                                              total_provider_income,
-                                                            is_user_pick_up_order:
-                                                              is_user_pick_up_order,
-                                                            is_order_payment_status_set_by_store:
-                                                              is_order_payment_status_set_by_store,
-                                                            is_distance_unit_mile:
-                                                              is_distance_unit_mile,
-                                                          });
-
-                                                        order_payment
-                                                          .save()
-                                                          .then(
-                                                            () => {
-                                                              order_payment.total_delivery_price =
-                                                                delivery_fees;
-                                                              var totalDeliveryPrice =
-                                                                !isNaN(
-                                                                  Number(
-                                                                    delivery_fees
-                                                                  )
-                                                                )
-                                                                  ? Number(
-                                                                      delivery_fees
-                                                                    )
-                                                                  : delivery_fees;
-                                                              cart.order_payment_id =
-                                                                order_payment._id;
-                                                              cart.save();
-
-                                                              order_payment.save();
-                                                              response_data.json(
-                                                                {
-                                                                  success: true,
-                                                                  message:
-                                                                    USER_MESSAGE_CODE.FARE_ESTIMATE_SUCCESSFULLY,
-                                                                  // delivery_fees,
-                                                                  // wallet: wallet,
-                                                                  // is_payment_max:
-                                                                  //   is_payment_max,
-                                                                  // is_pay_valid:
-                                                                  //   is_pay_valid,
-                                                                  // server_time:
-                                                                  //   server_time,
-                                                                  // timezone:
-                                                                  //   city_detail.timezone,
-                                                                  order_payment:
-                                                                    order_payment,
-                                                                  // store: store,
-
-                                                                  // vehicles:
-                                                                  //   vehicle_data,
-                                                                }
-                                                              );
-                                                            },
-                                                            (error) => {
-                                                              console.log(
-                                                                error
-                                                              );
-                                                              response_data.json(
-                                                                {
-                                                                  success: false,
-                                                                  error_code:
-                                                                    ERROR_CODE.SOMETHING_WENT_WRONG,
-                                                                }
-                                                              );
-                                                            }
-                                                          );
-                                                      }
-                                                    }
-                                                  );
-                                                });
+                                                );
+                                                return price;
+                                              } else {
+                                                return store.min_order_price;
                                               }
+                                            };
+
+                                            const minOrderPrice =
+                                              getMinOrderPrice(store);
+                                            // ikkaf
+                                            if (order_price < minOrderPrice) {
+                                              response_data.json({
+                                                success: false,
+                                                min_order_price:
+                                                  getMinOrderPrice(store),
+                                                // total_order_price,
+                                                // total_delivery_price,
+                                                // item_tax: item_tax,
+                                                // total_item_count,
+                                                // total_order_price,
+                                                // total_service_price,
+                                                // total_cart_price,
+                                                // service_tax,
+                                                // user_pay_payment,
+                                                // total_store_tax_price,
+                                                // is_order_payment_status_set_by_store,
+
+                                                // item_tax,
+                                                error_code:
+                                                  USER_ERROR_CODE.YOUR_ORDER_PRICE_LESS_THEN_STORE_MIN_ORDER_PRICE,
+                                              });
+                                            } else {
+                                              cart.total_item_count =
+                                                total_item_count;
+
+                                              Vehicle.findOne({
+                                                _id: service.vehicle_id,
+                                              }).then((vehicle_data) => {
+                                                if (!vehicle_data) {
+                                                  vehicle_data = [];
+                                                } else {
+                                                  vehicle_data = [vehicle_data];
+                                                }
+
+                                                Order_payment.findOne({
+                                                  _id: cart.order_payment_id,
+                                                }).then(
+                                                  async (order_payment) => {
+                                                    if (order_payment) {
+                                                      var promo_id =
+                                                        order_payment.promo_id;
+                                                      Promo_code.findOne({
+                                                        _id: promo_id,
+                                                      }).then(
+                                                        async (promo_code) => {
+                                                          if (promo_code) {
+                                                            promo_code.used_promo_code =
+                                                              promo_code.used_promo_code -
+                                                              1;
+                                                            promo_code.payment_apply_on =
+                                                              promo_code.payment_apply_on.filter(
+                                                                (id) =>
+                                                                  id.toString() !=
+                                                                  order_payment._id.toString()
+                                                              );
+                                                            console.log(
+                                                              ">>>>121" +
+                                                                JSON.stringify(
+                                                                  order_payment._id
+                                                                )
+                                                            );
+                                                            promo_code.save();
+                                                            user.promo_count =
+                                                              user.promo_count -
+                                                              1;
+                                                            user.save();
+                                                          }
+                                                        }
+                                                      );
+
+                                                      order_payment.cart_id =
+                                                        cart._id;
+                                                      order_payment.is_min_fare_applied =
+                                                        is_min_fare_applied;
+                                                      order_payment.order_id =
+                                                        null;
+                                                      order_payment.order_unique_id = 0;
+                                                      order_payment.store_id =
+                                                        store._id;
+                                                      order_payment.user_id =
+                                                        cart.user_id;
+                                                      order_payment.country_id =
+                                                        country_id;
+                                                      order_payment.city_id =
+                                                        city_id;
+                                                      order_payment.provider_id =
+                                                        null;
+                                                      order_payment.promo_id =
+                                                        null;
+                                                      order_payment.delivery_price_used_type =
+                                                        delivery_price_used_type;
+                                                      order_payment.delivery_price_used_type_id =
+                                                        delivery_price_used_type_id;
+                                                      order_payment.currency_code =
+                                                        wallet_currency_code;
+                                                      order_payment.admin_currency_code =
+                                                        "";
+                                                      order_payment.order_currency_code =
+                                                        store.wallet_currency_code;
+                                                      order_payment.current_rate = 1;
+                                                      order_payment.admin_profit_mode_on_delivery =
+                                                        admin_profit_mode_on_delivery;
+                                                      order_payment.admin_profit_value_on_delivery =
+                                                        admin_profit_value_on_delivery;
+                                                      order_payment.total_admin_profit_on_delivery =
+                                                        total_admin_profit_on_delivery;
+                                                      order_payment.total_provider_income =
+                                                        total_provider_income;
+                                                      order_payment.admin_profit_mode_on_store =
+                                                        admin_profit_mode_on_store;
+                                                      order_payment.admin_profit_value_on_store =
+                                                        admin_profit_value_on_store;
+                                                      order_payment.total_admin_profit_on_store =
+                                                        total_admin_profit_on_store;
+                                                      order_payment.total_store_income =
+                                                        total_store_income;
+                                                      order_payment.total_distance =
+                                                        total_distance;
+                                                      order_payment.total_time =
+                                                        total_time;
+                                                      order_payment.is_distance_unit_mile =
+                                                        is_distance_unit_mile;
+                                                      order_payment.total_service_price =
+                                                        total_service_price;
+                                                      order_payment.total_admin_tax_price =
+                                                        total_admin_tax_price;
+                                                      order_payment.total_after_tax_price =
+                                                        total_after_tax_price;
+                                                      order_payment.total_surge_price =
+                                                        total_surge_price;
+                                                      order_payment.total_delivery_price_after_surge =
+                                                        total_delivery_price_after_surge;
+                                                      order_payment.total_cart_price =
+                                                        total_cart_price;
+                                                      order_payment.total_delivery_price =
+                                                        total_delivery_price;
+                                                      order_payment.total_item_count =
+                                                        total_item_count;
+                                                      order_payment.service_tax =
+                                                        service_tax;
+                                                      order_payment.item_tax =
+                                                        item_tax;
+                                                      order_payment.total_store_tax_price =
+                                                        total_store_tax_price;
+                                                      order_payment.total_order_price =
+                                                        total_order_price;
+                                                      order_payment.promo_payment = 0;
+                                                      if (
+                                                        request_data_body.deduct_from_wallet &&
+                                                        order_payment.wallet_deduction
+                                                      ) {
+                                                        user_pay_payment -=
+                                                          order_payment.wallet_deduction;
+                                                      }
+                                                      order_payment.total =
+                                                        total;
+                                                      order_payment.wallet_payment = 0;
+                                                      order_payment.total_after_wallet_payment = 0;
+                                                      order_payment.cash_payment = 0;
+                                                      order_payment.card_payment = 0;
+                                                      order_payment.remaining_payment = 0;
+                                                      order_payment.delivered_at =
+                                                        null;
+                                                      order_payment.is_order_payment_status_set_by_store =
+                                                        is_order_payment_status_set_by_store;
+                                                      order_payment.is_user_pick_up_order =
+                                                        is_user_pick_up_order;
+                                                      var delivery_fees =
+                                                        user_radius_region &&
+                                                        user_radius_region.delivery_fees
+                                                          ? user_radius_region.delivery_fees
+                                                          : store.delivery_fees;
+                                                      //delivery
+                                                      if (
+                                                        user_pay_payment >
+                                                        store.free_delivery_for_above_order_price
+                                                      ) {
+                                                        delivery_fees = 0;
+                                                        is_store_pay_delivery_fees = true;
+                                                      }
+
+                                                      order_payment.user_pay_payment =
+                                                        user_pay_payment +
+                                                        delivery_fees;
+                                                      order_payment.is_store_pay_delivery_fees =
+                                                        is_store_pay_delivery_fees;
+                                                      order_payment.total_delivery_price =
+                                                        delivery_fees;
+                                                      // var is_payment_max =
+                                                      // user.is_payment_max;
+                                                      // var is_pay_valid =
+                                                      // user.is_pay_valid;
+                                                      var is_payment_max =
+                                                        user.is_payment_max;
+                                                      var is_pay_valid =
+                                                        user.is_pay_valid;
+                                                      order_payment.is_paid_from_wallet = true;
+                                                      await new Promise(
+                                                        (res, rej) => {
+                                                          remove_loyalty_points(
+                                                            {
+                                                              body: {
+                                                                order_payment_id:
+                                                                  order_payment._id.toString(),
+                                                                user_id:
+                                                                  order_payment.user_id.toString(),
+                                                              },
+                                                            },
+                                                            {
+                                                              json: (data) => {
+                                                                res(data);
+                                                              },
+                                                            }
+                                                          );
+                                                        }
+                                                      );
+                                                      await new Promise(
+                                                        (res, rej) => {
+                                                          remove_promo_code(
+                                                            {
+                                                              body: {
+                                                                order_payment_id:
+                                                                  order_payment._id.toString(),
+                                                              },
+                                                            },
+                                                            {
+                                                              json: (data) => {
+                                                                res(data);
+                                                              },
+                                                            }
+                                                          );
+                                                        }
+                                                      );
+                                                      order_payment.save().then(
+                                                        () => {
+                                                          order_payment.total_delivery_price =
+                                                            delivery_fees;
+                                                          response_data.json({
+                                                            success: true,
+                                                            message:
+                                                              USER_MESSAGE_CODE.FARE_ESTIMATE_SUCCESSFULLY,
+                                                            // delivery_fees,
+                                                            // wallet: wallet,
+                                                            // is_payment_max:
+                                                            //   is_payment_max,
+                                                            // is_pay_valid:
+                                                            //   is_pay_valid,
+                                                            // server_time:
+                                                            //   server_time,
+                                                            // timezone:
+                                                            //   city_detail.timezone,
+                                                            order_payment:
+                                                              order_payment,
+                                                            // store: {...store,user_radius_region},
+                                                            // vehicles:
+                                                            //   vehicle_data,
+                                                          });
+                                                        },
+                                                        (error) => {
+                                                          console.log(error);
+                                                          response_data.json({
+                                                            success: false,
+                                                            error_code:
+                                                              ERROR_CODE.SOMETHING_WENT_WRONG,
+                                                          });
+                                                        }
+                                                      );
+                                                    } else {
+                                                      if (
+                                                        request_data_body.deduct_from_wallet &&
+                                                        order_payment.wallet_deduction
+                                                      ) {
+                                                        user_pay_payment -=
+                                                          order_payment.wallet_deduction;
+                                                      }
+                                                      var delivery_fees =
+                                                        user_radius_region &&
+                                                        user_radius_region.delivery_fees
+                                                          ? user_radius_region.delivery_fees
+                                                          : store.delivery_fees;
+                                                      if (
+                                                        user_pay_payment >
+                                                        store.free_delivery_for_above_order_price
+                                                      ) {
+                                                        delivery_fees = 0;
+                                                        is_store_pay_delivery_fees = true;
+                                                      }
+                                                      user_pay_payment =
+                                                        user_pay_payment +
+                                                        delivery_fees;
+                                                      /* ENTRY IN ORDER PAYMENT */
+                                                      var order_payment =
+                                                        new Order_payment({
+                                                          cart_id: cart._id,
+                                                          store_id: store._id,
+                                                          user_id: cart.user_id,
+                                                          country_id:
+                                                            country_id,
+                                                          city_id: city_id,
+                                                          delivery_price_used_type:
+                                                            delivery_price_used_type,
+                                                          delivery_price_used_type_id:
+                                                            delivery_price_used_type_id,
+                                                          currency_code:
+                                                            wallet_currency_code,
+                                                          order_currency_code:
+                                                            store.wallet_currency_code,
+                                                          current_rate: 1, // HERE current_rate MEANS ORDER TO ADMIN CONVERT RATE
+                                                          wallet_to_admin_current_rate: 1,
+                                                          wallet_to_order_current_rate: 1,
+                                                          total_distance:
+                                                            total_distance,
+                                                          total_time:
+                                                            total_time,
+                                                          service_tax:
+                                                            service_tax,
+                                                          is_min_fare_applied:
+                                                            is_min_fare_applied,
+                                                          item_tax: item_tax,
+                                                          total_service_price:
+                                                            total_service_price,
+                                                          total_admin_tax_price:
+                                                            total_admin_tax_price,
+                                                          total_delivery_price:
+                                                            total_delivery_price,
+                                                          is_store_pay_delivery_fees:
+                                                            is_store_pay_delivery_fees,
+                                                          total_item_count:
+                                                            total_item_count,
+                                                          total_cart_price:
+                                                            total_cart_price,
+                                                          total_store_tax_price:
+                                                            total_store_tax_price,
+                                                          user_pay_payment:
+                                                            user_pay_payment,
+                                                          total_order_price:
+                                                            total_order_price,
+                                                          promo_payment:
+                                                            promo_payment,
+                                                          total: total,
+                                                          admin_profit_mode_on_store:
+                                                            admin_profit_mode_on_store,
+                                                          admin_profit_value_on_store:
+                                                            admin_profit_value_on_store,
+                                                          total_admin_profit_on_store:
+                                                            total_admin_profit_on_store,
+                                                          total_store_income:
+                                                            total_store_income,
+                                                          admin_profit_mode_on_delivery:
+                                                            admin_profit_mode_on_delivery,
+                                                          admin_profit_value_on_delivery:
+                                                            admin_profit_value_on_delivery,
+                                                          total_admin_profit_on_delivery:
+                                                            total_admin_profit_on_delivery,
+                                                          total_provider_income:
+                                                            total_provider_income,
+                                                          is_user_pick_up_order:
+                                                            is_user_pick_up_order,
+                                                          is_order_payment_status_set_by_store:
+                                                            is_order_payment_status_set_by_store,
+                                                          is_distance_unit_mile:
+                                                            is_distance_unit_mile,
+                                                        });
+
+                                                      order_payment.save().then(
+                                                        () => {
+                                                          order_payment.total_delivery_price =
+                                                            delivery_fees;
+                                                          var totalDeliveryPrice =
+                                                            !isNaN(
+                                                              Number(
+                                                                delivery_fees
+                                                              )
+                                                            )
+                                                              ? Number(
+                                                                  delivery_fees
+                                                                )
+                                                              : delivery_fees;
+                                                          cart.order_payment_id =
+                                                            order_payment._id;
+                                                          cart.save();
+
+                                                          order_payment.save();
+                                                          response_data.json({
+                                                            success: true,
+                                                            message:
+                                                              USER_MESSAGE_CODE.FARE_ESTIMATE_SUCCESSFULLY,
+                                                            // delivery_fees,
+                                                            // wallet: wallet,
+                                                            // is_payment_max:
+                                                            //   is_payment_max,
+                                                            // is_pay_valid:
+                                                            //   is_pay_valid,
+                                                            // server_time:
+                                                            //   server_time,
+                                                            // timezone:
+                                                            //   city_detail.timezone,
+                                                            order_payment:
+                                                              order_payment,
+                                                            // store: store,
+
+                                                            // vehicles:
+                                                            //   vehicle_data,
+                                                          });
+                                                        },
+                                                        (error) => {
+                                                          console.log(error);
+                                                          response_data.json({
+                                                            success: false,
+                                                            error_code:
+                                                              ERROR_CODE.SOMETHING_WENT_WRONG,
+                                                          });
+                                                        }
+                                                      );
+                                                    }
+                                                  }
+                                                );
+                                              });
                                             }
-                                          );
-                                        } else {
-                                          response_data.json({
-                                            success: false,
-                                            error_code:
-                                              USER_ERROR_CODE.DELIVERY_SERVICE_NOT_AVAILABLE_IN_YOUR_CITY,
-                                          });
-                                        }
-                                      },
-                                      (error) => {
+                                          }
+                                        );
+                                      } else {
                                         response_data.json({
                                           success: false,
                                           error_code:
-                                            ERROR_CODE.SOMETHING_WENT_WRONG,
+                                            USER_ERROR_CODE.DELIVERY_SERVICE_NOT_AVAILABLE_IN_YOUR_CITY,
                                         });
                                       }
-                                    );
-                                  }
-                                },
-                                (error) => {
-                                  response_data.json({
-                                    success: false,
-                                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                                  });
+                                    },
+                                    (error) => {
+                                      response_data.json({
+                                        success: false,
+                                        error_code:
+                                          ERROR_CODE.SOMETHING_WENT_WRONG,
+                                      });
+                                    }
+                                  );
                                 }
-                              );
-                            },
-                            (error) => {
-                              response_data.json({
-                                success: false,
-                                error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                              });
-                            }
-                          );
-                        } else {
-                          response_data.json({
-                            success: false,
-                            error_code: STORE_ERROR_CODE.STORE_DATA_NOT_FOUND,
-                          });
-                        }
-                      },
-                      (error) => {
+                              },
+                              (error) => {
+                                response_data.json({
+                                  success: false,
+                                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                                });
+                              }
+                            );
+                          },
+                          (error) => {
+                            response_data.json({
+                              success: false,
+                              error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                            });
+                          }
+                        );
+                      } else {
                         response_data.json({
                           success: false,
-                          error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                          error_code: STORE_ERROR_CODE.STORE_DATA_NOT_FOUND,
                         });
                       }
-                    );
-                  } else {
-                    response_data.json({
-                      success: false,
-                      error_code: USER_ERROR_CODE.GET_ORDER_CART_INVOICE_FAILED,
-                    });
-                  }
-                },
-                (error) => {
+                    },
+                    (error) => {
+                      response_data.json({
+                        success: false,
+                        error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                      });
+                    }
+                  );
+                } else {
                   response_data.json({
                     success: false,
-                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                    error_code: USER_ERROR_CODE.GET_ORDER_CART_INVOICE_FAILED,
                   });
                 }
-              );
-            }
+              },
+              (error) => {
+                response_data.json({
+                  success: false,
+                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                });
+              }
+            );
           },
           (error) => {
             response_data.json({
@@ -6464,920 +6323,888 @@ exports.get_cards_and_order_cart_invoice = async function (req, res) {
             );
           }
         }
-        if (
-          order_type != ADMIN_DATA_ID.STORE &&
-          user &&
-          request_data_body.server_token !== null &&
-          user.server_token != request_data_body.server_token
-        ) {
+
+        const cart = await Cart.findOne({
+          $or: [{ _id: cart_id }, { cart_unique_token: cart_unique_token }],
+        });
+        if (!cart) {
           res.json({
             success: false,
-            error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
+            error_code: USER_ERROR_CODE.GET_ORDER_CART_INVOICE_FAILED,
           });
           return;
-        } else {
-          const cart = await Cart.findOne({
-            $or: [{ _id: cart_id }, { cart_unique_token: cart_unique_token }],
+        }
+        if (!cart.destination_addresses || !cart.destination_addresses.length) {
+          res.json({
+            success: false,
+            error_code: USER_ERROR_CODE.GET_ORDER_CART_INVOICE_FAILED,
+            message: "Destination addresses missing in the cart.",
           });
-          if (!cart) {
-            res.json({
-              success: false,
-              error_code: USER_ERROR_CODE.GET_ORDER_CART_INVOICE_FAILED,
-            });
-            return;
-          }
-          if (
-            !cart.destination_addresses ||
-            !cart.destination_addresses.length
-          ) {
-            res.json({
-              success: false,
-              error_code: USER_ERROR_CODE.GET_ORDER_CART_INVOICE_FAILED,
-              message: "Destination addresses missing in the cart.",
-            });
-            return;
-          }
-          var destination_location = cart.destination_addresses[0].location;
-          let store = await Store.findOne({
-            _id: request_data_body.store_id,
-          }).lean();
-          if (!store) {
-            res.json({
-              success: false,
-              error_code: STORE_ERROR_CODE.STORE_DATA_NOT_FOUND,
-            });
-            return;
-          }
-          let current_time = new Date(
-            new Date().toLocaleString("en-US", {
-              timeZone: "Asia/Dubai",
-            })
+          return;
+        }
+        var destination_location = cart.destination_addresses[0].location;
+        let store = await Store.findOne({
+          _id: request_data_body.store_id,
+        }).lean();
+        if (!store) {
+          res.json({
+            success: false,
+            error_code: STORE_ERROR_CODE.STORE_DATA_NOT_FOUND,
+          });
+          return;
+        }
+        let current_time = new Date(
+          new Date().toLocaleString("en-US", {
+            timeZone: "Asia/Dubai",
+          })
+        );
+        let store_time = store.store_time;
+        let storeTime = [];
+        let len = 6;
+        let firstSlotDayIndex = 0;
+        let firstSlot = {};
+        for (let i = 0; i <= len; i++) {
+          const day_name = moment()
+            .tz("Asia/Dubai")
+            .add(i, "days")
+            .format("ddd");
+          const date = moment()
+            .tz("Asia/Dubai")
+            .add(i, "days")
+            .format("DD/MM/YYYY");
+          const currentStoreTime = store_time.find(
+            (s) => s.day_name === day_name
           );
-          let store_time = store.store_time;
-          let storeTime = [];
-          let len = 6;
-          let firstSlotDayIndex = 0;
-          let firstSlot = {};
-          for (let i = 0; i <= len; i++) {
-            const day_name = moment()
-              .tz("Asia/Dubai")
-              .add(i, "days")
-              .format("ddd");
-            const date = moment()
-              .tz("Asia/Dubai")
-              .add(i, "days")
-              .format("DD/MM/YYYY");
-            const currentStoreTime = store_time.find(
-              (s) => s.day_name === day_name
-            );
 
-            let time = currentStoreTime
-              ? { ...currentStoreTime, day_name, date }
-              : {
-                  is_store_open: false,
-                  is_store_open_full_time: false,
-                  day_name,
-                  date,
-                  day_time: [],
-                };
-            let is_store_open = false;
-            if (i === firstSlotDayIndex) {
-              const dayTime = [];
-              time.day_time.forEach((t) => {
-                const tm = moment(t.store_open_time, "HH:mm");
-                const ctm = moment(t.store_close_time, "HH:mm");
-                const currTime = moment.tz("Asia/Dubai");
-                const minutesOfDay = (m) => m.minutes() + m.hours() * 60;
-                if (
-                  moment(currTime.format("HH:mm"), "HH:mm").isBetween(
-                    tm,
-                    ctm
-                  ) &&
-                  i === 0
-                ) {
-                  is_store_open = true;
-                }
-                if (minutesOfDay(currTime) < minutesOfDay(tm) || i !== 0) {
-                  dayTime.push(t);
-                }
-              });
-              time.is_store_open = is_store_open;
-              time.day_time = dayTime;
-              if (dayTime.length === 0) {
-                firstSlot = { ...time };
-                firstSlotDayIndex++;
-              } else {
-                storeTime.push(time);
+          let time = currentStoreTime
+            ? { ...currentStoreTime, day_name, date }
+            : {
+                is_store_open: false,
+                is_store_open_full_time: false,
+                day_name,
+                date,
+                day_time: [],
+              };
+          let is_store_open = false;
+          if (i === firstSlotDayIndex) {
+            const dayTime = [];
+            time.day_time.forEach((t) => {
+              const tm = moment(t.store_open_time, "HH:mm");
+              const ctm = moment(t.store_close_time, "HH:mm");
+              const currTime = moment.tz("Asia/Dubai");
+              const minutesOfDay = (m) => m.minutes() + m.hours() * 60;
+              if (
+                moment(currTime.format("HH:mm"), "HH:mm").isBetween(tm, ctm) &&
+                i === 0
+              ) {
+                is_store_open = true;
               }
+              if (minutesOfDay(currTime) < minutesOfDay(tm) || i !== 0) {
+                dayTime.push(t);
+              }
+            });
+            time.is_store_open = is_store_open;
+            time.day_time = dayTime;
+            if (dayTime.length === 0) {
+              firstSlot = { ...time };
+              firstSlotDayIndex++;
             } else {
-              time.is_store_open = time.day_time.length > 0 ? true : false;
               storeTime.push(time);
             }
-          }
-          if (firstSlotDayIndex > 0) storeTime.push(firstSlot);
-          store.store_time = storeTime;
-
-          var store_location = store.location;
-          var city_id = store.city_id;
-          var country_id = store.country_id;
-          const country = Country.findOne({ _id: country_id });
-          const city_detail = City.findOne({ _id: city_id });
-          var is_distance_unit_mile = false;
-          if (country) {
-            is_distance_unit_mile = country.is_distance_unit_mile;
-            if (!user) {
-              wallet_currency_code = country.currency_code;
-            }
-          }
-          if (wallet_currency_code == "") {
-            wallet_currency_code = store.wallet_currency_code;
-          }
-          if (!city_detail) {
-            res.json({
-              success: false,
-              error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-            });
-            return;
-          }
-          var admin_profit_mode_on_delivery =
-            city_detail.admin_profit_mode_on_delivery;
-          var admin_profit_value_on_delivery =
-            city_detail.admin_profit_value_on_delivery;
-
-          var delivery_price_used_type = ADMIN_DATA_ID.ADMIN;
-          var delivery_price_used_type_id = null;
-          var is_order_payment_status_set_by_store = false;
-          if (
-            store.is_store_can_add_provider ||
-            store.is_store_can_complete_order
-          ) {
-            delivery_price_used_type = ADMIN_DATA_ID.STORE;
-            delivery_price_used_type_id = store._id;
-            is_order_payment_status_set_by_store = true;
-          }
-
-          var delivery_type = DELIVERY_TYPE.STORE;
-
-          var query = {};
-          if (request_data_body.vehicle_id) {
-            var vehicle_id = request_data_body.vehicle_id;
-            query = {
-              city_id: city_id,
-              delivery_type: delivery_type,
-              vehicle_id: vehicle_id,
-              type_id: delivery_price_used_type_id,
-            };
           } else {
-            query = {
-              city_id: city_id,
-              delivery_type: delivery_type,
-              type_id: delivery_price_used_type_id,
-            };
+            time.is_store_open = time.day_time.length > 0 ? true : false;
+            storeTime.push(time);
           }
-          const service_list = await Service.find(query);
-          var service = null;
-          var default_service_index = service_list.findIndex(
-            (service) => service.is_default == true
-          );
-          if (default_service_index !== -1 && !vehicle_id) {
-            service = service_list[default_service_index];
-          } else if (service_list.length > 0) {
-            service = service_list[0];
+        }
+        if (firstSlotDayIndex > 0) storeTime.push(firstSlot);
+        store.store_time = storeTime;
+
+        var store_location = store.location;
+        var city_id = store.city_id;
+        var country_id = store.country_id;
+        const country = Country.findOne({ _id: country_id });
+        const city_detail = City.findOne({ _id: city_id });
+        var is_distance_unit_mile = false;
+        if (country) {
+          is_distance_unit_mile = country.is_distance_unit_mile;
+          if (!user) {
+            wallet_currency_code = country.currency_code;
           }
-          if (!service) {
-            res.json({
-              success: false,
-              error_code:
-                USER_ERROR_CODE.DELIVERY_SERVICE_NOT_AVAILABLE_IN_YOUR_CITY,
-            });
-            return;
-          }
-          utils.check_zone(
-            city_id,
-            delivery_type,
-            delivery_price_used_type_id,
-            service.vehicle_id,
-            city_detail.zone_business,
-            store_location,
-            destination_location,
-            async function (zone_response) {
-              /* HERE USER PARAM */
+        }
+        if (wallet_currency_code == "") {
+          wallet_currency_code = store.wallet_currency_code;
+        }
+        if (!city_detail) {
+          res.json({
+            success: false,
+            error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+          });
+          return;
+        }
+        var admin_profit_mode_on_delivery =
+          city_detail.admin_profit_mode_on_delivery;
+        var admin_profit_value_on_delivery =
+          city_detail.admin_profit_value_on_delivery;
 
-              var total_distance = request_data_body.total_distance;
-              var total_time = request_data_body.total_time;
+        var delivery_price_used_type = ADMIN_DATA_ID.ADMIN;
+        var delivery_price_used_type_id = null;
+        var is_order_payment_status_set_by_store = false;
+        if (
+          store.is_store_can_add_provider ||
+          store.is_store_can_complete_order
+        ) {
+          delivery_price_used_type = ADMIN_DATA_ID.STORE;
+          delivery_price_used_type_id = store._id;
+          is_order_payment_status_set_by_store = true;
+        }
 
-              var is_user_pick_up_order = false;
+        var delivery_type = DELIVERY_TYPE.STORE;
 
-              if (request_data_body.is_user_pick_up_order != undefined) {
-                is_user_pick_up_order = request_data_body.is_user_pick_up_order;
+        var query = {};
+        if (request_data_body.vehicle_id) {
+          var vehicle_id = request_data_body.vehicle_id;
+          query = {
+            city_id: city_id,
+            delivery_type: delivery_type,
+            vehicle_id: vehicle_id,
+            type_id: delivery_price_used_type_id,
+          };
+        } else {
+          query = {
+            city_id: city_id,
+            delivery_type: delivery_type,
+            type_id: delivery_price_used_type_id,
+          };
+        }
+        const service_list = await Service.find(query);
+        var service = null;
+        var default_service_index = service_list.findIndex(
+          (service) => service.is_default == true
+        );
+        if (default_service_index !== -1 && !vehicle_id) {
+          service = service_list[default_service_index];
+        } else if (service_list.length > 0) {
+          service = service_list[0];
+        }
+        if (!service) {
+          res.json({
+            success: false,
+            error_code:
+              USER_ERROR_CODE.DELIVERY_SERVICE_NOT_AVAILABLE_IN_YOUR_CITY,
+          });
+          return;
+        }
+        utils.check_zone(
+          city_id,
+          delivery_type,
+          delivery_price_used_type_id,
+          service.vehicle_id,
+          city_detail.zone_business,
+          store_location,
+          destination_location,
+          async function (zone_response) {
+            /* HERE USER PARAM */
+
+            var total_distance = request_data_body.total_distance;
+            var total_time = request_data_body.total_time;
+
+            var is_user_pick_up_order = false;
+
+            if (request_data_body.is_user_pick_up_order != undefined) {
+              is_user_pick_up_order = request_data_body.is_user_pick_up_order;
+            }
+
+            var total_item_count = request_data_body.total_item_count;
+
+            /* SERVICE DATA HERE */
+            var base_price = 0;
+            var base_price_distance = 0;
+            var price_per_unit_distance = 0;
+            var price_per_unit_time = 0;
+            var service_tax = 0;
+            var min_fare = 0;
+            var is_min_fare_applied = false;
+
+            if (service) {
+              if (service.admin_profit_mode_on_delivery) {
+                admin_profit_mode_on_delivery =
+                  service.admin_profit_mode_on_delivery;
+                admin_profit_value_on_delivery =
+                  service.admin_profit_value_on_delivery;
               }
 
-              var total_item_count = request_data_body.total_item_count;
+              base_price = service.base_price;
+              base_price_distance = service.base_price_distance;
+              price_per_unit_distance = service.price_per_unit_distance;
+              price_per_unit_time = service.price_per_unit_time;
+              service_tax = service.service_tax;
+              min_fare = service.min_fare;
+            }
+            var admin_profit_mode_on_store = store.admin_profit_mode_on_store;
+            var admin_profit_value_on_store = store.admin_profit_value_on_store;
+            // STORE DATA HERE //
 
-              /* SERVICE DATA HERE */
-              var base_price = 0;
-              var base_price_distance = 0;
-              var price_per_unit_distance = 0;
-              var price_per_unit_time = 0;
-              var service_tax = 0;
-              var min_fare = 0;
-              var is_min_fare_applied = false;
+            var item_tax = store.item_tax;
+            // DELIVERY CALCULATION START //
+            var distance_price = 0;
+            var total_base_price = 0;
+            var total_distance_price = 0;
+            var total_time_price = 0;
+            var total_service_price = 0;
+            var total_admin_tax_price = 0;
+            var total_after_tax_price = 0;
+            var total_surge_price = 0;
+            var total_delivery_price_after_surge = 0;
+            var delivery_price = 0;
+            var total_delivery_price = 0;
+            var total_admin_profit_on_delivery = 0;
+            var total_provider_income = 0;
 
-              if (service) {
-                if (service.admin_profit_mode_on_delivery) {
-                  admin_profit_mode_on_delivery =
-                    service.admin_profit_mode_on_delivery;
-                  admin_profit_value_on_delivery =
-                    service.admin_profit_value_on_delivery;
-                }
+            total_time = total_time / 60; // convert to mins
+            total_time = utils.precisionRoundTwo(Number(total_time));
 
-                base_price = service.base_price;
-                base_price_distance = service.base_price_distance;
-                price_per_unit_distance = service.price_per_unit_distance;
-                price_per_unit_time = service.price_per_unit_time;
-                service_tax = service.service_tax;
-                min_fare = service.min_fare;
-              }
-              var admin_profit_mode_on_store = store.admin_profit_mode_on_store;
-              var admin_profit_value_on_store =
-                store.admin_profit_value_on_store;
-              // STORE DATA HERE //
+            if (is_distance_unit_mile) {
+              total_distance = total_distance * 0.000621371;
+            } else {
+              total_distance = total_distance * 0.001;
+            }
 
-              var item_tax = store.item_tax;
-              // DELIVERY CALCULATION START //
-              var distance_price = 0;
-              var total_base_price = 0;
-              var total_distance_price = 0;
-              var total_time_price = 0;
-              var total_service_price = 0;
-              var total_admin_tax_price = 0;
-              var total_after_tax_price = 0;
-              var total_surge_price = 0;
-              var total_delivery_price_after_surge = 0;
-              var delivery_price = 0;
-              var total_delivery_price = 0;
-              var total_admin_profit_on_delivery = 0;
-              var total_provider_income = 0;
-
-              total_time = total_time / 60; // convert to mins
-              total_time = utils.precisionRoundTwo(Number(total_time));
-
-              if (is_distance_unit_mile) {
-                total_distance = total_distance * 0.000621371;
-              } else {
-                total_distance = total_distance * 0.001;
-              }
-
-              if (!is_user_pick_up_order) {
-                if (service && service.is_use_distance_calculation) {
-                  var delivery_price_setting = service.delivery_price_setting;
-                  delivery_price_setting.forEach(function (
-                    delivery_setting_detail
-                  ) {
-                    if (delivery_setting_detail.to_distance >= total_distance) {
-                      distance_price =
-                        distance_price + delivery_setting_detail.delivery_fee;
-                    }
-                  });
-                  total_distance_price = distance_price;
-                  total_service_price = distance_price;
-                  delivery_price = distance_price;
-                  total_after_tax_price = distance_price;
-                  total_delivery_price_after_surge = distance_price;
-                } else {
-                  total_base_price = base_price;
-                  if (total_distance > base_price_distance) {
+            if (!is_user_pick_up_order) {
+              if (service && service.is_use_distance_calculation) {
+                var delivery_price_setting = service.delivery_price_setting;
+                delivery_price_setting.forEach(function (
+                  delivery_setting_detail
+                ) {
+                  if (delivery_setting_detail.to_distance >= total_distance) {
                     distance_price =
-                      (total_distance - base_price_distance) *
-                      price_per_unit_distance;
+                      distance_price + delivery_setting_detail.delivery_fee;
                   }
-
-                  total_base_price = utils.precisionRoundTwo(total_base_price);
-                  distance_price = utils.precisionRoundTwo(distance_price);
-                  total_time_price = price_per_unit_time * total_time;
-                  total_time_price = utils.precisionRoundTwo(
-                    Number(total_time_price)
-                  );
-
-                  total_distance_price = +total_base_price + +distance_price;
-                  total_distance_price =
-                    utils.precisionRoundTwo(total_distance_price);
-
-                  total_service_price =
-                    +total_distance_price + +total_time_price;
-                  total_service_price = utils.precisionRoundTwo(
-                    Number(total_service_price)
-                  );
-
-                  total_admin_tax_price =
-                    service_tax * total_service_price * 0.01;
-                  total_admin_tax_price = utils.precisionRoundTwo(
-                    Number(total_admin_tax_price)
-                  );
-
-                  total_after_tax_price =
-                    +total_service_price + +total_admin_tax_price;
-                  total_after_tax_price = utils.precisionRoundTwo(
-                    Number(total_after_tax_price)
-                  );
-
-                  total_delivery_price_after_surge =
-                    +total_after_tax_price + +total_surge_price;
-                  total_delivery_price_after_surge = utils.precisionRoundTwo(
-                    Number(total_delivery_price_after_surge)
-                  );
-
-                  if (total_delivery_price_after_surge <= min_fare) {
-                    delivery_price = min_fare;
-                    is_min_fare_applied = true;
-                  } else {
-                    delivery_price = total_delivery_price_after_surge;
-                  }
-                }
-
-                if (zone_response.success) {
-                  total_admin_tax_price = 0;
-                  total_base_price = 0;
-                  total_distance_price = 0;
-                  total_time_price = 0;
-                  total_service_price = zone_response.zone_price;
-                  delivery_price = zone_response.zone_price;
-                  total_after_tax_price = total_service_price;
-                  total_delivery_price_after_surge = total_service_price;
-                }
-
-                switch (admin_profit_mode_on_delivery) {
-                  case ADMIN_PROFIT_ON_DELIVERY_ID.PERCENTAGE /* 1- percentage */:
-                    total_admin_profit_on_delivery =
-                      delivery_price * admin_profit_value_on_delivery * 0.01;
-                    break;
-                  case ADMIN_PROFIT_ON_DELIVERY_ID.PER_DELVIERY /* 2- absolute per delivery */:
-                    total_admin_profit_on_delivery =
-                      admin_profit_value_on_delivery;
-                    break;
-                  default:
-                    /* percentage */
-                    total_admin_profit_on_delivery =
-                      delivery_price * admin_profit_value_on_delivery * 0.01;
-                    break;
-                }
-
-                total_admin_profit_on_delivery = utils.precisionRoundTwo(
-                  Number(total_admin_profit_on_delivery)
-                );
-                total_provider_income =
-                  delivery_price - total_admin_profit_on_delivery;
-                total_provider_income = utils.precisionRoundTwo(
-                  Number(total_provider_income)
-                );
+                });
+                total_distance_price = distance_price;
+                total_service_price = distance_price;
+                delivery_price = distance_price;
+                total_after_tax_price = distance_price;
+                total_delivery_price_after_surge = distance_price;
               } else {
-                total_distance = 0;
-                total_time = 0;
+                total_base_price = base_price;
+                if (total_distance > base_price_distance) {
+                  distance_price =
+                    (total_distance - base_price_distance) *
+                    price_per_unit_distance;
+                }
+
+                total_base_price = utils.precisionRoundTwo(total_base_price);
+                distance_price = utils.precisionRoundTwo(distance_price);
+                total_time_price = price_per_unit_time * total_time;
+                total_time_price = utils.precisionRoundTwo(
+                  Number(total_time_price)
+                );
+
+                total_distance_price = +total_base_price + +distance_price;
+                total_distance_price =
+                  utils.precisionRoundTwo(total_distance_price);
+
+                total_service_price = +total_distance_price + +total_time_price;
+                total_service_price = utils.precisionRoundTwo(
+                  Number(total_service_price)
+                );
+
+                total_admin_tax_price =
+                  service_tax * total_service_price * 0.01;
+                total_admin_tax_price = utils.precisionRoundTwo(
+                  Number(total_admin_tax_price)
+                );
+
+                total_after_tax_price =
+                  +total_service_price + +total_admin_tax_price;
+                total_after_tax_price = utils.precisionRoundTwo(
+                  Number(total_after_tax_price)
+                );
+
+                total_delivery_price_after_surge =
+                  +total_after_tax_price + +total_surge_price;
+                total_delivery_price_after_surge = utils.precisionRoundTwo(
+                  Number(total_delivery_price_after_surge)
+                );
+
+                if (total_delivery_price_after_surge <= min_fare) {
+                  delivery_price = min_fare;
+                  is_min_fare_applied = true;
+                } else {
+                  delivery_price = total_delivery_price_after_surge;
+                }
               }
 
-              // DELIVERY CALCULATION END //
-              // ORDER CALCULATION START //
-
-              var order_price = 0;
-              var total_store_tax_price = 0;
-              var total_order_price = 0;
-              var total_admin_profit_on_store = 0;
-              var total_store_income = 0;
-              var total_cart_price = 0;
-              var is_store_pay_delivery_fees = false;
-
-              total_cart_price = cart.total_cart_price;
-              if (request_data_body.total_cart_price) {
-                total_cart_price = request_data_body.total_cart_price;
+              if (zone_response.success) {
+                total_admin_tax_price = 0;
+                total_base_price = 0;
+                total_distance_price = 0;
+                total_time_price = 0;
+                total_service_price = zone_response.zone_price;
+                delivery_price = zone_response.zone_price;
+                total_after_tax_price = total_service_price;
+                total_delivery_price_after_surge = total_service_price;
               }
 
-              if (store.is_use_item_tax) {
-                total_store_tax_price = cart.total_item_tax;
-              } else {
-                total_store_tax_price = total_cart_price * item_tax * 0.01;
-              }
-
-              total_store_tax_price = utils.precisionRoundTwo(
-                Number(total_store_tax_price)
-              );
-              cart.total_item_tax = total_store_tax_price;
-
-              // total_store_tax_price = total_cart_price * item_tax * 0.01;
-              // total_store_tax_price = utils.precisionRoundTwo(Number(total_store_tax_price));
-
-              order_price = +total_cart_price + +total_store_tax_price;
-              order_price = utils.precisionRoundTwo(Number(order_price));
-
-              switch (admin_profit_mode_on_store) {
-                case ADMIN_PROFIT_ON_ORDER_ID.PERCENTAGE /* percentage */:
-                  total_admin_profit_on_store =
-                    order_price * admin_profit_value_on_store * 0.01;
+              switch (admin_profit_mode_on_delivery) {
+                case ADMIN_PROFIT_ON_DELIVERY_ID.PERCENTAGE /* 1- percentage */:
+                  total_admin_profit_on_delivery =
+                    delivery_price * admin_profit_value_on_delivery * 0.01;
                   break;
-                case ADMIN_PROFIT_ON_ORDER_ID.PER_ORDER /* absolute per order */:
-                  total_admin_profit_on_store = admin_profit_value_on_store;
-                  break;
-                case ADMIN_PROFIT_ON_ORDER_ID.PER_ITEMS /* absolute value per items */:
-                  total_admin_profit_on_store =
-                    admin_profit_value_on_store * total_item_count;
+                case ADMIN_PROFIT_ON_DELIVERY_ID.PER_DELVIERY /* 2- absolute per delivery */:
+                  total_admin_profit_on_delivery =
+                    admin_profit_value_on_delivery;
                   break;
                 default:
                   /* percentage */
-                  total_admin_profit_on_store =
-                    order_price * admin_profit_value_on_store * 0.01;
+                  total_admin_profit_on_delivery =
+                    delivery_price * admin_profit_value_on_delivery * 0.01;
                   break;
               }
 
-              total_admin_profit_on_store = utils.precisionRoundTwo(
-                Number(total_admin_profit_on_store)
+              total_admin_profit_on_delivery = utils.precisionRoundTwo(
+                Number(total_admin_profit_on_delivery)
               );
-              total_store_income = order_price - total_admin_profit_on_store;
-
-              // if(delivery_price_used_type == ADMIN_DATA_ID.STORE){
-              //     total_store_income = total_store_income + total_provider_income;
-              //     total_provider_income = 0;
-              // }
-              total_store_income = utils.precisionRoundTwo(
-                Number(total_store_income)
+              total_provider_income =
+                delivery_price - total_admin_profit_on_delivery;
+              total_provider_income = utils.precisionRoundTwo(
+                Number(total_provider_income)
               );
-              /* ORDER CALCULATION END */
+            } else {
+              total_distance = 0;
+              total_time = 0;
+            }
 
-              /* FINAL INVOICE CALCULATION START */
-              total_delivery_price = delivery_price;
-              total_order_price = order_price;
-              var total = +total_delivery_price + +total_order_price;
-              total = utils.precisionRoundTwo(Number(total));
-              var user_pay_payment = total;
-              // Store Pay Delivery Fees Condition
+            // DELIVERY CALCULATION END //
+            // ORDER CALCULATION START //
 
-              var distance_from_store = utils.getDistanceFromTwoLocation(
-                destination_location,
-                store_location
-              );
-              if (
-                total_order_price > store.free_delivery_for_above_order_price &&
-                distance_from_store < store.free_delivery_within_radius &&
-                store.is_store_pay_delivery_fees == true
-              ) {
-                is_store_pay_delivery_fees = true;
-                user_pay_payment = order_price;
-              }
-              let latitude = request_data_body.user_lat;
-              let longitude = request_data_body.user_lng;
-              if (!request_data_body.user_lat && !request_data_body.user_lng) {
-                latitude = 55.27467799999999;
-                longitude = 25.1781685;
-              }
-              const minOrderPrice = await setUseRadiusZone(
-                store,
-                latitude,
-                longitude,
-                cart_id
-              );
-              const store_resp = {
-                _id: store._id,
-                name: store.name,
-                user_radius_zone: store.user_radius_zone,
-                image_url: store.image_url,
-                price_rating: store.price_rating,
-                is_store_busy: store.is_store_busy,
-                is_business: store.is_business,
-                is_approved: store.is_approved,
-                is_taking_schedule_order: store.is_taking_schedule_order,
-                inform_schedule_order_before_min:
-                  store.inform_schedule_order_before_min,
-                schedule_order_create_after_minute:
-                  store.schedule_order_create_after_minute,
-                is_provide_pickup_delivery: store.is_provide_pickup_delivery,
-                is_card_on_delivery_visible: store.is_card_on_delivery_visible,
-                is_cash_visible: store.is_cash_visible,
-                is_online_payment_visible: store.is_online_payment_visible,
-                is_show_cash: store.is_show_cash,
-                is_wallet_visible: store.is_wallet_visible,
-                min_price_for_card_on_delivery:
-                  store.min_price_for_card_on_delivery,
-                min_price_for_cash: store.min_price_for_cash,
-                min_price_for_online_payment:
-                  store.min_price_for_online_payment,
-                min_price_for_wallet: store.min_price_for_wallet,
-                is_payment_max: user.is_payment_max,
-                is_use_wallet: user.is_use_wallet,
-                is_pay_valid: user.is_pay_valid,
-                user_rate: store.user_rate,
-                user_rate_count: store.user_rate_count,
-                is_visible: store.is_visible,
-                store_time: store.store_time,
-                slogan: store.slogan,
-                famous_products_tags: store.famous_products_tags,
-                server_token: store.server_token,
-                store_type: store.store_type,
-                admin_type: store.admin_type,
-                store_type_id: store.store_type_id,
-                location: store.location,
-                created_at: store.created_at,
-                updated_at: store.updated_at,
-                unique_id: store.unique_id,
-                auto_complete_order: store.auto_complete_order,
-                store_sequence: store.store_sequence,
-                is_show_card_on_delivery: store.is_show_card_on_delivery,
-                is_show_online_payment: store.is_show_online_payment,
-                name_type: store.name_type,
-                image_url_2: store.image_url_2,
-                images: store.images,
-                info: store.info,
-                tags: store.tags,
-                under_item_price: store.under_item_price,
-                min_order_for_loyalty: store.min_order_for_loyalty,
-                is_loyalty_payment_visible: store.is_loyalty_payment_visible,
-              };
-              if (order_price < minOrderPrice) {
-                res.json({
-                  success: false,
-                  min_order_price: minOrderPrice,
-                  // total_order_price,
-                  // total_delivery_price,
-                  // item_tax: item_tax,
-                  // total_item_count,
-                  // total_order_price,
-                  // total_service_price,
-                  // total_cart_price,
-                  // service_tax,
-                  // user_pay_payment,
-                  // total_store_tax_price,
-                  // is_order_payment_status_set_by_store,
+            var order_price = 0;
+            var total_store_tax_price = 0;
+            var total_order_price = 0;
+            var total_admin_profit_on_store = 0;
+            var total_store_income = 0;
+            var total_cart_price = 0;
+            var is_store_pay_delivery_fees = false;
 
-                  // item_tax,
-                  error_code:
-                    USER_ERROR_CODE.YOUR_ORDER_PRICE_LESS_THEN_STORE_MIN_ORDER_PRICE,
-                });
-              } else {
-                cart.total_item_count = total_item_count;
+            total_cart_price = cart.total_cart_price;
+            if (request_data_body.total_cart_price) {
+              total_cart_price = request_data_body.total_cart_price;
+            }
 
-                Vehicle.findOne({
-                  _id: service.vehicle_id,
-                }).then((vehicle_data) => {
-                  if (!vehicle_data) {
-                    vehicle_data = [];
-                  } else {
-                    vehicle_data = [vehicle_data];
-                  }
+            if (store.is_use_item_tax) {
+              total_store_tax_price = cart.total_item_tax;
+            } else {
+              total_store_tax_price = total_cart_price * item_tax * 0.01;
+            }
 
-                  Order_payment.findOne({
-                    _id: cart.order_payment_id,
-                  }).then(async (order_payment) => {
-                    if (order_payment) {
-                      var promo_id = order_payment.promo_id;
-                      Promo_code.findOne({
-                        _id: promo_id,
-                      }).then(async (promo_code) => {
-                        if (promo_code) {
-                          promo_code.used_promo_code =
-                            promo_code.used_promo_code - 1;
-                          promo_code.payment_apply_on =
-                            promo_code.payment_apply_on.filter(
-                              (id) =>
-                                id.toString() != order_payment._id.toString()
-                            );
-                          console.log(
-                            ">>>>121" + JSON.stringify(order_payment._id)
+            total_store_tax_price = utils.precisionRoundTwo(
+              Number(total_store_tax_price)
+            );
+            cart.total_item_tax = total_store_tax_price;
+
+            // total_store_tax_price = total_cart_price * item_tax * 0.01;
+            // total_store_tax_price = utils.precisionRoundTwo(Number(total_store_tax_price));
+
+            order_price = +total_cart_price + +total_store_tax_price;
+            order_price = utils.precisionRoundTwo(Number(order_price));
+
+            switch (admin_profit_mode_on_store) {
+              case ADMIN_PROFIT_ON_ORDER_ID.PERCENTAGE /* percentage */:
+                total_admin_profit_on_store =
+                  order_price * admin_profit_value_on_store * 0.01;
+                break;
+              case ADMIN_PROFIT_ON_ORDER_ID.PER_ORDER /* absolute per order */:
+                total_admin_profit_on_store = admin_profit_value_on_store;
+                break;
+              case ADMIN_PROFIT_ON_ORDER_ID.PER_ITEMS /* absolute value per items */:
+                total_admin_profit_on_store =
+                  admin_profit_value_on_store * total_item_count;
+                break;
+              default:
+                /* percentage */
+                total_admin_profit_on_store =
+                  order_price * admin_profit_value_on_store * 0.01;
+                break;
+            }
+
+            total_admin_profit_on_store = utils.precisionRoundTwo(
+              Number(total_admin_profit_on_store)
+            );
+            total_store_income = order_price - total_admin_profit_on_store;
+
+            // if(delivery_price_used_type == ADMIN_DATA_ID.STORE){
+            //     total_store_income = total_store_income + total_provider_income;
+            //     total_provider_income = 0;
+            // }
+            total_store_income = utils.precisionRoundTwo(
+              Number(total_store_income)
+            );
+            /* ORDER CALCULATION END */
+
+            /* FINAL INVOICE CALCULATION START */
+            total_delivery_price = delivery_price;
+            total_order_price = order_price;
+            var total = +total_delivery_price + +total_order_price;
+            total = utils.precisionRoundTwo(Number(total));
+            var user_pay_payment = total;
+            // Store Pay Delivery Fees Condition
+
+            var distance_from_store = utils.getDistanceFromTwoLocation(
+              destination_location,
+              store_location
+            );
+            if (
+              total_order_price > store.free_delivery_for_above_order_price &&
+              distance_from_store < store.free_delivery_within_radius &&
+              store.is_store_pay_delivery_fees == true
+            ) {
+              is_store_pay_delivery_fees = true;
+              user_pay_payment = order_price;
+            }
+            let latitude = request_data_body.user_lat;
+            let longitude = request_data_body.user_lng;
+            if (!request_data_body.user_lat && !request_data_body.user_lng) {
+              latitude = 55.27467799999999;
+              longitude = 25.1781685;
+            }
+            const minOrderPrice = await setUseRadiusZone(
+              store,
+              latitude,
+              longitude,
+              cart_id
+            );
+            const store_resp = {
+              _id: store._id,
+              name: store.name,
+              user_radius_zone: store.user_radius_zone,
+              image_url: store.image_url,
+              price_rating: store.price_rating,
+              is_store_busy: store.is_store_busy,
+              is_business: store.is_business,
+              is_approved: store.is_approved,
+              is_taking_schedule_order: store.is_taking_schedule_order,
+              inform_schedule_order_before_min:
+                store.inform_schedule_order_before_min,
+              schedule_order_create_after_minute:
+                store.schedule_order_create_after_minute,
+              is_provide_pickup_delivery: store.is_provide_pickup_delivery,
+              is_card_on_delivery_visible: store.is_card_on_delivery_visible,
+              is_cash_visible: store.is_cash_visible,
+              is_online_payment_visible: store.is_online_payment_visible,
+              is_show_cash: store.is_show_cash,
+              is_wallet_visible: store.is_wallet_visible,
+              min_price_for_card_on_delivery:
+                store.min_price_for_card_on_delivery,
+              min_price_for_cash: store.min_price_for_cash,
+              min_price_for_online_payment: store.min_price_for_online_payment,
+              min_price_for_wallet: store.min_price_for_wallet,
+              is_payment_max: user.is_payment_max,
+              is_use_wallet: user.is_use_wallet,
+              is_pay_valid: user.is_pay_valid,
+              user_rate: store.user_rate,
+              user_rate_count: store.user_rate_count,
+              is_visible: store.is_visible,
+              store_time: store.store_time,
+              slogan: store.slogan,
+              famous_products_tags: store.famous_products_tags,
+              server_token: store.server_token,
+              store_type: store.store_type,
+              admin_type: store.admin_type,
+              store_type_id: store.store_type_id,
+              location: store.location,
+              created_at: store.created_at,
+              updated_at: store.updated_at,
+              unique_id: store.unique_id,
+              auto_complete_order: store.auto_complete_order,
+              store_sequence: store.store_sequence,
+              is_show_card_on_delivery: store.is_show_card_on_delivery,
+              is_show_online_payment: store.is_show_online_payment,
+              name_type: store.name_type,
+              image_url_2: store.image_url_2,
+              images: store.images,
+              info: store.info,
+              tags: store.tags,
+              under_item_price: store.under_item_price,
+              min_order_for_loyalty: store.min_order_for_loyalty,
+              is_loyalty_payment_visible: store.is_loyalty_payment_visible,
+            };
+            if (order_price < minOrderPrice) {
+              res.json({
+                success: false,
+                min_order_price: minOrderPrice,
+                // total_order_price,
+                // total_delivery_price,
+                // item_tax: item_tax,
+                // total_item_count,
+                // total_order_price,
+                // total_service_price,
+                // total_cart_price,
+                // service_tax,
+                // user_pay_payment,
+                // total_store_tax_price,
+                // is_order_payment_status_set_by_store,
+
+                // item_tax,
+                error_code:
+                  USER_ERROR_CODE.YOUR_ORDER_PRICE_LESS_THEN_STORE_MIN_ORDER_PRICE,
+              });
+            } else {
+              cart.total_item_count = total_item_count;
+
+              Vehicle.findOne({
+                _id: service.vehicle_id,
+              }).then((vehicle_data) => {
+                if (!vehicle_data) {
+                  vehicle_data = [];
+                } else {
+                  vehicle_data = [vehicle_data];
+                }
+
+                Order_payment.findOne({
+                  _id: cart.order_payment_id,
+                }).then(async (order_payment) => {
+                  if (order_payment) {
+                    var promo_id = order_payment.promo_id;
+                    Promo_code.findOne({
+                      _id: promo_id,
+                    }).then(async (promo_code) => {
+                      if (promo_code) {
+                        promo_code.used_promo_code =
+                          promo_code.used_promo_code - 1;
+                        promo_code.payment_apply_on =
+                          promo_code.payment_apply_on.filter(
+                            (id) =>
+                              id.toString() != order_payment._id.toString()
                           );
-                          promo_code.save();
-                          user.promo_count = user.promo_count - 1;
-                          user.save();
-                        }
-                      });
-
-                      order_payment.cart_id = cart._id;
-                      order_payment.is_min_fare_applied = is_min_fare_applied;
-                      order_payment.order_id = null;
-                      order_payment.order_unique_id = 0;
-                      order_payment.store_id = store._id;
-                      order_payment.user_id = cart.user_id;
-                      order_payment.country_id = country_id;
-                      order_payment.city_id = city_id;
-                      order_payment.provider_id = null;
-                      order_payment.delivery_price_used_type =
-                        delivery_price_used_type;
-                      order_payment.delivery_price_used_type_id =
-                        delivery_price_used_type_id;
-                      order_payment.currency_code = wallet_currency_code;
-                      order_payment.admin_currency_code = "";
-                      order_payment.order_currency_code =
-                        store.wallet_currency_code;
-                      order_payment.current_rate = 1;
-                      order_payment.admin_profit_mode_on_delivery =
-                        admin_profit_mode_on_delivery;
-                      order_payment.admin_profit_value_on_delivery =
-                        admin_profit_value_on_delivery;
-                      order_payment.total_admin_profit_on_delivery =
-                        total_admin_profit_on_delivery;
-                      order_payment.total_provider_income =
-                        total_provider_income;
-                      order_payment.admin_profit_mode_on_store =
-                        admin_profit_mode_on_store;
-                      order_payment.admin_profit_value_on_store =
-                        admin_profit_value_on_store;
-                      order_payment.total_admin_profit_on_store =
-                        total_admin_profit_on_store;
-                      order_payment.total_store_income = total_store_income;
-                      order_payment.total_distance = total_distance;
-                      order_payment.total_time = total_time;
-                      order_payment.is_distance_unit_mile =
-                        is_distance_unit_mile;
-                      order_payment.total_service_price = total_service_price;
-                      order_payment.total_admin_tax_price =
-                        total_admin_tax_price;
-                      order_payment.total_after_tax_price =
-                        total_after_tax_price;
-                      order_payment.total_surge_price = total_surge_price;
-                      order_payment.total_delivery_price_after_surge =
-                        total_delivery_price_after_surge;
-                      order_payment.total_cart_price = total_cart_price;
-                      order_payment.total_delivery_price = total_delivery_price;
-                      order_payment.total_item_count = total_item_count;
-                      order_payment.service_tax = service_tax;
-                      order_payment.item_tax = item_tax;
-                      order_payment.total_store_tax_price =
-                        total_store_tax_price;
-                      order_payment.total_order_price = total_order_price;
-                      if (
-                        request_data_body.deduct_from_wallet &&
-                        order_payment.wallet_deduction
-                      ) {
-                        user_pay_payment -= order_payment.wallet_deduction;
+                        console.log(
+                          ">>>>121" + JSON.stringify(order_payment._id)
+                        );
+                        promo_code.save();
+                        user.promo_count = user.promo_count - 1;
+                        user.save();
                       }
-                      order_payment.total = total;
-                      order_payment.wallet_payment = 0;
-                      order_payment.total_after_wallet_payment = 0;
-                      order_payment.cash_payment = 0;
-                      order_payment.card_payment = 0;
-                      order_payment.remaining_payment = 0;
-                      order_payment.delivered_at = null;
-                      order_payment.is_order_payment_status_set_by_store =
-                        is_order_payment_status_set_by_store;
-                      order_payment.is_user_pick_up_order =
-                        is_user_pick_up_order;
-                      var delivery_fees = store.user_radius_zone.delivery_fees
-                        ? store.user_radius_zone.delivery_fees
-                        : store.delivery_fees;
+                    });
+
+                    order_payment.cart_id = cart._id;
+                    order_payment.is_min_fare_applied = is_min_fare_applied;
+                    order_payment.order_id = null;
+                    order_payment.order_unique_id = 0;
+                    order_payment.store_id = store._id;
+                    order_payment.user_id = cart.user_id;
+                    order_payment.country_id = country_id;
+                    order_payment.city_id = city_id;
+                    order_payment.provider_id = null;
+                    order_payment.delivery_price_used_type =
+                      delivery_price_used_type;
+                    order_payment.delivery_price_used_type_id =
+                      delivery_price_used_type_id;
+                    order_payment.currency_code = wallet_currency_code;
+                    order_payment.admin_currency_code = "";
+                    order_payment.order_currency_code =
+                      store.wallet_currency_code;
+                    order_payment.current_rate = 1;
+                    order_payment.admin_profit_mode_on_delivery =
+                      admin_profit_mode_on_delivery;
+                    order_payment.admin_profit_value_on_delivery =
+                      admin_profit_value_on_delivery;
+                    order_payment.total_admin_profit_on_delivery =
+                      total_admin_profit_on_delivery;
+                    order_payment.total_provider_income = total_provider_income;
+                    order_payment.admin_profit_mode_on_store =
+                      admin_profit_mode_on_store;
+                    order_payment.admin_profit_value_on_store =
+                      admin_profit_value_on_store;
+                    order_payment.total_admin_profit_on_store =
+                      total_admin_profit_on_store;
+                    order_payment.total_store_income = total_store_income;
+                    order_payment.total_distance = total_distance;
+                    order_payment.total_time = total_time;
+                    order_payment.is_distance_unit_mile = is_distance_unit_mile;
+                    order_payment.total_service_price = total_service_price;
+                    order_payment.total_admin_tax_price = total_admin_tax_price;
+                    order_payment.total_after_tax_price = total_after_tax_price;
+                    order_payment.total_surge_price = total_surge_price;
+                    order_payment.total_delivery_price_after_surge =
+                      total_delivery_price_after_surge;
+                    order_payment.total_cart_price = total_cart_price;
+                    order_payment.total_delivery_price = total_delivery_price;
+                    order_payment.total_item_count = total_item_count;
+                    order_payment.service_tax = service_tax;
+                    order_payment.item_tax = item_tax;
+                    order_payment.total_store_tax_price = total_store_tax_price;
+                    order_payment.total_order_price = total_order_price;
+                    if (
+                      request_data_body.deduct_from_wallet &&
+                      order_payment.wallet_deduction
+                    ) {
+                      user_pay_payment -= order_payment.wallet_deduction;
+                    }
+                    order_payment.total = total;
+                    order_payment.wallet_payment = 0;
+                    order_payment.total_after_wallet_payment = 0;
+                    order_payment.cash_payment = 0;
+                    order_payment.card_payment = 0;
+                    order_payment.remaining_payment = 0;
+                    order_payment.delivered_at = null;
+                    order_payment.is_order_payment_status_set_by_store =
+                      is_order_payment_status_set_by_store;
+                    order_payment.is_user_pick_up_order = is_user_pick_up_order;
+                    var delivery_fees = store.user_radius_zone.delivery_fees
+                      ? store.user_radius_zone.delivery_fees
+                      : store.delivery_fees;
+                    if (
+                      user_pay_payment >
+                      store.free_delivery_for_above_order_price
+                    ) {
+                      delivery_fees = 0;
+                      is_store_pay_delivery_fees = true;
+                    }
+
+                    let other_promo = order_payment.loyalty_payment
+                      ? order_payment.loyalty_payment
+                      : order_payment.promo_payment;
+
+                    if (!other_promo) other_promo = 0;
+                    try {
+                      const userId = user._id || order_payment.user_id;
+                      const userSetting = await UserSetting.findOne({
+                        userId,
+                      }).lean();
                       if (
-                        user_pay_payment >
-                        store.free_delivery_for_above_order_price
+                        userSetting &&
+                        userSetting.free_delivery &&
+                        user_pay_payment > userSetting.free_delivery_amount
                       ) {
                         delivery_fees = 0;
-                        is_store_pay_delivery_fees = true;
                       }
-
-                      let other_promo = order_payment.loyalty_payment
-                        ? order_payment.loyalty_payment
-                        : order_payment.promo_payment;
-
-                      if (!other_promo) other_promo = 0;
-                      try {
-                        const userId = user._id || order_payment.user_id;
-                        const userSetting = await UserSetting.findOne({
-                          userId,
-                        }).lean();
-                        if (
-                          userSetting &&
-                          userSetting.free_delivery &&
-                          user_pay_payment > userSetting.free_delivery_amount
-                        ) {
-                          delivery_fees = 0;
-                        }
-                      } catch (error) {
-                        console.log(
-                          "error: unable to find user setting for applying free delivery",
-                          error
-                        );
-                      }
-
-                      order_payment.user_pay_payment =
-                        user_pay_payment + delivery_fees - other_promo;
-                      order_payment.is_store_pay_delivery_fees =
-                        is_store_pay_delivery_fees;
-                      order_payment.total_delivery_price = delivery_fees;
-                      // var is_payment_max =
-                      // user.is_payment_max;
-                      // var is_pay_valid =
-                      // user.is_pay_valid;
-                      // var is_payment_max = user.is_payment_max;
-                      // var is_pay_valid = user.is_pay_valid;
-                      order_payment.save().then(
-                        async () => {
-                          order_payment.total_delivery_price = delivery_fees;
-                          delete store.radius_regions;
-                          const setting = await Setting.findOne({});
-                          let promo_code_name = "";
-                          if (order_payment && order_payment.promo_id) {
-                            const code = await Promo_code.findById(
-                              order_payment.promo_id
-                            ).lean();
-                            if (code) {
-                              promo_code_name = code.promo_code_name;
-                            }
-                          }
-                          res.json({
-                            success: true,
-                            message:
-                              USER_MESSAGE_CODE.FARE_ESTIMATE_SUCCESSFULLY,
-                            delivery_fees,
-                            wallet: wallet,
-                            // is_payment_max:
-                            //   is_payment_max,
-                            // is_pay_valid:
-                            //   is_pay_valid,
-                            server_time: server_time,
-                            timezone: city_detail.timezone,
-                            order_payment: {
-                              ...order_payment.toJSON(),
-                              promo_code_name,
-                            },
-                            store: store_resp,
-                            customer_replacement_reason,
-                            max_loyalty_per_order_to_redeem:
-                              setting.max_loyalty_per_order_to_redeem,
-                            is_amount_per_loyalty_to_redeem:
-                              setting.is_amount_per_loyalty_to_redeem,
-                            is_amount_per_loyalty_to_add_for_order:
-                              setting.is_amount_per_loyalty_to_add_for_order,
-                            // vehicles: vehicle_data,
-                            ...card_response,
-                          });
-                        },
-                        (error) => {
-                          res.json({
-                            success: false,
-                            error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                          });
-                        }
-                      );
-                    } else {
-                      // var is_use_loyalty = request_data_body.is_use_loyalty;
-                      // var loyalty_payment = 0;
-                      // if (is_use_loyalty) {
-                      //   const setting = await Setting.findOne({});
-                      //   const min_redeem_point =
-                      //     setting.is_point_per_loyalty_to_redeem;
-                      //   const min_order_value =
-                      //     setting.is_amount_per_loyalty_to_redeem;
-                      //   //
-                      //   //
-                      //   //
-                      //   if (cart.total_cart_price > min_order_value) {
-                      //     // user.loyalty_points = user.loyalty_points - min_redeem_point
-                      //     loyalty_payment = user.loyalty_points;
-                      //     if (user_pay_payment < loyalty_payment) {
-                      //       user.loyalty_points = Math.floor(
-                      //         loyalty_payment - user_pay_payment
-                      //       );
-                      //       loyalty_payment = user_pay_payment;
-                      //       user_pay_payment = 0;
-                      //     } else {
-                      //       user_pay_payment =
-                      //         user_pay_payment - loyalty_payment;
-                      //       user.loyalty_points = 0;
-                      //     }
-                      //     user.save();
-                      //
-                      //   }
-                      // }
-                      if (
-                        request_data_body.deduct_from_wallet &&
-                        order_payment.wallet_deduction
-                      ) {
-                        user_pay_payment -= order_payment.wallet_deduction;
-                      }
-                      var delivery_fees = store.user_radius_zone.delivery_fees
-                        ? store.user_radius_zone.delivery_fees
-                        : store.delivery_fees;
-                      if (
-                        user_pay_payment >
-                        store.free_delivery_for_above_order_price
-                      ) {
-                        delivery_fees = 0;
-                        is_store_pay_delivery_fees = true;
-                      }
-                      try {
-                        const userId = user._id || order_payment.user_id;
-                        const userSetting = await UserSetting.findOne({
-                          userId,
-                        }).lean();
-                        if (
-                          userSetting &&
-                          userSetting.free_delivery &&
-                          user_pay_payment > userSetting.free_delivery_amount
-                        ) {
-                          delivery_fees = 0;
-                        }
-                      } catch (error) {
-                        console.log(
-                          "error: unable to find user setting for applying free delivery",
-                          error
-                        );
-                      }
-
-                      user_pay_payment = user_pay_payment + delivery_fees;
-                      /* ENTRY IN ORDER PAYMENT */
-                      var order_payment = new Order_payment({
-                        cart_id: cart._id,
-                        store_id: store._id,
-                        user_id: cart.user_id,
-                        country_id: country_id,
-                        city_id: city_id,
-                        // loyalty_payment: loyalty_payment,
-                        delivery_price_used_type: delivery_price_used_type,
-                        delivery_price_used_type_id:
-                          delivery_price_used_type_id,
-                        currency_code: wallet_currency_code,
-                        order_currency_code: store.wallet_currency_code,
-                        current_rate: 1, // HERE current_rate MEANS ORDER TO ADMIN CONVERT RATE
-                        wallet_to_admin_current_rate: 1,
-                        wallet_to_order_current_rate: 1,
-                        total_distance: total_distance,
-                        total_time: total_time,
-                        service_tax: service_tax,
-                        is_min_fare_applied: is_min_fare_applied,
-                        item_tax: item_tax,
-                        total_service_price: total_service_price,
-                        total_admin_tax_price: total_admin_tax_price,
-                        total_delivery_price: total_delivery_price,
-                        is_store_pay_delivery_fees: is_store_pay_delivery_fees,
-                        total_item_count: total_item_count,
-                        total_cart_price: total_cart_price,
-                        total_store_tax_price: total_store_tax_price,
-                        user_pay_payment: user_pay_payment,
-                        total_order_price: total_order_price,
-                        promo_payment: 0,
-                        total: total,
-                        admin_profit_mode_on_store: admin_profit_mode_on_store,
-                        admin_profit_value_on_store:
-                          admin_profit_value_on_store,
-                        total_admin_profit_on_store:
-                          total_admin_profit_on_store,
-                        total_store_income: total_store_income,
-                        admin_profit_mode_on_delivery:
-                          admin_profit_mode_on_delivery,
-                        admin_profit_value_on_delivery:
-                          admin_profit_value_on_delivery,
-                        total_admin_profit_on_delivery:
-                          total_admin_profit_on_delivery,
-                        total_provider_income: total_provider_income,
-                        is_user_pick_up_order: is_user_pick_up_order,
-                        is_order_payment_status_set_by_store:
-                          is_order_payment_status_set_by_store,
-                        is_distance_unit_mile: is_distance_unit_mile,
-                      });
-
-                      order_payment.save().then(
-                        async () => {
-                          order_payment.total_delivery_price = delivery_fees;
-                          var totalDeliveryPrice = !isNaN(Number(delivery_fees))
-                            ? Number(delivery_fees)
-                            : delivery_fees;
-                          cart.order_payment_id = order_payment._id;
-                          cart.save();
-
-                          order_payment.save();
-                          delete store.radius_regions;
-                          const setting = await Setting.findOne({});
-
-                          res.json({
-                            success: true,
-                            message:
-                              USER_MESSAGE_CODE.FARE_ESTIMATE_SUCCESSFULLY,
-                            delivery_fees,
-                            wallet: wallet,
-                            is_payment_max: is_payment_max,
-                            is_pay_valid: is_pay_valid,
-                            server_time: server_time,
-                            timezone: city_detail.timezone,
-                            order_payment: order_payment,
-                            store: store_resp,
-                            customer_replacement_reason,
-                            max_loyalty_per_order_to_redeem:
-                              setting.max_loyalty_per_order_to_redeem,
-                            is_amount_per_loyalty_to_redeem:
-                              setting.is_amount_per_loyalty_to_redeem,
-                            is_amount_per_loyalty_to_add_for_order:
-                              setting.is_amount_per_loyalty_to_add_for_order,
-                            // vehicles: vehicle_data,
-                            ...card_response,
-                          });
-                        },
-                        (error) => {
-                          res.json({
-                            success: false,
-                            error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                          });
-                        }
+                    } catch (error) {
+                      console.log(
+                        "error: unable to find user setting for applying free delivery",
+                        error
                       );
                     }
-                  });
+
+                    order_payment.user_pay_payment =
+                      user_pay_payment + delivery_fees - other_promo;
+                    order_payment.is_store_pay_delivery_fees =
+                      is_store_pay_delivery_fees;
+                    order_payment.total_delivery_price = delivery_fees;
+                    // var is_payment_max =
+                    // user.is_payment_max;
+                    // var is_pay_valid =
+                    // user.is_pay_valid;
+                    // var is_payment_max = user.is_payment_max;
+                    // var is_pay_valid = user.is_pay_valid;
+                    order_payment.save().then(
+                      async () => {
+                        order_payment.total_delivery_price = delivery_fees;
+                        delete store.radius_regions;
+                        const setting = await Setting.findOne({});
+                        let promo_code_name = "";
+                        if (order_payment && order_payment.promo_id) {
+                          const code = await Promo_code.findById(
+                            order_payment.promo_id
+                          ).lean();
+                          if (code) {
+                            promo_code_name = code.promo_code_name;
+                          }
+                        }
+                        res.json({
+                          success: true,
+                          message: USER_MESSAGE_CODE.FARE_ESTIMATE_SUCCESSFULLY,
+                          delivery_fees,
+                          wallet: wallet,
+                          // is_payment_max:
+                          //   is_payment_max,
+                          // is_pay_valid:
+                          //   is_pay_valid,
+                          server_time: server_time,
+                          timezone: city_detail.timezone,
+                          order_payment: {
+                            ...order_payment.toJSON(),
+                            promo_code_name,
+                          },
+                          store: store_resp,
+                          customer_replacement_reason,
+                          max_loyalty_per_order_to_redeem:
+                            setting.max_loyalty_per_order_to_redeem,
+                          is_amount_per_loyalty_to_redeem:
+                            setting.is_amount_per_loyalty_to_redeem,
+                          is_amount_per_loyalty_to_add_for_order:
+                            setting.is_amount_per_loyalty_to_add_for_order,
+                          // vehicles: vehicle_data,
+                          ...card_response,
+                        });
+                      },
+                      (error) => {
+                        res.json({
+                          success: false,
+                          error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                        });
+                      }
+                    );
+                  } else {
+                    // var is_use_loyalty = request_data_body.is_use_loyalty;
+                    // var loyalty_payment = 0;
+                    // if (is_use_loyalty) {
+                    //   const setting = await Setting.findOne({});
+                    //   const min_redeem_point =
+                    //     setting.is_point_per_loyalty_to_redeem;
+                    //   const min_order_value =
+                    //     setting.is_amount_per_loyalty_to_redeem;
+                    //   //
+                    //   //
+                    //   //
+                    //   if (cart.total_cart_price > min_order_value) {
+                    //     // user.loyalty_points = user.loyalty_points - min_redeem_point
+                    //     loyalty_payment = user.loyalty_points;
+                    //     if (user_pay_payment < loyalty_payment) {
+                    //       user.loyalty_points = Math.floor(
+                    //         loyalty_payment - user_pay_payment
+                    //       );
+                    //       loyalty_payment = user_pay_payment;
+                    //       user_pay_payment = 0;
+                    //     } else {
+                    //       user_pay_payment =
+                    //         user_pay_payment - loyalty_payment;
+                    //       user.loyalty_points = 0;
+                    //     }
+                    //     user.save();
+                    //
+                    //   }
+                    // }
+                    if (
+                      request_data_body.deduct_from_wallet &&
+                      order_payment.wallet_deduction
+                    ) {
+                      user_pay_payment -= order_payment.wallet_deduction;
+                    }
+                    var delivery_fees = store.user_radius_zone.delivery_fees
+                      ? store.user_radius_zone.delivery_fees
+                      : store.delivery_fees;
+                    if (
+                      user_pay_payment >
+                      store.free_delivery_for_above_order_price
+                    ) {
+                      delivery_fees = 0;
+                      is_store_pay_delivery_fees = true;
+                    }
+                    try {
+                      const userId = user._id || order_payment.user_id;
+                      const userSetting = await UserSetting.findOne({
+                        userId,
+                      }).lean();
+                      if (
+                        userSetting &&
+                        userSetting.free_delivery &&
+                        user_pay_payment > userSetting.free_delivery_amount
+                      ) {
+                        delivery_fees = 0;
+                      }
+                    } catch (error) {
+                      console.log(
+                        "error: unable to find user setting for applying free delivery",
+                        error
+                      );
+                    }
+
+                    user_pay_payment = user_pay_payment + delivery_fees;
+                    /* ENTRY IN ORDER PAYMENT */
+                    var order_payment = new Order_payment({
+                      cart_id: cart._id,
+                      store_id: store._id,
+                      user_id: cart.user_id,
+                      country_id: country_id,
+                      city_id: city_id,
+                      // loyalty_payment: loyalty_payment,
+                      delivery_price_used_type: delivery_price_used_type,
+                      delivery_price_used_type_id: delivery_price_used_type_id,
+                      currency_code: wallet_currency_code,
+                      order_currency_code: store.wallet_currency_code,
+                      current_rate: 1, // HERE current_rate MEANS ORDER TO ADMIN CONVERT RATE
+                      wallet_to_admin_current_rate: 1,
+                      wallet_to_order_current_rate: 1,
+                      total_distance: total_distance,
+                      total_time: total_time,
+                      service_tax: service_tax,
+                      is_min_fare_applied: is_min_fare_applied,
+                      item_tax: item_tax,
+                      total_service_price: total_service_price,
+                      total_admin_tax_price: total_admin_tax_price,
+                      total_delivery_price: total_delivery_price,
+                      is_store_pay_delivery_fees: is_store_pay_delivery_fees,
+                      total_item_count: total_item_count,
+                      total_cart_price: total_cart_price,
+                      total_store_tax_price: total_store_tax_price,
+                      user_pay_payment: user_pay_payment,
+                      total_order_price: total_order_price,
+                      promo_payment: 0,
+                      total: total,
+                      admin_profit_mode_on_store: admin_profit_mode_on_store,
+                      admin_profit_value_on_store: admin_profit_value_on_store,
+                      total_admin_profit_on_store: total_admin_profit_on_store,
+                      total_store_income: total_store_income,
+                      admin_profit_mode_on_delivery:
+                        admin_profit_mode_on_delivery,
+                      admin_profit_value_on_delivery:
+                        admin_profit_value_on_delivery,
+                      total_admin_profit_on_delivery:
+                        total_admin_profit_on_delivery,
+                      total_provider_income: total_provider_income,
+                      is_user_pick_up_order: is_user_pick_up_order,
+                      is_order_payment_status_set_by_store:
+                        is_order_payment_status_set_by_store,
+                      is_distance_unit_mile: is_distance_unit_mile,
+                    });
+
+                    order_payment.save().then(
+                      async () => {
+                        order_payment.total_delivery_price = delivery_fees;
+                        var totalDeliveryPrice = !isNaN(Number(delivery_fees))
+                          ? Number(delivery_fees)
+                          : delivery_fees;
+                        cart.order_payment_id = order_payment._id;
+                        cart.save();
+
+                        order_payment.save();
+                        delete store.radius_regions;
+                        const setting = await Setting.findOne({});
+
+                        res.json({
+                          success: true,
+                          message: USER_MESSAGE_CODE.FARE_ESTIMATE_SUCCESSFULLY,
+                          delivery_fees,
+                          wallet: wallet,
+                          is_payment_max: is_payment_max,
+                          is_pay_valid: is_pay_valid,
+                          server_time: server_time,
+                          timezone: city_detail.timezone,
+                          order_payment: order_payment,
+                          store: store_resp,
+                          customer_replacement_reason,
+                          max_loyalty_per_order_to_redeem:
+                            setting.max_loyalty_per_order_to_redeem,
+                          is_amount_per_loyalty_to_redeem:
+                            setting.is_amount_per_loyalty_to_redeem,
+                          is_amount_per_loyalty_to_add_for_order:
+                            setting.is_amount_per_loyalty_to_add_for_order,
+                          // vehicles: vehicle_data,
+                          ...card_response,
+                        });
+                      },
+                      (error) => {
+                        res.json({
+                          success: false,
+                          error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                        });
+                      }
+                    );
+                  }
                 });
-              }
+              });
             }
-          );
-        }
+          }
+        );
       } else {
         res.json(response);
       }
@@ -7401,682 +7228,655 @@ exports.get_courier_order_invoice = function (request_data, response_data) {
         User.findOne({ _id: request_data_body.user_id }).then(
           (user) => {
             // if(user){
-            if (
-              user &&
-              request_data_body.server_token !== null &&
-              user.server_token != request_data_body.server_token
-            ) {
-              response_data.json({
-                success: false,
-                error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              });
-            } else {
-              if (user) {
-                cart_id = user.cart_id;
-                user_id = user._id;
-                cart_unique_token = null;
-                is_payment_max = user.is_payment_max;
-                is_pay_valid = user.is_pay_valid;
 
-                wallet_currency_code = user.wallet_currency_code;
-              }
-              Cart.findOne({
-                $or: [
-                  { _id: cart_id },
-                  { cart_unique_token: cart_unique_token },
-                ],
-              }).then(
-                (cart) => {
-                  if (cart) {
-                    var destination_location =
-                      cart.destination_addresses[0].location;
-                    var pickup_location = cart.pickup_addresses[0].location;
-                    var city_id = request_data_body.city_id;
-                    var country_id = request_data_body.country_id;
-                    var delivery_type = DELIVERY_TYPE.COURIER;
+            if (user) {
+              cart_id = user.cart_id;
+              user_id = user._id;
+              cart_unique_token = null;
+              is_payment_max = user.is_payment_max;
+              is_pay_valid = user.is_pay_valid;
 
-                    Country.findOne({ _id: country_id }).then(
-                      (country) => {
-                        var is_distance_unit_mile = false;
-                        if (country) {
-                          var is_distance_unit_mile =
-                            country.is_distance_unit_mile;
-                          if (!user) {
-                            wallet_currency_code = country.currency_code;
-                          }
+              wallet_currency_code = user.wallet_currency_code;
+            }
+            Cart.findOne({
+              $or: [{ _id: cart_id }, { cart_unique_token: cart_unique_token }],
+            }).then(
+              (cart) => {
+                if (cart) {
+                  var destination_location =
+                    cart.destination_addresses[0].location;
+                  var pickup_location = cart.pickup_addresses[0].location;
+                  var city_id = request_data_body.city_id;
+                  var country_id = request_data_body.country_id;
+                  var delivery_type = DELIVERY_TYPE.COURIER;
+
+                  Country.findOne({ _id: country_id }).then(
+                    (country) => {
+                      var is_distance_unit_mile = false;
+                      if (country) {
+                        var is_distance_unit_mile =
+                          country.is_distance_unit_mile;
+                        if (!user) {
+                          wallet_currency_code = country.currency_code;
                         }
+                      }
 
-                        City.findOne({ _id: city_id }).then(
-                          (city_detail) => {
-                            if (city_detail) {
-                              var admin_profit_mode_on_delivery =
-                                city_detail.admin_profit_mode_on_delivery;
-                              var admin_profit_value_on_delivery =
-                                city_detail.admin_profit_value_on_delivery;
+                      City.findOne({ _id: city_id }).then(
+                        (city_detail) => {
+                          if (city_detail) {
+                            var admin_profit_mode_on_delivery =
+                              city_detail.admin_profit_mode_on_delivery;
+                            var admin_profit_value_on_delivery =
+                              city_detail.admin_profit_value_on_delivery;
 
-                              var delivery_price_used_type =
-                                ADMIN_DATA_ID.ADMIN;
-                              var delivery_price_used_type_id = null;
-                              var is_order_payment_status_set_by_store = false;
+                            var delivery_price_used_type = ADMIN_DATA_ID.ADMIN;
+                            var delivery_price_used_type_id = null;
+                            var is_order_payment_status_set_by_store = false;
 
-                              var query = {};
-                              if (request_data_body.vehicle_id) {
-                                var vehicle_id = request_data_body.vehicle_id;
-                                query = {
-                                  city_id: city_id,
-                                  delivery_type: delivery_type,
-                                  vehicle_id: vehicle_id,
-                                  type_id: delivery_price_used_type_id,
-                                };
-                              } else {
-                                query = {
-                                  city_id: city_id,
-                                  delivery_type: delivery_type,
-                                  type_id: delivery_price_used_type_id,
-                                };
-                              }
+                            var query = {};
+                            if (request_data_body.vehicle_id) {
+                              var vehicle_id = request_data_body.vehicle_id;
+                              query = {
+                                city_id: city_id,
+                                delivery_type: delivery_type,
+                                vehicle_id: vehicle_id,
+                                type_id: delivery_price_used_type_id,
+                              };
+                            } else {
+                              query = {
+                                city_id: city_id,
+                                delivery_type: delivery_type,
+                                type_id: delivery_price_used_type_id,
+                              };
+                            }
 
-                              Service.find(query).then(
-                                (service_list) => {
-                                  var service = null;
-                                  var default_service_index =
-                                    service_list.findIndex(
-                                      (service) => service.is_default == true
-                                    );
-                                  if (
-                                    default_service_index !== -1 &&
-                                    !vehicle_id
-                                  ) {
-                                    service =
-                                      service_list[default_service_index];
-                                  } else if (service_list.length > 0) {
-                                    service = service_list[0];
-                                  }
+                            Service.find(query).then(
+                              (service_list) => {
+                                var service = null;
+                                var default_service_index =
+                                  service_list.findIndex(
+                                    (service) => service.is_default == true
+                                  );
+                                if (
+                                  default_service_index !== -1 &&
+                                  !vehicle_id
+                                ) {
+                                  service = service_list[default_service_index];
+                                } else if (service_list.length > 0) {
+                                  service = service_list[0];
+                                }
 
-                                  if (service) {
-                                    utils.check_zone(
-                                      city_id,
-                                      delivery_type,
-                                      delivery_price_used_type_id,
-                                      service.vehicle_id,
-                                      city_detail.zone_business,
-                                      pickup_location,
-                                      destination_location,
-                                      function (zone_response) {
-                                        /* HERE USER PARAM */
+                                if (service) {
+                                  utils.check_zone(
+                                    city_id,
+                                    delivery_type,
+                                    delivery_price_used_type_id,
+                                    service.vehicle_id,
+                                    city_detail.zone_business,
+                                    pickup_location,
+                                    destination_location,
+                                    function (zone_response) {
+                                      /* HERE USER PARAM */
 
-                                        var total_distance =
-                                          request_data_body.total_distance;
-                                        var total_time =
-                                          request_data_body.total_time;
+                                      var total_distance =
+                                        request_data_body.total_distance;
+                                      var total_time =
+                                        request_data_body.total_time;
 
-                                        var is_user_pick_up_order = false;
+                                      var is_user_pick_up_order = false;
 
-                                        var total_item_count = 1;
+                                      var total_item_count = 1;
 
-                                        /* SERVICE DATA HERE */
-                                        var base_price = 0;
-                                        var base_price_distance = 0;
-                                        var price_per_unit_distance = 0;
-                                        var price_per_unit_time = 0;
-                                        var service_tax = 0;
-                                        var min_fare = 0;
-                                        var is_min_fare_applied = false;
+                                      /* SERVICE DATA HERE */
+                                      var base_price = 0;
+                                      var base_price_distance = 0;
+                                      var price_per_unit_distance = 0;
+                                      var price_per_unit_time = 0;
+                                      var service_tax = 0;
+                                      var min_fare = 0;
+                                      var is_min_fare_applied = false;
 
-                                        if (service) {
-                                          if (
-                                            service.admin_profit_mode_on_delivery
-                                          ) {
-                                            admin_profit_mode_on_delivery =
-                                              service.admin_profit_mode_on_delivery;
-                                            admin_profit_value_on_delivery =
-                                              service.admin_profit_value_on_delivery;
-                                          }
-
-                                          base_price = service.base_price;
-                                          base_price_distance =
-                                            service.base_price_distance;
-                                          price_per_unit_distance =
-                                            service.price_per_unit_distance;
-                                          price_per_unit_time =
-                                            service.price_per_unit_time;
-                                          service_tax = service.service_tax;
-                                          min_fare = service.min_fare;
-                                        }
-                                        var admin_profit_mode_on_store = 0;
-                                        var admin_profit_value_on_store = 0;
-                                        // STORE DATA HERE //
-
-                                        var item_tax = 0;
-                                        // DELIVERY CALCULATION START //
-                                        var distance_price = 0;
-                                        var total_base_price = 0;
-                                        var total_distance_price = 0;
-                                        var total_time_price = 0;
-                                        var total_service_price = 0;
-                                        var total_admin_tax_price = 0;
-                                        var total_after_tax_price = 0;
-                                        var total_surge_price = 0;
-                                        var total_delivery_price_after_surge = 0;
-                                        var delivery_price = 0;
-                                        var total_delivery_price = 0;
-                                        var total_admin_profit_on_delivery = 0;
-                                        var total_provider_income = 0;
-                                        var promo_payment = 0;
-
-                                        total_time = total_time / 60; // convert to mins
-                                        total_time = utils.precisionRoundTwo(
-                                          Number(total_time)
-                                        );
-
-                                        if (is_distance_unit_mile) {
-                                          total_distance =
-                                            total_distance * 0.000621371;
-                                        } else {
-                                          total_distance =
-                                            total_distance * 0.001;
+                                      if (service) {
+                                        if (
+                                          service.admin_profit_mode_on_delivery
+                                        ) {
+                                          admin_profit_mode_on_delivery =
+                                            service.admin_profit_mode_on_delivery;
+                                          admin_profit_value_on_delivery =
+                                            service.admin_profit_value_on_delivery;
                                         }
 
-                                        if (!is_user_pick_up_order) {
-                                          if (
-                                            service &&
-                                            service.is_use_distance_calculation
-                                          ) {
-                                            var delivery_price_setting =
-                                              service.delivery_price_setting;
-                                            delivery_price_setting.forEach(
-                                              function (
-                                                delivery_setting_detail
+                                        base_price = service.base_price;
+                                        base_price_distance =
+                                          service.base_price_distance;
+                                        price_per_unit_distance =
+                                          service.price_per_unit_distance;
+                                        price_per_unit_time =
+                                          service.price_per_unit_time;
+                                        service_tax = service.service_tax;
+                                        min_fare = service.min_fare;
+                                      }
+                                      var admin_profit_mode_on_store = 0;
+                                      var admin_profit_value_on_store = 0;
+                                      // STORE DATA HERE //
+
+                                      var item_tax = 0;
+                                      // DELIVERY CALCULATION START //
+                                      var distance_price = 0;
+                                      var total_base_price = 0;
+                                      var total_distance_price = 0;
+                                      var total_time_price = 0;
+                                      var total_service_price = 0;
+                                      var total_admin_tax_price = 0;
+                                      var total_after_tax_price = 0;
+                                      var total_surge_price = 0;
+                                      var total_delivery_price_after_surge = 0;
+                                      var delivery_price = 0;
+                                      var total_delivery_price = 0;
+                                      var total_admin_profit_on_delivery = 0;
+                                      var total_provider_income = 0;
+                                      var promo_payment = 0;
+
+                                      total_time = total_time / 60; // convert to mins
+                                      total_time = utils.precisionRoundTwo(
+                                        Number(total_time)
+                                      );
+
+                                      if (is_distance_unit_mile) {
+                                        total_distance =
+                                          total_distance * 0.000621371;
+                                      } else {
+                                        total_distance = total_distance * 0.001;
+                                      }
+
+                                      if (!is_user_pick_up_order) {
+                                        if (
+                                          service &&
+                                          service.is_use_distance_calculation
+                                        ) {
+                                          var delivery_price_setting =
+                                            service.delivery_price_setting;
+                                          delivery_price_setting.forEach(
+                                            function (delivery_setting_detail) {
+                                              if (
+                                                delivery_setting_detail.to_distance >=
+                                                total_distance
                                               ) {
-                                                if (
-                                                  delivery_setting_detail.to_distance >=
-                                                  total_distance
-                                                ) {
-                                                  distance_price =
-                                                    distance_price +
-                                                    delivery_setting_detail.delivery_fee;
-                                                }
+                                                distance_price =
+                                                  distance_price +
+                                                  delivery_setting_detail.delivery_fee;
                                               }
-                                            );
-                                            total_distance_price =
-                                              distance_price;
-                                            total_service_price =
-                                              distance_price;
-                                            delivery_price = distance_price;
-                                            total_after_tax_price =
-                                              distance_price;
-                                            total_delivery_price_after_surge =
-                                              distance_price;
-                                          } else {
-                                            total_base_price = base_price;
-                                            if (
-                                              total_distance >
-                                              base_price_distance
-                                            ) {
-                                              distance_price =
-                                                (total_distance -
-                                                  base_price_distance) *
-                                                price_per_unit_distance;
                                             }
-
-                                            total_base_price =
-                                              utils.precisionRoundTwo(
-                                                total_base_price
-                                              );
-                                            distance_price =
-                                              utils.precisionRoundTwo(
-                                                distance_price
-                                              );
-                                            total_time_price =
-                                              price_per_unit_time * total_time;
-                                            total_time_price =
-                                              utils.precisionRoundTwo(
-                                                Number(total_time_price)
-                                              );
-
-                                            total_distance_price =
-                                              +total_base_price +
-                                              +distance_price;
-                                            total_distance_price =
-                                              utils.precisionRoundTwo(
-                                                total_distance_price
-                                              );
-
-                                            total_service_price =
-                                              +total_distance_price +
-                                              +total_time_price;
-                                            total_service_price =
-                                              utils.precisionRoundTwo(
-                                                Number(total_service_price)
-                                              );
-
-                                            total_admin_tax_price =
-                                              service_tax *
-                                              total_service_price *
-                                              0.01;
-                                            total_admin_tax_price =
-                                              utils.precisionRoundTwo(
-                                                Number(total_admin_tax_price)
-                                              );
-
-                                            total_after_tax_price =
-                                              +total_service_price +
-                                              +total_admin_tax_price;
-                                            total_after_tax_price =
-                                              utils.precisionRoundTwo(
-                                                Number(total_after_tax_price)
-                                              );
-
-                                            total_delivery_price_after_surge =
-                                              +total_after_tax_price +
-                                              +total_surge_price;
-                                            total_delivery_price_after_surge =
-                                              utils.precisionRoundTwo(
-                                                Number(
-                                                  total_delivery_price_after_surge
-                                                )
-                                              );
-
-                                            if (
-                                              total_delivery_price_after_surge <=
-                                              min_fare
-                                            ) {
-                                              delivery_price = min_fare;
-                                              is_min_fare_applied = true;
-                                            } else {
-                                              delivery_price =
-                                                total_delivery_price_after_surge;
-                                            }
-                                          }
-
-                                          if (zone_response.success) {
-                                            total_admin_tax_price = 0;
-                                            total_base_price = 0;
-                                            total_distance_price = 0;
-                                            total_time_price = 0;
-                                            total_service_price =
-                                              zone_response.zone_price;
-                                            delivery_price =
-                                              zone_response.zone_price;
-                                            total_after_tax_price =
-                                              total_service_price;
-                                            total_delivery_price_after_surge =
-                                              total_service_price;
-                                          }
-
-                                          switch (
-                                            admin_profit_mode_on_delivery
+                                          );
+                                          total_distance_price = distance_price;
+                                          total_service_price = distance_price;
+                                          delivery_price = distance_price;
+                                          total_after_tax_price =
+                                            distance_price;
+                                          total_delivery_price_after_surge =
+                                            distance_price;
+                                        } else {
+                                          total_base_price = base_price;
+                                          if (
+                                            total_distance > base_price_distance
                                           ) {
-                                            case ADMIN_PROFIT_ON_DELIVERY_ID.PERCENTAGE /* 1- percentage */:
-                                              total_admin_profit_on_delivery =
-                                                delivery_price *
-                                                admin_profit_value_on_delivery *
-                                                0.01;
-                                              break;
-                                            case ADMIN_PROFIT_ON_DELIVERY_ID.PER_DELVIERY /* 2- absolute per delivery */:
-                                              total_admin_profit_on_delivery =
-                                                admin_profit_value_on_delivery;
-                                              break;
-                                            default:
-                                              /* percentage */
-                                              total_admin_profit_on_delivery =
-                                                delivery_price *
-                                                admin_profit_value_on_delivery *
-                                                0.01;
-                                              break;
+                                            distance_price =
+                                              (total_distance -
+                                                base_price_distance) *
+                                              price_per_unit_distance;
                                           }
 
-                                          total_admin_profit_on_delivery =
+                                          total_base_price =
+                                            utils.precisionRoundTwo(
+                                              total_base_price
+                                            );
+                                          distance_price =
+                                            utils.precisionRoundTwo(
+                                              distance_price
+                                            );
+                                          total_time_price =
+                                            price_per_unit_time * total_time;
+                                          total_time_price =
+                                            utils.precisionRoundTwo(
+                                              Number(total_time_price)
+                                            );
+
+                                          total_distance_price =
+                                            +total_base_price + +distance_price;
+                                          total_distance_price =
+                                            utils.precisionRoundTwo(
+                                              total_distance_price
+                                            );
+
+                                          total_service_price =
+                                            +total_distance_price +
+                                            +total_time_price;
+                                          total_service_price =
+                                            utils.precisionRoundTwo(
+                                              Number(total_service_price)
+                                            );
+
+                                          total_admin_tax_price =
+                                            service_tax *
+                                            total_service_price *
+                                            0.01;
+                                          total_admin_tax_price =
+                                            utils.precisionRoundTwo(
+                                              Number(total_admin_tax_price)
+                                            );
+
+                                          total_after_tax_price =
+                                            +total_service_price +
+                                            +total_admin_tax_price;
+                                          total_after_tax_price =
+                                            utils.precisionRoundTwo(
+                                              Number(total_after_tax_price)
+                                            );
+
+                                          total_delivery_price_after_surge =
+                                            +total_after_tax_price +
+                                            +total_surge_price;
+                                          total_delivery_price_after_surge =
                                             utils.precisionRoundTwo(
                                               Number(
-                                                total_admin_profit_on_delivery
+                                                total_delivery_price_after_surge
                                               )
                                             );
-                                          total_provider_income =
-                                            delivery_price -
-                                            total_admin_profit_on_delivery;
-                                          total_provider_income =
-                                            utils.precisionRoundTwo(
-                                              Number(total_provider_income)
-                                            );
-                                        } else {
-                                          total_distance = 0;
-                                          total_time = 0;
+
+                                          if (
+                                            total_delivery_price_after_surge <=
+                                            min_fare
+                                          ) {
+                                            delivery_price = min_fare;
+                                            is_min_fare_applied = true;
+                                          } else {
+                                            delivery_price =
+                                              total_delivery_price_after_surge;
+                                          }
                                         }
 
-                                        // DELIVERY CALCULATION END //
-                                        // ORDER CALCULATION START //
+                                        if (zone_response.success) {
+                                          total_admin_tax_price = 0;
+                                          total_base_price = 0;
+                                          total_distance_price = 0;
+                                          total_time_price = 0;
+                                          total_service_price =
+                                            zone_response.zone_price;
+                                          delivery_price =
+                                            zone_response.zone_price;
+                                          total_after_tax_price =
+                                            total_service_price;
+                                          total_delivery_price_after_surge =
+                                            total_service_price;
+                                        }
 
-                                        var order_price = 0;
-                                        var total_store_tax_price = 0;
-                                        var total_order_price = 0;
-                                        var total_admin_profit_on_store = 0;
-                                        var total_store_income = 0;
-                                        var total_cart_price = 0;
-                                        var is_store_pay_delivery_fees = false;
+                                        switch (admin_profit_mode_on_delivery) {
+                                          case ADMIN_PROFIT_ON_DELIVERY_ID.PERCENTAGE /* 1- percentage */:
+                                            total_admin_profit_on_delivery =
+                                              delivery_price *
+                                              admin_profit_value_on_delivery *
+                                              0.01;
+                                            break;
+                                          case ADMIN_PROFIT_ON_DELIVERY_ID.PER_DELVIERY /* 2- absolute per delivery */:
+                                            total_admin_profit_on_delivery =
+                                              admin_profit_value_on_delivery;
+                                            break;
+                                          default:
+                                            /* percentage */
+                                            total_admin_profit_on_delivery =
+                                              delivery_price *
+                                              admin_profit_value_on_delivery *
+                                              0.01;
+                                            break;
+                                        }
 
-                                        total_cart_price = 0;
+                                        total_admin_profit_on_delivery =
+                                          utils.precisionRoundTwo(
+                                            Number(
+                                              total_admin_profit_on_delivery
+                                            )
+                                          );
+                                        total_provider_income =
+                                          delivery_price -
+                                          total_admin_profit_on_delivery;
+                                        total_provider_income =
+                                          utils.precisionRoundTwo(
+                                            Number(total_provider_income)
+                                          );
+                                      } else {
+                                        total_distance = 0;
+                                        total_time = 0;
+                                      }
 
-                                        cart.total_item_tax =
-                                          total_store_tax_price;
+                                      // DELIVERY CALCULATION END //
+                                      // ORDER CALCULATION START //
 
-                                        order_price =
-                                          +total_cart_price +
-                                          +total_store_tax_price;
-                                        order_price = utils.precisionRoundTwo(
-                                          Number(order_price)
-                                        );
+                                      var order_price = 0;
+                                      var total_store_tax_price = 0;
+                                      var total_order_price = 0;
+                                      var total_admin_profit_on_store = 0;
+                                      var total_store_income = 0;
+                                      var total_cart_price = 0;
+                                      var is_store_pay_delivery_fees = false;
 
-                                        /* FINAL INVOICE CALCULATION START */
-                                        total_delivery_price = delivery_price;
-                                        total_order_price = order_price;
-                                        var total =
-                                          +total_delivery_price +
-                                          +total_order_price;
-                                        total = utils.precisionRoundTwo(
-                                          Number(total)
-                                        );
-                                        var user_pay_payment = total;
+                                      total_cart_price = 0;
 
-                                        cart.total_item_count =
-                                          total_item_count;
+                                      cart.total_item_tax =
+                                        total_store_tax_price;
 
-                                        Vehicle.findOne({
-                                          _id: service.vehicle_id,
-                                        }).then((vehicle_data) => {
-                                          if (!vehicle_data) {
-                                            vehicle_data = [];
+                                      order_price =
+                                        +total_cart_price +
+                                        +total_store_tax_price;
+                                      order_price = utils.precisionRoundTwo(
+                                        Number(order_price)
+                                      );
+
+                                      /* FINAL INVOICE CALCULATION START */
+                                      total_delivery_price = delivery_price;
+                                      total_order_price = order_price;
+                                      var total =
+                                        +total_delivery_price +
+                                        +total_order_price;
+                                      total = utils.precisionRoundTwo(
+                                        Number(total)
+                                      );
+                                      var user_pay_payment = total;
+
+                                      cart.total_item_count = total_item_count;
+
+                                      Vehicle.findOne({
+                                        _id: service.vehicle_id,
+                                      }).then((vehicle_data) => {
+                                        if (!vehicle_data) {
+                                          vehicle_data = [];
+                                        } else {
+                                          vehicle_data = [vehicle_data];
+                                        }
+
+                                        Order_payment.findOne({
+                                          _id: cart.order_payment_id,
+                                        }).then((order_payment) => {
+                                          if (order_payment) {
+                                            var promo_id =
+                                              order_payment.promo_id;
+                                            Promo_code.findOne({
+                                              _id: promo_id,
+                                            }).then((promo_code) => {
+                                              if (promo_code) {
+                                                promo_code.used_promo_code =
+                                                  promo_code.used_promo_code -
+                                                  1;
+                                                promo_code.save();
+                                                user.promo_count =
+                                                  user.promo_count - 1;
+                                                user.save();
+                                              }
+                                            });
+
+                                            order_payment.cart_id = cart._id;
+                                            order_payment.is_min_fare_applied =
+                                              is_min_fare_applied;
+                                            order_payment.order_id = null;
+                                            order_payment.order_unique_id = 0;
+                                            order_payment.store_id = null;
+                                            order_payment.user_id =
+                                              cart.user_id;
+                                            order_payment.country_id =
+                                              country_id;
+                                            order_payment.city_id = city_id;
+                                            order_payment.provider_id = null;
+                                            order_payment.promo_id = null;
+                                            order_payment.delivery_price_used_type =
+                                              delivery_price_used_type;
+                                            order_payment.delivery_price_used_type_id =
+                                              delivery_price_used_type_id;
+                                            order_payment.currency_code =
+                                              wallet_currency_code;
+                                            order_payment.admin_currency_code =
+                                              "";
+                                            order_payment.order_currency_code =
+                                              user.wallet_currency_code;
+                                            order_payment.current_rate = 1;
+                                            order_payment.admin_profit_mode_on_delivery =
+                                              admin_profit_mode_on_delivery;
+                                            order_payment.admin_profit_value_on_delivery =
+                                              admin_profit_value_on_delivery;
+                                            order_payment.total_admin_profit_on_delivery =
+                                              total_admin_profit_on_delivery;
+                                            order_payment.total_provider_income =
+                                              total_provider_income;
+                                            order_payment.admin_profit_mode_on_store =
+                                              admin_profit_mode_on_store;
+                                            order_payment.admin_profit_value_on_store =
+                                              admin_profit_value_on_store;
+                                            order_payment.total_admin_profit_on_store =
+                                              total_admin_profit_on_store;
+                                            order_payment.total_store_income =
+                                              total_store_income;
+                                            order_payment.total_distance =
+                                              total_distance;
+                                            order_payment.total_time =
+                                              total_time;
+                                            order_payment.is_distance_unit_mile =
+                                              is_distance_unit_mile;
+                                            order_payment.is_store_pay_delivery_fees =
+                                              is_store_pay_delivery_fees;
+                                            order_payment.total_service_price =
+                                              total_service_price;
+                                            order_payment.total_admin_tax_price =
+                                              total_admin_tax_price;
+                                            order_payment.total_after_tax_price =
+                                              total_after_tax_price;
+                                            order_payment.total_surge_price =
+                                              total_surge_price;
+                                            order_payment.total_delivery_price_after_surge =
+                                              total_delivery_price_after_surge;
+                                            order_payment.total_cart_price =
+                                              total_cart_price;
+                                            order_payment.total_delivery_price =
+                                              total_delivery_price;
+                                            order_payment.total_item_count =
+                                              total_item_count;
+                                            order_payment.service_tax =
+                                              service_tax;
+                                            order_payment.item_tax = item_tax;
+                                            order_payment.total_store_tax_price =
+                                              total_store_tax_price;
+                                            order_payment.total_order_price =
+                                              total_order_price;
+                                            order_payment.promo_payment = 0;
+                                            order_payment.user_pay_payment =
+                                              user_pay_payment;
+                                            order_payment.total = total;
+                                            order_payment.wallet_payment = 0;
+                                            order_payment.total_after_wallet_payment = 0;
+                                            order_payment.cash_payment = 0;
+                                            order_payment.card_payment = 0;
+                                            order_payment.remaining_payment = 0;
+                                            order_payment.delivered_at = null;
+                                            order_payment.is_order_payment_status_set_by_store =
+                                              is_order_payment_status_set_by_store;
+                                            order_payment.is_user_pick_up_order =
+                                              is_user_pick_up_order;
+                                            order_payment.save().then(
+                                              () => {
+                                                response_data.json({
+                                                  success: true,
+                                                  message:
+                                                    USER_MESSAGE_CODE.FARE_ESTIMATE_SUCCESSFULLY,
+                                                  server_time: server_time,
+                                                  timezone:
+                                                    city_detail.timezone,
+                                                  order_payment: order_payment,
+                                                  vehicles: vehicle_data,
+                                                });
+                                              },
+                                              (error) => {
+                                                response_data.json({
+                                                  success: false,
+                                                  error_code:
+                                                    ERROR_CODE.SOMETHING_WENT_WRONG,
+                                                });
+                                              }
+                                            );
                                           } else {
-                                            vehicle_data = [vehicle_data];
-                                          }
-
-                                          Order_payment.findOne({
-                                            _id: cart.order_payment_id,
-                                          }).then((order_payment) => {
-                                            if (order_payment) {
-                                              var promo_id =
-                                                order_payment.promo_id;
-                                              Promo_code.findOne({
-                                                _id: promo_id,
-                                              }).then((promo_code) => {
-                                                if (promo_code) {
-                                                  promo_code.used_promo_code =
-                                                    promo_code.used_promo_code -
-                                                    1;
-                                                  promo_code.save();
-                                                  user.promo_count =
-                                                    user.promo_count - 1;
-                                                  user.save();
-                                                }
+                                            /* ENTRY IN ORDER PAYMENT */
+                                            var order_payment =
+                                              new Order_payment({
+                                                cart_id: cart._id,
+                                                store_id: null,
+                                                user_id: cart.user_id,
+                                                country_id: country_id,
+                                                is_min_fare_applied:
+                                                  is_min_fare_applied,
+                                                city_id: city_id,
+                                                delivery_price_used_type:
+                                                  delivery_price_used_type,
+                                                delivery_price_used_type_id:
+                                                  delivery_price_used_type_id,
+                                                currency_code:
+                                                  wallet_currency_code,
+                                                order_currency_code:
+                                                  user.wallet_currency_code,
+                                                current_rate: 1, // HERE current_rate MEANS ORDER TO ADMIN CONVERT RATE
+                                                wallet_to_admin_current_rate: 1,
+                                                wallet_to_order_current_rate: 1,
+                                                total_distance: total_distance,
+                                                total_time: total_time,
+                                                service_tax: service_tax,
+                                                item_tax: item_tax,
+                                                total_service_price:
+                                                  total_service_price,
+                                                total_admin_tax_price:
+                                                  total_admin_tax_price,
+                                                total_delivery_price:
+                                                  total_delivery_price,
+                                                is_store_pay_delivery_fees:
+                                                  is_store_pay_delivery_fees,
+                                                total_item_count:
+                                                  total_item_count,
+                                                total_cart_price:
+                                                  total_cart_price,
+                                                total_store_tax_price:
+                                                  total_store_tax_price,
+                                                user_pay_payment:
+                                                  user_pay_payment,
+                                                total_order_price:
+                                                  total_order_price,
+                                                promo_payment: promo_payment,
+                                                total: total,
+                                                admin_profit_mode_on_store:
+                                                  admin_profit_mode_on_store,
+                                                admin_profit_value_on_store:
+                                                  admin_profit_value_on_store,
+                                                total_admin_profit_on_store:
+                                                  total_admin_profit_on_store,
+                                                total_store_income:
+                                                  total_store_income,
+                                                admin_profit_mode_on_delivery:
+                                                  admin_profit_mode_on_delivery,
+                                                admin_profit_value_on_delivery:
+                                                  admin_profit_value_on_delivery,
+                                                total_admin_profit_on_delivery:
+                                                  total_admin_profit_on_delivery,
+                                                total_provider_income:
+                                                  total_provider_income,
+                                                is_user_pick_up_order:
+                                                  is_user_pick_up_order,
+                                                is_order_payment_status_set_by_store:
+                                                  is_order_payment_status_set_by_store,
+                                                is_distance_unit_mile:
+                                                  is_distance_unit_mile,
                                               });
 
-                                              order_payment.cart_id = cart._id;
-                                              order_payment.is_min_fare_applied =
-                                                is_min_fare_applied;
-                                              order_payment.order_id = null;
-                                              order_payment.order_unique_id = 0;
-                                              order_payment.store_id = null;
-                                              order_payment.user_id =
-                                                cart.user_id;
-                                              order_payment.country_id =
-                                                country_id;
-                                              order_payment.city_id = city_id;
-                                              order_payment.provider_id = null;
-                                              order_payment.promo_id = null;
-                                              order_payment.delivery_price_used_type =
-                                                delivery_price_used_type;
-                                              order_payment.delivery_price_used_type_id =
-                                                delivery_price_used_type_id;
-                                              order_payment.currency_code =
-                                                wallet_currency_code;
-                                              order_payment.admin_currency_code =
-                                                "";
-                                              order_payment.order_currency_code =
-                                                user.wallet_currency_code;
-                                              order_payment.current_rate = 1;
-                                              order_payment.admin_profit_mode_on_delivery =
-                                                admin_profit_mode_on_delivery;
-                                              order_payment.admin_profit_value_on_delivery =
-                                                admin_profit_value_on_delivery;
-                                              order_payment.total_admin_profit_on_delivery =
-                                                total_admin_profit_on_delivery;
-                                              order_payment.total_provider_income =
-                                                total_provider_income;
-                                              order_payment.admin_profit_mode_on_store =
-                                                admin_profit_mode_on_store;
-                                              order_payment.admin_profit_value_on_store =
-                                                admin_profit_value_on_store;
-                                              order_payment.total_admin_profit_on_store =
-                                                total_admin_profit_on_store;
-                                              order_payment.total_store_income =
-                                                total_store_income;
-                                              order_payment.total_distance =
-                                                total_distance;
-                                              order_payment.total_time =
-                                                total_time;
-                                              order_payment.is_distance_unit_mile =
-                                                is_distance_unit_mile;
-                                              order_payment.is_store_pay_delivery_fees =
-                                                is_store_pay_delivery_fees;
-                                              order_payment.total_service_price =
-                                                total_service_price;
-                                              order_payment.total_admin_tax_price =
-                                                total_admin_tax_price;
-                                              order_payment.total_after_tax_price =
-                                                total_after_tax_price;
-                                              order_payment.total_surge_price =
-                                                total_surge_price;
-                                              order_payment.total_delivery_price_after_surge =
-                                                total_delivery_price_after_surge;
-                                              order_payment.total_cart_price =
-                                                total_cart_price;
-                                              order_payment.total_delivery_price =
-                                                total_delivery_price;
-                                              order_payment.total_item_count =
-                                                total_item_count;
-                                              order_payment.service_tax =
-                                                service_tax;
-                                              order_payment.item_tax = item_tax;
-                                              order_payment.total_store_tax_price =
-                                                total_store_tax_price;
-                                              order_payment.total_order_price =
-                                                total_order_price;
-                                              order_payment.promo_payment = 0;
-                                              order_payment.user_pay_payment =
-                                                user_pay_payment;
-                                              order_payment.total = total;
-                                              order_payment.wallet_payment = 0;
-                                              order_payment.total_after_wallet_payment = 0;
-                                              order_payment.cash_payment = 0;
-                                              order_payment.card_payment = 0;
-                                              order_payment.remaining_payment = 0;
-                                              order_payment.delivered_at = null;
-                                              order_payment.is_order_payment_status_set_by_store =
-                                                is_order_payment_status_set_by_store;
-                                              order_payment.is_user_pick_up_order =
-                                                is_user_pick_up_order;
-                                              order_payment.save().then(
-                                                () => {
-                                                  response_data.json({
-                                                    success: true,
-                                                    message:
-                                                      USER_MESSAGE_CODE.FARE_ESTIMATE_SUCCESSFULLY,
-                                                    server_time: server_time,
-                                                    timezone:
-                                                      city_detail.timezone,
-                                                    order_payment:
-                                                      order_payment,
-                                                    vehicles: vehicle_data,
-                                                  });
-                                                },
-                                                (error) => {
-                                                  response_data.json({
-                                                    success: false,
-                                                    error_code:
-                                                      ERROR_CODE.SOMETHING_WENT_WRONG,
-                                                  });
-                                                }
-                                              );
-                                            } else {
-                                              /* ENTRY IN ORDER PAYMENT */
-                                              var order_payment =
-                                                new Order_payment({
-                                                  cart_id: cart._id,
-                                                  store_id: null,
-                                                  user_id: cart.user_id,
-                                                  country_id: country_id,
-                                                  is_min_fare_applied:
-                                                    is_min_fare_applied,
-                                                  city_id: city_id,
-                                                  delivery_price_used_type:
-                                                    delivery_price_used_type,
-                                                  delivery_price_used_type_id:
-                                                    delivery_price_used_type_id,
-                                                  currency_code:
-                                                    wallet_currency_code,
-                                                  order_currency_code:
-                                                    user.wallet_currency_code,
-                                                  current_rate: 1, // HERE current_rate MEANS ORDER TO ADMIN CONVERT RATE
-                                                  wallet_to_admin_current_rate: 1,
-                                                  wallet_to_order_current_rate: 1,
-                                                  total_distance:
-                                                    total_distance,
-                                                  total_time: total_time,
-                                                  service_tax: service_tax,
-                                                  item_tax: item_tax,
-                                                  total_service_price:
-                                                    total_service_price,
-                                                  total_admin_tax_price:
-                                                    total_admin_tax_price,
-                                                  total_delivery_price:
-                                                    total_delivery_price,
-                                                  is_store_pay_delivery_fees:
-                                                    is_store_pay_delivery_fees,
-                                                  total_item_count:
-                                                    total_item_count,
-                                                  total_cart_price:
-                                                    total_cart_price,
-                                                  total_store_tax_price:
-                                                    total_store_tax_price,
-                                                  user_pay_payment:
-                                                    user_pay_payment,
-                                                  total_order_price:
-                                                    total_order_price,
-                                                  promo_payment: promo_payment,
-                                                  total: total,
-                                                  admin_profit_mode_on_store:
-                                                    admin_profit_mode_on_store,
-                                                  admin_profit_value_on_store:
-                                                    admin_profit_value_on_store,
-                                                  total_admin_profit_on_store:
-                                                    total_admin_profit_on_store,
-                                                  total_store_income:
-                                                    total_store_income,
-                                                  admin_profit_mode_on_delivery:
-                                                    admin_profit_mode_on_delivery,
-                                                  admin_profit_value_on_delivery:
-                                                    admin_profit_value_on_delivery,
-                                                  total_admin_profit_on_delivery:
-                                                    total_admin_profit_on_delivery,
-                                                  total_provider_income:
-                                                    total_provider_income,
-                                                  is_user_pick_up_order:
-                                                    is_user_pick_up_order,
-                                                  is_order_payment_status_set_by_store:
-                                                    is_order_payment_status_set_by_store,
-                                                  is_distance_unit_mile:
-                                                    is_distance_unit_mile,
+                                            order_payment.save().then(
+                                              () => {
+                                                cart.order_payment_id =
+                                                  order_payment._id;
+                                                cart.save();
+                                                response_data.json({
+                                                  success: true,
+                                                  message:
+                                                    USER_MESSAGE_CODE.FARE_ESTIMATE_SUCCESSFULLY,
+                                                  server_time: server_time,
+                                                  timezone:
+                                                    city_detail.timezone,
+                                                  order_payment: order_payment,
+                                                  vehicles: vehicle_data,
                                                 });
-
-                                              order_payment.save().then(
-                                                () => {
-                                                  cart.order_payment_id =
-                                                    order_payment._id;
-                                                  cart.save();
-                                                  response_data.json({
-                                                    success: true,
-                                                    message:
-                                                      USER_MESSAGE_CODE.FARE_ESTIMATE_SUCCESSFULLY,
-                                                    server_time: server_time,
-                                                    timezone:
-                                                      city_detail.timezone,
-                                                    order_payment:
-                                                      order_payment,
-                                                    vehicles: vehicle_data,
-                                                  });
-                                                },
-                                                (error) => {
-                                                  response_data.json({
-                                                    success: false,
-                                                    error_code:
-                                                      ERROR_CODE.SOMETHING_WENT_WRONG,
-                                                  });
-                                                }
-                                              );
-                                            }
-                                          });
+                                              },
+                                              (error) => {
+                                                response_data.json({
+                                                  success: false,
+                                                  error_code:
+                                                    ERROR_CODE.SOMETHING_WENT_WRONG,
+                                                });
+                                              }
+                                            );
+                                          }
                                         });
-                                      }
-                                    );
-                                  } else {
-                                    response_data.json({
-                                      success: false,
-                                      error_code:
-                                        USER_ERROR_CODE.DELIVERY_SERVICE_NOT_AVAILABLE_IN_YOUR_CITY,
-                                    });
-                                  }
-                                },
-                                (error) => {
+                                      });
+                                    }
+                                  );
+                                } else {
                                   response_data.json({
                                     success: false,
                                     error_code:
                                       USER_ERROR_CODE.DELIVERY_SERVICE_NOT_AVAILABLE_IN_YOUR_CITY,
                                   });
                                 }
-                              );
-                            }
-                          },
-                          (error) => {
-                            response_data.json({
-                              success: false,
-                              error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                            });
+                              },
+                              (error) => {
+                                response_data.json({
+                                  success: false,
+                                  error_code:
+                                    USER_ERROR_CODE.DELIVERY_SERVICE_NOT_AVAILABLE_IN_YOUR_CITY,
+                                });
+                              }
+                            );
                           }
-                        );
-                      },
-                      (error) => {
-                        response_data.json({
-                          success: false,
-                          error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                        });
-                      }
-                    );
-                    //     } else {
-                    //         response_data.json({success: false, error_code: STORE_ERROR_CODE.STORE_DATA_NOT_FOUND});
-                    //     }
+                        },
+                        (error) => {
+                          response_data.json({
+                            success: false,
+                            error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                          });
+                        }
+                      );
+                    },
+                    (error) => {
+                      response_data.json({
+                        success: false,
+                        error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                      });
+                    }
+                  );
+                  //     } else {
+                  //         response_data.json({success: false, error_code: STORE_ERROR_CODE.STORE_DATA_NOT_FOUND});
+                  //     }
 
-                    // }, (error) => {
-                    //
-                    //     response_data.json({
-                    //         success: false,
-                    //         error_code: ERROR_CODE.SOMETHING_WENT_WRONG
-                    //     });
-                    // });
-                  } else {
-                    response_data.json({
-                      success: false,
-                      error_code: USER_ERROR_CODE.GET_ORDER_CART_INVOICE_FAILED,
-                    });
-                  }
-                },
-                (error) => {
+                  // }, (error) => {
+                  //
+                  //     response_data.json({
+                  //         success: false,
+                  //         error_code: ERROR_CODE.SOMETHING_WENT_WRONG
+                  //     });
+                  // });
+                } else {
                   response_data.json({
                     success: false,
-                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                    error_code: USER_ERROR_CODE.GET_ORDER_CART_INVOICE_FAILED,
                   });
                 }
-              );
-            }
+              },
+              (error) => {
+                response_data.json({
+                  success: false,
+                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                });
+              }
+            );
+
             // } else {
             //     response_data.json({
             //         success: false,
@@ -8100,7 +7900,7 @@ exports.get_courier_order_invoice = function (request_data, response_data) {
 
 // PAY ORDER PAYMENT
 exports.pay_order_payment = function (request_data, response_data) {
-  console.log('pay_order_payment: '+ JSON.stringify(request_data.body));
+  console.log("pay_order_payment: " + JSON.stringify(request_data.body));
   utils.check_request_params(
     request_data.body,
     [
@@ -8128,17 +7928,7 @@ exports.pay_order_payment = function (request_data, response_data) {
           });
           return;
         }
-        if (
-          order_type == ADMIN_DATA_ID.USER &&
-          request_data_body.server_token !== null &&
-          user.server_token !== request_data_body.server_token
-        ) {
-          response_data.json({
-            success: false,
-            error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-          });
-          return;
-        }
+
         if (user.wallet < 0) {
           response_data.json({
             success: false,
@@ -8637,313 +8427,301 @@ exports.order_history_detail = function (request_data, response_data) {
         User.findOne({ _id: request_data_body.user_id }).then(
           (user_detail) => {
             if (user_detail) {
-              if (
-                request_data_body.server_token !== null &&
-                user_detail.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                Order.findOne({ _id: request_data_body.order_id }).then(
-                  (order_detail) => {
-                    if (order_detail) {
-                      var country_id = order_detail.country_id;
+              Order.findOne({ _id: request_data_body.order_id }).then(
+                (order_detail) => {
+                  if (order_detail) {
+                    var country_id = order_detail.country_id;
 
-                      Store.findOne({ _id: order_detail.store_id }).then(
-                        (store_data) => {
-                          Country.findOne({ _id: country_id }).then(
-                            (country) => {
-                              var currency = "";
-                              if (country) {
-                                currency = country.currency_sign;
-                              }
-                              var current_provider = null;
-                              Request.findOne({
-                                _id: order_detail.request_id,
-                              }).then(
-                                (request_data) => {
-                                  if (request_data) {
-                                    current_provider =
-                                      request_data.current_provider;
-                                  }
-                                  Provider.findOne({
-                                    _id: current_provider,
-                                  }).then(
-                                    (provider_data) => {
-                                      Order_payment.findOne({
-                                        _id: order_detail.order_payment_id,
-                                      }).then(
-                                        (order_payment) => {
-                                          var provider_detail = {};
-                                          var store_detail = {};
-                                          var payment_gateway_name = "Cash";
-                                          let mode = "Cash";
-                                          if (
-                                            order_payment.is_payment_mode_cash ==
-                                            false
-                                          ) {
-                                            switch (true) {
-                                              case order_detail.is_payment_mode_card_on_delivery:
-                                                mode = "Card on Delivery";
-                                                break;
-                                              case order_detail.is_paid_from_wallet:
-                                                mode = "Wallet";
-                                                break;
-                                            }
-                                            payment_gateway_name = mode;
+                    Store.findOne({ _id: order_detail.store_id }).then(
+                      (store_data) => {
+                        Country.findOne({ _id: country_id }).then(
+                          (country) => {
+                            var currency = "";
+                            if (country) {
+                              currency = country.currency_sign;
+                            }
+                            var current_provider = null;
+                            Request.findOne({
+                              _id: order_detail.request_id,
+                            }).then(
+                              (request_data) => {
+                                if (request_data) {
+                                  current_provider =
+                                    request_data.current_provider;
+                                }
+                                Provider.findOne({
+                                  _id: current_provider,
+                                }).then(
+                                  (provider_data) => {
+                                    Order_payment.findOne({
+                                      _id: order_detail.order_payment_id,
+                                    }).then(
+                                      (order_payment) => {
+                                        var provider_detail = {};
+                                        var store_detail = {};
+                                        var payment_gateway_name = "Cash";
+                                        let mode = "Cash";
+                                        if (
+                                          order_payment.is_payment_mode_cash ==
+                                          false
+                                        ) {
+                                          switch (true) {
+                                            case order_detail.is_payment_mode_card_on_delivery:
+                                              mode = "Card on Delivery";
+                                              break;
+                                            case order_detail.is_paid_from_wallet:
+                                              mode = "Wallet";
+                                              break;
                                           }
-                                          switch (order_payment.payment_id) {
-                                            case "1":
-                                              payment_gateway_name =
-                                                "card on delivery";
-                                            case "2":
-                                              payment_gateway_name =
-                                                "wallet payment";
-                                            case "3":
-                                              payment_gateway_name =
-                                                "online payment";
-                                            case "4":
-                                              payment_gateway_name =
-                                                "cash & wallet payment";
-                                            case "5":
-                                              payment_gateway_name =
-                                                "card & wallet payment";
-                                            case "6":
-                                              payment_gateway_name =
-                                                "online & wallet payment";
-                                          }
-                                          if (
-                                            order_payment.is_payment_mode_card_on_delivery
-                                          ) {
+                                          payment_gateway_name = mode;
+                                        }
+                                        switch (order_payment.payment_id) {
+                                          case "1":
                                             payment_gateway_name =
-                                              "Card on Delivery";
-                                          }
-                                          if (
-                                            order_payment.is_payment_mode_online_payment
-                                          ) {
-                                            payment_gateway_name = "Online";
-                                          }
-                                          if (store_data) {
-                                            store_detail = {
-                                              name: store_data.name,
-                                              image_url: store_data.image_url,
-                                              min_order_price:
-                                                store_data.min_order_price,
-                                              store_delivery_id:
-                                                store_data.store_delivery_id,
-                                            };
-                                          }
+                                              "card on delivery";
+                                          case "2":
+                                            payment_gateway_name =
+                                              "wallet payment";
+                                          case "3":
+                                            payment_gateway_name =
+                                              "online payment";
+                                          case "4":
+                                            payment_gateway_name =
+                                              "cash & wallet payment";
+                                          case "5":
+                                            payment_gateway_name =
+                                              "card & wallet payment";
+                                          case "6":
+                                            payment_gateway_name =
+                                              "online & wallet payment";
+                                        }
+                                        if (
+                                          order_payment.is_payment_mode_card_on_delivery
+                                        ) {
+                                          payment_gateway_name =
+                                            "Card on Delivery";
+                                        }
+                                        if (
+                                          order_payment.is_payment_mode_online_payment
+                                        ) {
+                                          payment_gateway_name = "Online";
+                                        }
+                                        if (store_data) {
+                                          store_detail = {
+                                            name: store_data.name,
+                                            image_url: store_data.image_url,
+                                            min_order_price:
+                                              store_data.min_order_price,
+                                            store_delivery_id:
+                                              store_data.store_delivery_id,
+                                          };
+                                        }
 
-                                          if (provider_data) {
-                                            provider_detail = {
-                                              first_name:
-                                                provider_data.first_name,
-                                              last_name:
-                                                provider_data.last_name,
-                                              image_url:
-                                                provider_data.image_url,
-                                            };
-                                          }
+                                        if (provider_data) {
+                                          provider_detail = {
+                                            first_name:
+                                              provider_data.first_name,
+                                            last_name: provider_data.last_name,
+                                            image_url: provider_data.image_url,
+                                          };
+                                        }
 
-                                          var order_payment_query = {
-                                            $lookup: {
-                                              from: "order_payments",
-                                              localField: "order_payment_id",
-                                              foreignField: "_id",
-                                              as: "order_payment_detail",
+                                        var order_payment_query = {
+                                          $lookup: {
+                                            from: "order_payments",
+                                            localField: "order_payment_id",
+                                            foreignField: "_id",
+                                            as: "order_payment_detail",
+                                          },
+                                        };
+                                        var array_to_json_order_payment = {
+                                          $unwind: "$order_payment_detail",
+                                        };
+
+                                        var cart_query = {
+                                          $lookup: {
+                                            from: "carts",
+                                            localField: "cart_id",
+                                            foreignField: "_id",
+                                            as: "cart_detail",
+                                          },
+                                        };
+
+                                        var array_to_json_cart_query = {
+                                          $unwind: "$cart_detail",
+                                        };
+
+                                        var user_condition = {
+                                          $match: {
+                                            user_id: {
+                                              $eq: mongoose.Types.ObjectId(
+                                                request_data_body.user_id
+                                              ),
                                             },
-                                          };
-                                          var array_to_json_order_payment = {
-                                            $unwind: "$order_payment_detail",
-                                          };
-
-                                          var cart_query = {
-                                            $lookup: {
-                                              from: "carts",
-                                              localField: "cart_id",
-                                              foreignField: "_id",
-                                              as: "cart_detail",
+                                          },
+                                        };
+                                        var order_condition = {
+                                          $match: {
+                                            _id: {
+                                              $eq: mongoose.Types.ObjectId(
+                                                request_data_body.order_id
+                                              ),
                                             },
-                                          };
+                                          },
+                                        };
 
-                                          var array_to_json_cart_query = {
-                                            $unwind: "$cart_detail",
-                                          };
-
-                                          var user_condition = {
-                                            $match: {
-                                              user_id: {
-                                                $eq: mongoose.Types.ObjectId(
-                                                  request_data_body.user_id
-                                                ),
+                                        var order_status_condition = {
+                                          $match: {
+                                            $or: [
+                                              {
+                                                order_status: {
+                                                  $eq: ORDER_STATE.STORE_REJECTED,
+                                                },
                                               },
-                                            },
-                                          };
-                                          var order_condition = {
-                                            $match: {
-                                              _id: {
-                                                $eq: mongoose.Types.ObjectId(
-                                                  request_data_body.order_id
-                                                ),
+                                              {
+                                                order_status: {
+                                                  $eq: ORDER_STATE.CANCELED_BY_USER,
+                                                },
                                               },
-                                            },
-                                          };
+                                              {
+                                                order_status: {
+                                                  $eq: ORDER_STATE.STORE_CANCELLED,
+                                                },
+                                              },
+                                              {
+                                                order_status: {
+                                                  $eq: ORDER_STATE.ORDER_COMPLETED,
+                                                },
+                                              },
+                                            ],
+                                          },
+                                        };
 
-                                          var order_status_condition = {
-                                            $match: {
-                                              $or: [
-                                                {
-                                                  order_status: {
-                                                    $eq: ORDER_STATE.STORE_REJECTED,
-                                                  },
+                                        var order_status_id_condition = {
+                                          $match: {
+                                            $or: [
+                                              {
+                                                order_status_id: {
+                                                  $eq: ORDER_STATUS_ID.CANCELLED,
                                                 },
-                                                {
-                                                  order_status: {
-                                                    $eq: ORDER_STATE.CANCELED_BY_USER,
-                                                  },
+                                              },
+                                              {
+                                                order_status_id: {
+                                                  $eq: ORDER_STATUS_ID.REJECTED,
                                                 },
-                                                {
-                                                  order_status: {
-                                                    $eq: ORDER_STATE.STORE_CANCELLED,
-                                                  },
+                                              },
+                                              {
+                                                order_status_id: {
+                                                  $eq: ORDER_STATUS_ID.COMPLETED,
                                                 },
-                                                {
-                                                  order_status: {
-                                                    $eq: ORDER_STATE.ORDER_COMPLETED,
-                                                  },
-                                                },
-                                              ],
-                                            },
-                                          };
+                                              },
+                                            ],
+                                          },
+                                        };
 
-                                          var order_status_id_condition = {
-                                            $match: {
-                                              $or: [
-                                                {
-                                                  order_status_id: {
-                                                    $eq: ORDER_STATUS_ID.CANCELLED,
-                                                  },
-                                                },
-                                                {
-                                                  order_status_id: {
-                                                    $eq: ORDER_STATUS_ID.REJECTED,
-                                                  },
-                                                },
-                                                {
-                                                  order_status_id: {
-                                                    $eq: ORDER_STATUS_ID.COMPLETED,
-                                                  },
-                                                },
-                                              ],
-                                            },
-                                          };
-
-                                          Order.aggregate([
-                                            order_condition,
-                                            user_condition,
-                                            order_status_condition,
-                                            order_status_id_condition,
-                                            order_payment_query,
-                                            cart_query,
-                                            array_to_json_order_payment,
-                                            array_to_json_cart_query,
-                                          ]).then(
-                                            (orders) => {
-                                              orders &&
-                                                console.log(
-                                                  "====orders--length" +
-                                                    orders.length
-                                                );
-                                              if (orders.length == 0) {
-                                                response_data.json({
-                                                  success: false,
-                                                  error_code:
-                                                    USER_ERROR_CODE.ORDER_DETAIL_NOT_FOUND,
-                                                });
-                                              } else {
-                                                response_data.json({
-                                                  success: true,
-                                                  message:
-                                                    USER_MESSAGE_CODE.GET_USER_ORDER_DETAIL_SUCCESSFULLY,
-                                                  currency: currency,
-                                                  checkout_amount:
-                                                    order_payment.checkout_amount,
-                                                  store_detail: store_detail,
-                                                  provider_detail:
-                                                    provider_detail,
-                                                  payment_gateway_name:
-                                                    payment_gateway_name,
-                                                  order_list: orders[0],
-                                                });
-                                              }
-                                            },
-                                            (error) => {
+                                        Order.aggregate([
+                                          order_condition,
+                                          user_condition,
+                                          order_status_condition,
+                                          order_status_id_condition,
+                                          order_payment_query,
+                                          cart_query,
+                                          array_to_json_order_payment,
+                                          array_to_json_cart_query,
+                                        ]).then(
+                                          (orders) => {
+                                            orders &&
+                                              console.log(
+                                                "====orders--length" +
+                                                  orders.length
+                                              );
+                                            if (orders.length == 0) {
                                               response_data.json({
                                                 success: false,
                                                 error_code:
-                                                  ERROR_CODE.SOMETHING_WENT_WRONG,
+                                                  USER_ERROR_CODE.ORDER_DETAIL_NOT_FOUND,
+                                              });
+                                            } else {
+                                              response_data.json({
+                                                success: true,
+                                                message:
+                                                  USER_MESSAGE_CODE.GET_USER_ORDER_DETAIL_SUCCESSFULLY,
+                                                currency: currency,
+                                                checkout_amount:
+                                                  order_payment.checkout_amount,
+                                                store_detail: store_detail,
+                                                provider_detail:
+                                                  provider_detail,
+                                                payment_gateway_name:
+                                                  payment_gateway_name,
+                                                order_list: orders[0],
                                               });
                                             }
-                                          );
-                                        },
-                                        (error) => {
-                                          response_data.json({
-                                            success: false,
-                                            error_code:
-                                              ERROR_CODE.SOMETHING_WENT_WRONG,
-                                          });
-                                        }
-                                      );
-                                    },
-                                    (error) => {
-                                      response_data.json({
-                                        success: false,
-                                        error_code:
-                                          ERROR_CODE.SOMETHING_WENT_WRONG,
-                                      });
-                                    }
-                                  );
-                                },
-                                (error) => {
-                                  response_data.json({
-                                    success: false,
-                                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                                  });
-                                }
-                              );
-                            },
-                            (error) => {
-                              response_data.json({
-                                success: false,
-                                error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                              });
-                            }
-                          );
-                        },
-                        (error) => {
-                          response_data.json({
-                            success: false,
-                            error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                          });
-                        }
-                      );
-                    } else {
-                      response_data.json({
-                        success: false,
-                        error_code: STORE_ERROR_CODE.ORDER_DETAIL_NOT_FOUND,
-                      });
-                    }
-                  },
-                  (error) => {
+                                          },
+                                          (error) => {
+                                            response_data.json({
+                                              success: false,
+                                              error_code:
+                                                ERROR_CODE.SOMETHING_WENT_WRONG,
+                                            });
+                                          }
+                                        );
+                                      },
+                                      (error) => {
+                                        response_data.json({
+                                          success: false,
+                                          error_code:
+                                            ERROR_CODE.SOMETHING_WENT_WRONG,
+                                        });
+                                      }
+                                    );
+                                  },
+                                  (error) => {
+                                    response_data.json({
+                                      success: false,
+                                      error_code:
+                                        ERROR_CODE.SOMETHING_WENT_WRONG,
+                                    });
+                                  }
+                                );
+                              },
+                              (error) => {
+                                response_data.json({
+                                  success: false,
+                                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                                });
+                              }
+                            );
+                          },
+                          (error) => {
+                            response_data.json({
+                              success: false,
+                              error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                            });
+                          }
+                        );
+                      },
+                      (error) => {
+                        response_data.json({
+                          success: false,
+                          error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                        });
+                      }
+                    );
+                  } else {
                     response_data.json({
                       success: false,
-                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                      error_code: STORE_ERROR_CODE.ORDER_DETAIL_NOT_FOUND,
                     });
                   }
-                );
-              }
+                },
+                (error) => {
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
             } else {
               response_data.json({
                 success: false,
@@ -8978,201 +8756,186 @@ exports.order_history = function (request_data, response_data) {
         User.findOne({ _id: request_data_body.user_id }).then(
           (user_detail) => {
             if (user_detail) {
-              if (
-                request_data_body.server_token !== null &&
-                user_detail.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
+              var start_date = null,
+                end_date = null;
+
+              if (request_data_body.start_date == "") {
+                start_date = new Date(0);
               } else {
-                var start_date = null,
-                  end_date = null;
+                start_date = request_data_body.start_date;
+              }
 
-                if (request_data_body.start_date == "") {
-                  start_date = new Date(0);
-                } else {
-                  start_date = request_data_body.start_date;
-                }
+              if (request_data_body.end_date == "") {
+                end_date = new Date();
+              } else {
+                end_date = request_data_body.end_date;
+              }
 
-                if (request_data_body.end_date == "") {
-                  end_date = new Date();
-                } else {
-                  end_date = request_data_body.end_date;
-                }
+              start_date = new Date(start_date);
+              start_date = start_date.setHours(0, 0, 0, 0);
+              start_date = new Date(start_date);
 
-                start_date = new Date(start_date);
-                start_date = start_date.setHours(0, 0, 0, 0);
-                start_date = new Date(start_date);
+              end_date = new Date(end_date);
+              end_date = end_date.setHours(23, 59, 59, 999);
+              end_date = new Date(end_date);
 
-                end_date = new Date(end_date);
-                end_date = end_date.setHours(23, 59, 59, 999);
-                end_date = new Date(end_date);
-
-                var user_condition = {
-                  $match: {
-                    user_id: {
-                      $eq: mongoose.Types.ObjectId(request_data_body.user_id),
-                    },
+              var user_condition = {
+                $match: {
+                  user_id: {
+                    $eq: mongoose.Types.ObjectId(request_data_body.user_id),
                   },
-                };
-                var order_status_condition = {
-                  $match: {
-                    $or: [
-                      {
-                        order_status: ORDER_STATE.ORDER_COMPLETED,
-                        is_user_show_invoice: true,
+                },
+              };
+              var order_status_condition = {
+                $match: {
+                  $or: [
+                    {
+                      order_status: ORDER_STATE.ORDER_COMPLETED,
+                      is_user_show_invoice: true,
+                    },
+                    { order_status: ORDER_STATE.STORE_CANCELLED },
+                    { order_status: ORDER_STATE.CANCELED_BY_USER },
+                    { order_status: ORDER_STATE.STORE_REJECTED },
+                  ],
+                },
+              };
+
+              var filter = {
+                $match: {
+                  completed_date_in_city_timezone: {
+                    $gte: start_date,
+                    $lt: end_date,
+                  },
+                },
+              };
+
+              Order.aggregate([
+                user_condition,
+                order_status_condition,
+                // filter,
+                {
+                  $lookup: {
+                    from: "stores",
+                    localField: "store_id",
+                    foreignField: "_id",
+                    as: "store_detail",
+                  },
+                },
+                {
+                  $unwind: {
+                    path: "$store_detail",
+                    preserveNullAndEmptyArrays: true,
+                  },
+                },
+
+                {
+                  $lookup: {
+                    from: "cities",
+                    localField: "city_id",
+                    foreignField: "_id",
+                    as: "city_detail",
+                  },
+                },
+                { $unwind: "$city_detail" },
+
+                {
+                  $lookup: {
+                    from: "countries",
+                    localField: "city_detail.country_id",
+                    foreignField: "_id",
+                    as: "country_detail",
+                  },
+                },
+                { $unwind: "$country_detail" },
+                {
+                  $lookup: {
+                    from: "requests",
+                    localField: "request_id",
+                    foreignField: "_id",
+                    as: "request_detail",
+                  },
+                },
+                {
+                  $unwind: {
+                    path: "$request_detail",
+                    preserveNullAndEmptyArrays: true,
+                  },
+                },
+                {
+                  $lookup: {
+                    from: "order_payments",
+                    localField: "order_payment_id",
+                    foreignField: "_id",
+                    as: "order_payment_detail",
+                  },
+                },
+                { $unwind: "$order_payment_detail" },
+                {
+                  $project: {
+                    created_at: "$created_at",
+                    order_status: "$order_status",
+                    order_status_id: "$order_status_id",
+                    completed_at: "$completed_at",
+                    is_ramadan_order: "$is_ramadan_order",
+                    unique_id: "$unique_id",
+                    total: "$order_payment_detail.total",
+                    refund_amount: "$order_payment_detail.refund_amount",
+                    total_service_price:
+                      "$order_payment_detail.total_service_price",
+                    total_order_price:
+                      "$order_payment_detail.total_order_price",
+                    currency: "$country_detail.currency_sign",
+                    user_pay_payment: "$order_payment_detail.user_pay_payment",
+                    checkout_amount: "$order_payment_detail.checkout_amount",
+                    delivery_type: "$delivery_type",
+                    image_url: "$image_url",
+                    request_detail: {
+                      created_at: "$request_detail.created_at",
+                      request_unique_id: "$request_detail.unique_id",
+                      delivery_status: "$request_detail.delivery_status",
+                      delivery_status_manage_id:
+                        "$request_detail.delivery_status_manage_id",
+                    },
+                    store_detail: {
+                      _id: "$store_detail._id",
+                      name: {
+                        $cond: ["$store_detail", "$store_detail.name", ""],
                       },
-                      { order_status: ORDER_STATE.STORE_CANCELLED },
-                      { order_status: ORDER_STATE.CANCELED_BY_USER },
-                      { order_status: ORDER_STATE.STORE_REJECTED },
-                    ],
-                  },
-                };
-
-                var filter = {
-                  $match: {
-                    completed_date_in_city_timezone: {
-                      $gte: start_date,
-                      $lt: end_date,
-                    },
-                  },
-                };
-
-                Order.aggregate([
-                  user_condition,
-                  order_status_condition,
-                  // filter,
-                  {
-                    $lookup: {
-                      from: "stores",
-                      localField: "store_id",
-                      foreignField: "_id",
-                      as: "store_detail",
-                    },
-                  },
-                  {
-                    $unwind: {
-                      path: "$store_detail",
-                      preserveNullAndEmptyArrays: true,
-                    },
-                  },
-
-                  {
-                    $lookup: {
-                      from: "cities",
-                      localField: "city_id",
-                      foreignField: "_id",
-                      as: "city_detail",
-                    },
-                  },
-                  { $unwind: "$city_detail" },
-
-                  {
-                    $lookup: {
-                      from: "countries",
-                      localField: "city_detail.country_id",
-                      foreignField: "_id",
-                      as: "country_detail",
-                    },
-                  },
-                  { $unwind: "$country_detail" },
-                  {
-                    $lookup: {
-                      from: "requests",
-                      localField: "request_id",
-                      foreignField: "_id",
-                      as: "request_detail",
-                    },
-                  },
-                  {
-                    $unwind: {
-                      path: "$request_detail",
-                      preserveNullAndEmptyArrays: true,
-                    },
-                  },
-                  {
-                    $lookup: {
-                      from: "order_payments",
-                      localField: "order_payment_id",
-                      foreignField: "_id",
-                      as: "order_payment_detail",
-                    },
-                  },
-                  { $unwind: "$order_payment_detail" },
-                  {
-                    $project: {
-                      created_at: "$created_at",
-                      order_status: "$order_status",
-                      order_status_id: "$order_status_id",
-                      completed_at: "$completed_at",
-                      is_ramadan_order: "$is_ramadan_order",
-                      unique_id: "$unique_id",
-                      total: "$order_payment_detail.total",
-                      refund_amount: "$order_payment_detail.refund_amount",
-                      total_service_price:
-                        "$order_payment_detail.total_service_price",
-                      total_order_price:
-                        "$order_payment_detail.total_order_price",
-                      currency: "$country_detail.currency_sign",
-                      user_pay_payment:
-                        "$order_payment_detail.user_pay_payment",
-                      checkout_amount: "$order_payment_detail.checkout_amount",
-                      delivery_type: "$delivery_type",
-                      image_url: "$image_url",
-                      request_detail: {
-                        created_at: "$request_detail.created_at",
-                        request_unique_id: "$request_detail.unique_id",
-                        delivery_status: "$request_detail.delivery_status",
-                        delivery_status_manage_id:
-                          "$request_detail.delivery_status_manage_id",
+                      min_order_price: {
+                        $cond: [
+                          "$store_detail",
+                          "$store_detail.min_order_price",
+                          "",
+                        ],
                       },
-                      store_detail: {
-                        _id: "$store_detail._id",
-                        name: {
-                          $cond: ["$store_detail", "$store_detail.name", ""],
-                        },
-                        min_order_price: {
-                          $cond: [
-                            "$store_detail",
-                            "$store_detail.min_order_price",
-                            "",
-                          ],
-                        },
-                        image_url: {
-                          $cond: [
-                            "$store_detail",
-                            "$store_detail.image_url",
-                            "",
-                          ],
-                        },
+                      image_url: {
+                        $cond: ["$store_detail", "$store_detail.image_url", ""],
                       },
                     },
                   },
-                ]).then(
-                  (orders) => {
-                    if (orders.length == 0) {
-                      response_data.json({
-                        success: false,
-                        error_code: USER_ERROR_CODE.ORDER_HISTORY_NOT_FOUND,
-                      });
-                    } else {
-                      response_data.json({
-                        success: true,
-                        message: USER_MESSAGE_CODE.ORDER_HISTORY_SUCCESSFULLY,
-                        order_list: orders,
-                      });
-                    }
-                  },
-                  (error) => {
+                },
+              ]).then(
+                (orders) => {
+                  if (orders.length == 0) {
                     response_data.json({
                       success: false,
-                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                      error_code: USER_ERROR_CODE.ORDER_HISTORY_NOT_FOUND,
+                    });
+                  } else {
+                    response_data.json({
+                      success: true,
+                      message: USER_MESSAGE_CODE.ORDER_HISTORY_SUCCESSFULLY,
+                      order_list: orders,
                     });
                   }
-                );
-              }
+                },
+                (error) => {
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
             } else {
               response_data.json({
                 success: false,
@@ -9212,190 +8975,184 @@ exports.bill_payment_history = async (req, res) => {
     });
     return;
   }
-  if (server_token !== null && user_detail.server_token !== server_token) {
+
+  const user_condition = {
+    $match: {
+      store_id: {
+        $eq: mongoose.Types.ObjectId("61ade5310cee435b6af6106b"),
+      },
+      user_id: {
+        $eq: mongoose.Types.ObjectId(user_id),
+      },
+    },
+  };
+  const order_status_condition = {
+    $match: {
+      $or: [
+        {
+          order_status: ORDER_STATE.ORDER_COMPLETED,
+        },
+        { order_status: ORDER_STATE.STORE_CANCELLED },
+        { order_status: ORDER_STATE.CANCELED_BY_USER },
+        { order_status: ORDER_STATE.STORE_REJECTED },
+      ],
+    },
+  };
+
+  const pipelines = [
+    user_condition,
+    order_status_condition,
+    // filter,
+    {
+      $lookup: {
+        from: "stores",
+        localField: "store_id",
+        foreignField: "_id",
+        as: "store_detail",
+      },
+    },
+    {
+      $unwind: {
+        path: "$store_detail",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+
+    {
+      $lookup: {
+        from: "cities",
+        localField: "city_id",
+        foreignField: "_id",
+        as: "city_detail",
+      },
+    },
+    { $unwind: "$city_detail" },
+
+    {
+      $lookup: {
+        from: "countries",
+        localField: "city_detail.country_id",
+        foreignField: "_id",
+        as: "country_detail",
+      },
+    },
+    { $unwind: "$country_detail" },
+    {
+      $lookup: {
+        from: "requests",
+        localField: "request_id",
+        foreignField: "_id",
+        as: "request_detail",
+      },
+    },
+    {
+      $unwind: {
+        path: "$request_detail",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: "order_payments",
+        localField: "order_payment_id",
+        foreignField: "_id",
+        as: "order_payment_detail",
+      },
+    },
+    {
+      $lookup: {
+        from: "carts",
+        localField: "cart_id",
+        foreignField: "_id",
+        as: "cart_detail",
+      },
+    },
+    { $unwind: "$cart_detail" },
+    { $unwind: "$order_payment_detail" },
+    {
+      $project: {
+        created_at: "$created_at",
+        order_status: "$order_status",
+        order_status_id: "$order_status_id",
+        completed_at: "$completed_at",
+        is_ramadan_order: "$is_ramadan_order",
+        unique_id: "$unique_id",
+        total: "$order_payment_detail.total",
+        refund_amount: "$order_payment_detail.refund_amount",
+        total_service_price: "$order_payment_detail.total_service_price",
+        total_order_price: "$order_payment_detail.total_order_price",
+        currency: "$country_detail.currency_sign",
+        user_pay_payment: "$order_payment_detail.user_pay_payment",
+        checkout_amount: "$order_payment_detail.checkout_amount",
+        delivery_type: "$delivery_type",
+        image_url: "$image_url",
+        request_detail: {
+          created_at: "$request_detail.created_at",
+          request_unique_id: "$request_detail.unique_id",
+          delivery_status: "$request_detail.delivery_status",
+          delivery_status_manage_id:
+            "$request_detail.delivery_status_manage_id",
+        },
+        store_detail: {
+          _id: "$store_detail._id",
+          name: {
+            $cond: ["$store_detail", "$store_detail.name", ""],
+          },
+          min_order_price: {
+            $cond: ["$store_detail", "$store_detail.min_order_price", ""],
+          },
+          image_url: {
+            $cond: ["$store_detail", "$store_detail.image_url", ""],
+          },
+        },
+        cart_detail: {
+          SkuCode: {
+            $first: {
+              $first: "$cart_detail.order_details.items.SkuCode",
+            },
+          },
+          SendValue: {
+            $first: {
+              $first: "$cart_detail.order_details.items.SendValue",
+            },
+          },
+          AccountNumber: {
+            $first: {
+              $first: "$cart_detail.order_details.items.AccountNumber",
+            },
+          },
+          SendCurrencyIso: {
+            $first: {
+              $first: "$cart_detail.order_details.items.SendCurrencyIso",
+            },
+          },
+          image_url: {
+            $first: {
+              $first: "$cart_detail.order_details.items.image_url",
+            },
+          },
+          details: {
+            $first: {
+              $first: "$cart_detail.order_details.items.details",
+            },
+          },
+        },
+      },
+    },
+  ];
+
+  const orders = await Order.aggregate(pipelines);
+  if (orders.length == 0) {
     res.json({
       success: false,
-      error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
+      error_code: USER_ERROR_CODE.ORDER_HISTORY_NOT_FOUND,
     });
   } else {
-    const user_condition = {
-      $match: {
-        store_id: {
-          $eq: mongoose.Types.ObjectId("61ade5310cee435b6af6106b"),
-        },
-        user_id: {
-          $eq: mongoose.Types.ObjectId(user_id),
-        },
-      },
-    };
-    const order_status_condition = {
-      $match: {
-        $or: [
-          {
-            order_status: ORDER_STATE.ORDER_COMPLETED,
-          },
-          { order_status: ORDER_STATE.STORE_CANCELLED },
-          { order_status: ORDER_STATE.CANCELED_BY_USER },
-          { order_status: ORDER_STATE.STORE_REJECTED },
-        ],
-      },
-    };
-
-    const pipelines = [
-      user_condition,
-      order_status_condition,
-      // filter,
-      {
-        $lookup: {
-          from: "stores",
-          localField: "store_id",
-          foreignField: "_id",
-          as: "store_detail",
-        },
-      },
-      {
-        $unwind: {
-          path: "$store_detail",
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-
-      {
-        $lookup: {
-          from: "cities",
-          localField: "city_id",
-          foreignField: "_id",
-          as: "city_detail",
-        },
-      },
-      { $unwind: "$city_detail" },
-
-      {
-        $lookup: {
-          from: "countries",
-          localField: "city_detail.country_id",
-          foreignField: "_id",
-          as: "country_detail",
-        },
-      },
-      { $unwind: "$country_detail" },
-      {
-        $lookup: {
-          from: "requests",
-          localField: "request_id",
-          foreignField: "_id",
-          as: "request_detail",
-        },
-      },
-      {
-        $unwind: {
-          path: "$request_detail",
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-      {
-        $lookup: {
-          from: "order_payments",
-          localField: "order_payment_id",
-          foreignField: "_id",
-          as: "order_payment_detail",
-        },
-      },
-      {
-        $lookup: {
-          from: "carts",
-          localField: "cart_id",
-          foreignField: "_id",
-          as: "cart_detail",
-        },
-      },
-      { $unwind: "$cart_detail" },
-      { $unwind: "$order_payment_detail" },
-      {
-        $project: {
-          created_at: "$created_at",
-          order_status: "$order_status",
-          order_status_id: "$order_status_id",
-          completed_at: "$completed_at",
-          is_ramadan_order: "$is_ramadan_order",
-          unique_id: "$unique_id",
-          total: "$order_payment_detail.total",
-          refund_amount: "$order_payment_detail.refund_amount",
-          total_service_price: "$order_payment_detail.total_service_price",
-          total_order_price: "$order_payment_detail.total_order_price",
-          currency: "$country_detail.currency_sign",
-          user_pay_payment: "$order_payment_detail.user_pay_payment",
-          checkout_amount: "$order_payment_detail.checkout_amount",
-          delivery_type: "$delivery_type",
-          image_url: "$image_url",
-          request_detail: {
-            created_at: "$request_detail.created_at",
-            request_unique_id: "$request_detail.unique_id",
-            delivery_status: "$request_detail.delivery_status",
-            delivery_status_manage_id:
-              "$request_detail.delivery_status_manage_id",
-          },
-          store_detail: {
-            _id: "$store_detail._id",
-            name: {
-              $cond: ["$store_detail", "$store_detail.name", ""],
-            },
-            min_order_price: {
-              $cond: ["$store_detail", "$store_detail.min_order_price", ""],
-            },
-            image_url: {
-              $cond: ["$store_detail", "$store_detail.image_url", ""],
-            },
-          },
-          cart_detail: {
-            SkuCode: {
-              $first: {
-                $first: "$cart_detail.order_details.items.SkuCode",
-              },
-            },
-            SendValue: {
-              $first: {
-                $first: "$cart_detail.order_details.items.SendValue",
-              },
-            },
-            AccountNumber: {
-              $first: {
-                $first: "$cart_detail.order_details.items.AccountNumber",
-              },
-            },
-            SendCurrencyIso: {
-              $first: {
-                $first: "$cart_detail.order_details.items.SendCurrencyIso",
-              },
-            },
-            image_url: {
-              $first: {
-                $first: "$cart_detail.order_details.items.image_url",
-              },
-            },
-            details: {
-              $first: {
-                $first: "$cart_detail.order_details.items.details",
-              },
-            },
-          },
-        },
-      },
-    ];
-
-    const orders = await Order.aggregate(pipelines);
-    if (orders.length == 0) {
-      res.json({
-        success: false,
-        error_code: USER_ERROR_CODE.ORDER_HISTORY_NOT_FOUND,
-      });
-    } else {
-      res.json({
-        success: true,
-        message: USER_MESSAGE_CODE.ORDER_HISTORY_SUCCESSFULLY,
-        order_list: orders,
-      });
-    }
+    res.json({
+      success: true,
+      message: USER_MESSAGE_CODE.ORDER_HISTORY_SUCCESSFULLY,
+      order_list: orders,
+    });
   }
 };
 
@@ -9414,119 +9171,108 @@ exports.user_rating_to_provider = function (request_data, response_data) {
         User.findOne({ _id: request_data_body.user_id }).then(
           (user_detail) => {
             if (user_detail) {
-              if (
-                request_data_body.server_token !== null &&
-                user_detail.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                Order.findOne({ _id: request_data_body.order_id }).then(
-                  (order) => {
-                    if (order) {
-                      Review.findOne({ order_id: order._id }).then(
-                        (review) => {
-                          if (review) {
-                            var order_status = order.order_status;
-                            if (order_status == ORDER_STATE.ORDER_COMPLETED) {
-                              Request.findOne({ _id: order.request_id }).then(
-                                (request) => {
-                                  Provider.findOne({
-                                    _id: request.provider_id,
-                                  }).then(
-                                    (provider) => {
-                                      if (provider) {
-                                        var user_rating_to_provider =
-                                          request_data_body.user_rating_to_provider;
-                                        review.user_rating_to_provider =
-                                          user_rating_to_provider;
-                                        review.user_review_to_provider =
-                                          request_data_body.user_review_to_provider;
+              Order.findOne({ _id: request_data_body.order_id }).then(
+                (order) => {
+                  if (order) {
+                    Review.findOne({ order_id: order._id }).then(
+                      (review) => {
+                        if (review) {
+                          var order_status = order.order_status;
+                          if (order_status == ORDER_STATE.ORDER_COMPLETED) {
+                            Request.findOne({ _id: order.request_id }).then(
+                              (request) => {
+                                Provider.findOne({
+                                  _id: request.provider_id,
+                                }).then(
+                                  (provider) => {
+                                    if (provider) {
+                                      var user_rating_to_provider =
+                                        request_data_body.user_rating_to_provider;
+                                      review.user_rating_to_provider =
+                                        user_rating_to_provider;
+                                      review.user_review_to_provider =
+                                        request_data_body.user_review_to_provider;
 
-                                        var old_rate = provider.user_rate;
-                                        var old_rate_count =
-                                          provider.user_rate_count;
-                                        var new_rate_counter =
-                                          old_rate_count + 1;
-                                        var new_rate =
-                                          (old_rate * old_rate_count +
-                                            user_rating_to_provider) /
-                                          new_rate_counter;
-                                        new_rate = utils.precisionRoundTwo(
-                                          Number(new_rate)
-                                        );
-                                        provider.user_rate = new_rate;
-                                        provider.user_rate_count =
-                                          provider.user_rate_count + 1;
-                                        order.is_user_rated_to_provider = true;
-                                        order.save().then(
-                                          () => {
-                                            provider.save();
-                                            review.save();
-                                            response_data.json({
-                                              success: true,
-                                              message:
-                                                USER_MESSAGE_CODE.GIVE_RATING_TO_PROVIDER_SUCCESSFULLY,
-                                            });
-                                          },
-                                          (error) => {
-                                            response_data.json({
-                                              success: false,
-                                              error_code:
-                                                ERROR_CODE.SOMETHING_WENT_WRONG,
-                                            });
-                                          }
-                                        );
-                                      }
-                                    },
-                                    (error) => {
-                                      response_data.json({
-                                        success: false,
-                                        error_code:
-                                          ERROR_CODE.SOMETHING_WENT_WRONG,
-                                      });
+                                      var old_rate = provider.user_rate;
+                                      var old_rate_count =
+                                        provider.user_rate_count;
+                                      var new_rate_counter = old_rate_count + 1;
+                                      var new_rate =
+                                        (old_rate * old_rate_count +
+                                          user_rating_to_provider) /
+                                        new_rate_counter;
+                                      new_rate = utils.precisionRoundTwo(
+                                        Number(new_rate)
+                                      );
+                                      provider.user_rate = new_rate;
+                                      provider.user_rate_count =
+                                        provider.user_rate_count + 1;
+                                      order.is_user_rated_to_provider = true;
+                                      order.save().then(
+                                        () => {
+                                          provider.save();
+                                          review.save();
+                                          response_data.json({
+                                            success: true,
+                                            message:
+                                              USER_MESSAGE_CODE.GIVE_RATING_TO_PROVIDER_SUCCESSFULLY,
+                                          });
+                                        },
+                                        (error) => {
+                                          response_data.json({
+                                            success: false,
+                                            error_code:
+                                              ERROR_CODE.SOMETHING_WENT_WRONG,
+                                          });
+                                        }
+                                      );
                                     }
-                                  );
-                                },
-                                (error) => {
-                                  response_data.json({
-                                    success: false,
-                                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                                  });
-                                }
-                              );
-                            } else {
-                              response_data.json({
-                                success: false,
-                                error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
-                              });
-                            }
+                                  },
+                                  (error) => {
+                                    response_data.json({
+                                      success: false,
+                                      error_code:
+                                        ERROR_CODE.SOMETHING_WENT_WRONG,
+                                    });
+                                  }
+                                );
+                              },
+                              (error) => {
+                                response_data.json({
+                                  success: false,
+                                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                                });
+                              }
+                            );
                           } else {
                             response_data.json({
                               success: false,
                               error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
                             });
                           }
-                        },
-                        (error) => {
+                        } else {
                           response_data.json({
                             success: false,
-                            error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                            error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
                           });
                         }
-                      );
-                    }
-                  },
-                  (error) => {
-                    response_data.json({
-                      success: false,
-                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                    });
+                      },
+                      (error) => {
+                        response_data.json({
+                          success: false,
+                          error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                        });
+                      }
+                    );
                   }
-                );
-              }
+                },
+                (error) => {
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
             } else {
               response_data.json({
                 success: false,
@@ -9569,114 +9315,102 @@ exports.user_rating_to_store = function (request_data, response_data) {
         User.findOne({ _id: request_data_body.user_id }).then(
           (user_detail) => {
             if (user_detail) {
-              if (
-                request_data_body.server_token !== null &&
-                user_detail.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                Order.findOne({ _id: request_data_body.order_id }).then(
-                  async (order) => {
-                    if (order) {
-                      let review = await Review.findOne({
+              Order.findOne({ _id: request_data_body.order_id }).then(
+                async (order) => {
+                  if (order) {
+                    let review = await Review.findOne({
+                      order_id: order._id,
+                    });
+                    if (!review) {
+                      review = await Review.create({
                         order_id: order._id,
                       });
-                      if (!review) {
-                        review = await Review.create({
-                          order_id: order._id,
-                        });
-                      }
+                    }
 
-                      if (review) {
-                        var order_status = order.order_status;
-                        if (order_status == ORDER_STATE.ORDER_COMPLETED) {
-                          Store.findOne({ _id: order.store_id }).then(
-                            (store) => {
-                              if (store) {
-                                var user_rating_to_store =
-                                  request_data_body.user_rating_to_store;
-                                review.user_rating_to_store =
-                                  user_rating_to_store;
-                                review.user_review_to_store =
-                                  request_data_body.user_review_to_store;
-                                var user_delivery_experience_rating_to_store =
-                                  request_data_body.user_delivery_experience_rating_to_store;
+                    if (review) {
+                      var order_status = order.order_status;
+                      if (order_status == ORDER_STATE.ORDER_COMPLETED) {
+                        Store.findOne({ _id: order.store_id }).then(
+                          (store) => {
+                            if (store) {
+                              var user_rating_to_store =
+                                request_data_body.user_rating_to_store;
+                              review.user_rating_to_store =
+                                user_rating_to_store;
+                              review.user_review_to_store =
+                                request_data_body.user_review_to_store;
+                              var user_delivery_experience_rating_to_store =
+                                request_data_body.user_delivery_experience_rating_to_store;
 
-                                console.log(
-                                  user_delivery_experience_rating_to_store
-                                );
-                                review.user_delivery_experience_rating_to_store =
-                                  user_delivery_experience_rating_to_store;
-                                var user_product_quality_rating_to_store =
-                                  request_data_body.user_product_quality_rating_to_store;
-                                review.user_product_quality_rating_to_store =
-                                  user_product_quality_rating_to_store;
-                                var old_rate = store.user_rate;
-                                var old_rate_count = store.user_rate_count;
-                                var new_rate_counter = old_rate_count + 1;
-                                var new_rate =
-                                  (old_rate * old_rate_count +
-                                    user_rating_to_store) /
-                                  new_rate_counter;
-                                new_rate = utils.precisionRoundTwo(
-                                  Number(new_rate)
-                                );
-                                store.user_rate = new_rate;
-                                store.user_rate_count =
-                                  store.user_rate_count + 1;
-                                order.is_user_rated_to_store = true;
-                                order.save().then(
-                                  () => {
-                                    store.save();
-                                    review.save();
-                                    response_data.json({
-                                      success: true,
-                                      message:
-                                        USER_MESSAGE_CODE.GIVE_RATING_TO_STORE_SUCCESSFULLY,
-                                    });
-                                  },
-                                  (error) => {
-                                    response_data.json({
-                                      success: false,
-                                      error_code:
-                                        ERROR_CODE.SOMETHING_WENT_WRONG,
-                                    });
-                                  }
-                                );
-                              }
-                            },
-                            (error) => {
-                              response_data.json({
-                                success: false,
-                                error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                              });
+                              console.log(
+                                user_delivery_experience_rating_to_store
+                              );
+                              review.user_delivery_experience_rating_to_store =
+                                user_delivery_experience_rating_to_store;
+                              var user_product_quality_rating_to_store =
+                                request_data_body.user_product_quality_rating_to_store;
+                              review.user_product_quality_rating_to_store =
+                                user_product_quality_rating_to_store;
+                              var old_rate = store.user_rate;
+                              var old_rate_count = store.user_rate_count;
+                              var new_rate_counter = old_rate_count + 1;
+                              var new_rate =
+                                (old_rate * old_rate_count +
+                                  user_rating_to_store) /
+                                new_rate_counter;
+                              new_rate = utils.precisionRoundTwo(
+                                Number(new_rate)
+                              );
+                              store.user_rate = new_rate;
+                              store.user_rate_count = store.user_rate_count + 1;
+                              order.is_user_rated_to_store = true;
+                              order.save().then(
+                                () => {
+                                  store.save();
+                                  review.save();
+                                  response_data.json({
+                                    success: true,
+                                    message:
+                                      USER_MESSAGE_CODE.GIVE_RATING_TO_STORE_SUCCESSFULLY,
+                                  });
+                                },
+                                (error) => {
+                                  response_data.json({
+                                    success: false,
+                                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                                  });
+                                }
+                              );
                             }
-                          );
-                        } else {
-                          response_data.json({
-                            success: false,
-                            error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
-                          });
-                        }
+                          },
+                          (error) => {
+                            response_data.json({
+                              success: false,
+                              error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                            });
+                          }
+                        );
                       } else {
                         response_data.json({
                           success: false,
                           error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
                         });
                       }
+                    } else {
+                      response_data.json({
+                        success: false,
+                        error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
+                      });
                     }
-                  },
-                  (error) => {
-                    response_data.json({
-                      success: false,
-                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                    });
                   }
-                );
-              }
+                },
+                (error) => {
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
             } else {
               response_data.json({
                 success: false,
@@ -9709,126 +9443,114 @@ exports.get_invoice = function (request_data, response_data) {
         User.findOne({ _id: request_data_body.user_id }).then(
           (user) => {
             if (user) {
-              if (
-                request_data_body.server_token !== null &&
-                user.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                Order.findOne({ _id: request_data_body.order_id }).then(
-                  (order_detail) => {
-                    if (order_detail) {
-                      Country.findOne({ _id: order_detail.country_id }).then(
-                        (country) => {
-                          var currency = "";
-                          if (country) {
-                            currency = country.currency_sign;
-                          }
+              Order.findOne({ _id: request_data_body.order_id }).then(
+                (order_detail) => {
+                  if (order_detail) {
+                    Country.findOne({ _id: order_detail.country_id }).then(
+                      (country) => {
+                        var currency = "";
+                        if (country) {
+                          currency = country.currency_sign;
+                        }
 
-                          Order_payment.findOne({
-                            _id: order_detail.order_payment_id,
-                          }).then(
-                            (order_payment_detail) => {
-                              if (order_payment_detail) {
-                                var current_provider = null;
-                                Request.findOne({
-                                  _id: order_detail.request_id,
-                                }).then(
-                                  (request) => {
-                                    if (request) {
-                                      current_provider =
-                                        request.current_provider;
-                                    }
-                                    Provider.findOne({
-                                      _id: current_provider,
-                                    }).then((provider_data) => {
-                                      var provider_detail = {};
-                                      if (provider_data) {
-                                        provider_detail = provider_data;
-                                      }
-
-                                      Payment_gateway.findOne({
-                                        _id: order_payment_detail.payment_id,
-                                      }).then(
-                                        (payment_gateway) => {
-                                          var payment_gateway_name = "Cash";
-                                          if (
-                                            !order_payment_detail.is_payment_mode_cash
-                                          ) {
-                                            payment_gateway_name =
-                                              payment_gateway.name;
-                                          }
-
-                                          response_data.json({
-                                            success: true,
-                                            message:
-                                              USER_MESSAGE_CODE.GET_INVOICE_SUCCESSFULLY,
-                                            payment_gateway_name:
-                                              payment_gateway_name,
-                                            currency: currency,
-                                            provider_detail: provider_detail,
-                                            order_detail: order_detail,
-                                            order_payment: order_payment_detail,
-                                          });
-                                        },
-                                        (error) => {
-                                          response_data.json({
-                                            success: false,
-                                            error_code:
-                                              ERROR_CODE.SOMETHING_WENT_WRONG,
-                                          });
-                                        }
-                                      );
-                                    });
-                                  },
-                                  (error) => {
-                                    response_data.json({
-                                      success: false,
-                                      error_code:
-                                        ERROR_CODE.SOMETHING_WENT_WRONG,
-                                    });
+                        Order_payment.findOne({
+                          _id: order_detail.order_payment_id,
+                        }).then(
+                          (order_payment_detail) => {
+                            if (order_payment_detail) {
+                              var current_provider = null;
+                              Request.findOne({
+                                _id: order_detail.request_id,
+                              }).then(
+                                (request) => {
+                                  if (request) {
+                                    current_provider = request.current_provider;
                                   }
-                                );
-                              } else {
-                                response_data.json({
-                                  success: false,
-                                  error_code: USER_ERROR_CODE.INVOICE_NOT_FOUND,
-                                });
-                              }
-                            },
-                            (error) => {
+                                  Provider.findOne({
+                                    _id: current_provider,
+                                  }).then((provider_data) => {
+                                    var provider_detail = {};
+                                    if (provider_data) {
+                                      provider_detail = provider_data;
+                                    }
+
+                                    Payment_gateway.findOne({
+                                      _id: order_payment_detail.payment_id,
+                                    }).then(
+                                      (payment_gateway) => {
+                                        var payment_gateway_name = "Cash";
+                                        if (
+                                          !order_payment_detail.is_payment_mode_cash
+                                        ) {
+                                          payment_gateway_name =
+                                            payment_gateway.name;
+                                        }
+
+                                        response_data.json({
+                                          success: true,
+                                          message:
+                                            USER_MESSAGE_CODE.GET_INVOICE_SUCCESSFULLY,
+                                          payment_gateway_name:
+                                            payment_gateway_name,
+                                          currency: currency,
+                                          provider_detail: provider_detail,
+                                          order_detail: order_detail,
+                                          order_payment: order_payment_detail,
+                                        });
+                                      },
+                                      (error) => {
+                                        response_data.json({
+                                          success: false,
+                                          error_code:
+                                            ERROR_CODE.SOMETHING_WENT_WRONG,
+                                        });
+                                      }
+                                    );
+                                  });
+                                },
+                                (error) => {
+                                  response_data.json({
+                                    success: false,
+                                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                                  });
+                                }
+                              );
+                            } else {
                               response_data.json({
                                 success: false,
-                                error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                                error_code: USER_ERROR_CODE.INVOICE_NOT_FOUND,
                               });
                             }
-                          );
-                        },
-                        (error) => {
-                          response_data.json({
-                            success: false,
-                            error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                          });
-                        }
-                      );
-                    } else {
-                      response_data.json({
-                        success: false,
-                        error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
-                      });
-                    }
-                  },
-                  (error) => {
+                          },
+                          (error) => {
+                            response_data.json({
+                              success: false,
+                              error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                            });
+                          }
+                        );
+                      },
+                      (error) => {
+                        response_data.json({
+                          success: false,
+                          error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                        });
+                      }
+                    );
+                  } else {
                     response_data.json({
                       success: false,
-                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                      error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
                     });
                   }
-                );
-              }
+                },
+                (error) => {
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
             } else {
               response_data.json({
                 success: false,
@@ -9969,147 +9691,137 @@ exports.get_order_detail = function (request_data, response_data) {
         User.findOne({ _id: request_data_body.user_id }).then(
           (user_detail) => {
             if (user_detail) {
-              if (
-                request_data_body.server_token !== null &&
-                user_detail.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                var order_condition = {
-                  $match: {
-                    _id: {
-                      $eq: mongoose.Types.ObjectId(request_data_body.order_id),
-                    },
+              var order_condition = {
+                $match: {
+                  _id: {
+                    $eq: mongoose.Types.ObjectId(request_data_body.order_id),
                   },
-                };
+                },
+              };
 
-                var store_query = {
-                  $lookup: {
-                    from: "stores",
-                    localField: "store_id",
-                    foreignField: "_id",
-                    as: "store_detail",
-                  },
-                };
-                var array_to_json_store_detail = {
-                  $unwind: {
-                    path: "$store_detail",
-                    preserveNullAndEmptyArrays: true,
-                  },
-                };
+              var store_query = {
+                $lookup: {
+                  from: "stores",
+                  localField: "store_id",
+                  foreignField: "_id",
+                  as: "store_detail",
+                },
+              };
+              var array_to_json_store_detail = {
+                $unwind: {
+                  path: "$store_detail",
+                  preserveNullAndEmptyArrays: true,
+                },
+              };
 
-                var country_query = {
-                  $lookup: {
-                    from: "countries",
-                    localField: "order_payment_detail.country_id",
-                    foreignField: "_id",
-                    as: "country_detail",
-                  },
-                };
+              var country_query = {
+                $lookup: {
+                  from: "countries",
+                  localField: "order_payment_detail.country_id",
+                  foreignField: "_id",
+                  as: "country_detail",
+                },
+              };
 
-                var array_to_json_country_query = {
-                  $unwind: "$country_detail",
-                };
+              var array_to_json_country_query = {
+                $unwind: "$country_detail",
+              };
 
-                var order_payment_query = {
-                  $lookup: {
-                    from: "order_payments",
-                    localField: "order_payment_id",
-                    foreignField: "_id",
-                    as: "order_payment_detail",
-                  },
-                };
-                var array_to_json_order_payment_query = {
-                  $unwind: "$order_payment_detail",
-                };
+              var order_payment_query = {
+                $lookup: {
+                  from: "order_payments",
+                  localField: "order_payment_id",
+                  foreignField: "_id",
+                  as: "order_payment_detail",
+                },
+              };
+              var array_to_json_order_payment_query = {
+                $unwind: "$order_payment_detail",
+              };
 
-                var payment_gateway_query = {
-                  $lookup: {
-                    from: "payment_gateways",
-                    localField: "order_payment_detail.payment_id",
-                    foreignField: "_id",
-                    as: "payment_gateway_detail",
-                  },
-                };
-                var cart_query = {
-                  $lookup: {
-                    from: "carts",
-                    localField: "cart_id",
-                    foreignField: "_id",
-                    as: "cart_detail",
-                  },
-                };
+              var payment_gateway_query = {
+                $lookup: {
+                  from: "payment_gateways",
+                  localField: "order_payment_detail.payment_id",
+                  foreignField: "_id",
+                  as: "payment_gateway_detail",
+                },
+              };
+              var cart_query = {
+                $lookup: {
+                  from: "carts",
+                  localField: "cart_id",
+                  foreignField: "_id",
+                  as: "cart_detail",
+                },
+              };
 
-                var array_to_json_cart_query = { $unwind: "$cart_detail" };
+              var array_to_json_cart_query = { $unwind: "$cart_detail" };
 
-                var request_query = {
-                  $lookup: {
-                    from: "requests",
-                    localField: "request_id",
-                    foreignField: "_id",
-                    as: "request_detail",
-                  },
-                };
+              var request_query = {
+                $lookup: {
+                  from: "requests",
+                  localField: "request_id",
+                  foreignField: "_id",
+                  as: "request_detail",
+                },
+              };
 
-                var array_to_json_request_query = {
-                  $unwind: {
-                    path: "$request_detail",
-                    preserveNullAndEmptyArrays: true,
-                  },
-                };
+              var array_to_json_request_query = {
+                $unwind: {
+                  path: "$request_detail",
+                  preserveNullAndEmptyArrays: true,
+                },
+              };
 
-                var provider_query = {
-                  $lookup: {
-                    from: "providers",
-                    localField: "request_detail.provider_id",
-                    foreignField: "_id",
-                    as: "provider_detail",
-                  },
-                };
+              var provider_query = {
+                $lookup: {
+                  from: "providers",
+                  localField: "request_detail.provider_id",
+                  foreignField: "_id",
+                  as: "provider_detail",
+                },
+              };
 
-                Order.aggregate([
-                  order_condition,
-                  order_payment_query,
-                  cart_query,
-                  request_query,
-                  store_query,
-                  array_to_json_store_detail,
-                  array_to_json_request_query,
-                  provider_query,
-                  array_to_json_cart_query,
-                  array_to_json_order_payment_query,
-                  country_query,
-                  array_to_json_country_query,
-                  payment_gateway_query,
-                ]).then(
-                  (order) => {
-                    if (order.length === 0) {
-                      response_data.json({
-                        success: false,
-                        error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
-                        pages: 0,
-                      });
-                    } else {
-                      response_data.json({
-                        success: true,
-                        message: ORDER_MESSAGE_CODE.GET_ORDER_DATA_SUCCESSFULLY,
-                        is_confirmation_code_required_at_complete_delivery:
-                          setting_detail.is_confirmation_code_required_at_complete_delivery,
-                        order: order[0],
-                      });
-                    }
-                  },
-                  (error) => {
+              Order.aggregate([
+                order_condition,
+                order_payment_query,
+                cart_query,
+                request_query,
+                store_query,
+                array_to_json_store_detail,
+                array_to_json_request_query,
+                provider_query,
+                array_to_json_cart_query,
+                array_to_json_order_payment_query,
+                country_query,
+                array_to_json_country_query,
+                payment_gateway_query,
+              ]).then(
+                (order) => {
+                  if (order.length === 0) {
                     response_data.json({
                       success: false,
-                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                      error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
+                      pages: 0,
+                    });
+                  } else {
+                    response_data.json({
+                      success: true,
+                      message: ORDER_MESSAGE_CODE.GET_ORDER_DATA_SUCCESSFULLY,
+                      is_confirmation_code_required_at_complete_delivery:
+                        setting_detail.is_confirmation_code_required_at_complete_delivery,
+                      order: order[0],
                     });
                   }
-                );
-              }
+                },
+                (error) => {
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
             } else {
               response_data.json({
                 success: false,
@@ -10142,74 +9854,63 @@ exports.get_favourite_store_list = function (request_data, response_data) {
       User.findOne({ _id: request_data_body.user_id }).then(
         (user_detail) => {
           if (user_detail) {
-            if (
-              request_data_body.server_token !== null &&
-              user_detail.server_token !== request_data_body.server_token
-            ) {
-              response_data.json({
-                success: false,
-                error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              });
-            } else {
-              var store_id_condition = {
-                $match: { _id: { $in: user_detail.favourite_stores } },
-              };
-              var store_approve_condition = {
-                $match: { is_approved: { $eq: true } },
-              };
-              var city_lookup = {
-                $lookup: {
-                  from: "cities",
-                  localField: "city_id",
-                  foreignField: "_id",
-                  as: "city_detail",
-                },
-              };
-              var array_to_json_city_detail = { $unwind: "$city_detail" };
+            var store_id_condition = {
+              $match: { _id: { $in: user_detail.favourite_stores } },
+            };
+            var store_approve_condition = {
+              $match: { is_approved: { $eq: true } },
+            };
+            var city_lookup = {
+              $lookup: {
+                from: "cities",
+                localField: "city_id",
+                foreignField: "_id",
+                as: "city_detail",
+              },
+            };
+            var array_to_json_city_detail = { $unwind: "$city_detail" };
 
-              var country_lookup = {
-                $lookup: {
-                  from: "countries",
-                  localField: "country_id",
-                  foreignField: "_id",
-                  as: "country_detail",
-                },
-              };
-              var array_to_json_country_detail = { $unwind: "$country_detail" };
-              var server_time = new Date(moment(new Date()).utc().valueOf());
-              Store.aggregate([
-                store_id_condition,
-                store_approve_condition,
-                city_lookup,
-                array_to_json_city_detail,
-                country_lookup,
-                array_to_json_country_detail,
-              ]).then(
-                (stores) => {
-                  if (stores.length == 0) {
-                    response_data.json({
-                      success: false,
-                      error_code:
-                        USER_ERROR_CODE.FAVOURITE_STORE_LIST_NOT_FOUND,
-                    });
-                  } else {
-                    response_data.json({
-                      success: true,
-                      message:
-                        USER_MESSAGE_CODE.GET_FAVOURITE_STORE_LIST_SUCCESSFULLY,
-                      server_time: server_time,
-                      favourite_stores: stores,
-                    });
-                  }
-                },
-                (error) => {
+            var country_lookup = {
+              $lookup: {
+                from: "countries",
+                localField: "country_id",
+                foreignField: "_id",
+                as: "country_detail",
+              },
+            };
+            var array_to_json_country_detail = { $unwind: "$country_detail" };
+            var server_time = new Date(moment(new Date()).utc().valueOf());
+            Store.aggregate([
+              store_id_condition,
+              store_approve_condition,
+              city_lookup,
+              array_to_json_city_detail,
+              country_lookup,
+              array_to_json_country_detail,
+            ]).then(
+              (stores) => {
+                if (stores.length == 0) {
                   response_data.json({
                     success: false,
-                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                    error_code: USER_ERROR_CODE.FAVOURITE_STORE_LIST_NOT_FOUND,
+                  });
+                } else {
+                  response_data.json({
+                    success: true,
+                    message:
+                      USER_MESSAGE_CODE.GET_FAVOURITE_STORE_LIST_SUCCESSFULLY,
+                    server_time: server_time,
+                    favourite_stores: stores,
                   });
                 }
-              );
-            }
+              },
+              (error) => {
+                response_data.json({
+                  success: false,
+                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                });
+              }
+            );
           } else {
             response_data.json({
               success: false,
@@ -10356,102 +10057,92 @@ exports.user_like_dislike_store_review = function (
         User.findOne({ _id: request_data_body.user_id }).then(
           (user_detail) => {
             if (user_detail) {
-              if (
-                request_data_body.server_token !== null &&
-                user_detail.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                Review.findOne({ _id: request_data_body.review_id }).then(
-                  (review_detail) => {
-                    if (review_detail) {
-                      var is_user_clicked_like_store_review = Boolean(
-                        request_data_body.is_user_clicked_like_store_review
-                      );
-                      var is_user_clicked_dislike_store_review = Boolean(
-                        request_data_body.is_user_clicked_dislike_store_review
-                      );
-                      var id_of_users_like_store_comment =
-                        review_detail.id_of_users_like_store_comment;
-                      var id_of_users_dislike_store_comment =
-                        review_detail.id_of_users_dislike_store_comment;
+              Review.findOne({ _id: request_data_body.review_id }).then(
+                (review_detail) => {
+                  if (review_detail) {
+                    var is_user_clicked_like_store_review = Boolean(
+                      request_data_body.is_user_clicked_like_store_review
+                    );
+                    var is_user_clicked_dislike_store_review = Boolean(
+                      request_data_body.is_user_clicked_dislike_store_review
+                    );
+                    var id_of_users_like_store_comment =
+                      review_detail.id_of_users_like_store_comment;
+                    var id_of_users_dislike_store_comment =
+                      review_detail.id_of_users_dislike_store_comment;
 
-                      if (is_user_clicked_like_store_review == true) {
-                        var index = id_of_users_like_store_comment.indexOf(
-                          request_data_body.user_id
-                        );
-                        if (index < 0) {
-                          id_of_users_like_store_comment.push(
-                            request_data_body.user_id
-                          );
-                          review_detail.id_of_users_like_store_comment =
-                            id_of_users_like_store_comment;
-                        }
-                      } else {
-                        var index = id_of_users_like_store_comment.indexOf(
-                          request_data_body.user_id
-                        );
-                        if (index >= 0) {
-                          id_of_users_like_store_comment.splice(index, 1);
-                          review_detail.id_of_users_like_store_comment =
-                            id_of_users_like_store_comment;
-                        }
-                      }
-                      if (is_user_clicked_dislike_store_review == true) {
-                        var index = id_of_users_dislike_store_comment.indexOf(
-                          request_data_body.user_id
-                        );
-                        if (index < 0) {
-                          id_of_users_dislike_store_comment.push(
-                            request_data_body.user_id
-                          );
-                          review_detail.id_of_users_dislike_store_comment =
-                            id_of_users_dislike_store_comment;
-                        }
-                      } else {
-                        var index = id_of_users_dislike_store_comment.indexOf(
-                          request_data_body.user_id
-                        );
-                        if (index >= 0) {
-                          id_of_users_dislike_store_comment.splice(index, 1);
-                          review_detail.id_of_users_dislike_store_comment =
-                            id_of_users_dislike_store_comment;
-                        }
-                      }
-
-                      review_detail.save().then(
-                        () => {
-                          response_data.json({
-                            success: true,
-                            message:
-                              USER_MESSAGE_CODE.REVIEW_COMMENT_SUCCESSFULLY,
-                          });
-                        },
-                        (error) => {
-                          response_data.json({
-                            success: false,
-                            error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                          });
-                        }
+                    if (is_user_clicked_like_store_review == true) {
+                      var index = id_of_users_like_store_comment.indexOf(
+                        request_data_body.user_id
                       );
+                      if (index < 0) {
+                        id_of_users_like_store_comment.push(
+                          request_data_body.user_id
+                        );
+                        review_detail.id_of_users_like_store_comment =
+                          id_of_users_like_store_comment;
+                      }
                     } else {
-                      response_data.json({
-                        success: false,
-                        error_code: USER_ERROR_CODE.STORE_REVIEW_DATA_NOT_FOUND,
-                      });
+                      var index = id_of_users_like_store_comment.indexOf(
+                        request_data_body.user_id
+                      );
+                      if (index >= 0) {
+                        id_of_users_like_store_comment.splice(index, 1);
+                        review_detail.id_of_users_like_store_comment =
+                          id_of_users_like_store_comment;
+                      }
                     }
-                  },
-                  (error) => {
+                    if (is_user_clicked_dislike_store_review == true) {
+                      var index = id_of_users_dislike_store_comment.indexOf(
+                        request_data_body.user_id
+                      );
+                      if (index < 0) {
+                        id_of_users_dislike_store_comment.push(
+                          request_data_body.user_id
+                        );
+                        review_detail.id_of_users_dislike_store_comment =
+                          id_of_users_dislike_store_comment;
+                      }
+                    } else {
+                      var index = id_of_users_dislike_store_comment.indexOf(
+                        request_data_body.user_id
+                      );
+                      if (index >= 0) {
+                        id_of_users_dislike_store_comment.splice(index, 1);
+                        review_detail.id_of_users_dislike_store_comment =
+                          id_of_users_dislike_store_comment;
+                      }
+                    }
+
+                    review_detail.save().then(
+                      () => {
+                        response_data.json({
+                          success: true,
+                          message:
+                            USER_MESSAGE_CODE.REVIEW_COMMENT_SUCCESSFULLY,
+                        });
+                      },
+                      (error) => {
+                        response_data.json({
+                          success: false,
+                          error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                        });
+                      }
+                    );
+                  } else {
                     response_data.json({
                       success: false,
-                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                      error_code: USER_ERROR_CODE.STORE_REVIEW_DATA_NOT_FOUND,
                     });
                   }
-                );
-              }
+                },
+                (error) => {
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
             } else {
               response_data.json({
                 success: false,
@@ -10479,57 +10170,46 @@ exports.add_favourite_address = function (request_data, response_data) {
   User.findOne({ _id: request_data_body.user_id }).then(
     async (user_detail) => {
       if (user_detail) {
-        if (
-          request_data_body.server_token !== null &&
-          user_detail.server_token !== request_data_body.server_token
-        ) {
-          response_data.json({
-            success: false,
-            error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-          });
-        } else {
-          await User_favourite_address.updateMany(
-            { user_id: user_detail._id },
-            { $set: { is_default_address: false } }
-          );
-          var user_favourite_address = new User_favourite_address({
-            user_id: user_detail._id,
-            title: request_data_body.title,
-            appartmentno: request_data_body.appartmentno,
-            landmark: request_data_body.landmark,
-            country: request_data_body.country,
-            city1: request_data_body.city1,
-            location: [request_data_body.latitude, request_data_body.longitude],
-            city_code: request_data_body.city_code,
-            address: request_data_body.address,
-            country_code_2: request_data_body.country_code_2,
-            city2: request_data_body.city2,
-            country_code: request_data_body.country_code,
-            city3: request_data_body.city3,
-            building_no: request_data_body.building_no,
-            is_default_address: true,
-          });
+        await User_favourite_address.updateMany(
+          { user_id: user_detail._id },
+          { $set: { is_default_address: false } }
+        );
+        var user_favourite_address = new User_favourite_address({
+          user_id: user_detail._id,
+          title: request_data_body.title,
+          appartmentno: request_data_body.appartmentno,
+          landmark: request_data_body.landmark,
+          country: request_data_body.country,
+          city1: request_data_body.city1,
+          location: [request_data_body.latitude, request_data_body.longitude],
+          city_code: request_data_body.city_code,
+          address: request_data_body.address,
+          country_code_2: request_data_body.country_code_2,
+          city2: request_data_body.city2,
+          country_code: request_data_body.country_code,
+          city3: request_data_body.city3,
+          building_no: request_data_body.building_no,
+          is_default_address: true,
+        });
 
-          user_favourite_address.save().then(() => {
-            User_favourite_address.find({
-              user_id: request_data_body.user_id,
-            }).then((user_favourite_address) => {
-              if (user_favourite_address && user_favourite_address.length > 0) {
-                response_data.json({
-                  success: true,
-                  message:
-                    USER_MESSAGE_CODE.FAVOURITE_ADDRESS_ADDED_SUCCESSFULLY,
-                  user_favourite_address: user_favourite_address,
-                });
-              } else {
-                response_data.json({
-                  success: false,
-                  error_code: USER_ERROR_CODE.FAVOURITE_ADDRESS_NOT_FOUND,
-                });
-              }
-            });
+        user_favourite_address.save().then(() => {
+          User_favourite_address.find({
+            user_id: request_data_body.user_id,
+          }).then((user_favourite_address) => {
+            if (user_favourite_address && user_favourite_address.length > 0) {
+              response_data.json({
+                success: true,
+                message: USER_MESSAGE_CODE.FAVOURITE_ADDRESS_ADDED_SUCCESSFULLY,
+                user_favourite_address: user_favourite_address,
+              });
+            } else {
+              response_data.json({
+                success: false,
+                error_code: USER_ERROR_CODE.FAVOURITE_ADDRESS_NOT_FOUND,
+              });
+            }
           });
-        }
+        });
       } else {
         response_data.json({
           success: false,
@@ -10552,45 +10232,32 @@ exports.update_favourite_address = function (request_data, response_data) {
   User.findOne({ _id: request_data_body.user_id }).then(
     (user_detail) => {
       if (user_detail) {
-        if (
-          request_data_body.server_token !== null &&
-          user_detail.server_token !== request_data_body.server_token
-        ) {
-          response_data.json({
-            success: false,
-            error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
+        request_data_body.location = [];
+        request_data_body.location[0] = request_data_body.latitude;
+        request_data_body.location[1] = request_data_body.longitude;
+        User_favourite_address.findOneAndUpdate(
+          { _id: user_fav_address_id },
+          request_data_body,
+          { new: true }
+        ).then((user_favourite_address) => {
+          User_favourite_address.find({
+            user_id: request_data_body.user_id,
+          }).then((user_favourite_address) => {
+            if (user_favourite_address && user_favourite_address.length != 0) {
+              response_data.json({
+                success: true,
+                message:
+                  USER_MESSAGE_CODE.FAVOURITE_ADDRESS_UPDATED_SUCCESSFULLY,
+                user_favourite_address: user_favourite_address,
+              });
+            } else {
+              response_data.json({
+                success: false,
+                error_code: USER_ERROR_CODE.FAVOURITE_ADDRESS_NOT_FOUND,
+              });
+            }
           });
-        } else {
-          request_data_body.location = [];
-          request_data_body.location[0] = request_data_body.latitude;
-          request_data_body.location[1] = request_data_body.longitude;
-          User_favourite_address.findOneAndUpdate(
-            { _id: user_fav_address_id },
-            request_data_body,
-            { new: true }
-          ).then((user_favourite_address) => {
-            User_favourite_address.find({
-              user_id: request_data_body.user_id,
-            }).then((user_favourite_address) => {
-              if (
-                user_favourite_address &&
-                user_favourite_address.length != 0
-              ) {
-                response_data.json({
-                  success: true,
-                  message:
-                    USER_MESSAGE_CODE.FAVOURITE_ADDRESS_UPDATED_SUCCESSFULLY,
-                  user_favourite_address: user_favourite_address,
-                });
-              } else {
-                response_data.json({
-                  success: false,
-                  error_code: USER_ERROR_CODE.FAVOURITE_ADDRESS_NOT_FOUND,
-                });
-              }
-            });
-          });
-        }
+        });
       } else {
         response_data.json({
           success: false,
@@ -10615,64 +10282,54 @@ exports.get_favourite_address = function (request_data, response_data) {
     async (user_detail) => {
       const settings = await Setting.findOne({});
       if (user_detail) {
-        if (
-          request_data_body.server_token !== null &&
-          user_detail.server_token !== request_data_body.server_token
-        ) {
-          response_data.json({
-            success: false,
-            error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
+        if (is_default_address && default_address_id) {
+          await User_favourite_address.updateMany(
+            { user_id: request_data_body.user_id },
+            { $set: { is_default_address: false } }
+          );
+          const default_address = await User_favourite_address.findOne({
+            _id: request_data.body.default_address_id,
           });
-        } else {
-          if (is_default_address && default_address_id) {
-            await User_favourite_address.updateMany(
-              { user_id: request_data_body.user_id },
-              { $set: { is_default_address: false } }
-            );
-            const default_address = await User_favourite_address.findOne({
-              _id: request_data.body.default_address_id,
-            });
-            default_address.is_default_address = true;
-            default_address.save();
-          }
-          User_favourite_address.find({
-            user_id: request_data_body.user_id,
-          }).then((user_favourite_address) => {
-            if (user_favourite_address && user_favourite_address.length != 0) {
-              user_favourite_address.forEach((address) => {
-                if (!address.title) {
-                  address.icon =
-                    settings.aws_bucket_url + "images/icons_home.png";
-                } else if (
-                  address.title &&
-                  address.title.toLowerCase() == "home"
-                ) {
-                  address.icon =
-                    settings.aws_bucket_url + "images/icons_home.png";
-                } else if (
-                  ["office", "work"].includes(
-                    address.title ? address.title.toLowerCase() : ""
-                  )
-                ) {
-                  address.icon = settings.aws_bucket_url + "images/works.png";
-                } else {
-                  address.icon = settings.aws_bucket_url + "images/others.png";
-                }
-              });
-
-              response_data.json({
-                success: true,
-                message: USER_MESSAGE_CODE.FAVOURITE_ADDRESS_ADDED_SUCCESSFULLY,
-                user_favourite_address: user_favourite_address,
-              });
-            } else {
-              response_data.json({
-                success: false,
-                error_code: USER_ERROR_CODE.FAVOURITE_ADDRESS_NOT_FOUND,
-              });
-            }
-          });
+          default_address.is_default_address = true;
+          default_address.save();
         }
+        User_favourite_address.find({
+          user_id: request_data_body.user_id,
+        }).then((user_favourite_address) => {
+          if (user_favourite_address && user_favourite_address.length != 0) {
+            user_favourite_address.forEach((address) => {
+              if (!address.title) {
+                address.icon =
+                  settings.aws_bucket_url + "images/icons_home.png";
+              } else if (
+                address.title &&
+                address.title.toLowerCase() == "home"
+              ) {
+                address.icon =
+                  settings.aws_bucket_url + "images/icons_home.png";
+              } else if (
+                ["office", "work"].includes(
+                  address.title ? address.title.toLowerCase() : ""
+                )
+              ) {
+                address.icon = settings.aws_bucket_url + "images/works.png";
+              } else {
+                address.icon = settings.aws_bucket_url + "images/others.png";
+              }
+            });
+
+            response_data.json({
+              success: true,
+              message: USER_MESSAGE_CODE.FAVOURITE_ADDRESS_ADDED_SUCCESSFULLY,
+              user_favourite_address: user_favourite_address,
+            });
+          } else {
+            response_data.json({
+              success: false,
+              error_code: USER_ERROR_CODE.FAVOURITE_ADDRESS_NOT_FOUND,
+            });
+          }
+        });
       } else {
         response_data.json({
           success: false,
@@ -10817,40 +10474,27 @@ exports.delete_favourite_address = function (request_data, response_data) {
   User.findOne({ _id: request_data_body.user_id }).then(
     (user_detail) => {
       if (user_detail) {
-        if (
-          request_data_body.server_token !== null &&
-          user_detail.server_token !== request_data_body.server_token
-        ) {
-          response_data.json({
-            success: false,
-            error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-          });
-        } else {
-          User_favourite_address.findOneAndRemove({
-            _id: user_fav_address_id,
+        User_favourite_address.findOneAndRemove({
+          _id: user_fav_address_id,
+        }).then((user_favourite_address) => {
+          User_favourite_address.find({
+            user_id: request_data_body.user_id,
           }).then((user_favourite_address) => {
-            User_favourite_address.find({
-              user_id: request_data_body.user_id,
-            }).then((user_favourite_address) => {
-              if (
-                user_favourite_address &&
-                user_favourite_address.length != 0
-              ) {
-                response_data.json({
-                  success: true,
-                  message:
-                    USER_MESSAGE_CODE.FAVOURITE_ADDRESS_UPDATED_SUCCESSFULLY,
-                  user_favourite_address: user_favourite_address,
-                });
-              } else {
-                response_data.json({
-                  success: false,
-                  error_code: USER_ERROR_CODE.FAVOURITE_ADDRESS_NOT_FOUND,
-                });
-              }
-            });
+            if (user_favourite_address && user_favourite_address.length != 0) {
+              response_data.json({
+                success: true,
+                message:
+                  USER_MESSAGE_CODE.FAVOURITE_ADDRESS_UPDATED_SUCCESSFULLY,
+                user_favourite_address: user_favourite_address,
+              });
+            } else {
+              response_data.json({
+                success: false,
+                error_code: USER_ERROR_CODE.FAVOURITE_ADDRESS_NOT_FOUND,
+              });
+            }
           });
-        }
+        });
       } else {
         response_data.json({
           success: false,

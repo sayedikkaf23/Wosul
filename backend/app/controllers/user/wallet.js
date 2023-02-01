@@ -157,34 +157,24 @@ exports.change_user_wallet_status = function (request_data, response_data) {
       var request_data_body = request_data.body;
       User.findOne({ _id: request_data_body.user_id }).then((user) => {
         if (user) {
-          if (
-            request_data_body.server_token !== null &&
-            user.server_token !== request_data_body.server_token
-          ) {
-            response_data.json({
-              success: false,
-              error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-            });
-          } else {
-            var status = request_data_body.is_use_wallet;
-            user.is_use_wallet = status;
-            user.save().then(
-              () => {
-                response_data.json({
-                  success: true,
-                  message: USER_MESSAGE_CODE.CHANGE_WALLET_STATUS_SUCCESSFULLY,
-                  is_use_wallet: user.is_use_wallet,
-                });
-              },
-              (error) => {
-                console.log(error);
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                });
-              }
-            );
-          }
+          var status = request_data_body.is_use_wallet;
+          user.is_use_wallet = status;
+          user.save().then(
+            () => {
+              response_data.json({
+                success: true,
+                message: USER_MESSAGE_CODE.CHANGE_WALLET_STATUS_SUCCESSFULLY,
+                is_use_wallet: user.is_use_wallet,
+              });
+            },
+            (error) => {
+              console.log(error);
+              response_data.json({
+                success: false,
+                error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+              });
+            }
+          );
         } else {
           response_data.json({
             success: false,
