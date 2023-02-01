@@ -39,99 +39,89 @@ exports.order_confirmation = function (request_data, response_data) {
   User.findOne({ _id: request_data_body.user_id }).then(
     (user) => {
       if (user) {
-        if (
-          request_data_body.server_token !== null &&
-          user.server_token !== request_data_body.server_token
-        ) {
-          response_data.json({
-            success: false,
-            error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-          });
-        } else {
-          Order.findOne({ _id: request_data_body.order_id }).then(
-            (order) => {
-              if (order) {
-                var order_id = order._id;
-                console.log(typeof request_data_body.is_user_confirmed);
-                if (request_data_body.is_user_confirmed == true) {
-                  order.is_user_confirmed = true;
-                  order.save();
-                  Store.findOne({ _id: order.store_id }).then((store) => {
-                    if (store) {
-                      if (store.device_token != "") {
-                        utils.sendPushNotificationWithPushData(
-                          ADMIN_DATA_ID.STORE,
-                          store.device_type,
-                          store.device_token,
-                          STORE_PUSH_CODE.USER_CONFIRMED_ORDER,
-                          PUSH_NOTIFICATION_SOUND_FILE.PUSH_NOTIFICATION_SOUND_FILE_IN_IOS,
-                          order_id,
-                          ""
-                        );
-                      }
+        Order.findOne({ _id: request_data_body.order_id }).then(
+          (order) => {
+            if (order) {
+              var order_id = order._id;
+              console.log(typeof request_data_body.is_user_confirmed);
+              if (request_data_body.is_user_confirmed == true) {
+                order.is_user_confirmed = true;
+                order.save();
+                Store.findOne({ _id: order.store_id }).then((store) => {
+                  if (store) {
+                    if (store.device_token != "") {
+                      utils.sendPushNotificationWithPushData(
+                        ADMIN_DATA_ID.STORE,
+                        store.device_type,
+                        store.device_token,
+                        STORE_PUSH_CODE.USER_CONFIRMED_ORDER,
+                        PUSH_NOTIFICATION_SOUND_FILE.PUSH_NOTIFICATION_SOUND_FILE_IN_IOS,
+                        order_id,
+                        ""
+                      );
                     }
-                  });
+                  }
+                });
 
-                  response_data.json({
-                    success: true,
-                    is_user_confirmed: order.is_user_confirmed,
+                response_data.json({
+                  success: true,
+                  is_user_confirmed: order.is_user_confirmed,
+                });
+              } else {
+                order.is_user_confirmed = false;
+                order.order_status = ORDER_STATE.CANCELED_BY_USER;
+                order.order_status_by = user._id;
+                order.order_status_id = ORDER_STATUS_ID.CANCELLED;
+                order.order_status_manage_id = ORDER_STATUS_ID.CANCELLED;
+                order.cancel_reason = "";
+
+                var index = order.date_time.findIndex(
+                  (x) => x.status == ORDER_STATE.CANCELED_BY_USER
+                );
+                if (index == -1) {
+                  order.date_time.push({
+                    status: ORDER_STATE.CANCELED_BY_USER,
+                    date: new Date(),
                   });
                 } else {
-                  order.is_user_confirmed = false;
-                  order.order_status = ORDER_STATE.CANCELED_BY_USER;
-                  order.order_status_by = user._id;
-                  order.order_status_id = ORDER_STATUS_ID.CANCELLED;
-                  order.order_status_manage_id = ORDER_STATUS_ID.CANCELLED;
-                  order.cancel_reason = "";
-
-                  var index = order.date_time.findIndex(
-                    (x) => x.status == ORDER_STATE.CANCELED_BY_USER
-                  );
-                  if (index == -1) {
-                    order.date_time.push({
-                      status: ORDER_STATE.CANCELED_BY_USER,
-                      date: new Date(),
-                    });
-                  } else {
-                    order.date_time[index].date = new Date();
-                  }
-
-                  order.completed_at = new Date();
-                  order.completed_date_in_city_timezone =
-                    utils.get_date_now_at_city(now, order.timezone);
-                  order.completed_date_tag = moment(
-                    order.completed_date_in_city_timezone
-                  ).format(DATE_FORMATE.DDMMYYYY);
-
-                  //order.save();
-
-                  order.save().then(
-                    () => {
-                      response_data.json({
-                        success: true,
-                        is_user_confirmed: order.is_user_confirmed,
-                      });
-                    },
-                    (error) => {
-                      console.log(error);
-                      response_data.json({
-                        success: false,
-                        error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                      });
-                    }
-                  );
+                  order.date_time[index].date = new Date();
                 }
+
+                order.completed_at = new Date();
+                order.completed_date_in_city_timezone =
+                  utils.get_date_now_at_city(now, order.timezone);
+                order.completed_date_tag = moment(
+                  order.completed_date_in_city_timezone
+                ).format(DATE_FORMATE.DDMMYYYY);
+
+                //order.save();
+
+                order.save().then(
+                  () => {
+                    response_data.json({
+                      success: true,
+                      is_user_confirmed: order.is_user_confirmed,
+                    });
+                  },
+                  (error) => {
+                    console.log(error);
+                    response_data.json({
+                      success: false,
+                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                    });
+                  }
+                );
               }
-            },
-            (error) => {
-              console.log(error);
-              response_data.json({
-                success: false,
-                error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-              });
             }
-          );
-        }
+          },
+          (error) => {
+            console.log(error);
+            response_data.json({
+              success: false,
+              error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+            });
+          }
+        );
       }
     },
     (error) => {
@@ -185,18 +175,7 @@ exports.create_order = function (request_data, response_data) {
           });
           return;
         }
-        if (
-          user &&
-          order_type != ADMIN_DATA_ID.STORE &&
-          request_data_body.server_token !== null &&
-          user.server_token !== request_data_body.server_token
-        ) {
-          response_data.json({
-            success: false,
-            error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-          });
-          return;
-        }
+
         const order_payments = await Order_payment.find({
           user_id: request_data_body.user_id,
           cart_id: request_data_body.cart_id,
@@ -660,397 +639,385 @@ exports.set_order_status = function (request_data, response_data) {
         Store.findOne({ _id: request_data_body.store_id }).then(
           (store) => {
             if (store) {
-              if (
-                request_data_body.server_token !== null &&
-                store.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                Order.findOne({
-                  _id: request_data_body.order_id,
-                  store_id: request_data_body.store_id,
-                  $or: [
-                    { order_status_id: ORDER_STATUS_ID.RUNNING },
-                    { order_status_id: ORDER_STATUS_ID.IDEAL },
-                  ],
-                }).then(
-                  (order) => {
-                    if (order) {
-                      Order_payment.findOne({
-                        _id: order.order_payment_id,
-                        store_id: request_data_body.store_id,
-                      }).then(
-                        async (order_payment) => {
-                          const user = await User.findOne({
-                            _id: order_payment.user_id,
-                          });
-                          var order_status = Number(
-                            request_data_body.order_status
+              Order.findOne({
+                _id: request_data_body.order_id,
+                store_id: request_data_body.store_id,
+                $or: [
+                  { order_status_id: ORDER_STATUS_ID.RUNNING },
+                  { order_status_id: ORDER_STATUS_ID.IDEAL },
+                ],
+              }).then(
+                (order) => {
+                  if (order) {
+                    Order_payment.findOne({
+                      _id: order.order_payment_id,
+                      store_id: request_data_body.store_id,
+                    }).then(
+                      async (order_payment) => {
+                        const user = await User.findOne({
+                          _id: order_payment.user_id,
+                        });
+                        var order_status = Number(
+                          request_data_body.order_status
+                        );
+                        if (order_status == ORDER_STATE.STORE_ACCEPTED) {
+                          exports.store_accept_order(
+                            store,
+                            order,
+                            request_data,
+                            order_payment.total_item_count,
+                            function (store_accept_response) {
+                              response_data.json(store_accept_response);
+                            }
                           );
-                          if (order_status == ORDER_STATE.STORE_ACCEPTED) {
-                            exports.store_accept_order(
+                        } else if (
+                          order_status == ORDER_STATE.STORE_PREPARING_ORDER
+                        ) {
+                          exports.store_preparing_order(
+                            store,
+                            order,
+                            request_data,
+                            function (store_preparing_response) {
+                              response_data.json(store_preparing_response);
+                            }
+                          );
+                        } else if (order_status == ORDER_STATE.ORDER_READY) {
+                          const order_payment_id = order_payment._id;
+                          // let checkoutAmount = Number(
+                          //   request_data_body.checkout_amount
+                          // );
+
+                          let { checkout_amount, bill_amount = 0 } =
+                            request_data.body;
+                          order_payment.checkout_amount = checkout_amount;
+
+                          order_payment.bill_amount = Number(
+                            bill_amount ? bill_amount : checkout_amount
+                          );
+                          if (isNaN(order_payment.bill_amount)) {
+                            order_payment.bill_amount = 0;
+                          }
+                          await order_payment.save();
+                          var is_payment_mode_cash =
+                            order_payment.is_payment_mode_cash;
+                          var is_payment_mode_card_on_delivery =
+                            order_payment.is_payment_mode_card_on_delivery;
+                          var is_payment_mode_google_pay =
+                            order_payment.is_payment_mode_google_pay;
+                          var is_payment_mode_online_payment =
+                            order_payment.is_payment_mode_online_payment;
+                          if (
+                            is_payment_mode_google_pay ||
+                            is_payment_mode_online_payment
+                          ) {
+                            try {
+                              var payment_info = await new Promise(
+                                (res, rej) => {
+                                  deduct_amount(
+                                    {
+                                      body: {
+                                        order_payment_id,
+                                        checkout_amount: checkout_amount,
+                                      },
+                                    },
+                                    {
+                                      json: function (data) {
+                                        res(data);
+                                      },
+                                    }
+                                  );
+                                }
+                              );
+                              if (
+                                payment_info.payment.approved == false &&
+                                payment_info.payment.status == "Declined"
+                              ) {
+                                order.order_status = ORDER_STATE.ORDER_ON_HOLD;
+                                order.date_time.push({
+                                  status: ORDER_STATE.ORDER_ON_HOLD,
+                                  date: new Date(),
+                                });
+                                await order.save();
+                                var order_data = {
+                                  order_id: order._id,
+                                  unique_id: order.unique_id,
+                                  store_name: store.name,
+                                  store_image: store.image_url,
+                                };
+
+                                if (user) {
+                                  var device_type = user.device_type;
+                                  var device_token = user.device_token;
+                                  utils.sendPushNotificationWithPushData(
+                                    ADMIN_DATA_ID.USER,
+                                    device_type,
+                                    device_token,
+                                    USER_PUSH_CODE.STORE_ONHOLD_ORDER_INSUFFICIENT_FUNDS,
+                                    PUSH_NOTIFICATION_SOUND_FILE.PUSH_NOTIFICATION_SOUND_FILE_IN_IOS,
+                                    order_data,
+                                    ""
+                                  );
+                                }
+                                var resp = {
+                                  success: false,
+                                  order,
+                                  message: ORDER_STATE.ORDER_ON_HOLD,
+                                  error_message:
+                                    "Payment declined by provider due to insufficient funds. Kindly contact the yeepeey team for support.",
+                                };
+                                io.emit("newOrder", { text: "new order" });
+                                response_data.json(resp);
+                              } else if (
+                                payment_info.payment.approved == true &&
+                                payment_info.payment.status == "Authorized"
+                              ) {
+                                await exports.addLoyaltyPoints(
+                                  user,
+                                  order_payment.total_cart_price,
+                                  store
+                                );
+                                if (store._id == "5fa2c370071d9d33b9917ef4") {
+                                  const order_data = {
+                                    order_id: order.unique_id,
+                                    branch: "04",
+                                    order_date_time: order.created_at,
+                                    delivery_time: order.completed_at,
+                                    payment_mode: "ONLINE",
+                                    total_value: order_payment.user_pay_payment,
+                                  };
+                                  const address_info = {
+                                    firstname: user.first_name,
+                                    lastname: user.last_name,
+                                    street: "AL KARAMA",
+                                    building: "Hamsah",
+                                    city: "Dubai",
+                                    postcode: "12345",
+                                    email: user.email,
+                                    telephone: user.phone,
+                                  };
+                                  try {
+                                    const resObj =
+                                      await exports.sendOrderHeaderToStore(
+                                        order_data,
+                                        address_info
+                                      );
+                                    console.log(
+                                      "senOrderHeaderToStore :>> ",
+                                      resObj
+                                    );
+                                  } catch (err) {
+                                    console.log("err :>> ", err);
+                                  }
+                                }
+                                await checkRefferalForFriend({
+                                  user,
+                                  checkout_amount:
+                                    request_data_body.checkout_amount,
+                                });
+
+                                exports.store_ready_order(
+                                  store,
+                                  order,
+                                  request_data,
+                                  order_payment.total_item_count,
+                                  request_data.files,
+                                  function (store_ready_response) {
+                                    io.emit("newOrder");
+                                    response_data.json(
+                                      Object.assign(store_ready_response, {
+                                        payment_info,
+                                      })
+                                    );
+                                  }
+                                );
+                              }
+                            } catch (error) {
+                              console.log("error :>>> " + error);
+                            }
+                          } else {
+                            if (is_payment_mode_cash) {
+                              if (store._id == "5fa2c370071d9d33b9917ef4") {
+                                const order_data = {
+                                  order_id: order.unique_id,
+                                  branch: "04",
+                                  order_date_time: order.created_at,
+                                  delivery_time: order.completed_at,
+                                  payment_mode: "CASH",
+                                  total_value: order_payment.user_pay_payment,
+                                };
+                                const address_info = {
+                                  firstname: user.first_name,
+                                  lastname: user.last_name,
+                                  street: "AL KARAMA",
+                                  building: "Hamsah",
+                                  city: "Dubai",
+                                  postcode: "12345",
+                                  email: user.email,
+                                  telephone: user.phone,
+                                };
+                                try {
+                                  const resObj =
+                                    await exports.sendOrderHeaderToStore(
+                                      order_data,
+                                      address_info
+                                    );
+                                  console.log(
+                                    "senOrderHeaderToStore :>> ",
+                                    resObj
+                                  );
+                                } catch (err) {
+                                  console.log(
+                                    "senOrderHeaderToStore error :>> ",
+                                    err
+                                  );
+                                }
+                              }
+                              await exports.addLoyaltyPoints(
+                                user,
+                                order_payment.total_cart_price,
+                                store
+                              );
+                              let checkout_amount =
+                                request_data_body.checkout_amount;
+                              const country = await Country.findOne({
+                                _id: user.country_id,
+                              });
+                              if (
+                                !user.is_referral_bonus_recieved &&
+                                checkout_amount >=
+                                  country.min_price_for_cash_payment
+                              ) {
+                                if (
+                                  country.is_referral_user &&
+                                  country.is_referral_wallet_enable_cash &&
+                                  user.is_referral
+                                ) {
+                                  console.log("referral_bonus >>>>>");
+                                  // user.wallet = user.wallet + country.referral_bonus_to_user;
+                                  const user_friend = await User.findOne({
+                                    _id: user.referred_by,
+                                  });
+                                  user_friend.wallet =
+                                    user_friend.wallet +
+                                    country.referral_bonus_to_user; // bonus to referree
+                                  await user_friend.save();
+                                  user.is_referral_bonus_recieved = true;
+                                  await user.save();
+                                }
+                              }
+                            } else if (is_payment_mode_card_on_delivery) {
+                              if (store._id == "5fa2c370071d9d33b9917ef4") {
+                                const order_data = {
+                                  order_id: order.unique_id,
+                                  branch: "04",
+                                  order_date_time: order.created_at,
+                                  delivery_time: order.completed_at,
+                                  payment_mode: "CARD ON DELIVERY",
+                                  total_value: order_payment.user_pay_payment,
+                                };
+                                const address_info = {
+                                  firstname: user.first_name,
+                                  lastname: user.last_name,
+                                  street: "AL KARAMA",
+                                  building: "Hamsah",
+                                  city: "Dubai",
+                                  postcode: "12345",
+                                  email: user.email,
+                                  telephone: user.phone,
+                                };
+                                try {
+                                  const resObj =
+                                    await exports.sendOrderHeaderToStore(
+                                      order_data,
+                                      address_info
+                                    );
+                                  console.log(
+                                    "senOrderHeaderToStore :>> ",
+                                    resObj
+                                  );
+                                } catch (err) {
+                                  console.log(
+                                    "err senOrderHeaderToStore :>> ",
+                                    err
+                                  );
+                                }
+                              }
+                              await exports.addLoyaltyPoints(
+                                user,
+                                order_payment.total_cart_price,
+                                store
+                              );
+                              let checkout_amount =
+                                request_data_body.checkout_amount;
+                              const country = await Country.findOne({
+                                _id: user.country_id,
+                              });
+                              if (
+                                !user.is_referral_bonus_recieved &&
+                                checkout_amount >=
+                                  country.min_price_for_card_on_delivery
+                              ) {
+                                if (
+                                  country.is_referral_user &&
+                                  country.is_referral_wallet_enable_card_on_delivery &&
+                                  user.is_referral
+                                ) {
+                                  console.log("referral_bonus >>>>>");
+                                  // user.wallet = user.wallet + country.referral_bonus_to_user;
+                                  const user_friend = await User.findOne({
+                                    _id: user.referred_by,
+                                  });
+                                  user_friend.wallet =
+                                    user_friend.wallet +
+                                    country.referral_bonus_to_user; // bonus to referree
+                                  await user_friend.save();
+                                  user.is_referral_bonus_recieved = true;
+                                  await user.save();
+                                }
+                              }
+                            }
+                            await checkRefferalForFriend({
+                              user,
+                              checkout_amount:
+                                request_data_body.checkout_amount,
+                            });
+                            exports.store_ready_order(
                               store,
                               order,
                               request_data,
                               order_payment.total_item_count,
-                              function (store_accept_response) {
-                                response_data.json(store_accept_response);
+                              request_data.files,
+                              function (store_ready_response) {
+                                io.emit("newOrder");
+                                response_data.json(store_ready_response);
                               }
                             );
-                          } else if (
-                            order_status == ORDER_STATE.STORE_PREPARING_ORDER
-                          ) {
-                            exports.store_preparing_order(
-                              store,
-                              order,
-                              request_data,
-                              function (store_preparing_response) {
-                                response_data.json(store_preparing_response);
-                              }
-                            );
-                          } else if (order_status == ORDER_STATE.ORDER_READY) {
-                            const order_payment_id = order_payment._id;
-                            // let checkoutAmount = Number(
-                            //   request_data_body.checkout_amount
-                            // );
-
-                            let { checkout_amount, bill_amount = 0 } =
-                              request_data.body;
-                            order_payment.checkout_amount = checkout_amount;
-
-                            order_payment.bill_amount = Number(
-                              bill_amount ? bill_amount : checkout_amount
-                            );
-                            if (isNaN(order_payment.bill_amount)) {
-                              order_payment.bill_amount = 0;
-                            }
-                            await order_payment.save();
-                            var is_payment_mode_cash =
-                              order_payment.is_payment_mode_cash;
-                            var is_payment_mode_card_on_delivery =
-                              order_payment.is_payment_mode_card_on_delivery;
-                            var is_payment_mode_google_pay =
-                              order_payment.is_payment_mode_google_pay;
-                            var is_payment_mode_online_payment =
-                              order_payment.is_payment_mode_online_payment;
-                            if (
-                              is_payment_mode_google_pay ||
-                              is_payment_mode_online_payment
-                            ) {
-                              try {
-                                var payment_info = await new Promise(
-                                  (res, rej) => {
-                                    deduct_amount(
-                                      {
-                                        body: {
-                                          order_payment_id,
-                                          checkout_amount: checkout_amount,
-                                        },
-                                      },
-                                      {
-                                        json: function (data) {
-                                          res(data);
-                                        },
-                                      }
-                                    );
-                                  }
-                                );
-                                if (
-                                  payment_info.payment.approved == false &&
-                                  payment_info.payment.status == "Declined"
-                                ) {
-                                  order.order_status =
-                                    ORDER_STATE.ORDER_ON_HOLD;
-                                  order.date_time.push({
-                                    status: ORDER_STATE.ORDER_ON_HOLD,
-                                    date: new Date(),
-                                  });
-                                  await order.save();
-                                  var order_data = {
-                                    order_id: order._id,
-                                    unique_id: order.unique_id,
-                                    store_name: store.name,
-                                    store_image: store.image_url,
-                                  };
-
-                                  if (user) {
-                                    var device_type = user.device_type;
-                                    var device_token = user.device_token;
-                                    utils.sendPushNotificationWithPushData(
-                                      ADMIN_DATA_ID.USER,
-                                      device_type,
-                                      device_token,
-                                      USER_PUSH_CODE.STORE_ONHOLD_ORDER_INSUFFICIENT_FUNDS,
-                                      PUSH_NOTIFICATION_SOUND_FILE.PUSH_NOTIFICATION_SOUND_FILE_IN_IOS,
-                                      order_data,
-                                      ""
-                                    );
-                                  }
-                                  var resp = {
-                                    success: false,
-                                    order,
-                                    message: ORDER_STATE.ORDER_ON_HOLD,
-                                    error_message:
-                                      "Payment declined by provider due to insufficient funds. Kindly contact the yeepeey team for support.",
-                                  };
-                                  io.emit("newOrder", { text: "new order" });
-                                  response_data.json(resp);
-                                } else if (
-                                  payment_info.payment.approved == true &&
-                                  payment_info.payment.status == "Authorized"
-                                ) {
-                                  await exports.addLoyaltyPoints(
-                                    user,
-                                    order_payment.total_cart_price,
-                                    store
-                                  );
-                                  if (store._id == "5fa2c370071d9d33b9917ef4") {
-                                    const order_data = {
-                                      order_id: order.unique_id,
-                                      branch: "04",
-                                      order_date_time: order.created_at,
-                                      delivery_time: order.completed_at,
-                                      payment_mode: "ONLINE",
-                                      total_value:
-                                        order_payment.user_pay_payment,
-                                    };
-                                    const address_info = {
-                                      firstname: user.first_name,
-                                      lastname: user.last_name,
-                                      street: "AL KARAMA",
-                                      building: "Hamsah",
-                                      city: "Dubai",
-                                      postcode: "12345",
-                                      email: user.email,
-                                      telephone: user.phone,
-                                    };
-                                    try {
-                                      const resObj =
-                                        await exports.sendOrderHeaderToStore(
-                                          order_data,
-                                          address_info
-                                        );
-                                      console.log(
-                                        "senOrderHeaderToStore :>> ",
-                                        resObj
-                                      );
-                                    } catch (err) {
-                                      console.log("err :>> ", err);
-                                    }
-                                  }
-                                  await checkRefferalForFriend({
-                                    user,
-                                    checkout_amount:
-                                      request_data_body.checkout_amount,
-                                  });
-
-                                  exports.store_ready_order(
-                                    store,
-                                    order,
-                                    request_data,
-                                    order_payment.total_item_count,
-                                    request_data.files,
-                                    function (store_ready_response) {
-                                      io.emit("newOrder");
-                                      response_data.json(
-                                        Object.assign(store_ready_response, {
-                                          payment_info,
-                                        })
-                                      );
-                                    }
-                                  );
-                                }
-                              } catch (error) {
-                                console.log("error :>>> " + error);
-                              }
-                            } else {
-                              if (is_payment_mode_cash) {
-                                if (store._id == "5fa2c370071d9d33b9917ef4") {
-                                  const order_data = {
-                                    order_id: order.unique_id,
-                                    branch: "04",
-                                    order_date_time: order.created_at,
-                                    delivery_time: order.completed_at,
-                                    payment_mode: "CASH",
-                                    total_value: order_payment.user_pay_payment,
-                                  };
-                                  const address_info = {
-                                    firstname: user.first_name,
-                                    lastname: user.last_name,
-                                    street: "AL KARAMA",
-                                    building: "Hamsah",
-                                    city: "Dubai",
-                                    postcode: "12345",
-                                    email: user.email,
-                                    telephone: user.phone,
-                                  };
-                                  try {
-                                    const resObj =
-                                      await exports.sendOrderHeaderToStore(
-                                        order_data,
-                                        address_info
-                                      );
-                                    console.log(
-                                      "senOrderHeaderToStore :>> ",
-                                      resObj
-                                    );
-                                  } catch (err) {
-                                    console.log(
-                                      "senOrderHeaderToStore error :>> ",
-                                      err
-                                    );
-                                  }
-                                }
-                                await exports.addLoyaltyPoints(
-                                  user,
-                                  order_payment.total_cart_price,
-                                  store
-                                );
-                                let checkout_amount =
-                                  request_data_body.checkout_amount;
-                                const country = await Country.findOne({
-                                  _id: user.country_id,
-                                });
-                                if (
-                                  !user.is_referral_bonus_recieved &&
-                                  checkout_amount >=
-                                    country.min_price_for_cash_payment
-                                ) {
-                                  if (
-                                    country.is_referral_user &&
-                                    country.is_referral_wallet_enable_cash &&
-                                    user.is_referral
-                                  ) {
-                                    console.log("referral_bonus >>>>>");
-                                    // user.wallet = user.wallet + country.referral_bonus_to_user;
-                                    const user_friend = await User.findOne({
-                                      _id: user.referred_by,
-                                    });
-                                    user_friend.wallet =
-                                      user_friend.wallet +
-                                      country.referral_bonus_to_user; // bonus to referree
-                                    await user_friend.save();
-                                    user.is_referral_bonus_recieved = true;
-                                    await user.save();
-                                  }
-                                }
-                              } else if (is_payment_mode_card_on_delivery) {
-                                if (store._id == "5fa2c370071d9d33b9917ef4") {
-                                  const order_data = {
-                                    order_id: order.unique_id,
-                                    branch: "04",
-                                    order_date_time: order.created_at,
-                                    delivery_time: order.completed_at,
-                                    payment_mode: "CARD ON DELIVERY",
-                                    total_value: order_payment.user_pay_payment,
-                                  };
-                                  const address_info = {
-                                    firstname: user.first_name,
-                                    lastname: user.last_name,
-                                    street: "AL KARAMA",
-                                    building: "Hamsah",
-                                    city: "Dubai",
-                                    postcode: "12345",
-                                    email: user.email,
-                                    telephone: user.phone,
-                                  };
-                                  try {
-                                    const resObj =
-                                      await exports.sendOrderHeaderToStore(
-                                        order_data,
-                                        address_info
-                                      );
-                                    console.log(
-                                      "senOrderHeaderToStore :>> ",
-                                      resObj
-                                    );
-                                  } catch (err) {
-                                    console.log(
-                                      "err senOrderHeaderToStore :>> ",
-                                      err
-                                    );
-                                  }
-                                }
-                                await exports.addLoyaltyPoints(
-                                  user,
-                                  order_payment.total_cart_price,
-                                  store
-                                );
-                                let checkout_amount =
-                                  request_data_body.checkout_amount;
-                                const country = await Country.findOne({
-                                  _id: user.country_id,
-                                });
-                                if (
-                                  !user.is_referral_bonus_recieved &&
-                                  checkout_amount >=
-                                    country.min_price_for_card_on_delivery
-                                ) {
-                                  if (
-                                    country.is_referral_user &&
-                                    country.is_referral_wallet_enable_card_on_delivery &&
-                                    user.is_referral
-                                  ) {
-                                    console.log("referral_bonus >>>>>");
-                                    // user.wallet = user.wallet + country.referral_bonus_to_user;
-                                    const user_friend = await User.findOne({
-                                      _id: user.referred_by,
-                                    });
-                                    user_friend.wallet =
-                                      user_friend.wallet +
-                                      country.referral_bonus_to_user; // bonus to referree
-                                    await user_friend.save();
-                                    user.is_referral_bonus_recieved = true;
-                                    await user.save();
-                                  }
-                                }
-                              }
-                              await checkRefferalForFriend({
-                                user,
-                                checkout_amount:
-                                  request_data_body.checkout_amount,
-                              });
-                              exports.store_ready_order(
-                                store,
-                                order,
-                                request_data,
-                                order_payment.total_item_count,
-                                request_data.files,
-                                function (store_ready_response) {
-                                  io.emit("newOrder");
-                                  response_data.json(store_ready_response);
-                                }
-                              );
-                            }
                           }
-                        },
-                        (error) => {
-                          console.log(error);
-                          response_data.json({
-                            success: false,
-                            error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                          });
                         }
-                      );
-                    } else {
-                      response_data.json({
-                        success: false,
-                        error_code: ORDER_ERROR_CODE.ORDER_ALREADY_CANCELLED,
-                      });
-                    }
-                  },
-                  (error) => {
-                    console.log(error);
+                      },
+                      (error) => {
+                        console.log(error);
+                        response_data.json({
+                          success: false,
+                          error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                        });
+                      }
+                    );
+                  } else {
                     response_data.json({
                       success: false,
-                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                      error_code: ORDER_ERROR_CODE.ORDER_ALREADY_CANCELLED,
                     });
                   }
-                );
-              }
+                },
+                (error) => {
+                  console.log(error);
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
             } else {
               response_data.json({
                 success: false,
@@ -1117,127 +1084,116 @@ exports.order_on_hold_payment = function (request_data, response_data) {
           ],
         });
         if (store) {
-          if (
-            false &&
-            request_data_body.server_token !== null &&
-            store.server_token !== request_data_body.server_token
-          ) {
-            response_data.json({
-              success: false,
-              error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-            });
-          } else {
-            const order_payment = await Order_payment.findOne({
-              _id: order.order_payment_id,
-              store_id: request_data_body.store_id,
-            });
+          const order_payment = await Order_payment.findOne({
+            _id: order.order_payment_id,
+            store_id: request_data_body.store_id,
+          });
 
-            if (order_payment) {
-              const user = await User.findOne({
-                _id: order_payment.user_id,
+          if (order_payment) {
+            const user = await User.findOne({
+              _id: order_payment.user_id,
+            });
+            var order_status = Number(request_data_body.order_status);
+            if (order_status == ORDER_STATE.ORDER_ON_HOLD) {
+              const order_payment_id = order_payment._id;
+
+              const card = await Card.findOne({
+                _id: request_data_body.card_id,
               });
-              var order_status = Number(request_data_body.order_status);
-              if (order_status == ORDER_STATE.ORDER_ON_HOLD) {
-                const order_payment_id = order_payment._id;
-
-                const card = await Card.findOne({
-                  _id: request_data_body.card_id,
-                });
-                if (card) {
-                  order_payment.instrument_id = card.instrument_id;
-                  await order_payment.save();
-                  try {
-                    var payment_info = await new Promise((res, rej) => {
-                      deduct_amount(
-                        {
-                          body: {
-                            order_payment_id,
-                            checkout_amount: request_data_body.checkout_amount,
-                          },
+              if (card) {
+                order_payment.instrument_id = card.instrument_id;
+                await order_payment.save();
+                try {
+                  var payment_info = await new Promise((res, rej) => {
+                    deduct_amount(
+                      {
+                        body: {
+                          order_payment_id,
+                          checkout_amount: request_data_body.checkout_amount,
                         },
-                        {
-                          json: function (data) {
-                            res(data);
-                          },
-                        }
-                      );
-                    });
-                    if (
-                      payment_info.payment.approved == false &&
-                      payment_info.payment.status == "Declined"
-                    ) {
-                      order.order_status = ORDER_STATE.ORDER_ON_HOLD;
-                      order.date_time.push({
-                        status: ORDER_STATE.ORDER_ON_HOLD,
-                        date: new Date(),
-                      });
-                      await order.save();
-                      var order_data = {
-                        order_id: order._id,
-                        unique_id: order.unique_id,
-                        store_name: store.name,
-                        store_image: store.image_url,
-                      };
-
-                      if (user) {
-                        var device_type = user.device_type;
-                        var device_token = user.device_token;
-                        utils.sendPushNotificationWithPushData(
-                          ADMIN_DATA_ID.USER,
-                          device_type,
-                          device_token,
-                          USER_PUSH_CODE.STORE_ONHOLD_ORDER_INSUFFICIENT_FUNDS,
-                          PUSH_NOTIFICATION_SOUND_FILE.PUSH_NOTIFICATION_SOUND_FILE_IN_IOS,
-                          order_data,
-                          ""
-                        );
+                      },
+                      {
+                        json: function (data) {
+                          res(data);
+                        },
                       }
-                      response_data.json({
-                        order,
-                        message: ORDER_STATE.ORDER_ON_HOLD,
-                        success: false,
-                        order_status: ORDER_STATE.ORDER_ON_HOLD,
-                      });
-                    } else if (
-                      payment_info.payment.approved == true &&
-                      payment_info.payment.status == "Authorized"
-                    ) {
-                      await checkRefferalForFriend({
-                        user,
-                        checkout_amount: request_data_body.checkout_amount,
-                      });
+                    );
+                  });
+                  if (
+                    payment_info.payment.approved == false &&
+                    payment_info.payment.status == "Declined"
+                  ) {
+                    order.order_status = ORDER_STATE.ORDER_ON_HOLD;
+                    order.date_time.push({
+                      status: ORDER_STATE.ORDER_ON_HOLD,
+                      date: new Date(),
+                    });
+                    await order.save();
+                    var order_data = {
+                      order_id: order._id,
+                      unique_id: order.unique_id,
+                      store_name: store.name,
+                      store_image: store.image_url,
+                    };
 
-                      exports.store_ready_order(
-                        store,
-                        order,
-                        request_data,
-                        order_payment.total_item_count,
-                        request_data.files,
-                        function (store_ready_response) {
-                          response_data.json(
-                            Object.assign(store_ready_response, {
-                              payment_info,
-                            })
-                          );
-                        }
+                    if (user) {
+                      var device_type = user.device_type;
+                      var device_token = user.device_token;
+                      utils.sendPushNotificationWithPushData(
+                        ADMIN_DATA_ID.USER,
+                        device_type,
+                        device_token,
+                        USER_PUSH_CODE.STORE_ONHOLD_ORDER_INSUFFICIENT_FUNDS,
+                        PUSH_NOTIFICATION_SOUND_FILE.PUSH_NOTIFICATION_SOUND_FILE_IN_IOS,
+                        order_data,
+                        ""
                       );
                     }
-                  } catch (error) {
-                    console.log("error: " + error);
+                    response_data.json({
+                      order,
+                      message: ORDER_STATE.ORDER_ON_HOLD,
+                      success: false,
+                      order_status: ORDER_STATE.ORDER_ON_HOLD,
+                    });
+                  } else if (
+                    payment_info.payment.approved == true &&
+                    payment_info.payment.status == "Authorized"
+                  ) {
+                    await checkRefferalForFriend({
+                      user,
+                      checkout_amount: request_data_body.checkout_amount,
+                    });
+
+                    exports.store_ready_order(
+                      store,
+                      order,
+                      request_data,
+                      order_payment.total_item_count,
+                      request_data.files,
+                      function (store_ready_response) {
+                        response_data.json(
+                          Object.assign(store_ready_response, {
+                            payment_info,
+                          })
+                        );
+                      }
+                    );
                   }
-                } else {
-                  response_data.json({
-                    success: false,
-                    error_message: "ivalid card",
-                  });
+                } catch (error) {
+                  console.log("error: " + error);
                 }
+              } else {
+                response_data.json({
+                  success: false,
+                  error_message: "ivalid card",
+                });
               }
-            } else {
-              response_data.json({
-                success: false,
-                error_code: ORDER_ERROR_CODE.ORDER_ALREADY_CANCELLED,
-              });
             }
+          } else {
+            response_data.json({
+              success: false,
+              error_code: ORDER_ERROR_CODE.ORDER_ALREADY_CANCELLED,
+            });
           }
         } else {
           response_data.json({
@@ -2348,60 +2304,50 @@ exports.store_cancel_or_reject_order = function (request_data, response_data) {
         Store.findOne({ _id: request_data_body.store_id }).then(
           (store) => {
             if (store) {
-              if (
-                request_data_body.server_token !== null &&
-                store.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                Order.findOne({
-                  _id: request_data_body.order_id,
-                  store_id: request_data_body.store_id,
-                }).then(
-                  (order) => {
-                    if (order) {
-                      var order_status = Number(request_data_body.order_status);
+              Order.findOne({
+                _id: request_data_body.order_id,
+                store_id: request_data_body.store_id,
+              }).then(
+                (order) => {
+                  if (order) {
+                    var order_status = Number(request_data_body.order_status);
 
-                      if (order_status == ORDER_STATE.STORE_REJECTED) {
-                        exports.store_reject_order(
-                          store,
-                          order,
-                          request_data,
-                          function (reject_request_response) {
-                            response_data.json(reject_request_response);
-                          }
-                        );
-                      } else if (order_status == ORDER_STATE.STORE_CANCELLED) {
-                        exports.store_cancel_order(
-                          store,
-                          order,
-                          request_data,
-                          function (cancel_request_response) {
-                            response_data.json(cancel_request_response);
-                          }
-                        );
-                      } else {
-                        response_data.json({ success: false });
-                      }
+                    if (order_status == ORDER_STATE.STORE_REJECTED) {
+                      exports.store_reject_order(
+                        store,
+                        order,
+                        request_data,
+                        function (reject_request_response) {
+                          response_data.json(reject_request_response);
+                        }
+                      );
+                    } else if (order_status == ORDER_STATE.STORE_CANCELLED) {
+                      exports.store_cancel_order(
+                        store,
+                        order,
+                        request_data,
+                        function (cancel_request_response) {
+                          response_data.json(cancel_request_response);
+                        }
+                      );
                     } else {
-                      response_data.json({
-                        success: false,
-                        error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
-                      });
+                      response_data.json({ success: false });
                     }
-                  },
-                  (error) => {
-                    console.log(error);
+                  } else {
                     response_data.json({
                       success: false,
-                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                      error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
                     });
                   }
-                );
-              }
+                },
+                (error) => {
+                  console.log(error);
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
             } else {
               response_data.json({
                 success: false,
@@ -2895,521 +2841,502 @@ exports.user_cancel_order = function (
         User.findOne({ _id: user_id }).then(
           (user) => {
             if (user) {
-              if (
-                request_data_body.server_token !== null &&
-                user.server_token !== request_data_body.server_token &&
-                !bypass_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                Order.findOne({
-                  _id: request_data_body.order_id,
-                  user_id: user_id,
-                }).then(
-                  (order) => {
-                    if (order) {
-                      var delivery_status = 0;
-                      var current_provider = null;
+              Order.findOne({
+                _id: request_data_body.order_id,
+                user_id: user_id,
+              }).then(
+                (order) => {
+                  if (order) {
+                    var delivery_status = 0;
+                    var current_provider = null;
 
-                      Request.findOne({ _id: order.request_id }).then(
-                        (request) => {
-                          if (request) {
-                            delivery_status = request.delivery_status;
-                            current_provider = request.current_provider;
-                            request.completed_at = now;
-                            request.completed_date_in_city_timezone =
-                              utils.get_date_now_at_city(now, order.timezone);
-                            request.completed_date_tag = moment(
-                              request.completed_date_in_city_timezone
-                            ).format(DATE_FORMATE.DDMMYYYY);
-                          }
+                    Request.findOne({ _id: order.request_id }).then(
+                      (request) => {
+                        if (request) {
+                          delivery_status = request.delivery_status;
+                          current_provider = request.current_provider;
+                          request.completed_at = now;
+                          request.completed_date_in_city_timezone =
+                            utils.get_date_now_at_city(now, order.timezone);
+                          request.completed_date_tag = moment(
+                            request.completed_date_in_city_timezone
+                          ).format(DATE_FORMATE.DDMMYYYY);
+                        }
 
-                          Provider.findOne({ _id: current_provider }).then(
-                            (provider) => {
-                              Store.findOne({ _id: order.store_id }).then(
-                                (store) => {
-                                  var order_status = order.order_status;
-                                  order.order_status =
-                                    ORDER_STATE.CANCELED_BY_USER;
-                                  order.order_status_by = user._id;
-                                  order.order_status_id =
-                                    ORDER_STATUS_ID.CANCELLED;
-                                  order.order_status_manage_id =
-                                    ORDER_STATUS_ID.CANCELLED;
-                                  order.cancel_reason = cancel_reason;
+                        Provider.findOne({ _id: current_provider }).then(
+                          (provider) => {
+                            Store.findOne({ _id: order.store_id }).then(
+                              (store) => {
+                                var order_status = order.order_status;
+                                order.order_status =
+                                  ORDER_STATE.CANCELED_BY_USER;
+                                order.order_status_by = user._id;
+                                order.order_status_id =
+                                  ORDER_STATUS_ID.CANCELLED;
+                                order.order_status_manage_id =
+                                  ORDER_STATUS_ID.CANCELLED;
+                                order.cancel_reason = cancel_reason;
 
-                                  var index = order.date_time.findIndex(
-                                    (x) =>
-                                      x.status == ORDER_STATE.CANCELED_BY_USER
+                                var index = order.date_time.findIndex(
+                                  (x) =>
+                                    x.status == ORDER_STATE.CANCELED_BY_USER
+                                );
+                                if (index == -1) {
+                                  order.date_time.push({
+                                    status: ORDER_STATE.CANCELED_BY_USER,
+                                    date: new Date(),
+                                  });
+                                } else {
+                                  order.date_time[index].date = new Date();
+                                }
+
+                                order.completed_at = now;
+                                order.completed_date_in_city_timezone =
+                                  utils.get_date_now_at_city(
+                                    now,
+                                    order.timezone
                                   );
-                                  if (index == -1) {
-                                    order.date_time.push({
-                                      status: ORDER_STATE.CANCELED_BY_USER,
-                                      date: new Date(),
-                                    });
-                                  } else {
-                                    order.date_time[index].date = new Date();
-                                  }
+                                order.completed_date_tag = moment(
+                                  order.completed_date_in_city_timezone
+                                ).format(DATE_FORMATE.DDMMYYYY);
 
-                                  order.completed_at = now;
-                                  order.completed_date_in_city_timezone =
-                                    utils.get_date_now_at_city(
-                                      now,
-                                      order.timezone
-                                    );
-                                  order.completed_date_tag = moment(
-                                    order.completed_date_in_city_timezone
-                                  ).format(DATE_FORMATE.DDMMYYYY);
-
-                                  order.save().then(
-                                    () => {
-                                      // sms to store order Cancelled.
-                                      if (
-                                        setting_detail.is_sms_notification &&
+                                order.save().then(
+                                  () => {
+                                    // sms to store order Cancelled.
+                                    if (
+                                      setting_detail.is_sms_notification &&
+                                      store
+                                    ) {
+                                      var store_phone_code =
+                                        store.country_phone_code + store.phone;
+                                      SMS.sendOtherSMS(
+                                        store_phone_code,
+                                        SMS_UNIQUE_ID.STORE_ORDER_CANCELLED,
+                                        ""
+                                      );
+                                    }
+                                    // mail to store order Cancelled.
+                                    if (
+                                      setting_detail.is_mail_notification &&
+                                      store
+                                    ) {
+                                      emails.sendStoreOrderCancelEmail(
+                                        request_data,
                                         store
-                                      ) {
-                                        var store_phone_code =
-                                          store.country_phone_code +
-                                          store.phone;
-                                        SMS.sendOtherSMS(
-                                          store_phone_code,
-                                          SMS_UNIQUE_ID.STORE_ORDER_CANCELLED,
-                                          ""
-                                        );
-                                      }
-                                      // mail to store order Cancelled.
-                                      if (
-                                        setting_detail.is_mail_notification &&
-                                        store
-                                      ) {
-                                        emails.sendStoreOrderCancelEmail(
-                                          request_data,
-                                          store
-                                        );
-                                      }
+                                      );
+                                    }
 
-                                      var provider_phone_with_code = "";
-                                      if (provider) {
+                                    var provider_phone_with_code = "";
+                                    if (provider) {
+                                      if (
+                                        delivery_status >=
+                                        ORDER_STATE.WAITING_FOR_DELIVERY_MAN
+                                      ) {
+                                        // sms to provider order Cancelled.
                                         if (
-                                          delivery_status >=
-                                          ORDER_STATE.WAITING_FOR_DELIVERY_MAN
+                                          setting_detail.is_sms_notification
                                         ) {
-                                          // sms to provider order Cancelled.
-                                          if (
-                                            setting_detail.is_sms_notification
-                                          ) {
-                                            provider_phone_with_code =
-                                              provider.country_phone_code +
-                                              provider.phone;
-                                            if (
-                                              provider_phone_with_code != ""
-                                            ) {
-                                              SMS.sendOtherSMS(
-                                                provider_phone_with_code,
-                                                SMS_UNIQUE_ID.PROVIDER_ORDER_CANCELLED,
-                                                ""
-                                              );
-                                            }
-                                          }
-                                          // mail to provider order Cancelled.
-                                          if (
-                                            setting_detail.is_mail_notification
-                                          ) {
-                                            emails.sendProviderOrderCancelEmail(
-                                              request_data,
-                                              provider
+                                          provider_phone_with_code =
+                                            provider.country_phone_code +
+                                            provider.phone;
+                                          if (provider_phone_with_code != "") {
+                                            SMS.sendOtherSMS(
+                                              provider_phone_with_code,
+                                              SMS_UNIQUE_ID.PROVIDER_ORDER_CANCELLED,
+                                              ""
                                             );
                                           }
-
-                                          utils.sendPushNotification(
-                                            ADMIN_DATA_ID.PROVIDER,
-                                            provider.device_type,
-                                            provider.device_token,
-                                            PROVIDER_PUSH_CODE.STORE_CANCELLED_REQUEST,
-                                            PUSH_NOTIFICATION_SOUND_FILE.PUSH_NOTIFICATION_SOUND_FILE_IN_IOS
+                                        }
+                                        // mail to provider order Cancelled.
+                                        if (
+                                          setting_detail.is_mail_notification
+                                        ) {
+                                          emails.sendProviderOrderCancelEmail(
+                                            request_data,
+                                            provider
                                           );
                                         }
-                                      }
-                                      if (request) {
-                                        request.current_provider = null;
-                                        request.provider_id = null;
-                                        request.delivery_status =
-                                          ORDER_STATE.CANCELED_BY_USER;
-                                        request.delivery_status_manage_id =
-                                          ORDER_STATUS_ID.CANCELLED;
-                                        request.delivery_status_by = null;
 
-                                        var index = request.date_time.findIndex(
-                                          (x) =>
-                                            x.status ==
-                                            ORDER_STATE.CANCELED_BY_USER
+                                        utils.sendPushNotification(
+                                          ADMIN_DATA_ID.PROVIDER,
+                                          provider.device_type,
+                                          provider.device_token,
+                                          PROVIDER_PUSH_CODE.STORE_CANCELLED_REQUEST,
+                                          PUSH_NOTIFICATION_SOUND_FILE.PUSH_NOTIFICATION_SOUND_FILE_IN_IOS
                                         );
-
-                                        if (index == -1) {
-                                          request.date_time.push({
-                                            status:
-                                              ORDER_STATE.CANCELED_BY_USER,
-                                            date: new Date(),
-                                          });
-                                        } else {
-                                          request.date_time[index].date =
-                                            new Date();
-                                        }
-
-                                        request.save();
                                       }
-                                      // my_request.cancel_request(request._id, null);
+                                    }
+                                    if (request) {
+                                      request.current_provider = null;
+                                      request.provider_id = null;
+                                      request.delivery_status =
+                                        ORDER_STATE.CANCELED_BY_USER;
+                                      request.delivery_status_manage_id =
+                                        ORDER_STATUS_ID.CANCELLED;
+                                      request.delivery_status_by = null;
 
-                                      var is_order_cancellation_charge_apply = false;
-                                      var order_cancellation_charge_for_above_order_price = 0;
-                                      var order_cancellation_charge_type = 0;
-                                      var order_cancellation_charge_value = 0;
-                                      if (store) {
-                                        is_order_cancellation_charge_apply =
-                                          store.is_order_cancellation_charge_apply;
-                                        order_cancellation_charge_for_above_order_price =
-                                          store.order_cancellation_charge_for_above_order_price;
-                                        order_cancellation_charge_type =
-                                          store.order_cancellation_charge_type;
-                                        order_cancellation_charge_value =
-                                          store.order_cancellation_charge_value;
+                                      var index = request.date_time.findIndex(
+                                        (x) =>
+                                          x.status ==
+                                          ORDER_STATE.CANCELED_BY_USER
+                                      );
+
+                                      if (index == -1) {
+                                        request.date_time.push({
+                                          status: ORDER_STATE.CANCELED_BY_USER,
+                                          date: new Date(),
+                                        });
+                                      } else {
+                                        request.date_time[index].date =
+                                          new Date();
                                       }
 
-                                      Order_payment.findOne({
-                                        _id: order.order_payment_id,
-                                      }).then(
-                                        (order_payment) => {
-                                          if (order_payment) {
-                                            order_payment.completed_at = now;
-                                            order_payment.completed_date_in_city_timezone =
-                                              utils.get_date_now_at_city(
-                                                now,
-                                                order.timezone
+                                      request.save();
+                                    }
+                                    // my_request.cancel_request(request._id, null);
+
+                                    var is_order_cancellation_charge_apply = false;
+                                    var order_cancellation_charge_for_above_order_price = 0;
+                                    var order_cancellation_charge_type = 0;
+                                    var order_cancellation_charge_value = 0;
+                                    if (store) {
+                                      is_order_cancellation_charge_apply =
+                                        store.is_order_cancellation_charge_apply;
+                                      order_cancellation_charge_for_above_order_price =
+                                        store.order_cancellation_charge_for_above_order_price;
+                                      order_cancellation_charge_type =
+                                        store.order_cancellation_charge_type;
+                                      order_cancellation_charge_value =
+                                        store.order_cancellation_charge_value;
+                                    }
+
+                                    Order_payment.findOne({
+                                      _id: order.order_payment_id,
+                                    }).then(
+                                      (order_payment) => {
+                                        if (order_payment) {
+                                          order_payment.completed_at = now;
+                                          order_payment.completed_date_in_city_timezone =
+                                            utils.get_date_now_at_city(
+                                              now,
+                                              order.timezone
+                                            );
+                                          order_payment.completed_date_tag =
+                                            moment(
+                                              order_payment.completed_date_in_city_timezone
+                                            ).format(DATE_FORMATE.DDMMYYYY);
+
+                                          var is_payment_mode_cash =
+                                            order_payment.is_payment_mode_cash;
+
+                                          var total_wallet_amount = 0;
+                                          var order_wallet_payment =
+                                            order_payment.wallet_payment;
+                                          if (
+                                            order_payment.payment_id != null &&
+                                            !is_payment_mode_cash
+                                          ) {
+                                            order_wallet_payment =
+                                              +order_wallet_payment +
+                                              +order_payment.card_payment;
+                                          }
+
+                                          if (order_wallet_payment > 0) {
+                                            total_wallet_amount =
+                                              wallet_history.add_wallet_history(
+                                                ADMIN_DATA_ID.USER,
+                                                user.unique_id,
+                                                user._id,
+                                                user.country_id,
+                                                order_payment.order_currency_code,
+                                                user.wallet_currency_code,
+                                                order_payment.wallet_to_order_current_rate,
+                                                order_wallet_payment,
+                                                user.wallet,
+                                                WALLET_STATUS_ID.ADD_WALLET_AMOUNT,
+                                                WALLET_COMMENT_ID.ORDER_REFUND,
+                                                "Refund Amount Of Order : " +
+                                                  order.unique_id
                                               );
-                                            order_payment.completed_date_tag =
-                                              moment(
-                                                order_payment.completed_date_in_city_timezone
-                                              ).format(DATE_FORMATE.DDMMYYYY);
 
-                                            var is_payment_mode_cash =
-                                              order_payment.is_payment_mode_cash;
+                                            user.wallet = total_wallet_amount;
 
-                                            var total_wallet_amount = 0;
-                                            var order_wallet_payment =
-                                              order_payment.wallet_payment;
-                                            if (
-                                              order_payment.payment_id !=
-                                                null &&
-                                              !is_payment_mode_cash
-                                            ) {
-                                              order_wallet_payment =
-                                                +order_wallet_payment +
-                                                +order_payment.card_payment;
+                                            order_payment.is_order_payment_refund = true;
+                                            order_payment.refund_amount =
+                                              order_wallet_payment;
+                                          }
+
+                                          var orders = user.orders;
+                                          var index = orders.indexOf(order._id);
+                                          if (index >= 0) {
+                                            orders.splice(index, 1);
+                                            user.orders = orders;
+                                          }
+                                          Promo_code.findOne({
+                                            _id: order_payment.promo_id,
+                                          }).then((promo_code) => {
+                                            if (promo_code) {
+                                              promo_code.used_promo_code =
+                                                promo_code.used_promo_code - 1;
+                                              promo_code.save();
                                             }
+                                          });
+                                          order_payment.promo_id = null;
 
-                                            if (order_wallet_payment > 0) {
-                                              total_wallet_amount =
-                                                wallet_history.add_wallet_history(
-                                                  ADMIN_DATA_ID.USER,
-                                                  user.unique_id,
-                                                  user._id,
-                                                  user.country_id,
-                                                  order_payment.order_currency_code,
-                                                  user.wallet_currency_code,
-                                                  order_payment.wallet_to_order_current_rate,
-                                                  order_wallet_payment,
-                                                  user.wallet,
-                                                  WALLET_STATUS_ID.ADD_WALLET_AMOUNT,
-                                                  WALLET_COMMENT_ID.ORDER_REFUND,
-                                                  "Refund Amount Of Order : " +
-                                                    order.unique_id
+                                          order_payment.pay_to_provider = 0;
+                                          order_payment.pay_to_store = 0;
+
+                                          order_payment.total_admin_profit_on_store = 0;
+                                          order_payment.total_store_income = 0;
+                                          order_payment.total_admin_profit_on_delivery = 0;
+                                          order_payment.total_provider_income = 0;
+                                          order_payment.is_payment_paid = true;
+
+                                          order_payment.cash_payment = 0;
+                                          order_payment.card_payment = 0;
+                                          order_payment.wallet_payment = 0;
+                                          order_payment.promo_payment = 0;
+                                          order_payment.user_pay_payment = 0;
+                                          order_payment.total = 0;
+                                          order_payment.is_paid_from_wallet = false;
+                                          order_payment.is_store_pay_delivery_fees = false;
+                                          (order_payment.is_order_price_paid_by_store = false),
+                                            (order_payment.is_promo_for_delivery_service = false);
+
+                                          /*Start Cancellation charges */
+                                          City.findOne({
+                                            _id: order.city_id,
+                                          }).then((city) => {
+                                            var is_store_earning_add_in_wallet_on_cash_payment_for_city = false;
+                                            var is_store_earning_add_in_wallet_on_other_payment_for_city = false;
+                                            if (city) {
+                                              var is_store_earning_add_in_wallet_on_cash_payment_for_city =
+                                                city.is_store_earning_add_in_wallet_on_cash_payment;
+                                              var is_store_earning_add_in_wallet_on_other_payment_for_city =
+                                                city.is_store_earning_add_in_wallet_on_other_payment;
+                                            }
+                                            if (
+                                              is_order_cancellation_charge_apply &&
+                                              order_status >=
+                                                ORDER_STATE.ORDER_READY &&
+                                              order_payment.total_order_price >
+                                                order_cancellation_charge_for_above_order_price
+                                            ) {
+                                              switch (
+                                                order_cancellation_charge_type
+                                              ) {
+                                                case ORDER_CANCELLATION_CHARGE_TYPE.PERCENTAGE /* percentage */:
+                                                  order_cancellation_charge_value =
+                                                    order_payment.total_order_price *
+                                                    order_cancellation_charge_value *
+                                                    0.01;
+                                                  break;
+                                                case ORDER_CANCELLATION_CHARGE_TYPE.ABSOLUTE /* absolute */:
+                                                  order_cancellation_charge_value =
+                                                    order_cancellation_charge_value;
+                                                  break;
+                                                default:
+                                                  /* percentage */
+                                                  order_cancellation_charge_value =
+                                                    order_payment.total_order_price *
+                                                    order_cancellation_charge_value *
+                                                    0.01;
+                                                  break;
+                                              }
+                                              order_cancellation_charge_value =
+                                                utils.precisionRoundTwo(
+                                                  Number(
+                                                    order_cancellation_charge_value
+                                                  )
                                                 );
 
-                                              user.wallet = total_wallet_amount;
+                                              order_payment.pay_to_store =
+                                                order_cancellation_charge_value;
+                                              order_payment.total_store_income =
+                                                order_cancellation_charge_value;
+                                              order_payment.total_admin_profit_on_store = 0;
+                                              order_payment.user_pay_payment =
+                                                order_cancellation_charge_value;
+                                              order_payment.total =
+                                                order_cancellation_charge_value;
+                                              order_payment.is_cancellation_fee = true;
+                                              order_payment.order_cancellation_charge =
+                                                order_cancellation_charge_value;
 
-                                              order_payment.is_order_payment_refund = true;
-                                              order_payment.refund_amount =
-                                                order_wallet_payment;
-                                            }
-
-                                            var orders = user.orders;
-                                            var index = orders.indexOf(
-                                              order._id
-                                            );
-                                            if (index >= 0) {
-                                              orders.splice(index, 1);
-                                              user.orders = orders;
-                                            }
-                                            Promo_code.findOne({
-                                              _id: order_payment.promo_id,
-                                            }).then((promo_code) => {
-                                              if (promo_code) {
-                                                promo_code.used_promo_code =
-                                                  promo_code.used_promo_code -
-                                                  1;
-                                                promo_code.save();
-                                              }
-                                            });
-                                            order_payment.promo_id = null;
-
-                                            order_payment.pay_to_provider = 0;
-                                            order_payment.pay_to_store = 0;
-
-                                            order_payment.total_admin_profit_on_store = 0;
-                                            order_payment.total_store_income = 0;
-                                            order_payment.total_admin_profit_on_delivery = 0;
-                                            order_payment.total_provider_income = 0;
-                                            order_payment.is_payment_paid = true;
-
-                                            order_payment.cash_payment = 0;
-                                            order_payment.card_payment = 0;
-                                            order_payment.wallet_payment = 0;
-                                            order_payment.promo_payment = 0;
-                                            order_payment.user_pay_payment = 0;
-                                            order_payment.total = 0;
-                                            order_payment.is_paid_from_wallet = false;
-                                            order_payment.is_store_pay_delivery_fees = false;
-                                            (order_payment.is_order_price_paid_by_store = false),
-                                              (order_payment.is_promo_for_delivery_service = false);
-
-                                            /*Start Cancellation charges */
-                                            City.findOne({
-                                              _id: order.city_id,
-                                            }).then((city) => {
-                                              var is_store_earning_add_in_wallet_on_cash_payment_for_city = false;
-                                              var is_store_earning_add_in_wallet_on_other_payment_for_city = false;
-                                              if (city) {
-                                                var is_store_earning_add_in_wallet_on_cash_payment_for_city =
-                                                  city.is_store_earning_add_in_wallet_on_cash_payment;
-                                                var is_store_earning_add_in_wallet_on_other_payment_for_city =
-                                                  city.is_store_earning_add_in_wallet_on_other_payment;
-                                              }
                                               if (
-                                                is_order_cancellation_charge_apply &&
-                                                order_status >=
-                                                  ORDER_STATE.ORDER_READY &&
-                                                order_payment.total_order_price >
-                                                  order_cancellation_charge_for_above_order_price
+                                                (setting_detail.is_store_earning_add_in_wallet_on_cash_payment &&
+                                                  is_store_earning_add_in_wallet_on_cash_payment_for_city) ||
+                                                (setting_detail.is_store_earning_add_in_wallet_on_other_payment &&
+                                                  is_store_earning_add_in_wallet_on_other_payment_for_city)
                                               ) {
-                                                switch (
-                                                  order_cancellation_charge_type
-                                                ) {
-                                                  case ORDER_CANCELLATION_CHARGE_TYPE.PERCENTAGE /* percentage */:
-                                                    order_cancellation_charge_value =
-                                                      order_payment.total_order_price *
-                                                      order_cancellation_charge_value *
-                                                      0.01;
-                                                    break;
-                                                  case ORDER_CANCELLATION_CHARGE_TYPE.ABSOLUTE /* absolute */:
-                                                    order_cancellation_charge_value =
-                                                      order_cancellation_charge_value;
-                                                    break;
-                                                  default:
-                                                    /* percentage */
-                                                    order_cancellation_charge_value =
-                                                      order_payment.total_order_price *
-                                                      order_cancellation_charge_value *
-                                                      0.01;
-                                                    break;
-                                                }
-                                                order_cancellation_charge_value =
-                                                  utils.precisionRoundTwo(
-                                                    Number(
-                                                      order_cancellation_charge_value
-                                                    )
+                                                order_payment.is_store_income_set_in_wallet = true;
+                                                order_payment.store_income_set_in_wallet =
+                                                  Math.abs(
+                                                    order_cancellation_charge_value
                                                   );
 
-                                                order_payment.pay_to_store =
-                                                  order_cancellation_charge_value;
-                                                order_payment.total_store_income =
-                                                  order_cancellation_charge_value;
-                                                order_payment.total_admin_profit_on_store = 0;
-                                                order_payment.user_pay_payment =
-                                                  order_cancellation_charge_value;
-                                                order_payment.total =
-                                                  order_cancellation_charge_value;
-                                                order_payment.is_cancellation_fee = true;
-                                                order_payment.order_cancellation_charge =
-                                                  order_cancellation_charge_value;
-
-                                                if (
-                                                  (setting_detail.is_store_earning_add_in_wallet_on_cash_payment &&
-                                                    is_store_earning_add_in_wallet_on_cash_payment_for_city) ||
-                                                  (setting_detail.is_store_earning_add_in_wallet_on_other_payment &&
-                                                    is_store_earning_add_in_wallet_on_other_payment_for_city)
-                                                ) {
-                                                  order_payment.is_store_income_set_in_wallet = true;
-                                                  order_payment.store_income_set_in_wallet =
+                                                var store_total_wallet_amount =
+                                                  wallet_history.add_wallet_history(
+                                                    ADMIN_DATA_ID.STORE,
+                                                    store.unique_id,
+                                                    store._id,
+                                                    store.country_id,
+                                                    store.wallet_currency_code,
+                                                    order_payment.order_currency_code,
+                                                    1,
                                                     Math.abs(
-                                                      order_cancellation_charge_value
-                                                    );
+                                                      order_payment.pay_to_store
+                                                    ),
+                                                    store.wallet,
+                                                    WALLET_STATUS_ID.ADD_WALLET_AMOUNT,
+                                                    WALLET_COMMENT_ID.SET_ORDER_PROFIT,
+                                                    "Cancellation profit Of This Order : " +
+                                                      order.unique_id
+                                                  );
 
-                                                  var store_total_wallet_amount =
-                                                    wallet_history.add_wallet_history(
-                                                      ADMIN_DATA_ID.STORE,
-                                                      store.unique_id,
-                                                      store._id,
-                                                      store.country_id,
-                                                      store.wallet_currency_code,
-                                                      order_payment.order_currency_code,
-                                                      1,
-                                                      Math.abs(
-                                                        order_payment.pay_to_store
-                                                      ),
-                                                      store.wallet,
-                                                      WALLET_STATUS_ID.ADD_WALLET_AMOUNT,
-                                                      WALLET_COMMENT_ID.SET_ORDER_PROFIT,
-                                                      "Cancellation profit Of This Order : " +
-                                                        order.unique_id
-                                                    );
-
-                                                  store.wallet =
-                                                    store_total_wallet_amount;
-                                                  store.save();
-                                                }
-
-                                                var payment_id =
-                                                  order_payment.payment_id;
-                                                utils.pay_payment_for_selected_payment_gateway(
-                                                  0,
-                                                  user._id,
-                                                  payment_id,
-                                                  order_cancellation_charge_value,
-                                                  user.wallet_currency_code,
-                                                  function (payment_paid) {
-                                                    if (!payment_paid) {
-                                                      order_payment.is_paid_from_wallet = true;
-                                                      order_payment.wallet_payment =
-                                                        order_cancellation_charge_value;
-                                                      order_payment.total_after_wallet_payment = 0;
-
-                                                      var total_wallet_amount_new =
-                                                        wallet_history.add_wallet_history(
-                                                          ADMIN_DATA_ID.USER,
-                                                          user.unique_id,
-                                                          user._id,
-                                                          user.country_id,
-                                                          user.wallet_currency_code,
-                                                          order_payment.order_currency_code,
-                                                          order_payment.wallet_to_order_current_rate,
-                                                          order_cancellation_charge_value,
-                                                          user.wallet,
-                                                          WALLET_STATUS_ID.REMOVE_WALLET_AMOUNT,
-                                                          WALLET_COMMENT_ID.ORDER_CHARGED,
-                                                          "Cancellation Charge Of Order : " +
-                                                            order.unique_id
-                                                        );
-
-                                                      user.wallet =
-                                                        total_wallet_amount_new;
-                                                    } else {
-                                                      order_payment.total_after_wallet_payment =
-                                                        order_cancellation_charge_value;
-                                                      order_payment.card_payment =
-                                                        order_cancellation_charge_value;
-                                                    }
-                                                    order_payment.save();
-                                                    user.save();
-                                                  }
-                                                );
-                                              } else {
-                                                user.save();
-                                                order_payment.save();
+                                                store.wallet =
+                                                  store_total_wallet_amount;
+                                                store.save();
                                               }
-                                            });
-                                            if (store) {
-                                              utils.sendPushNotification(
-                                                ADMIN_DATA_ID.STORE,
-                                                store.device_type,
-                                                store.device_token,
-                                                STORE_PUSH_CODE.USER_CANCELLED_ORDER,
-                                                PUSH_NOTIFICATION_SOUND_FILE.PUSH_NOTIFICATION_SOUND_FILE_IN_IOS
-                                              );
-                                            }
-                                            try {
-                                              remove_loyalty_and_promo_both(
-                                                order_payment
-                                              );
-                                            } catch (error) {}
 
-                                            response_data.json({
-                                              success: true,
-                                              message:
-                                                ORDER_MESSAGE_CODE.ORDER_CANCEL_SUCCESSFULLY,
-                                            });
-                                          } else {
-                                            response_data.json({
-                                              success: true,
-                                              message:
-                                                ORDER_MESSAGE_CODE.ORDER_CANCEL_SUCCESSFULLY,
-                                            });
+                                              var payment_id =
+                                                order_payment.payment_id;
+                                              utils.pay_payment_for_selected_payment_gateway(
+                                                0,
+                                                user._id,
+                                                payment_id,
+                                                order_cancellation_charge_value,
+                                                user.wallet_currency_code,
+                                                function (payment_paid) {
+                                                  if (!payment_paid) {
+                                                    order_payment.is_paid_from_wallet = true;
+                                                    order_payment.wallet_payment =
+                                                      order_cancellation_charge_value;
+                                                    order_payment.total_after_wallet_payment = 0;
+
+                                                    var total_wallet_amount_new =
+                                                      wallet_history.add_wallet_history(
+                                                        ADMIN_DATA_ID.USER,
+                                                        user.unique_id,
+                                                        user._id,
+                                                        user.country_id,
+                                                        user.wallet_currency_code,
+                                                        order_payment.order_currency_code,
+                                                        order_payment.wallet_to_order_current_rate,
+                                                        order_cancellation_charge_value,
+                                                        user.wallet,
+                                                        WALLET_STATUS_ID.REMOVE_WALLET_AMOUNT,
+                                                        WALLET_COMMENT_ID.ORDER_CHARGED,
+                                                        "Cancellation Charge Of Order : " +
+                                                          order.unique_id
+                                                      );
+
+                                                    user.wallet =
+                                                      total_wallet_amount_new;
+                                                  } else {
+                                                    order_payment.total_after_wallet_payment =
+                                                      order_cancellation_charge_value;
+                                                    order_payment.card_payment =
+                                                      order_cancellation_charge_value;
+                                                  }
+                                                  order_payment.save();
+                                                  user.save();
+                                                }
+                                              );
+                                            } else {
+                                              user.save();
+                                              order_payment.save();
+                                            }
+                                          });
+                                          if (store) {
+                                            utils.sendPushNotification(
+                                              ADMIN_DATA_ID.STORE,
+                                              store.device_type,
+                                              store.device_token,
+                                              STORE_PUSH_CODE.USER_CANCELLED_ORDER,
+                                              PUSH_NOTIFICATION_SOUND_FILE.PUSH_NOTIFICATION_SOUND_FILE_IN_IOS
+                                            );
                                           }
-                                        },
-                                        (error) => {
-                                          console.log(error);
+                                          try {
+                                            remove_loyalty_and_promo_both(
+                                              order_payment
+                                            );
+                                          } catch (error) {}
+
                                           response_data.json({
-                                            success: false,
-                                            error_code:
-                                              ERROR_CODE.SOMETHING_WENT_WRONG,
+                                            success: true,
+                                            message:
+                                              ORDER_MESSAGE_CODE.ORDER_CANCEL_SUCCESSFULLY,
+                                          });
+                                        } else {
+                                          response_data.json({
+                                            success: true,
+                                            message:
+                                              ORDER_MESSAGE_CODE.ORDER_CANCEL_SUCCESSFULLY,
                                           });
                                         }
-                                      );
-                                    },
-                                    (error) => {
-                                      console.log(error);
-                                      response_data.json({
-                                        success: false,
-                                        error_code:
-                                          ERROR_CODE.SOMETHING_WENT_WRONG,
-                                      });
-                                    }
-                                  );
-                                },
-                                (error) => {
-                                  console.log(error);
-                                  response_data.json({
-                                    success: false,
-                                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                                  });
-                                }
-                              );
-                            },
-                            (error) => {
-                              console.log(error);
-                              response_data.json({
-                                success: false,
-                                error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                              });
-                            }
-                          );
-                        },
-                        (error) => {
-                          console.log(error);
-                          response_data.json({
-                            success: false,
-                            error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                          });
-                        }
-                      );
-                    } else {
-                      response_data.json({
-                        success: false,
-                        error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
-                      });
-                    }
-                  },
-                  (error) => {
-                    console.log(error);
+                                      },
+                                      (error) => {
+                                        console.log(error);
+                                        response_data.json({
+                                          success: false,
+                                          error_code:
+                                            ERROR_CODE.SOMETHING_WENT_WRONG,
+                                        });
+                                      }
+                                    );
+                                  },
+                                  (error) => {
+                                    console.log(error);
+                                    response_data.json({
+                                      success: false,
+                                      error_code:
+                                        ERROR_CODE.SOMETHING_WENT_WRONG,
+                                    });
+                                  }
+                                );
+                              },
+                              (error) => {
+                                console.log(error);
+                                response_data.json({
+                                  success: false,
+                                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                                });
+                              }
+                            );
+                          },
+                          (error) => {
+                            console.log(error);
+                            response_data.json({
+                              success: false,
+                              error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                            });
+                          }
+                        );
+                      },
+                      (error) => {
+                        console.log(error);
+                        response_data.json({
+                          success: false,
+                          error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                        });
+                      }
+                    );
+                  } else {
                     response_data.json({
                       success: false,
-                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                      error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
                     });
                   }
-                );
-              }
+                },
+                (error) => {
+                  console.log(error);
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
             } else {
               response_data.json({
                 success: false,
@@ -3443,136 +3370,126 @@ exports.show_invoice = function (request_data, response_data) {
         User.findOne({ _id: request_data_body.user_id }).then(
           (user) => {
             if (user) {
-              if (
-                request_data_body.server_token !== null &&
-                user.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                Order.findOne({ _id: request_data_body.order_id }).then(
-                  (order) => {
-                    if (order) {
-                      Request.findOne({ _id: order.request_id }).then(
-                        (request) => {
-                          var current_provider = null;
-                          if (request) {
-                            current_provider = request.provider_id;
-                          }
-
-                          Provider.findOne({ _id: current_provider }).then(
-                            (provider) => {
-                              if (provider) {
-                                var provider_data = provider;
-                              }
-
-                              Store.findOne({ _id: order.store_id }).then(
-                                (store) => {
-                                  Country.findOne({
-                                    _id: order.country_id,
-                                  }).then(
-                                    (country) => {
-                                      var currency = "";
-                                      if (country) {
-                                        currency = country.currency_sign;
-                                      }
-                                      Order_payment.findOne({
-                                        _id: order.order_payment_id,
-                                      }).then((order_payment) => {
-                                        order.is_user_show_invoice =
-                                          request_data_body.is_user_show_invoice;
-
-                                        var orders = user.orders;
-                                        var index = orders.indexOf(order._id);
-                                        if (index >= 0) {
-                                          orders.splice(index, 1);
-                                          user.orders = orders;
-                                        }
-
-                                        order.save().then(
-                                          () => {
-                                            // if (store) {
-                                            //   emails.sendUserInvoiceEmail(
-                                            //     request_data,
-                                            //     user,
-                                            //     provider_data,
-                                            //     store,
-                                            //     order_payment,
-                                            //     currency
-                                            //   );
-                                            // }
-                                            user.save();
-                                            response_data.json({
-                                              success: true,
-                                              message:
-                                                ORDER_MESSAGE_CODE.SHOW_INVOICE_SUCCESSFULLY,
-                                            });
-                                          },
-                                          (error) => {
-                                            console.log(error);
-                                            response_data.json({
-                                              success: false,
-                                              error_code:
-                                                ERROR_CODE.SOMETHING_WENT_WRONG,
-                                            });
-                                          }
-                                        );
-                                      });
-                                    },
-                                    (error) => {
-                                      console.log(error);
-                                      response_data.json({
-                                        success: false,
-                                        error_code:
-                                          ERROR_CODE.SOMETHING_WENT_WRONG,
-                                      });
-                                    }
-                                  );
-                                },
-                                (error) => {
-                                  console.log(error);
-                                  response_data.json({
-                                    success: false,
-                                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                                  });
-                                }
-                              );
-                            },
-                            (error) => {
-                              console.log(error);
-                              response_data.json({
-                                success: false,
-                                error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                              });
-                            }
-                          );
-                        },
-                        (error) => {
-                          console.log(error);
-                          response_data.json({
-                            success: false,
-                            error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                          });
+              Order.findOne({ _id: request_data_body.order_id }).then(
+                (order) => {
+                  if (order) {
+                    Request.findOne({ _id: order.request_id }).then(
+                      (request) => {
+                        var current_provider = null;
+                        if (request) {
+                          current_provider = request.provider_id;
                         }
-                      );
-                    } else {
-                      response_data.json({
-                        success: false,
-                        error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
-                      });
-                    }
-                  },
-                  (error) => {
-                    console.log(error);
+
+                        Provider.findOne({ _id: current_provider }).then(
+                          (provider) => {
+                            if (provider) {
+                              var provider_data = provider;
+                            }
+
+                            Store.findOne({ _id: order.store_id }).then(
+                              (store) => {
+                                Country.findOne({
+                                  _id: order.country_id,
+                                }).then(
+                                  (country) => {
+                                    var currency = "";
+                                    if (country) {
+                                      currency = country.currency_sign;
+                                    }
+                                    Order_payment.findOne({
+                                      _id: order.order_payment_id,
+                                    }).then((order_payment) => {
+                                      order.is_user_show_invoice =
+                                        request_data_body.is_user_show_invoice;
+
+                                      var orders = user.orders;
+                                      var index = orders.indexOf(order._id);
+                                      if (index >= 0) {
+                                        orders.splice(index, 1);
+                                        user.orders = orders;
+                                      }
+
+                                      order.save().then(
+                                        () => {
+                                          // if (store) {
+                                          //   emails.sendUserInvoiceEmail(
+                                          //     request_data,
+                                          //     user,
+                                          //     provider_data,
+                                          //     store,
+                                          //     order_payment,
+                                          //     currency
+                                          //   );
+                                          // }
+                                          user.save();
+                                          response_data.json({
+                                            success: true,
+                                            message:
+                                              ORDER_MESSAGE_CODE.SHOW_INVOICE_SUCCESSFULLY,
+                                          });
+                                        },
+                                        (error) => {
+                                          console.log(error);
+                                          response_data.json({
+                                            success: false,
+                                            error_code:
+                                              ERROR_CODE.SOMETHING_WENT_WRONG,
+                                          });
+                                        }
+                                      );
+                                    });
+                                  },
+                                  (error) => {
+                                    console.log(error);
+                                    response_data.json({
+                                      success: false,
+                                      error_code:
+                                        ERROR_CODE.SOMETHING_WENT_WRONG,
+                                    });
+                                  }
+                                );
+                              },
+                              (error) => {
+                                console.log(error);
+                                response_data.json({
+                                  success: false,
+                                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                                });
+                              }
+                            );
+                          },
+                          (error) => {
+                            console.log(error);
+                            response_data.json({
+                              success: false,
+                              error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                            });
+                          }
+                        );
+                      },
+                      (error) => {
+                        console.log(error);
+                        response_data.json({
+                          success: false,
+                          error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                        });
+                      }
+                    );
+                  } else {
                     response_data.json({
                       success: false,
-                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                      error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
                     });
                   }
-                );
-              }
+                },
+                (error) => {
+                  console.log(error);
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
             } else {
               response_data.json({
                 success: false,

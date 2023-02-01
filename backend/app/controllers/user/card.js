@@ -220,34 +220,23 @@ exports.delete_card = function (request_data, response_data) {
       if (response.success) {
         var request_data_body = request_data.body;
 
-        if (
-          false &&
-          request_data_body.server_token !== null &&
-          detail.server_token !== request_data_body.server_token
-        ) {
-          response_data.json({
-            success: false,
-            error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-          });
-        } else {
-          Card.deleteOne({
-            _id: request_data_body.card_id,
-          }).then(
-            () => {
-              response_data.json({
-                success: true,
-                message: CARD_MESSAGE_CODE.CARD_DELETE_SUCCESSFULLY,
-              });
-            },
-            (error) => {
-              console.log(error);
-              response_data.json({
-                success: false,
-                error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-              });
-            }
-          );
-        }
+        Card.deleteOne({
+          _id: request_data_body.card_id,
+        }).then(
+          () => {
+            response_data.json({
+              success: true,
+              message: CARD_MESSAGE_CODE.CARD_DELETE_SUCCESSFULLY,
+            });
+          },
+          (error) => {
+            console.log(error);
+            response_data.json({
+              success: false,
+              error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+            });
+          }
+        );
       } else {
         response_data.json(response);
       }
