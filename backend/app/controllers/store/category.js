@@ -85,72 +85,61 @@ exports.add_category1 = function (request_data, response_data) {
         Store.findOne({ _id: request_data_body.store_id }).then(
           (store_detail) => {
             if (store_detail) {
-              if (
-                request_data_body.type != ADMIN_DATA_ID.ADMIN &&
-                request_data_body.server_token !== null &&
-                store_detail.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                Category.findOne({
-                  store_id: request_data_body.store_id,
-                  name: { $regex: request_data_body.name, $options: "i" },
-                }).then(
-                  (category_data) => {
-                    if (category_data) {
-                      response_data.json({
-                        success: false,
-                        error_code: CATEGORY_ERROR_CODE.CATEGORY_ALREADY_EXIST,
-                      });
-                    } else {
-                      var category = new Category(request_data_body);
-                      var image_file = request_data.files;
-                      if (image_file != undefined && image_file.length > 0) {
-                        var image_name =
-                          category._id + utils.generateServerToken(4);
-                        var url =
-                          utils.getStoreImageFolderPath(
-                            FOLDER_NAME.STORE_category
-                          ) +
-                          image_name +
-                          FILE_EXTENSION.CATEGORY;
-
-                        category.image_url = url;
-                        utils.storeImageToFolder(
-                          image_file[0].path,
-                          image_name + FILE_EXTENSION.CATEGORY,
-                          FOLDER_NAME.STORE_category
-                        );
-                      }
-                      category.save().then(
-                        () => {
-                          response_data.json({
-                            success: true,
-                            message:
-                              CATEGORY_MESSAGE_CODE.CATEGORY_ADD_SUCCESSFULLY,
-                            category: category,
-                          });
-                        },
-                        (error) => {
-                          response_data.json({
-                            success: false,
-                            error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                          });
-                        }
-                      );
-                    }
-                  },
-                  (error) => {
+              Category.findOne({
+                store_id: request_data_body.store_id,
+                name: { $regex: request_data_body.name, $options: "i" },
+              }).then(
+                (category_data) => {
+                  if (category_data) {
                     response_data.json({
                       success: false,
-                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                      error_code: CATEGORY_ERROR_CODE.CATEGORY_ALREADY_EXIST,
                     });
+                  } else {
+                    var category = new Category(request_data_body);
+                    var image_file = request_data.files;
+                    if (image_file != undefined && image_file.length > 0) {
+                      var image_name =
+                        category._id + utils.generateServerToken(4);
+                      var url =
+                        utils.getStoreImageFolderPath(
+                          FOLDER_NAME.STORE_category
+                        ) +
+                        image_name +
+                        FILE_EXTENSION.CATEGORY;
+
+                      category.image_url = url;
+                      utils.storeImageToFolder(
+                        image_file[0].path,
+                        image_name + FILE_EXTENSION.CATEGORY,
+                        FOLDER_NAME.STORE_category
+                      );
+                    }
+                    category.save().then(
+                      () => {
+                        response_data.json({
+                          success: true,
+                          message:
+                            CATEGORY_MESSAGE_CODE.CATEGORY_ADD_SUCCESSFULLY,
+                          category: category,
+                        });
+                      },
+                      (error) => {
+                        response_data.json({
+                          success: false,
+                          error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                        });
+                      }
+                    );
                   }
-                );
-              }
+                },
+                (error) => {
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
             } else {
               response_data.json({
                 success: false,
@@ -179,56 +168,39 @@ exports.get_category_list = function (request_data, response_data) {
       Store.findOne({ _id: request_data_body.store_id }).then(
         (store_detail) => {
           if (store_detail) {
-            // jwt.verify(request_data_body.server_token, 'yeepeey', function(err, decoded) {
-            //     if(decoded){
-            //     } else {
-            //         response_data.json({success: false, error_code: ERROR_CODE.INVALID_SERVER_TOKEN});
-            //     }
-            // });
-            if (
-              request_data_body.type != ADMIN_DATA_ID.ADMIN &&
-              request_data_body.server_token !== null &&
-              store_detail.server_token !== request_data_body.server_token
-            ) {
-              response_data.json({
-                success: false,
-                error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              });
-            } else {
-              var condition = {
-                $match: {
-                  store_id: {
-                    $eq: mongoose.Types.ObjectId(request_data_body.store_id),
-                  },
+            var condition = {
+              $match: {
+                store_id: {
+                  $eq: mongoose.Types.ObjectId(request_data_body.store_id),
                 },
-              };
-              Category.find(
-                {
-                  store_id: mongoose.Types.ObjectId(request_data_body.store_id),
-                },
-                function (err, category) {
-                  if (category.length == 0) {
-                    console.log("category data nnot found");
-                    response_data.json({
-                      success: false,
-                      error_code: CATEGORY_ERROR_CODE.CATEGORY_DATA_NOT_FOUND,
-                    });
-                  } else {
-                    response_data.json({
-                      success: true,
-                      message: CATEGORY_MESSAGE_CODE.CATEGORY_LIST_SUCCESSFULLY,
-                      category: category,
-                    });
-                  }
-                },
-                (error) => {
+              },
+            };
+            Category.find(
+              {
+                store_id: mongoose.Types.ObjectId(request_data_body.store_id),
+              },
+              function (err, category) {
+                if (category.length == 0) {
+                  console.log("category data nnot found");
                   response_data.json({
                     success: false,
-                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                    error_code: CATEGORY_ERROR_CODE.CATEGORY_DATA_NOT_FOUND,
+                  });
+                } else {
+                  response_data.json({
+                    success: true,
+                    message: CATEGORY_MESSAGE_CODE.CATEGORY_LIST_SUCCESSFULLY,
+                    category: category,
                   });
                 }
-              ).sort({sequence_number : 1});
-            }
+              },
+              (error) => {
+                response_data.json({
+                  success: false,
+                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                });
+              }
+            ).sort({ sequence_number: 1 });
           } else {
             response_data.json({
               success: false,
@@ -260,95 +232,79 @@ exports.get_category_data = function (request_data, response_data) {
         Store.findOne({ _id: request_data_body.store_id }).then(
           (store_detail) => {
             if (store_detail) {
-              // jwt.verify(request_data_body.server_token, 'yeepeey', function(err, decoded) {
-              //     if(decoded){
-              //     } else {
-              //         response_data.json({success: false, error_code: ERROR_CODE.INVALID_SERVER_TOKEN});
-              //     }
-              // });
-              if (
-                request_data_body.server_token !== null &&
-                store_detail.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                Category.findOne({ _id: request_data_body.category_id }).then(
-                  (category) => {
-                    if (!category) {
-                      response_data.json({
-                        success: false,
-                        error_code: CATEGORY_ERROR_CODE.CATEGORY_DATA_NOT_FOUND,
-                      });
-                    } else {
-                      var store_condition = {
-                        $match: {
-                          store_id: {
-                            $eq: mongoose.Types.ObjectId(
-                              request_data_body.store_id
-                            ),
-                          },
-                        },
-                      };
-                      var category_condition = {
-                        $match: {
-                          _id: {
-                            $ne: mongoose.Types.ObjectId(
-                              request_data_body.category_id
-                            ),
-                          },
-                        },
-                      };
-                      Category.aggregate([
-                        store_condition,
-                        category_condition,
-                        { $project: { a: "$name" } },
-                        { $unwind: "$a" },
-                        {
-                          $group: {
-                            _id: "a",
-                            category_name: { $addToSet: "$a" },
-                          },
-                        },
-                      ]).then(
-                        (category_array) => {
-                          if (category_array.length == 0) {
-                            response_data.json({
-                              success: true,
-                              message:
-                                CATEGORY_MESSAGE_CODE.CATEGORY_LIST_SUCCESSFULLY,
-                              category: category,
-                              category_array: [],
-                            });
-                          } else {
-                            response_data.json({
-                              success: true,
-                              message:
-                                CATEGORY_MESSAGE_CODE.CATEGORY_LIST_SUCCESSFULLY,
-                              category: category,
-                              category_array: category_array[0].category_name,
-                            });
-                          }
-                        },
-                        (error) => {
-                          response_data.json({
-                            success: false,
-                            error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                          });
-                        }
-                      );
-                    }
-                  },
-                  (error) => {
+              Category.findOne({ _id: request_data_body.category_id }).then(
+                (category) => {
+                  if (!category) {
                     response_data.json({
                       success: false,
-                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                      error_code: CATEGORY_ERROR_CODE.CATEGORY_DATA_NOT_FOUND,
                     });
+                  } else {
+                    var store_condition = {
+                      $match: {
+                        store_id: {
+                          $eq: mongoose.Types.ObjectId(
+                            request_data_body.store_id
+                          ),
+                        },
+                      },
+                    };
+                    var category_condition = {
+                      $match: {
+                        _id: {
+                          $ne: mongoose.Types.ObjectId(
+                            request_data_body.category_id
+                          ),
+                        },
+                      },
+                    };
+                    Category.aggregate([
+                      store_condition,
+                      category_condition,
+                      { $project: { a: "$name" } },
+                      { $unwind: "$a" },
+                      {
+                        $group: {
+                          _id: "a",
+                          category_name: { $addToSet: "$a" },
+                        },
+                      },
+                    ]).then(
+                      (category_array) => {
+                        if (category_array.length == 0) {
+                          response_data.json({
+                            success: true,
+                            message:
+                              CATEGORY_MESSAGE_CODE.CATEGORY_LIST_SUCCESSFULLY,
+                            category: category,
+                            category_array: [],
+                          });
+                        } else {
+                          response_data.json({
+                            success: true,
+                            message:
+                              CATEGORY_MESSAGE_CODE.CATEGORY_LIST_SUCCESSFULLY,
+                            category: category,
+                            category_array: category_array[0].category_name,
+                          });
+                        }
+                      },
+                      (error) => {
+                        response_data.json({
+                          success: false,
+                          error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                        });
+                      }
+                    );
                   }
-                );
-              }
+                },
+                (error) => {
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
             } else {
               response_data.json({
                 success: false,
@@ -456,92 +412,79 @@ exports.update_category1 = function (request_data, response_data) {
         Store.findOne({ _id: request_data_body.store_id }).then(
           (store_detail) => {
             if (store_detail) {
-              if (
-                request_data_body.type != ADMIN_DATA_ID.ADMIN &&
-                request_data_body.server_token !== null &&
-                store_detail.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                Category.findOne({
-                  _id: { $ne: request_data_body.category_id },
-                  store_id: request_data_body.store_id,
-                  name: { $regex: request_data_body.name, $options: "i" },
-                }).then(
-                  (category_detail) => {
-                    if (category_detail) {
-                      response_data.json({
-                        success: false,
-                        error_code: CATEGORY_ERROR_CODE.CATEGORY_ALREADY_EXIST,
-                      });
-                    } else {
-                      Category.findOneAndUpdate(
-                        { _id: category_id },
-                        request_data_body,
-                        { new: true }
-                      ).then(
-                        (category_data) => {
-                          if (category_data) {
-                            var image_file = request_data.files;
-                            if (
-                              image_file != undefined &&
-                              image_file.length > 0
-                            ) {
-                              utils.deleteImageFromFolder(
-                                category_data.image_url,
-                                FOLDER_NAME.STORE_category
-                              );
-                              var image_name =
-                                category_data._id +
-                                utils.generateServerToken(4);
-                              var url =
-                                utils.getStoreImageFolderPath(
-                                  FOLDER_NAME.STORE_category
-                                ) +
-                                image_name +
-                                FILE_EXTENSION.CATEGORY;
-                              utils.storeImageToFolder(
-                                image_file[0].path,
-                                image_name + FILE_EXTENSION.CATEGORY,
-                                FOLDER_NAME.STORE_category
-                              );
-                              category_data.image_url = url;
-                              category_data.save();
-                            }
-
-                            response_data.json({
-                              success: true,
-                              message:
-                                CATEGORY_MESSAGE_CODE.UPDATE_SUCCESSFULLY,
-                              category: category_data,
-                            });
-                          } else {
-                            response_data.json({
-                              success: false,
-                              error_code: CATEGORY_ERROR_CODE.UPDATE_FAILED,
-                            });
-                          }
-                        },
-                        (error) => {
-                          response_data.json({
-                            success: false,
-                            error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                          });
-                        }
-                      );
-                    }
-                  },
-                  (error) => {
+              Category.findOne({
+                _id: { $ne: request_data_body.category_id },
+                store_id: request_data_body.store_id,
+                name: { $regex: request_data_body.name, $options: "i" },
+              }).then(
+                (category_detail) => {
+                  if (category_detail) {
                     response_data.json({
                       success: false,
-                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                      error_code: CATEGORY_ERROR_CODE.CATEGORY_ALREADY_EXIST,
                     });
+                  } else {
+                    Category.findOneAndUpdate(
+                      { _id: category_id },
+                      request_data_body,
+                      { new: true }
+                    ).then(
+                      (category_data) => {
+                        if (category_data) {
+                          var image_file = request_data.files;
+                          if (
+                            image_file != undefined &&
+                            image_file.length > 0
+                          ) {
+                            utils.deleteImageFromFolder(
+                              category_data.image_url,
+                              FOLDER_NAME.STORE_category
+                            );
+                            var image_name =
+                              category_data._id + utils.generateServerToken(4);
+                            var url =
+                              utils.getStoreImageFolderPath(
+                                FOLDER_NAME.STORE_category
+                              ) +
+                              image_name +
+                              FILE_EXTENSION.CATEGORY;
+                            utils.storeImageToFolder(
+                              image_file[0].path,
+                              image_name + FILE_EXTENSION.CATEGORY,
+                              FOLDER_NAME.STORE_category
+                            );
+                            category_data.image_url = url;
+                            category_data.save();
+                          }
+
+                          response_data.json({
+                            success: true,
+                            message: CATEGORY_MESSAGE_CODE.UPDATE_SUCCESSFULLY,
+                            category: category_data,
+                          });
+                        } else {
+                          response_data.json({
+                            success: false,
+                            error_code: CATEGORY_ERROR_CODE.UPDATE_FAILED,
+                          });
+                        }
+                      },
+                      (error) => {
+                        response_data.json({
+                          success: false,
+                          error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                        });
+                      }
+                    );
                   }
-                );
-              }
+                },
+                (error) => {
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
             } else {
               response_data.json({
                 success: false,

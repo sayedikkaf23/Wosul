@@ -157,11 +157,7 @@ exports.update_cart_detail = async function (request_data, response_data) {
   Store.findOne({ _id: request_data_body.store_id }).then(
     (store) => {
       if (store) {
-        //if (request_data_body.server_token !== null && store.server_token !== request_data_body.server_token) {
-        //    response_data.json({success: false, error_code: ERROR_CODE.INVALID_SERVER_TOKEN});
-        //
-        //} else
-        //{
+        
         Cart.findOne({ _id: cart_id }).then(
           (cart) => {
             if (cart) {
@@ -674,21 +670,7 @@ exports.get_substitute_items = function (request_data, response_data) {
       Store.findOne({ _id: store_id }).then(
         (store_detail) => {
           if (store_detail) {
-            // jwt.verify(request_data_body.server_token, 'yeepeey', function(err, decoded) {
-            //     if(decoded){
-            //     } else {
-            //         response_data.json({success: false, error_code: ERROR_CODE.INVALID_SERVER_TOKEN});
-            //     }
-            // });
-            if (
-              request_data_body.server_token !== null &&
-              store_detail.server_token !== request_data_body.server_token
-            ) {
-              response_data.json({
-                success: false,
-                error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              });
-            } else {
+            
               Country.findOne({ _id: store_detail.country_id }).then(
                 (country_data) => {
                   if (country_data) {
@@ -756,7 +738,7 @@ exports.get_substitute_items = function (request_data, response_data) {
                   });
                 }
               );
-            }
+            
           } else {
             response_data.json({
               success: false,
@@ -786,21 +768,7 @@ exports.select_substitute_item = function (request_data, response_data) {
   Store.findOne({ _id: request_data_body.store_id }).then(
     (store) => {
       if (store) {
-        // jwt.verify(request_data_body.server_token, 'yeepeey', function(err, decoded) {
-        //     if(decoded){
-        //     } else {
-        //         response_data.json({success: false, error_code: ERROR_CODE.INVALID_SERVER_TOKEN});
-        //     }
-        // });
-        if (
-          request_data_body.server_token !== null &&
-          store.server_token !== request_data_body.server_token
-        ) {
-          response_data.json({
-            success: false,
-            error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-          });
-        } else {
+        
           Item.findOne({ _id: item_id }).then(
             (item_detail) => {
               if (item_detail) {
@@ -911,7 +879,7 @@ exports.select_substitute_item = function (request_data, response_data) {
               });
             }
           );
-        }
+        
       } else {
         response_data.json({
           success: false,
@@ -940,11 +908,7 @@ exports.assign_substitute_item = function (request_data, response_data) {
   Store.findOne({ _id: request_data_body.store_id }).then(
     (store) => {
       if (store) {
-        //if (request_data_body.server_token !== null && store.server_token !== request_data_body.server_token) {
-        //    response_data.json({success: false, error_code: ERROR_CODE.INVALID_SERVER_TOKEN});
-        //
-        //} else
-        //{
+        
         Item.findOne({ _id: item_id }).then(
           (item_detail) => {
             if (item_detail) {
@@ -1267,11 +1231,7 @@ exports.update_cart_item_price = async function (request_data, response_data) {
   Store.findOne({ _id: request_data_body.store_id }).then(
     (store) => {
       if (store) {
-        //if (request_data_body.server_token !== null && store.server_token !== request_data_body.server_token) {
-        //    response_data.json({success: false, error_code: ERROR_CODE.INVALID_SERVER_TOKEN});
-        //
-        //} else
-        //{
+        
         Cart.findOne({ _id: cart_id }).then(
           async (cart) => {
             let notification = "",
@@ -1777,16 +1737,7 @@ exports.add_item = function (request_data, response_data) {
         Store.findOne({ _id: request_data_body.store_id }).then(
           (store_detail) => {
             if (store_detail) {
-              if (
-                request_data_body.type != ADMIN_DATA_ID.ADMIN &&
-                request_data_body.server_token !== null &&
-                store_detail.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
+              
                 Item.findOne({
                   store_id: request_data_body.store_id,
                   product_id: request_data_body.product_id,
@@ -1824,7 +1775,7 @@ exports.add_item = function (request_data, response_data) {
                     });
                   }
                 );
-              }
+              
             } else {
               response_data.json({
                 success: false,
@@ -2030,23 +1981,7 @@ exports.get_store_product_item_list = function (request_data, response_data) {
       table.findOne({ _id: id }).then(
         (detail) => {
           if (detail) {
-            // jwt.verify(request_data_body.server_token, 'yeepeey', function(err, decoded) {
-            //     if(decoded){
-            //     } else {
-            //         response_data.json({success: false, error_code: ERROR_CODE.INVALID_SERVER_TOKEN});
-            //     }
-            // });
-            if (
-              false &&
-              request_data_body.type != ADMIN_DATA_ID.ADMIN &&
-              request_data_body.server_token !== null &&
-              detail.server_token !== request_data_body.server_token
-            ) {
-              response_data.json({
-                success: false,
-                error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              });
-            } else {
+            
               Country.findOne({ _id: detail.country_id }).then(
                 (country_data) => {
                   if (country_data) {
@@ -2124,7 +2059,7 @@ exports.get_store_product_item_list = function (request_data, response_data) {
                   });
                 }
               );
-            }
+            
           } else {
             response_data.json({
               success: false,
@@ -2173,16 +2108,7 @@ exports.get_item_list = function (request_data, response_data) {
       Store.findOne({ _id: store_id }).then(
         (store_detail) => {
           if (store_detail) {
-            if (
-              request_data_body.type != ADMIN_DATA_ID.ADMIN &&
-              request_data_body.server_token !== null &&
-              store_detail.server_token !== request_data_body.server_token
-            ) {
-              response_data.json({
-                success: false,
-                error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              });
-            } else {
+            
               Country.findOne({ _id: store_detail.country_id }).then(
                 (country_data) => {
                   if (country_data) {
@@ -2237,7 +2163,7 @@ exports.get_item_list = function (request_data, response_data) {
                   });
                 }
               );
-            }
+            
           } else {
             response_data.json({
               success: false,
@@ -2271,21 +2197,7 @@ exports.get_item_data = function (request_data, response_data) {
         Store.findOne({ _id: store_id }).then(
           (store_detail) => {
             if (store_detail) {
-              // jwt.verify(request_data_body.server_token, 'yeepeey', function(err, decoded) {
-              //     if(decoded){
-              //     } else {
-              //         response_data.json({success: false, error_code: ERROR_CODE.INVALID_SERVER_TOKEN});
-              //     }
-              // });
-              if (
-                request_data_body.server_token !== null &&
-                store_detail.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
+              
                 Item.findOne({ _id: item_id }).then(
                   (item_data) => {
                     if (item_data) {
@@ -2397,7 +2309,7 @@ exports.get_item_data = function (request_data, response_data) {
                     });
                   }
                 );
-              }
+              
             } else {
               response_data.json({
                 success: false,
@@ -2481,16 +2393,7 @@ exports.delete_item = function (request_data, response_data) {
         Store.findOne({ _id: request_data_body.store_id }).then(
           (store_detail) => {
             if (store_detail) {
-              if (
-                request_data_body.type != ADMIN_DATA_ID.ADMIN &&
-                request_data_body.server_token !== null &&
-                store_detail.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
+              
                 Item.findOneAndRemove(
                   { _id: item_id },
                   function (error, item_data) {
@@ -2507,7 +2410,7 @@ exports.delete_item = function (request_data, response_data) {
                     }
                   }
                 );
-              }
+              
             } else {
               response_data.json({
                 success: false,
@@ -2563,16 +2466,7 @@ exports.update_item = function (request_data, response_data) {
         Store.findOne({ _id: request_data_body.store_id }).then(
           (store_detail) => {
             if (store_detail) {
-              if (
-                request_data_body.type != ADMIN_DATA_ID.ADMIN &&
-                request_data_body.server_token !== null &&
-                store_detail.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
+              
                 Item.findOne({
                   _id: { $ne: request_data_body.item_id },
                   store_id: request_data_body.store_id,
@@ -2632,7 +2526,7 @@ exports.update_item = function (request_data, response_data) {
                     });
                   }
                 );
-              }
+              
             } else {
               response_data.json({
                 success: false,
@@ -2662,16 +2556,7 @@ exports.delete_item_image = function (request_data, response_data) {
       Store.findOne({ _id: request_data_body.store_id }).then(
         (store_detail) => {
           if (store_detail) {
-            if (
-              request_data_body.type != ADMIN_DATA_ID.ADMIN &&
-              request_data_body.server_token !== null &&
-              store_detail.server_token !== request_data_body.server_token
-            ) {
-              response_data.json({
-                success: false,
-                error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              });
-            } else {
+            
               Item.findOne({ _id: request_data_body._id }).then(
                 (item) => {
                   if (item) {
@@ -2724,7 +2609,7 @@ exports.delete_item_image = function (request_data, response_data) {
                   });
                 }
               );
-            }
+            
           } else {
             response_data.json({
               success: false,
@@ -2769,12 +2654,7 @@ exports.get_item_detail = function (request_data, response_data) {
         Table.findOne({ _id: request_data_body.id }).then(
           (detail) => {
             if (detail) {
-              // jwt.verify(request_data_body.server_token, 'yeepeey', function(err, decoded) {
-              //     if(decoded){
-              //     } else {
-              //         response_data.json({success: false, error_code: ERROR_CODE.INVALID_SERVER_TOKEN});
-              //     }
-              // });
+              
               if (
                 request_data_body.server_token !== null &&
                 detail.server_token !== request_data_body.server_token

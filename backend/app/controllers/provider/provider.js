@@ -605,14 +605,6 @@ exports.provider_update = function (request_data, response_data) {
           (provider) => {
             if (provider) {
               if (
-                request_data_body.server_token !== null &&
-                provider.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: PROVIDER_ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else if (
                 social_id == null &&
                 old_password != "" &&
                 old_password != provider.password
@@ -893,79 +885,67 @@ exports.provider_otp_verification = function (request_data, response_data) {
       Provider.findOne({ _id: request_data_body.provider_id }).then(
         (provider) => {
           if (provider) {
-            if (
-              request_data_body.server_token !== null &&
-              provider.server_token !== request_data_body.server_token
-            ) {
-              response_data.json({
-                success: false,
-                error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              });
-            } else {
-              if (request_data_body.is_phone_number_verified != undefined) {
-                provider.is_phone_number_verified =
-                  request_data_body.is_phone_number_verified;
+            if (request_data_body.is_phone_number_verified != undefined) {
+              provider.is_phone_number_verified =
+                request_data_body.is_phone_number_verified;
 
-                if (provider.phone != request_data_body.phone) {
-                  Provider.findOne({ phone: request_data_body.phone }).then(
-                    (provider_phone_detail) => {
-                      if (provider_phone_detail) {
-                        provider_phone_detail.phone =
-                          utils.getNewPhoneNumberFromOldNumber(
-                            provider_phone_detail.phone
-                          );
-                        provider_phone_detail.is_phone_number_verified = false;
-                        provider_phone_detail.save();
-                      }
-                    },
-                    (error) => {
-                      console.log(error);
+              if (provider.phone != request_data_body.phone) {
+                Provider.findOne({ phone: request_data_body.phone }).then(
+                  (provider_phone_detail) => {
+                    if (provider_phone_detail) {
+                      provider_phone_detail.phone =
+                        utils.getNewPhoneNumberFromOldNumber(
+                          provider_phone_detail.phone
+                        );
+                      provider_phone_detail.is_phone_number_verified = false;
+                      provider_phone_detail.save();
                     }
-                  );
-                }
-                provider.phone = request_data_body.phone;
+                  },
+                  (error) => {
+                    console.log(error);
+                  }
+                );
               }
-
-              if (request_data_body.is_email_verified != undefined) {
-                provider.is_email_verified =
-                  request_data_body.is_email_verified;
-
-                if (provider.email != request_data_body.email) {
-                  Provider.findOne({ email: request_data_body.email }).then(
-                    (provider_email_detail) => {
-                      if (provider_email_detail) {
-                        provider_email_detail.email =
-                          "notverified" + provider_email_detail.email;
-                        provider_email_detail.is_email_verified = false;
-                        provider_email_detail.save();
-                      }
-                    },
-                    (error) => {
-                      console.log(error);
-                    }
-                  );
-                }
-
-                provider.email = request_data_body.email;
-              }
-
-              provider.save().then(
-                () => {
-                  response_data.json({
-                    success: true,
-                    message:
-                      PROVIDER_MESSAGE_CODE.OTP_VERIFICATION_SUCCESSFULLY,
-                  });
-                },
-                (error) => {
-                  console.log(error);
-                  response_data.json({
-                    success: false,
-                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                  });
-                }
-              );
+              provider.phone = request_data_body.phone;
             }
+
+            if (request_data_body.is_email_verified != undefined) {
+              provider.is_email_verified = request_data_body.is_email_verified;
+
+              if (provider.email != request_data_body.email) {
+                Provider.findOne({ email: request_data_body.email }).then(
+                  (provider_email_detail) => {
+                    if (provider_email_detail) {
+                      provider_email_detail.email =
+                        "notverified" + provider_email_detail.email;
+                      provider_email_detail.is_email_verified = false;
+                      provider_email_detail.save();
+                    }
+                  },
+                  (error) => {
+                    console.log(error);
+                  }
+                );
+              }
+
+              provider.email = request_data_body.email;
+            }
+
+            provider.save().then(
+              () => {
+                response_data.json({
+                  success: true,
+                  message: PROVIDER_MESSAGE_CODE.OTP_VERIFICATION_SUCCESSFULLY,
+                });
+              },
+              (error) => {
+                console.log(error);
+                response_data.json({
+                  success: false,
+                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                });
+              }
+            );
           } else {
             response_data.json({
               success: false,
@@ -998,30 +978,23 @@ exports.update_device_token = function (request_data, response_data) {
         Provider.findOne({ _id: request_data_body.provider_id }).then(
           (provider) => {
             if (provider) {
-              if (provider.server_token != request_data_body.server_token) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                provider.device_token = request_data_body.device_token;
-                provider.save().then(
-                  () => {
-                    response_data.json({
-                      success: true,
-                      message:
-                        PROVIDER_MESSAGE_CODE.DEVICE_TOKEN_UPDATE_SUCCESSFULLY,
-                    });
-                  },
-                  (error) => {
-                    console.log(error);
-                    response_data.json({
-                      success: false,
-                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                    });
-                  }
-                );
-              }
+              provider.device_token = request_data_body.device_token;
+              provider.save().then(
+                () => {
+                  response_data.json({
+                    success: true,
+                    message:
+                      PROVIDER_MESSAGE_CODE.DEVICE_TOKEN_UPDATE_SUCCESSFULLY,
+                  });
+                },
+                (error) => {
+                  console.log(error);
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
             } else {
               response_data.json({
                 success: false,
@@ -1052,109 +1025,98 @@ exports.get_detail = function (request_data, response_data) {
       Provider.findOne({ _id: request_data_body.provider_id }).then(
         (provider) => {
           if (provider) {
-            if (
-              request_data_body.server_token !== null &&
-              provider.server_token != request_data_body.server_token
-            ) {
-              response_data.json({
-                success: false,
-                error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              });
-            } else {
-              Country.findOne({ _id: provider.country_id }).then(
-                (country) => {
-                  provider.app_version = request_data_body.app_version;
-                  if (request_data_body.device_token != undefined) {
-                    provider.device_token = request_data_body.device_token;
-                  } else {
-                    provider.device_token = provider.device_token;
-                  }
-                  provider.save().then(
-                    (provider) => {
-                      Vehicle.findOne({ _id: provider.vehicle_id }).then(
-                        (vehicle) => {
-                          var vehicle_detail = {};
-                          if (vehicle) {
-                            vehicle_detail = vehicle;
-                          }
-                          var is_document_uploaded = true;
-
-                          if (provider.vehicle_ids.length == 0) {
-                            is_document_uploaded = false;
-                            response_data.json({
-                              success: true,
-                              message:
-                                PROVIDER_MESSAGE_CODE.GET_DETAIL_SUCCESSFULLY,
-                              is_vehicle_document_uploaded:
-                                is_document_uploaded,
-                              minimum_phone_number_length:
-                                country.minimum_phone_number_length,
-                              maximum_phone_number_length:
-                                country.maximum_phone_number_length,
-                              vehicle_detail: vehicle_detail,
-                              provider: provider,
-                            });
-                          } else {
-                            Provider_vehicle.find({
-                              _id: { $in: provider.vehicle_ids },
-                              is_document_uploaded: false,
-                            }).then(
-                              (provider_vehicle) => {
-                                if (provider_vehicle.length > 0) {
-                                  is_document_uploaded = false;
-                                }
-
-                                response_data.json({
-                                  success: true,
-                                  message:
-                                    PROVIDER_MESSAGE_CODE.GET_DETAIL_SUCCESSFULLY,
-                                  is_vehicle_document_uploaded:
-                                    is_document_uploaded,
-                                  minimum_phone_number_length:
-                                    country.minimum_phone_number_length,
-                                  maximum_phone_number_length:
-                                    country.maximum_phone_number_length,
-                                  vehicle_detail: vehicle_detail,
-                                  provider: provider,
-                                });
-                              },
-                              (error) => {
-                                console.log(error);
-                                response_data.json({
-                                  success: false,
-                                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                                });
-                              }
-                            );
-                          }
-                        },
-                        (error) => {
-                          console.log(error);
-                          response_data.json({
-                            success: false,
-                            error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                          });
-                        }
-                      );
-                    },
-                    (error) => {
-                      console.log(error);
-                      response_data.json({
-                        success: false,
-                        error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                      });
-                    }
-                  );
-                },
-                (error) => {
-                  console.log(error);
-                  response_data.json({
-                    success: false,
-                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                  });
+            Country.findOne({ _id: provider.country_id }).then(
+              (country) => {
+                provider.app_version = request_data_body.app_version;
+                if (request_data_body.device_token != undefined) {
+                  provider.device_token = request_data_body.device_token;
+                } else {
+                  provider.device_token = provider.device_token;
                 }
-              );
-            }
+                provider.save().then(
+                  (provider) => {
+                    Vehicle.findOne({ _id: provider.vehicle_id }).then(
+                      (vehicle) => {
+                        var vehicle_detail = {};
+                        if (vehicle) {
+                          vehicle_detail = vehicle;
+                        }
+                        var is_document_uploaded = true;
+
+                        if (provider.vehicle_ids.length == 0) {
+                          is_document_uploaded = false;
+                          response_data.json({
+                            success: true,
+                            message:
+                              PROVIDER_MESSAGE_CODE.GET_DETAIL_SUCCESSFULLY,
+                            is_vehicle_document_uploaded: is_document_uploaded,
+                            minimum_phone_number_length:
+                              country.minimum_phone_number_length,
+                            maximum_phone_number_length:
+                              country.maximum_phone_number_length,
+                            vehicle_detail: vehicle_detail,
+                            provider: provider,
+                          });
+                        } else {
+                          Provider_vehicle.find({
+                            _id: { $in: provider.vehicle_ids },
+                            is_document_uploaded: false,
+                          }).then(
+                            (provider_vehicle) => {
+                              if (provider_vehicle.length > 0) {
+                                is_document_uploaded = false;
+                              }
+
+                              response_data.json({
+                                success: true,
+                                message:
+                                  PROVIDER_MESSAGE_CODE.GET_DETAIL_SUCCESSFULLY,
+                                is_vehicle_document_uploaded:
+                                  is_document_uploaded,
+                                minimum_phone_number_length:
+                                  country.minimum_phone_number_length,
+                                maximum_phone_number_length:
+                                  country.maximum_phone_number_length,
+                                vehicle_detail: vehicle_detail,
+                                provider: provider,
+                              });
+                            },
+                            (error) => {
+                              console.log(error);
+                              response_data.json({
+                                success: false,
+                                error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                              });
+                            }
+                          );
+                        }
+                      },
+                      (error) => {
+                        console.log(error);
+                        response_data.json({
+                          success: false,
+                          error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                        });
+                      }
+                    );
+                  },
+                  (error) => {
+                    console.log(error);
+                    response_data.json({
+                      success: false,
+                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                    });
+                  }
+                );
+              },
+              (error) => {
+                console.log(error);
+                response_data.json({
+                  success: false,
+                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                });
+              }
+            );
           } else {
             response_data.json({
               success: false,
@@ -1184,60 +1146,50 @@ exports.logout = function (request_data, response_data) {
       Provider.findOne({ _id: request_data_body.provider_id }).then(
         (provider) => {
           if (provider) {
-            if (
-              request_data_body.server_token !== null &&
-              provider.server_token != request_data_body.server_token
-            ) {
-              response_data.json({
-                success: false,
-                error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              });
-            } else {
-              City.findOne({ _id: provider.city_id }).then(
-                (city) => {
-                  var city_timezone = city.timezone;
+            City.findOne({ _id: provider.city_id }).then(
+              (city) => {
+                var city_timezone = city.timezone;
 
-                  if (provider.is_online) {
-                    utils.insert_daily_provider_analytics(
-                      city_timezone,
-                      provider._id,
-                      0,
-                      true,
-                      null,
-                      provider.is_active_for_job,
-                      null
-                    );
-                  }
-
-                  provider.device_token = "";
-                  provider.server_token = "";
-                  provider.is_online = false;
-                  provider.is_active_for_job = false;
-                  provider.save().then(
-                    () => {
-                      response_data.json({
-                        success: true,
-                        message: PROVIDER_MESSAGE_CODE.LOGOUT_SUCCESSFULLY,
-                      });
-                    },
-                    (error) => {
-                      console.log(error);
-                      response_data.json({
-                        success: false,
-                        error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                      });
-                    }
+                if (provider.is_online) {
+                  utils.insert_daily_provider_analytics(
+                    city_timezone,
+                    provider._id,
+                    0,
+                    true,
+                    null,
+                    provider.is_active_for_job,
+                    null
                   );
-                },
-                (error) => {
-                  console.log(error);
-                  response_data.json({
-                    success: false,
-                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                  });
                 }
-              );
-            }
+
+                provider.device_token = "";
+                provider.server_token = "";
+                provider.is_online = false;
+                provider.is_active_for_job = false;
+                provider.save().then(
+                  () => {
+                    response_data.json({
+                      success: true,
+                      message: PROVIDER_MESSAGE_CODE.LOGOUT_SUCCESSFULLY,
+                    });
+                  },
+                  (error) => {
+                    console.log(error);
+                    response_data.json({
+                      success: false,
+                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                    });
+                  }
+                );
+              },
+              (error) => {
+                console.log(error);
+                response_data.json({
+                  success: false,
+                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                });
+              }
+            );
           } else {
             response_data.json({
               success: false,
@@ -1270,109 +1222,99 @@ exports.change_status = function (request_data, response_data) {
         Provider.findOne({ _id: request_data_body.provider_id }).then(
           (provider) => {
             if (provider) {
-              if (
-                request_data_body.server_token !== null &&
-                provider.server_token != request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                City.findOne({ _id: provider.city_id }).then(
-                  (city) => {
-                    var city_timezone = city.timezone;
-                    var date_now = new Date();
-                    var is_online = Boolean(request_data_body.is_online);
-                    var is_active_for_job = Boolean(
-                      request_data_body.is_active_for_job
-                    );
-                    var provider_time_diff_in_sec_online_time = 0;
-                    var provider_time_diff_in_sec_active_job_time = 0;
+              City.findOne({ _id: provider.city_id }).then(
+                (city) => {
+                  var city_timezone = city.timezone;
+                  var date_now = new Date();
+                  var is_online = Boolean(request_data_body.is_online);
+                  var is_active_for_job = Boolean(
+                    request_data_body.is_active_for_job
+                  );
+                  var provider_time_diff_in_sec_online_time = 0;
+                  var provider_time_diff_in_sec_active_job_time = 0;
 
-                    var is_active_time = false;
-                    var is_online_time = false;
-                    var start_time = null;
-                    var start_active_time = null;
-                    if (provider.is_online != is_online) {
-                      is_online_time = true;
+                  var is_active_time = false;
+                  var is_online_time = false;
+                  var start_time = null;
+                  var start_active_time = null;
+                  if (provider.is_online != is_online) {
+                    is_online_time = true;
 
-                      if (is_online) {
-                        provider.start_online_time = date_now;
-                      } else {
-                        provider_time_diff_in_sec_online_time =
-                          utils.getTimeDifferenceInSecond(
-                            date_now,
-                            provider.start_online_time
-                          );
-
-                        start_time = provider.start_online_time;
-                        provider.start_online_time = null;
-                      }
-
-                      provider.is_online = is_online;
-                      provider.total_online_time =
-                        +provider.total_online_time +
-                        +provider_time_diff_in_sec_online_time;
-                    }
-
-                    if (provider.is_active_for_job != is_active_for_job) {
-                      is_active_time = true;
-
-                      if (is_active_for_job) {
-                        provider.start_active_job_time = date_now;
-                      } else {
-                        provider_time_diff_in_sec_active_job_time =
-                          utils.getTimeDifferenceInSecond(
-                            date_now,
-                            provider.start_active_job_time
-                          );
-
-                        start_active_time = provider.start_active_job_time;
-                        provider.start_active_job_time = null;
-                      }
-                      provider.is_active_for_job = is_active_for_job;
-                      provider.total_active_job_time =
-                        +provider.total_active_job_time +
-                        +provider_time_diff_in_sec_active_job_time;
-                    }
-                    provider.save().then(
-                      () => {
-                        utils.insert_daily_provider_analytics(
-                          city_timezone,
-                          provider._id,
-                          0,
-                          is_online_time,
-                          start_time,
-                          is_active_time,
-                          start_active_time
+                    if (is_online) {
+                      provider.start_online_time = date_now;
+                    } else {
+                      provider_time_diff_in_sec_online_time =
+                        utils.getTimeDifferenceInSecond(
+                          date_now,
+                          provider.start_online_time
                         );
-                        response_data.json({
-                          success: true,
-                          message:
-                            PROVIDER_MESSAGE_CODE.STATUS_CHANGED_SUCCESSFULLY,
-                          is_online: provider.is_online,
-                          is_active_for_job: provider.is_active_for_job,
-                        });
-                      },
-                      (error) => {
-                        console.log(error);
-                        response_data.json({
-                          success: false,
-                          error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                        });
-                      }
-                    );
-                  },
-                  (error) => {
-                    console.log(error);
-                    response_data.json({
-                      success: false,
-                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                    });
+
+                      start_time = provider.start_online_time;
+                      provider.start_online_time = null;
+                    }
+
+                    provider.is_online = is_online;
+                    provider.total_online_time =
+                      +provider.total_online_time +
+                      +provider_time_diff_in_sec_online_time;
                   }
-                );
-              }
+
+                  if (provider.is_active_for_job != is_active_for_job) {
+                    is_active_time = true;
+
+                    if (is_active_for_job) {
+                      provider.start_active_job_time = date_now;
+                    } else {
+                      provider_time_diff_in_sec_active_job_time =
+                        utils.getTimeDifferenceInSecond(
+                          date_now,
+                          provider.start_active_job_time
+                        );
+
+                      start_active_time = provider.start_active_job_time;
+                      provider.start_active_job_time = null;
+                    }
+                    provider.is_active_for_job = is_active_for_job;
+                    provider.total_active_job_time =
+                      +provider.total_active_job_time +
+                      +provider_time_diff_in_sec_active_job_time;
+                  }
+                  provider.save().then(
+                    () => {
+                      utils.insert_daily_provider_analytics(
+                        city_timezone,
+                        provider._id,
+                        0,
+                        is_online_time,
+                        start_time,
+                        is_active_time,
+                        start_active_time
+                      );
+                      response_data.json({
+                        success: true,
+                        message:
+                          PROVIDER_MESSAGE_CODE.STATUS_CHANGED_SUCCESSFULLY,
+                        is_online: provider.is_online,
+                        is_active_for_job: provider.is_active_for_job,
+                      });
+                    },
+                    (error) => {
+                      console.log(error);
+                      response_data.json({
+                        success: false,
+                        error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                      });
+                    }
+                  );
+                },
+                (error) => {
+                  console.log(error);
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
             } else {
               response_data.json({
                 success: false,
@@ -1403,142 +1345,132 @@ exports.get_requests = function (request_data, response_data) {
       Provider.findOne({ _id: request_data_body.provider_id }).then(
         (provider_detail) => {
           if (provider_detail) {
-            if (
-              request_data_body.server_token !== null &&
-              provider_detail.server_token !== request_data_body.server_token
-            ) {
-              response_data.json({
-                success: false,
-                error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              });
-            } else {
-              var provider_condition = {
-                $match: {
-                  $or: [
-                    {
-                      current_provider: {
-                        $eq: Schema(request_data_body.provider_id),
-                      },
+            var provider_condition = {
+              $match: {
+                $or: [
+                  {
+                    current_provider: {
+                      $eq: Schema(request_data_body.provider_id),
                     },
-                    {
-                      provider_id: {
-                        $eq: Schema(request_data_body.provider_id),
-                      },
-                    },
-                  ],
-                },
-              };
-              var delivery_status_condition = {
-                $match: {
-                  delivery_status: {
-                    $eq: ORDER_STATE.WAITING_FOR_DELIVERY_MAN,
                   },
+                  {
+                    provider_id: {
+                      $eq: Schema(request_data_body.provider_id),
+                    },
+                  },
+                ],
+              },
+            };
+            var delivery_status_condition = {
+              $match: {
+                delivery_status: {
+                  $eq: ORDER_STATE.WAITING_FOR_DELIVERY_MAN,
                 },
-              };
-              var delivery_status_manage_id_condition = {
-                $match: {
-                  delivery_status_manage_id: { $eq: ORDER_STATUS_ID.RUNNING },
-                },
-              };
+              },
+            };
+            var delivery_status_manage_id_condition = {
+              $match: {
+                delivery_status_manage_id: { $eq: ORDER_STATUS_ID.RUNNING },
+              },
+            };
 
-              Request.aggregate([
-                provider_condition,
-                delivery_status_condition,
-                delivery_status_manage_id_condition,
+            Request.aggregate([
+              provider_condition,
+              delivery_status_condition,
+              delivery_status_manage_id_condition,
 
-                { $unwind: "$orders" },
-                {
-                  $lookup: {
-                    from: "orders",
-                    localField: "orders.order_id",
-                    foreignField: "_id",
-                    as: "order_detail",
+              { $unwind: "$orders" },
+              {
+                $lookup: {
+                  from: "orders",
+                  localField: "orders.order_id",
+                  foreignField: "_id",
+                  as: "order_detail",
+                },
+              },
+              { $unwind: "$order_detail" },
+              {
+                $match: {
+                  "order_detail.order_status_id": {
+                    $eq: ORDER_STATUS_ID.RUNNING,
                   },
                 },
-                { $unwind: "$order_detail" },
-                {
-                  $match: {
-                    "order_detail.order_status_id": {
-                      $eq: ORDER_STATUS_ID.RUNNING,
+              },
+              {
+                $lookup: {
+                  from: "stores",
+                  localField: "order_detail.store_id",
+                  foreignField: "_id",
+                  as: "store_detail",
+                },
+              },
+              {
+                $unwind: {
+                  path: "$store_detail",
+                  preserveNullAndEmptyArrays: true,
+                },
+              },
+              {
+                $lookup: {
+                  from: "order_payments",
+                  localField: "orders.order_payment_id",
+                  foreignField: "_id",
+                  as: "order_payment_detail",
+                },
+              },
+              { $unwind: "$order_payment_detail" },
+
+              {
+                $group: {
+                  _id: "$_id",
+                  requests: {
+                    $push: {
+                      _id: "$_id",
+                      unique_id: "$unique_id",
+                      order_id: "$order_detail._id",
+                      order_unique_id: "$order_detail.unique_id",
+                      created_at: "$created_at",
+                      delivery_status: "$delivery_status",
+                      estimated_time_for_delivery_in_min:
+                        "$estimated_time_for_delivery_in_min",
+                      estimated_time_for_ready_order:
+                        "$order_detail.estimated_time_for_ready_order",
+                      is_provider_show_invoice:
+                        "$order_detail.is_provider_show_invoice",
+                      pickup_addresses: "$pickup_addresses",
+                      destination_addresses: "$destination_addresses",
+                      store_name: "$store_detail.name",
+                      store_image: "$store_detail.image_url",
+                      image_url: "$order_detail.image_url",
+                      delivery_type: "$order_detail.delivery_type",
                     },
                   },
                 },
-                {
-                  $lookup: {
-                    from: "stores",
-                    localField: "order_detail.store_id",
-                    foreignField: "_id",
-                    as: "store_detail",
-                  },
-                },
-                {
-                  $unwind: {
-                    path: "$store_detail",
-                    preserveNullAndEmptyArrays: true,
-                  },
-                },
-                {
-                  $lookup: {
-                    from: "order_payments",
-                    localField: "orders.order_payment_id",
-                    foreignField: "_id",
-                    as: "order_payment_detail",
-                  },
-                },
-                { $unwind: "$order_payment_detail" },
-
-                {
-                  $group: {
-                    _id: "$_id",
-                    requests: {
-                      $push: {
-                        _id: "$_id",
-                        unique_id: "$unique_id",
-                        order_id: "$order_detail._id",
-                        order_unique_id: "$order_detail.unique_id",
-                        created_at: "$created_at",
-                        delivery_status: "$delivery_status",
-                        estimated_time_for_delivery_in_min:
-                          "$estimated_time_for_delivery_in_min",
-                        estimated_time_for_ready_order:
-                          "$order_detail.estimated_time_for_ready_order",
-                        is_provider_show_invoice:
-                          "$order_detail.is_provider_show_invoice",
-                        pickup_addresses: "$pickup_addresses",
-                        destination_addresses: "$destination_addresses",
-                        store_name: "$store_detail.name",
-                        store_image: "$store_detail.image_url",
-                        image_url: "$order_detail.image_url",
-                        delivery_type: "$order_detail.delivery_type",
-                      },
-                    },
-                  },
-                },
-              ]).then(
-                (requests) => {
-                  if (requests.length == 0) {
-                    response_data.json({
-                      success: false,
-                      error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
-                    });
-                  } else {
-                    response_data.json({
-                      success: true,
-                      message:
-                        ORDER_MESSAGE_CODE.ORDER_LIST_FOR_PROVIDER_SUCCESSFULLY,
-                      request_list: requests,
-                    });
-                  }
-                },
-                (error) => {
-                  console.log(error);
+              },
+            ]).then(
+              (requests) => {
+                if (requests.length == 0) {
                   response_data.json({
                     success: false,
-                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                    error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
+                  });
+                } else {
+                  response_data.json({
+                    success: true,
+                    message:
+                      ORDER_MESSAGE_CODE.ORDER_LIST_FOR_PROVIDER_SUCCESSFULLY,
+                    request_list: requests,
                   });
                 }
-              );
-            }
+              },
+              (error) => {
+                console.log(error);
+                response_data.json({
+                  success: false,
+                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                });
+              }
+            );
           } else {
             response_data.json({
               success: false,
@@ -1568,148 +1500,138 @@ exports.get_active_requests = function (request_data, response_data) {
       Provider.findOne({ _id: request_data_body.provider_id }).then(
         (provider_detail) => {
           if (provider_detail) {
-            if (
-              request_data_body.server_token !== null &&
-              provider_detail.server_token !== request_data_body.server_token
-            ) {
-              response_data.json({
-                success: false,
-                error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              });
-            } else {
-              var provider_condition = {
-                $match: { provider_id: Schema(request_data_body.provider_id) },
-              };
-              var order_condition = {
-                $match: {
-                  $or: [
-                    {
-                      $and: [
-                        {
-                          "order_detail.is_provider_show_invoice": {
-                            $eq: false,
-                          },
+            var provider_condition = {
+              $match: { provider_id: Schema(request_data_body.provider_id) },
+            };
+            var order_condition = {
+              $match: {
+                $or: [
+                  {
+                    $and: [
+                      {
+                        "order_detail.is_provider_show_invoice": {
+                          $eq: false,
                         },
-                        {
-                          "order_detail.order_status_id": {
-                            $eq: ORDER_STATUS_ID.COMPLETED,
-                          },
+                      },
+                      {
+                        "order_detail.order_status_id": {
+                          $eq: ORDER_STATUS_ID.COMPLETED,
                         },
-                      ],
-                    },
-                    {
-                      "order_detail.order_status_id": {
-                        $eq: ORDER_STATUS_ID.RUNNING,
                       },
-                    },
-                  ],
-                },
-              };
-
-              var sort = { $sort: {} };
-              sort["$sort"]["updated_at"] = parseInt(-1);
-
-              Request.aggregate([
-                provider_condition,
-                sort,
-                { $unwind: "$orders" },
-                {
-                  $lookup: {
-                    from: "orders",
-                    localField: "orders.order_id",
-                    foreignField: "_id",
-                    as: "order_detail",
+                    ],
                   },
-                },
-                { $unwind: "$order_detail" },
-                order_condition,
-                {
-                  $lookup: {
-                    from: "order_payments",
-                    localField: "orders.order_payment_id",
-                    foreignField: "_id",
-                    as: "order_payment_detail",
-                  },
-                },
-                { $unwind: "$order_payment_detail" },
-                {
-                  $lookup: {
-                    from: "users",
-                    localField: "user_id",
-                    foreignField: "_id",
-                    as: "user_detail",
-                  },
-                },
-                { $unwind: "$user_detail" },
-                {
-                  $lookup: {
-                    from: "stores",
-                    localField: "order_detail.store_id",
-                    foreignField: "_id",
-                    as: "store_detail",
-                  },
-                },
-                {
-                  $unwind: {
-                    path: "$store_detail",
-                    preserveNullAndEmptyArrays: true,
-                  },
-                },
-                {
-                  $group: {
-                    _id: "$_id",
-                    requests: {
-                      $push: {
-                        _id: "$_id",
-                        unique_id: "$unique_id",
-                        order_id: "$order_detail._id",
-                        order_unique_id: "$order_detail.unique_id",
-                        created_at: "$created_at",
-                        delivery_status: "$delivery_status",
-                        estimated_time_for_delivery_in_min:
-                          "$estimated_time_for_delivery_in_min",
-                        estimated_time_for_ready_order:
-                          "$order_detail.estimated_time_for_ready_order",
-                        is_provider_show_invoice:
-                          "$order_detail.is_provider_show_invoice",
-                        pickup_addresses: "$pickup_addresses",
-                        destination_addresses: "$destination_addresses",
-                        store_name: "$store_detail.name",
-                        store_image: "$store_detail.image_url",
-                        user_first_name: "$user_detail.first_name",
-                        user_last_name: "$user_detail.last_name",
-                        user_image: "$user_detail.image_url",
-                        image_url: "$order_detail.image_url",
-                        delivery_type: "$order_detail.delivery_type",
-                      },
+                  {
+                    "order_detail.order_status_id": {
+                      $eq: ORDER_STATUS_ID.RUNNING,
                     },
                   },
+                ],
+              },
+            };
+
+            var sort = { $sort: {} };
+            sort["$sort"]["updated_at"] = parseInt(-1);
+
+            Request.aggregate([
+              provider_condition,
+              sort,
+              { $unwind: "$orders" },
+              {
+                $lookup: {
+                  from: "orders",
+                  localField: "orders.order_id",
+                  foreignField: "_id",
+                  as: "order_detail",
                 },
-              ]).then(
-                (requests) => {
-                  if (requests.length == 0) {
-                    response_data.json({
-                      success: false,
-                      error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
-                    });
-                  } else {
-                    response_data.json({
-                      success: true,
-                      message:
-                        ORDER_MESSAGE_CODE.ORDER_LIST_FOR_PROVIDER_SUCCESSFULLY,
-                      request_list: requests,
-                    });
-                  }
+              },
+              { $unwind: "$order_detail" },
+              order_condition,
+              {
+                $lookup: {
+                  from: "order_payments",
+                  localField: "orders.order_payment_id",
+                  foreignField: "_id",
+                  as: "order_payment_detail",
                 },
-                (error) => {
-                  console.log(error);
+              },
+              { $unwind: "$order_payment_detail" },
+              {
+                $lookup: {
+                  from: "users",
+                  localField: "user_id",
+                  foreignField: "_id",
+                  as: "user_detail",
+                },
+              },
+              { $unwind: "$user_detail" },
+              {
+                $lookup: {
+                  from: "stores",
+                  localField: "order_detail.store_id",
+                  foreignField: "_id",
+                  as: "store_detail",
+                },
+              },
+              {
+                $unwind: {
+                  path: "$store_detail",
+                  preserveNullAndEmptyArrays: true,
+                },
+              },
+              {
+                $group: {
+                  _id: "$_id",
+                  requests: {
+                    $push: {
+                      _id: "$_id",
+                      unique_id: "$unique_id",
+                      order_id: "$order_detail._id",
+                      order_unique_id: "$order_detail.unique_id",
+                      created_at: "$created_at",
+                      delivery_status: "$delivery_status",
+                      estimated_time_for_delivery_in_min:
+                        "$estimated_time_for_delivery_in_min",
+                      estimated_time_for_ready_order:
+                        "$order_detail.estimated_time_for_ready_order",
+                      is_provider_show_invoice:
+                        "$order_detail.is_provider_show_invoice",
+                      pickup_addresses: "$pickup_addresses",
+                      destination_addresses: "$destination_addresses",
+                      store_name: "$store_detail.name",
+                      store_image: "$store_detail.image_url",
+                      user_first_name: "$user_detail.first_name",
+                      user_last_name: "$user_detail.last_name",
+                      user_image: "$user_detail.image_url",
+                      image_url: "$order_detail.image_url",
+                      delivery_type: "$order_detail.delivery_type",
+                    },
+                  },
+                },
+              },
+            ]).then(
+              (requests) => {
+                if (requests.length == 0) {
                   response_data.json({
                     success: false,
-                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                    error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
+                  });
+                } else {
+                  response_data.json({
+                    success: true,
+                    message:
+                      ORDER_MESSAGE_CODE.ORDER_LIST_FOR_PROVIDER_SUCCESSFULLY,
+                    request_list: requests,
                   });
                 }
-              );
-            }
+              },
+              (error) => {
+                console.log(error);
+                response_data.json({
+                  success: false,
+                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                });
+              }
+            );
           } else {
             response_data.json({
               success: false,
@@ -1742,192 +1664,181 @@ exports.get_order_status = function (request_data, response_data) {
         Provider.findOne({ _id: request_data_body.provider_id }).then(
           (provider_detail) => {
             if (provider_detail) {
-              if (
-                request_data_body.server_token !== null &&
-                provider_detail.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                Order.findOne({
-                  _id: request_data_body.order_id,
-                  current_provider: request_data_body.provider_id,
-                }).then(
-                  (order) => {
-                    if (order) {
-                      var start_time = order.delivery_send_at;
-                      var end_time = new Date(Date.now());
-                      var time_diff_sec = utils.getTimeDifferenceInSecond(
-                        end_time,
-                        start_time
-                      );
+              Order.findOne({
+                _id: request_data_body.order_id,
+                current_provider: request_data_body.provider_id,
+              }).then(
+                (order) => {
+                  if (order) {
+                    var start_time = order.delivery_send_at;
+                    var end_time = new Date(Date.now());
+                    var time_diff_sec = utils.getTimeDifferenceInSecond(
+                      end_time,
+                      start_time
+                    );
 
-                      var time_left_to_responds_trip =
-                        setting_detail.provider_timeout - time_diff_sec;
-                      if (time_left_to_responds_trip <= 0) {
-                        time_left_to_responds_trip = 0;
-                        // REMOVE THIS ORDER FROM CURRENT ORDER AND ORDERS LIST FROM PROVIDERS
-                      }
-
-                      var total_distance = 0;
-                      var total_time = 0;
-                      var total_provider_income = 0;
-
-                      User.findOne({ _id: order.user_id }).then(
-                        (user_detail) => {
-                          Store.findOne({ _id: order.store_id }).then(
-                            (store_detail) => {
-                              Order_payment.findOne({
-                                order_id: request_data_body.order_id,
-                              }).then(
-                                (order_payment) => {
-                                  if (order_payment) {
-                                    total_distance =
-                                      order_payment.total_distance;
-                                    total_time = order_payment.total_time;
-                                    total_provider_income =
-                                      order_payment.total_provider_income;
-                                  }
-                                  var order_detail = {};
-
-                                  var store_name = "";
-                                  var store_image = "";
-                                  if (store_detail) {
-                                    store_name = store_detail.name;
-                                    store_image = store_detail.image_url;
-                                  }
-
-                                  if (
-                                    order.estimated_time_for_ready_order !=
-                                    undefined
-                                  ) {
-                                    order_detail = {
-                                      time_left_to_responds_trip:
-                                        time_left_to_responds_trip,
-                                      _id: order._id,
-                                      unique_id: order.unique_id,
-                                      currency: order.currency,
-                                      total_provider_income:
-                                        total_provider_income,
-                                      estimated_time_for_ready_order:
-                                        order.estimated_time_for_ready_order,
-                                      is_confirmation_code_required_at_pickup_delivery:
-                                        setting_detail.is_confirmation_code_required_at_pickup_delivery,
-                                      is_confirmation_code_required_at_complete_delivery:
-                                        setting_detail.is_confirmation_code_required_at_complete_delivery,
-                                      confirmation_code_for_complete_delivery:
-                                        order.confirmation_code_for_complete_delivery,
-                                      confirmation_code_for_pick_up_delivery:
-                                        order.confirmation_code_for_pick_up_delivery,
-                                      order_status: order.order_status,
-                                      note_for_deliveryman:
-                                        order.note_for_deliveryman,
-                                      order_status_id: order.order_status_id,
-                                      source_address: order.source_address,
-                                      destination_address:
-                                        order.destination_address,
-                                      source_location: order.source_location,
-                                      destination_location:
-                                        order.destination_location,
-                                      total_distance: total_distance,
-                                      total_time: total_time,
-                                      store_name: store_name,
-                                      store_image: store_image,
-                                      delivery_type: order.delivery_type,
-                                      image_url: order.image_url,
-                                      user_pay_payment:
-                                        order_payment.user_pay_payment,
-                                    };
-                                  } else {
-                                    order_detail = {
-                                      time_left_to_responds_trip:
-                                        time_left_to_responds_trip,
-                                      _id: order._id,
-                                      unique_id: order.unique_id,
-                                      currency: order.currency,
-                                      total_provider_income:
-                                        total_provider_income,
-                                      is_confirmation_code_required_at_pickup_delivery:
-                                        setting_detail.is_confirmation_code_required_at_pickup_delivery,
-                                      is_confirmation_code_required_at_complete_delivery:
-                                        setting_detail.is_confirmation_code_required_at_complete_delivery,
-                                      confirmation_code_for_complete_delivery:
-                                        order.confirmation_code_for_complete_delivery,
-                                      confirmation_code_for_pick_up_delivery:
-                                        order.confirmation_code_for_pick_up_delivery,
-                                      order_status: order.order_status,
-                                      note_for_deliveryman:
-                                        order.note_for_deliveryman,
-                                      order_status_id: order.order_status_id,
-                                      source_address: order.source_address,
-                                      destination_address:
-                                        order.destination_address,
-                                      source_location: order.source_location,
-                                      destination_location:
-                                        order.destination_location,
-                                      total_distance: total_distance,
-                                      total_time: total_time,
-                                      store_name: store_name,
-                                      store_image: store_image,
-                                      delivery_type: order.delivery_type,
-                                      image_url: order.image_url,
-                                      user_pay_payment:
-                                        order_payment.user_pay_payment,
-                                    };
-                                  }
-
-                                  response_data.json({
-                                    success: true,
-                                    message:
-                                      ORDER_MESSAGE_CODE.GET_ORDER_DATA_SUCCESSFULLY,
-                                    order: order_detail,
-                                    user_detail: user_detail,
-                                  });
-                                },
-                                (error) => {
-                                  console.log(error);
-                                  response_data.json({
-                                    success: false,
-                                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                                  });
-                                }
-                              );
-                            },
-                            (error) => {
-                              console.log(error);
-                              response_data.json({
-                                success: false,
-                                error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                              });
-                            }
-                          );
-                        },
-                        (error) => {
-                          console.log(error);
-                          response_data.json({
-                            success: false,
-                            error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                          });
-                        }
-                      );
-                    } else {
-                      response_data.json({
-                        success: false,
-                        error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
-                      });
+                    var time_left_to_responds_trip =
+                      setting_detail.provider_timeout - time_diff_sec;
+                    if (time_left_to_responds_trip <= 0) {
+                      time_left_to_responds_trip = 0;
+                      // REMOVE THIS ORDER FROM CURRENT ORDER AND ORDERS LIST FROM PROVIDERS
                     }
-                  },
-                  (error) => {
-                    console.log(error);
+
+                    var total_distance = 0;
+                    var total_time = 0;
+                    var total_provider_income = 0;
+
+                    User.findOne({ _id: order.user_id }).then(
+                      (user_detail) => {
+                        Store.findOne({ _id: order.store_id }).then(
+                          (store_detail) => {
+                            Order_payment.findOne({
+                              order_id: request_data_body.order_id,
+                            }).then(
+                              (order_payment) => {
+                                if (order_payment) {
+                                  total_distance = order_payment.total_distance;
+                                  total_time = order_payment.total_time;
+                                  total_provider_income =
+                                    order_payment.total_provider_income;
+                                }
+                                var order_detail = {};
+
+                                var store_name = "";
+                                var store_image = "";
+                                if (store_detail) {
+                                  store_name = store_detail.name;
+                                  store_image = store_detail.image_url;
+                                }
+
+                                if (
+                                  order.estimated_time_for_ready_order !=
+                                  undefined
+                                ) {
+                                  order_detail = {
+                                    time_left_to_responds_trip:
+                                      time_left_to_responds_trip,
+                                    _id: order._id,
+                                    unique_id: order.unique_id,
+                                    currency: order.currency,
+                                    total_provider_income:
+                                      total_provider_income,
+                                    estimated_time_for_ready_order:
+                                      order.estimated_time_for_ready_order,
+                                    is_confirmation_code_required_at_pickup_delivery:
+                                      setting_detail.is_confirmation_code_required_at_pickup_delivery,
+                                    is_confirmation_code_required_at_complete_delivery:
+                                      setting_detail.is_confirmation_code_required_at_complete_delivery,
+                                    confirmation_code_for_complete_delivery:
+                                      order.confirmation_code_for_complete_delivery,
+                                    confirmation_code_for_pick_up_delivery:
+                                      order.confirmation_code_for_pick_up_delivery,
+                                    order_status: order.order_status,
+                                    note_for_deliveryman:
+                                      order.note_for_deliveryman,
+                                    order_status_id: order.order_status_id,
+                                    source_address: order.source_address,
+                                    destination_address:
+                                      order.destination_address,
+                                    source_location: order.source_location,
+                                    destination_location:
+                                      order.destination_location,
+                                    total_distance: total_distance,
+                                    total_time: total_time,
+                                    store_name: store_name,
+                                    store_image: store_image,
+                                    delivery_type: order.delivery_type,
+                                    image_url: order.image_url,
+                                    user_pay_payment:
+                                      order_payment.user_pay_payment,
+                                  };
+                                } else {
+                                  order_detail = {
+                                    time_left_to_responds_trip:
+                                      time_left_to_responds_trip,
+                                    _id: order._id,
+                                    unique_id: order.unique_id,
+                                    currency: order.currency,
+                                    total_provider_income:
+                                      total_provider_income,
+                                    is_confirmation_code_required_at_pickup_delivery:
+                                      setting_detail.is_confirmation_code_required_at_pickup_delivery,
+                                    is_confirmation_code_required_at_complete_delivery:
+                                      setting_detail.is_confirmation_code_required_at_complete_delivery,
+                                    confirmation_code_for_complete_delivery:
+                                      order.confirmation_code_for_complete_delivery,
+                                    confirmation_code_for_pick_up_delivery:
+                                      order.confirmation_code_for_pick_up_delivery,
+                                    order_status: order.order_status,
+                                    note_for_deliveryman:
+                                      order.note_for_deliveryman,
+                                    order_status_id: order.order_status_id,
+                                    source_address: order.source_address,
+                                    destination_address:
+                                      order.destination_address,
+                                    source_location: order.source_location,
+                                    destination_location:
+                                      order.destination_location,
+                                    total_distance: total_distance,
+                                    total_time: total_time,
+                                    store_name: store_name,
+                                    store_image: store_image,
+                                    delivery_type: order.delivery_type,
+                                    image_url: order.image_url,
+                                    user_pay_payment:
+                                      order_payment.user_pay_payment,
+                                  };
+                                }
+
+                                response_data.json({
+                                  success: true,
+                                  message:
+                                    ORDER_MESSAGE_CODE.GET_ORDER_DATA_SUCCESSFULLY,
+                                  order: order_detail,
+                                  user_detail: user_detail,
+                                });
+                              },
+                              (error) => {
+                                console.log(error);
+                                response_data.json({
+                                  success: false,
+                                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                                });
+                              }
+                            );
+                          },
+                          (error) => {
+                            console.log(error);
+                            response_data.json({
+                              success: false,
+                              error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                            });
+                          }
+                        );
+                      },
+                      (error) => {
+                        console.log(error);
+                        response_data.json({
+                          success: false,
+                          error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                        });
+                      }
+                    );
+                  } else {
                     response_data.json({
                       success: false,
-                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                      error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
                     });
                   }
-                );
-              }
+                },
+                (error) => {
+                  console.log(error);
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
             } else {
               response_data.json({
                 success: false,
@@ -1961,292 +1872,273 @@ exports.get_request_status = function (request_data, response_data) {
         Provider.findOne({ _id: request_data_body.provider_id }).then(
           (provider_detail) => {
             if (provider_detail) {
-              if (
-                request_data_body.server_token !== null &&
-                provider_detail.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                Request.findOne({
-                  _id: request_data_body.request_id,
-                  current_provider: request_data_body.provider_id,
-                }).then(
-                  (request) => {
-                    if (request) {
-                      Order.findOne({ _id: request.orders[0].order_id }).then(
-                        (order_detail) => {
-                          if (order_detail) {
-                            Cart.findOne({ _id: order_detail.cart_id }).then(
-                              (cart) => {
-                                var order_details = [];
+              Request.findOne({
+                _id: request_data_body.request_id,
+                current_provider: request_data_body.provider_id,
+              }).then(
+                (request) => {
+                  if (request) {
+                    Order.findOne({ _id: request.orders[0].order_id }).then(
+                      (order_detail) => {
+                        if (order_detail) {
+                          Cart.findOne({ _id: order_detail.cart_id }).then(
+                            (cart) => {
+                              var order_details = [];
 
-                                if (cart) {
-                                  order_details = cart.order_details;
-                                }
-
-                                var start_time = null;
-                                var index = request.date_time.findIndex(
-                                  (x) =>
-                                    x.status ==
-                                    ORDER_STATE.WAITING_FOR_DELIVERY_MAN
-                                );
-                                if (index >= 0) {
-                                  start_time = request.date_time[index].date;
-                                }
-
-                                var end_time = new Date(Date.now());
-
-                                var time_diff_sec =
-                                  utils.getTimeDifferenceInSecond(
-                                    end_time,
-                                    start_time
-                                  );
-
-                                var time_left_to_responds_trip =
-                                  setting_detail.provider_timeout -
-                                  time_diff_sec;
-
-                                if (time_left_to_responds_trip <= 0) {
-                                  time_left_to_responds_trip = 0;
-                                  // REMOVE THIS ORDER FROM CURRENT ORDER AND ORDERS LIST FROM PROVIDERS
-                                }
-
-                                var total_distance = 0;
-                                var total_time = 0;
-                                var total_provider_income = 0;
-
-                                User.findOne({ _id: request.user_id }).then(
-                                  (user_detail) => {
-                                    Store.findOne({
-                                      _id: order_detail.store_id,
-                                    }).then(
-                                      (store_detail) => {
-                                        var country_id =
-                                          order_detail.country_id;
-                                        Country.findOne({
-                                          _id: country_id,
-                                        }).then(
-                                          (country_detail) => {
-                                            var currency =
-                                              country_detail.currency_sign;
-                                            Order_payment.findOne({
-                                              order_id: order_detail._id,
-                                            }).then(
-                                              (order_payment) => {
-                                                if (order_payment) {
-                                                  total_distance =
-                                                    order_payment.total_distance;
-                                                  total_time =
-                                                    order_payment.total_time;
-                                                  total_provider_income =
-                                                    order_payment.total_provider_income;
-                                                }
-                                                var request_detail = {};
-
-                                                var store_name = "";
-                                                var store_image = "";
-                                                var store_country_phone_code =
-                                                  "";
-                                                var store_phone = "";
-
-                                                if (store_detail) {
-                                                  store_name =
-                                                    store_detail.name;
-                                                  store_image =
-                                                    store_detail.image_url;
-                                                  store_country_phone_code =
-                                                    store_detail.country_phone_code;
-                                                  store_phone =
-                                                    store_detail.phone;
-                                                }
-
-                                                if (
-                                                  order_detail.estimated_time_for_ready_order !=
-                                                  undefined
-                                                ) {
-                                                  request_detail = {
-                                                    time_left_to_responds_trip:
-                                                      time_left_to_responds_trip,
-                                                    order_id: order_detail._id,
-                                                    order_unique_id:
-                                                      order_detail.unique_id,
-                                                    _id: request._id,
-                                                    unique_id:
-                                                      request.unique_id,
-                                                    currency: currency,
-                                                    total_provider_income:
-                                                      total_provider_income,
-                                                    estimated_time_for_ready_order:
-                                                      order_detail.estimated_time_for_ready_order,
-                                                    is_confirmation_code_required_at_pickup_delivery:
-                                                      setting_detail.is_confirmation_code_required_at_pickup_delivery,
-                                                    is_confirmation_code_required_at_complete_delivery:
-                                                      setting_detail.is_confirmation_code_required_at_complete_delivery,
-                                                    confirmation_code_for_complete_delivery:
-                                                      request.confirmation_code_for_complete_delivery,
-                                                    confirmation_code_for_pick_up_delivery:
-                                                      request.confirmation_code_for_pick_up_delivery,
-                                                    delivery_status:
-                                                      request.delivery_status,
-
-                                                    delivery_status_manage_id:
-                                                      request.delivery_status_manage_id,
-                                                    pickup_addresses:
-                                                      request.pickup_addresses,
-                                                    destination_addresses:
-                                                      request.destination_addresses,
-                                                    total_distance:
-                                                      total_distance,
-                                                    total_time: total_time,
-                                                    store_name: store_name,
-                                                    store_image: store_image,
-                                                    store_phone: store_phone,
-                                                    store_country_phone_code:
-                                                      store_country_phone_code,
-                                                    order_details:
-                                                      order_details,
-                                                    delivery_type:
-                                                      order_detail.delivery_type,
-                                                    image_url:
-                                                      order_detail.image_url,
-                                                  };
-                                                } else {
-                                                  request_detail = {
-                                                    time_left_to_responds_trip:
-                                                      time_left_to_responds_trip,
-                                                    order_id: order_detail._id,
-                                                    order_unique_id:
-                                                      order_detail.unique_id,
-                                                    estimated_time_for_delivery_in_min:
-                                                      request.estimated_time_for_delivery_in_min,
-
-                                                    _id: request._id,
-                                                    unique_id:
-                                                      request.unique_id,
-
-                                                    currency: currency,
-                                                    total_provider_income:
-                                                      total_provider_income,
-
-                                                    is_confirmation_code_required_at_pickup_delivery:
-                                                      setting_detail.is_confirmation_code_required_at_pickup_delivery,
-                                                    is_confirmation_code_required_at_complete_delivery:
-                                                      setting_detail.is_confirmation_code_required_at_complete_delivery,
-                                                    confirmation_code_for_complete_delivery:
-                                                      request.confirmation_code_for_complete_delivery,
-                                                    confirmation_code_for_pick_up_delivery:
-                                                      request.confirmation_code_for_pick_up_delivery,
-                                                    delivery_status:
-                                                      request.delivery_status,
-
-                                                    delivery_status_manage_id:
-                                                      request.delivery_status_manage_id,
-                                                    pickup_addresses:
-                                                      request.pickup_addresses,
-                                                    destination_addresses:
-                                                      request.destination_addresses,
-
-                                                    total_distance:
-                                                      total_distance,
-                                                    total_time: total_time,
-                                                    store_name: store_name,
-                                                    store_image: store_image,
-                                                    store_phone: store_phone,
-                                                    store_country_phone_code:
-                                                      store_country_phone_code,
-
-                                                    order_details:
-                                                      order_details,
-                                                    delivery_type:
-                                                      order_detail.delivery_type,
-                                                    image_url:
-                                                      order_detail.image_url,
-                                                  };
-                                                }
-
-                                                response_data.json({
-                                                  success: true,
-                                                  message:
-                                                    ORDER_MESSAGE_CODE.GET_ORDER_DATA_SUCCESSFULLY,
-                                                  request: request_detail,
-                                                  user_detail: user_detail,
-                                                });
-                                              },
-                                              (error) => {
-                                                console.log(error);
-                                                response_data.json({
-                                                  success: false,
-                                                  error_code:
-                                                    ERROR_CODE.SOMETHING_WENT_WRONG,
-                                                });
-                                              }
-                                            );
-                                          },
-                                          (error) => {
-                                            console.log(error);
-                                            response_data.json({
-                                              success: false,
-                                              error_code:
-                                                ERROR_CODE.SOMETHING_WENT_WRONG,
-                                            });
-                                          }
-                                        );
-                                      },
-                                      (error) => {
-                                        console.log(error);
-                                        response_data.json({
-                                          success: false,
-                                          error_code:
-                                            ERROR_CODE.SOMETHING_WENT_WRONG,
-                                        });
-                                      }
-                                    );
-                                  },
-                                  (error) => {
-                                    console.log(error);
-                                    response_data.json({
-                                      success: false,
-                                      error_code:
-                                        ERROR_CODE.SOMETHING_WENT_WRONG,
-                                    });
-                                  }
-                                );
+                              if (cart) {
+                                order_details = cart.order_details;
                               }
-                            );
-                          } else {
-                            response_data.json({
-                              success: false,
-                              error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
-                            });
-                          }
-                        },
-                        (error) => {
-                          console.log(error);
+
+                              var start_time = null;
+                              var index = request.date_time.findIndex(
+                                (x) =>
+                                  x.status ==
+                                  ORDER_STATE.WAITING_FOR_DELIVERY_MAN
+                              );
+                              if (index >= 0) {
+                                start_time = request.date_time[index].date;
+                              }
+
+                              var end_time = new Date(Date.now());
+
+                              var time_diff_sec =
+                                utils.getTimeDifferenceInSecond(
+                                  end_time,
+                                  start_time
+                                );
+
+                              var time_left_to_responds_trip =
+                                setting_detail.provider_timeout - time_diff_sec;
+
+                              if (time_left_to_responds_trip <= 0) {
+                                time_left_to_responds_trip = 0;
+                                // REMOVE THIS ORDER FROM CURRENT ORDER AND ORDERS LIST FROM PROVIDERS
+                              }
+
+                              var total_distance = 0;
+                              var total_time = 0;
+                              var total_provider_income = 0;
+
+                              User.findOne({ _id: request.user_id }).then(
+                                (user_detail) => {
+                                  Store.findOne({
+                                    _id: order_detail.store_id,
+                                  }).then(
+                                    (store_detail) => {
+                                      var country_id = order_detail.country_id;
+                                      Country.findOne({
+                                        _id: country_id,
+                                      }).then(
+                                        (country_detail) => {
+                                          var currency =
+                                            country_detail.currency_sign;
+                                          Order_payment.findOne({
+                                            order_id: order_detail._id,
+                                          }).then(
+                                            (order_payment) => {
+                                              if (order_payment) {
+                                                total_distance =
+                                                  order_payment.total_distance;
+                                                total_time =
+                                                  order_payment.total_time;
+                                                total_provider_income =
+                                                  order_payment.total_provider_income;
+                                              }
+                                              var request_detail = {};
+
+                                              var store_name = "";
+                                              var store_image = "";
+                                              var store_country_phone_code = "";
+                                              var store_phone = "";
+
+                                              if (store_detail) {
+                                                store_name = store_detail.name;
+                                                store_image =
+                                                  store_detail.image_url;
+                                                store_country_phone_code =
+                                                  store_detail.country_phone_code;
+                                                store_phone =
+                                                  store_detail.phone;
+                                              }
+
+                                              if (
+                                                order_detail.estimated_time_for_ready_order !=
+                                                undefined
+                                              ) {
+                                                request_detail = {
+                                                  time_left_to_responds_trip:
+                                                    time_left_to_responds_trip,
+                                                  order_id: order_detail._id,
+                                                  order_unique_id:
+                                                    order_detail.unique_id,
+                                                  _id: request._id,
+                                                  unique_id: request.unique_id,
+                                                  currency: currency,
+                                                  total_provider_income:
+                                                    total_provider_income,
+                                                  estimated_time_for_ready_order:
+                                                    order_detail.estimated_time_for_ready_order,
+                                                  is_confirmation_code_required_at_pickup_delivery:
+                                                    setting_detail.is_confirmation_code_required_at_pickup_delivery,
+                                                  is_confirmation_code_required_at_complete_delivery:
+                                                    setting_detail.is_confirmation_code_required_at_complete_delivery,
+                                                  confirmation_code_for_complete_delivery:
+                                                    request.confirmation_code_for_complete_delivery,
+                                                  confirmation_code_for_pick_up_delivery:
+                                                    request.confirmation_code_for_pick_up_delivery,
+                                                  delivery_status:
+                                                    request.delivery_status,
+
+                                                  delivery_status_manage_id:
+                                                    request.delivery_status_manage_id,
+                                                  pickup_addresses:
+                                                    request.pickup_addresses,
+                                                  destination_addresses:
+                                                    request.destination_addresses,
+                                                  total_distance:
+                                                    total_distance,
+                                                  total_time: total_time,
+                                                  store_name: store_name,
+                                                  store_image: store_image,
+                                                  store_phone: store_phone,
+                                                  store_country_phone_code:
+                                                    store_country_phone_code,
+                                                  order_details: order_details,
+                                                  delivery_type:
+                                                    order_detail.delivery_type,
+                                                  image_url:
+                                                    order_detail.image_url,
+                                                };
+                                              } else {
+                                                request_detail = {
+                                                  time_left_to_responds_trip:
+                                                    time_left_to_responds_trip,
+                                                  order_id: order_detail._id,
+                                                  order_unique_id:
+                                                    order_detail.unique_id,
+                                                  estimated_time_for_delivery_in_min:
+                                                    request.estimated_time_for_delivery_in_min,
+
+                                                  _id: request._id,
+                                                  unique_id: request.unique_id,
+
+                                                  currency: currency,
+                                                  total_provider_income:
+                                                    total_provider_income,
+
+                                                  is_confirmation_code_required_at_pickup_delivery:
+                                                    setting_detail.is_confirmation_code_required_at_pickup_delivery,
+                                                  is_confirmation_code_required_at_complete_delivery:
+                                                    setting_detail.is_confirmation_code_required_at_complete_delivery,
+                                                  confirmation_code_for_complete_delivery:
+                                                    request.confirmation_code_for_complete_delivery,
+                                                  confirmation_code_for_pick_up_delivery:
+                                                    request.confirmation_code_for_pick_up_delivery,
+                                                  delivery_status:
+                                                    request.delivery_status,
+
+                                                  delivery_status_manage_id:
+                                                    request.delivery_status_manage_id,
+                                                  pickup_addresses:
+                                                    request.pickup_addresses,
+                                                  destination_addresses:
+                                                    request.destination_addresses,
+
+                                                  total_distance:
+                                                    total_distance,
+                                                  total_time: total_time,
+                                                  store_name: store_name,
+                                                  store_image: store_image,
+                                                  store_phone: store_phone,
+                                                  store_country_phone_code:
+                                                    store_country_phone_code,
+
+                                                  order_details: order_details,
+                                                  delivery_type:
+                                                    order_detail.delivery_type,
+                                                  image_url:
+                                                    order_detail.image_url,
+                                                };
+                                              }
+
+                                              response_data.json({
+                                                success: true,
+                                                message:
+                                                  ORDER_MESSAGE_CODE.GET_ORDER_DATA_SUCCESSFULLY,
+                                                request: request_detail,
+                                                user_detail: user_detail,
+                                              });
+                                            },
+                                            (error) => {
+                                              console.log(error);
+                                              response_data.json({
+                                                success: false,
+                                                error_code:
+                                                  ERROR_CODE.SOMETHING_WENT_WRONG,
+                                              });
+                                            }
+                                          );
+                                        },
+                                        (error) => {
+                                          console.log(error);
+                                          response_data.json({
+                                            success: false,
+                                            error_code:
+                                              ERROR_CODE.SOMETHING_WENT_WRONG,
+                                          });
+                                        }
+                                      );
+                                    },
+                                    (error) => {
+                                      console.log(error);
+                                      response_data.json({
+                                        success: false,
+                                        error_code:
+                                          ERROR_CODE.SOMETHING_WENT_WRONG,
+                                      });
+                                    }
+                                  );
+                                },
+                                (error) => {
+                                  console.log(error);
+                                  response_data.json({
+                                    success: false,
+                                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                                  });
+                                }
+                              );
+                            }
+                          );
+                        } else {
                           response_data.json({
                             success: false,
-                            error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                            error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
                           });
                         }
-                      );
-                    } else {
-                      response_data.json({
-                        success: false,
-                        error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
-                      });
-                    }
-                  },
-                  (error) => {
-                    console.log(error);
+                      },
+                      (error) => {
+                        console.log(error);
+                        response_data.json({
+                          success: false,
+                          error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                        });
+                      }
+                    );
+                  } else {
                     response_data.json({
                       success: false,
-                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                      error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
                     });
                   }
-                );
-              }
+                },
+                (error) => {
+                  console.log(error);
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
             } else {
               response_data.json({
                 success: false,
@@ -2277,41 +2169,31 @@ exports.update_location = function (request_data, response_data) {
       Provider.findOne({ _id: request_data_body.provider_id }).then(
         (provider) => {
           if (provider) {
-            if (
-              request_data_body.server_token !== null &&
-              provider.server_token != request_data_body.server_token
-            ) {
-              response_data.json({
-                success: false,
-                error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              });
-            } else {
-              var now = new Date(Date.now());
-              provider.previous_location = provider.location;
-              provider.location = [
-                request_data_body.latitude,
-                request_data_body.longitude,
-              ];
-              provider.bearing = request_data_body.bearing;
-              provider.location_updated_time = now;
-              provider.save().then(
-                () => {
-                  response_data.json({
-                    success: true,
-                    message: PROVIDER_MESSAGE_CODE.LOCATION_UPDATE_SUCCESSFULLY,
-                    location: provider.location,
-                    bearing: provider.bearing,
-                  });
-                },
-                (error) => {
-                  console.log(error);
-                  response_data.json({
-                    success: false,
-                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                  });
-                }
-              );
-            }
+            var now = new Date(Date.now());
+            provider.previous_location = provider.location;
+            provider.location = [
+              request_data_body.latitude,
+              request_data_body.longitude,
+            ];
+            provider.bearing = request_data_body.bearing;
+            provider.location_updated_time = now;
+            provider.save().then(
+              () => {
+                response_data.json({
+                  success: true,
+                  message: PROVIDER_MESSAGE_CODE.LOCATION_UPDATE_SUCCESSFULLY,
+                  location: provider.location,
+                  bearing: provider.bearing,
+                });
+              },
+              (error) => {
+                console.log(error);
+                response_data.json({
+                  success: false,
+                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                });
+              }
+            );
           } else {
             response_data.json({
               success: false,
@@ -2344,266 +2226,247 @@ exports.request_history_detail = function (request_data, response_data) {
         Provider.findOne({ _id: request_data_body.provider_id }).then(
           (provider) => {
             if (provider) {
-              if (
-                request_data_body.server_token !== null &&
-                provider.server_token != request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                Request.findOne({ _id: request_data_body.request_id }).then(
-                  (request) => {
-                    if (request) {
-                      Order.findOne({ _id: request.orders[0].order_id }).then(
-                        (order_detail) => {
-                          if (order_detail) {
-                            var country_id = order_detail.country_id;
+              Request.findOne({ _id: request_data_body.request_id }).then(
+                (request) => {
+                  if (request) {
+                    Order.findOne({ _id: request.orders[0].order_id }).then(
+                      (order_detail) => {
+                        if (order_detail) {
+                          var country_id = order_detail.country_id;
 
-                            Store.findOne({ _id: order_detail.store_id }).then(
-                              (store_data) => {
-                                Country.findOne({ _id: country_id }).then(
-                                  (country) => {
-                                    var currency = country.currency_sign;
+                          Store.findOne({ _id: order_detail.store_id }).then(
+                            (store_data) => {
+                              Country.findOne({ _id: country_id }).then(
+                                (country) => {
+                                  var currency = country.currency_sign;
 
-                                    User.findOne({ _id: request.user_id }).then(
-                                      (user_data) => {
-                                        Order_payment.findOne({
-                                          _id: order_detail.order_payment_id,
-                                        }).then(
-                                          (order_payment) => {
-                                            Payment_gateway.findOne({
-                                              _id: order_payment.payment_id,
-                                            }).then(
-                                              (payment_gateway) => {
-                                                var payment_gateway_name =
-                                                  "Cash";
-                                                if (
-                                                  !order_payment.is_payment_mode_cash &&
-                                                  payment_gateway
-                                                ) {
-                                                  payment_gateway_name =
-                                                    payment_gateway.name;
-                                                }
+                                  User.findOne({ _id: request.user_id }).then(
+                                    (user_data) => {
+                                      Order_payment.findOne({
+                                        _id: order_detail.order_payment_id,
+                                      }).then(
+                                        (order_payment) => {
+                                          Payment_gateway.findOne({
+                                            _id: order_payment.payment_id,
+                                          }).then(
+                                            (payment_gateway) => {
+                                              var payment_gateway_name = "Cash";
+                                              if (
+                                                !order_payment.is_payment_mode_cash &&
+                                                payment_gateway
+                                              ) {
+                                                payment_gateway_name =
+                                                  payment_gateway.name;
+                                              }
 
-                                                var store_detail = {};
-                                                if (store_data) {
-                                                  store_detail = {
-                                                    name: store_data.name,
-                                                    image_url:
-                                                      store_data.image_url,
-                                                  };
-                                                }
-
-                                                var user_detail = {
-                                                  first_name:
-                                                    user_data.first_name,
-                                                  last_name:
-                                                    user_data.last_name,
+                                              var store_detail = {};
+                                              if (store_data) {
+                                                store_detail = {
+                                                  name: store_data.name,
                                                   image_url:
-                                                    user_data.image_url,
+                                                    store_data.image_url,
                                                 };
+                                              }
 
-                                                var orders_array_unwind = {
-                                                  $unwind: "$orders",
-                                                };
-                                                var order_query = {
-                                                  $lookup: {
-                                                    from: "orders",
-                                                    localField:
-                                                      "orders.order_id",
-                                                    foreignField: "_id",
-                                                    as: "order_detail",
-                                                  },
-                                                };
-                                                var array_to_json_order_query =
-                                                  { $unwind: "$order_detail" };
+                                              var user_detail = {
+                                                first_name:
+                                                  user_data.first_name,
+                                                last_name: user_data.last_name,
+                                                image_url: user_data.image_url,
+                                              };
 
-                                                var cart_query = {
-                                                  $lookup: {
-                                                    from: "carts",
-                                                    localField:
-                                                      "orders.cart_id",
-                                                    foreignField: "_id",
-                                                    as: "cart_detail",
-                                                  },
-                                                };
-                                                var array_to_json_cart_query = {
-                                                  $unwind: "$cart_detail",
-                                                };
+                                              var orders_array_unwind = {
+                                                $unwind: "$orders",
+                                              };
+                                              var order_query = {
+                                                $lookup: {
+                                                  from: "orders",
+                                                  localField: "orders.order_id",
+                                                  foreignField: "_id",
+                                                  as: "order_detail",
+                                                },
+                                              };
+                                              var array_to_json_order_query = {
+                                                $unwind: "$order_detail",
+                                              };
 
-                                                var order_payment_query = {
-                                                  $lookup: {
-                                                    from: "order_payments",
-                                                    localField:
-                                                      "orders.order_payment_id",
-                                                    foreignField: "_id",
-                                                    as: "order_payment_detail",
-                                                  },
+                                              var cart_query = {
+                                                $lookup: {
+                                                  from: "carts",
+                                                  localField: "orders.cart_id",
+                                                  foreignField: "_id",
+                                                  as: "cart_detail",
+                                                },
+                                              };
+                                              var array_to_json_cart_query = {
+                                                $unwind: "$cart_detail",
+                                              };
+
+                                              var order_payment_query = {
+                                                $lookup: {
+                                                  from: "order_payments",
+                                                  localField:
+                                                    "orders.order_payment_id",
+                                                  foreignField: "_id",
+                                                  as: "order_payment_detail",
+                                                },
+                                              };
+                                              var array_to_json_order_payment =
+                                                {
+                                                  $unwind:
+                                                    "$order_payment_detail",
                                                 };
-                                                var array_to_json_order_payment =
-                                                  {
-                                                    $unwind:
-                                                      "$order_payment_detail",
-                                                  };
-                                                var provider_condition = {
+                                              var provider_condition = {
+                                                $match: {
+                                                  provider_id: {
+                                                    $eq: mongoose.Types.ObjectId(
+                                                      request_data_body.provider_id
+                                                    ),
+                                                  },
+                                                },
+                                              };
+                                              var request_condition = {
+                                                $match: {
+                                                  _id: {
+                                                    $eq: mongoose.Types.ObjectId(
+                                                      request_data_body.request_id
+                                                    ),
+                                                  },
+                                                },
+                                              };
+                                              var delivery_status_condition = {
+                                                $match: {
+                                                  delivery_status: {
+                                                    $eq: ORDER_STATE.ORDER_COMPLETED,
+                                                  },
+                                                },
+                                              };
+                                              var delivery_status_manage_id_condition =
+                                                {
                                                   $match: {
-                                                    provider_id: {
-                                                      $eq: mongoose.Types.ObjectId(
-                                                        request_data_body.provider_id
-                                                      ),
+                                                    delivery_status_manage_id: {
+                                                      $eq: ORDER_STATUS_ID.COMPLETED,
                                                     },
                                                   },
                                                 };
-                                                var request_condition = {
-                                                  $match: {
-                                                    _id: {
-                                                      $eq: mongoose.Types.ObjectId(
-                                                        request_data_body.request_id
-                                                      ),
-                                                    },
-                                                  },
-                                                };
-                                                var delivery_status_condition =
-                                                  {
-                                                    $match: {
-                                                      delivery_status: {
-                                                        $eq: ORDER_STATE.ORDER_COMPLETED,
-                                                      },
-                                                    },
-                                                  };
-                                                var delivery_status_manage_id_condition =
-                                                  {
-                                                    $match: {
-                                                      delivery_status_manage_id:
-                                                        {
-                                                          $eq: ORDER_STATUS_ID.COMPLETED,
-                                                        },
-                                                    },
-                                                  };
 
-                                                Request.aggregate([
-                                                  request_condition,
-                                                  provider_condition,
-                                                  delivery_status_condition,
-                                                  delivery_status_manage_id_condition,
-                                                  orders_array_unwind,
-                                                  order_query,
-                                                  cart_query,
-                                                  order_payment_query,
-                                                  array_to_json_order_query,
-                                                  array_to_json_cart_query,
-                                                  array_to_json_order_payment,
-                                                ]).then(
-                                                  (requests) => {
-                                                    if (requests.length == 0) {
-                                                      response_data.json({
-                                                        success: false,
-                                                        error_code:
-                                                          PROVIDER_ERROR_CODE.ORDER_DETAIL_NOT_FOUND,
-                                                      });
-                                                    } else {
-                                                      response_data.json({
-                                                        success: true,
-                                                        message:
-                                                          PROVIDER_MESSAGE_CODE.GET_PROVIDER_ORDER_DETAIL_SUCCESSFULLY,
-                                                        currency: currency,
-                                                        store_detail:
-                                                          store_detail,
-                                                        user_detail:
-                                                          user_detail,
-                                                        payment_gateway_name:
-                                                          payment_gateway_name,
-                                                        request: requests[0],
-                                                      });
-                                                    }
-                                                  },
-                                                  (error) => {
-                                                    console.log(error);
+                                              Request.aggregate([
+                                                request_condition,
+                                                provider_condition,
+                                                delivery_status_condition,
+                                                delivery_status_manage_id_condition,
+                                                orders_array_unwind,
+                                                order_query,
+                                                cart_query,
+                                                order_payment_query,
+                                                array_to_json_order_query,
+                                                array_to_json_cart_query,
+                                                array_to_json_order_payment,
+                                              ]).then(
+                                                (requests) => {
+                                                  if (requests.length == 0) {
                                                     response_data.json({
                                                       success: false,
                                                       error_code:
-                                                        ERROR_CODE.SOMETHING_WENT_WRONG,
+                                                        PROVIDER_ERROR_CODE.ORDER_DETAIL_NOT_FOUND,
+                                                    });
+                                                  } else {
+                                                    response_data.json({
+                                                      success: true,
+                                                      message:
+                                                        PROVIDER_MESSAGE_CODE.GET_PROVIDER_ORDER_DETAIL_SUCCESSFULLY,
+                                                      currency: currency,
+                                                      store_detail:
+                                                        store_detail,
+                                                      user_detail: user_detail,
+                                                      payment_gateway_name:
+                                                        payment_gateway_name,
+                                                      request: requests[0],
                                                     });
                                                   }
-                                                );
-                                              },
-                                              (error) => {
-                                                console.log(error);
-                                                response_data.json({
-                                                  success: false,
-                                                  error_code:
-                                                    ERROR_CODE.SOMETHING_WENT_WRONG,
-                                                });
-                                              }
-                                            );
-                                          },
-                                          (error) => {
-                                            console.log(error);
-                                            response_data.json({
-                                              success: false,
-                                              error_code:
-                                                ERROR_CODE.SOMETHING_WENT_WRONG,
-                                            });
-                                          }
-                                        );
-                                      },
-                                      (error) => {
-                                        console.log(error);
-                                        response_data.json({
-                                          success: false,
-                                          error_code:
-                                            ERROR_CODE.SOMETHING_WENT_WRONG,
-                                        });
-                                      }
-                                    );
-                                  },
-                                  (error) => {
-                                    console.log(error);
-                                    response_data.json({
-                                      success: false,
-                                      error_code:
-                                        ERROR_CODE.SOMETHING_WENT_WRONG,
-                                    });
-                                  }
-                                );
-                              },
-                              (error) => {
-                                console.log(error);
-                                response_data.json({
-                                  success: false,
-                                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                                });
-                              }
-                            );
-                          } else {
-                            response_data.json({
-                              success: false,
-                              error_code:
-                                STORE_ERROR_CODE.ORDER_DETAIL_NOT_FOUND,
-                            });
-                          }
-                        },
-                        (error) => {
-                          console.log(error);
+                                                },
+                                                (error) => {
+                                                  console.log(error);
+                                                  response_data.json({
+                                                    success: false,
+                                                    error_code:
+                                                      ERROR_CODE.SOMETHING_WENT_WRONG,
+                                                  });
+                                                }
+                                              );
+                                            },
+                                            (error) => {
+                                              console.log(error);
+                                              response_data.json({
+                                                success: false,
+                                                error_code:
+                                                  ERROR_CODE.SOMETHING_WENT_WRONG,
+                                              });
+                                            }
+                                          );
+                                        },
+                                        (error) => {
+                                          console.log(error);
+                                          response_data.json({
+                                            success: false,
+                                            error_code:
+                                              ERROR_CODE.SOMETHING_WENT_WRONG,
+                                          });
+                                        }
+                                      );
+                                    },
+                                    (error) => {
+                                      console.log(error);
+                                      response_data.json({
+                                        success: false,
+                                        error_code:
+                                          ERROR_CODE.SOMETHING_WENT_WRONG,
+                                      });
+                                    }
+                                  );
+                                },
+                                (error) => {
+                                  console.log(error);
+                                  response_data.json({
+                                    success: false,
+                                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                                  });
+                                }
+                              );
+                            },
+                            (error) => {
+                              console.log(error);
+                              response_data.json({
+                                success: false,
+                                error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                              });
+                            }
+                          );
+                        } else {
                           response_data.json({
                             success: false,
-                            error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                            error_code: STORE_ERROR_CODE.ORDER_DETAIL_NOT_FOUND,
                           });
                         }
-                      );
-                    }
-                  },
-                  (error) => {
-                    console.log(error);
-                    response_data.json({
-                      success: false,
-                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                    });
+                      },
+                      (error) => {
+                        console.log(error);
+                        response_data.json({
+                          success: false,
+                          error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                        });
+                      }
+                    );
                   }
-                );
-              }
+                },
+                (error) => {
+                  console.log(error);
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
             } else {
               response_data.json({
                 success: false,
@@ -2640,204 +2503,187 @@ exports.request_history = function (request_data, response_data) {
         Provider.findOne({ _id: request_data_body.provider_id }).then(
           (provider) => {
             if (provider) {
-              if (
-                request_data_body.server_token !== null &&
-                provider.server_token != request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
+              var start_date, end_date;
+
+              if (request_data_body.start_date == "") {
+                start_date = new Date(0);
               } else {
-                var start_date, end_date;
+                start_date = request_data_body.start_date;
+              }
 
-                if (request_data_body.start_date == "") {
-                  start_date = new Date(0);
-                } else {
-                  start_date = request_data_body.start_date;
-                }
+              if (request_data_body.end_date == "") {
+                end_date = new Date();
+              } else {
+                end_date = request_data_body.end_date;
+              }
 
-                if (request_data_body.end_date == "") {
-                  end_date = new Date();
-                } else {
-                  end_date = request_data_body.end_date;
-                }
+              start_date = new Date(start_date);
+              start_date = start_date.setHours(0, 0, 0, 0);
+              start_date = new Date(start_date);
 
-                start_date = new Date(start_date);
-                start_date = start_date.setHours(0, 0, 0, 0);
-                start_date = new Date(start_date);
+              end_date = new Date(end_date);
+              end_date = end_date.setHours(23, 59, 59, 999);
+              end_date = new Date(end_date);
 
-                end_date = new Date(end_date);
-                end_date = end_date.setHours(23, 59, 59, 999);
-                end_date = new Date(end_date);
-
-                var provider_condition = {
-                  $match: {
-                    provider_id: {
-                      $eq: mongoose.Types.ObjectId(
-                        request_data_body.provider_id
-                      ),
-                    },
+              var provider_condition = {
+                $match: {
+                  provider_id: {
+                    $eq: mongoose.Types.ObjectId(request_data_body.provider_id),
                   },
-                };
+                },
+              };
 
-                var delivery_status_condition = {
-                  $match: {
-                    $or: [
-                      { delivery_status: ORDER_STATE.ORDER_COMPLETED },
-                      { delivery_status: ORDER_STATE.STORE_CANCELLED },
-                      { delivery_status: ORDER_STATE.DELIVERY_MAN_CANCELLED },
-                    ],
-                  },
-                };
-                var delivery_status_manage_id_condition = {
-                  $match: {
-                    $or: [
-                      { delivery_status_manage_id: ORDER_STATUS_ID.COMPLETED },
-                      { delivery_status_manage_id: ORDER_STATUS_ID.CANCELLED },
-                    ],
-                  },
-                };
+              var delivery_status_condition = {
+                $match: {
+                  $or: [
+                    { delivery_status: ORDER_STATE.ORDER_COMPLETED },
+                    { delivery_status: ORDER_STATE.STORE_CANCELLED },
+                    { delivery_status: ORDER_STATE.DELIVERY_MAN_CANCELLED },
+                  ],
+                },
+              };
+              var delivery_status_manage_id_condition = {
+                $match: {
+                  $or: [
+                    { delivery_status_manage_id: ORDER_STATUS_ID.COMPLETED },
+                    { delivery_status_manage_id: ORDER_STATUS_ID.CANCELLED },
+                  ],
+                },
+              };
 
-                var filter = {
-                  $match: {
-                    completed_date_in_city_timezone: {
-                      $gte: start_date,
-                      $lt: end_date,
-                    },
+              var filter = {
+                $match: {
+                  completed_date_in_city_timezone: {
+                    $gte: start_date,
+                    $lt: end_date,
                   },
-                };
-                Request.aggregate([
-                  provider_condition,
-                  delivery_status_condition,
-                  delivery_status_manage_id_condition,
-                  filter,
-                  {
-                    $lookup: {
-                      from: "users",
-                      localField: "user_id",
-                      foreignField: "_id",
-                      as: "user_detail",
-                    },
+                },
+              };
+              Request.aggregate([
+                provider_condition,
+                delivery_status_condition,
+                delivery_status_manage_id_condition,
+                filter,
+                {
+                  $lookup: {
+                    from: "users",
+                    localField: "user_id",
+                    foreignField: "_id",
+                    as: "user_detail",
                   },
-                  { $unwind: "$user_detail" },
+                },
+                { $unwind: "$user_detail" },
 
-                  {
-                    $lookup: {
-                      from: "cities",
-                      localField: "city_id",
-                      foreignField: "_id",
-                      as: "city_detail",
-                    },
+                {
+                  $lookup: {
+                    from: "cities",
+                    localField: "city_id",
+                    foreignField: "_id",
+                    as: "city_detail",
                   },
-                  { $unwind: "$city_detail" },
+                },
+                { $unwind: "$city_detail" },
 
-                  {
-                    $lookup: {
-                      from: "countries",
-                      localField: "city_detail.country_id",
-                      foreignField: "_id",
-                      as: "country_detail",
-                    },
+                {
+                  $lookup: {
+                    from: "countries",
+                    localField: "city_detail.country_id",
+                    foreignField: "_id",
+                    as: "country_detail",
                   },
+                },
 
-                  { $unwind: "$country_detail" },
+                { $unwind: "$country_detail" },
 
-                  { $unwind: "$orders" },
-                  {
-                    $lookup: {
-                      from: "orders",
-                      localField: "orders.order_id",
-                      foreignField: "_id",
-                      as: "order_detail",
-                    },
+                { $unwind: "$orders" },
+                {
+                  $lookup: {
+                    from: "orders",
+                    localField: "orders.order_id",
+                    foreignField: "_id",
+                    as: "order_detail",
                   },
-                  { $unwind: "$order_detail" },
+                },
+                { $unwind: "$order_detail" },
 
-                  {
-                    $lookup: {
-                      from: "order_payments",
-                      localField: "orders.order_payment_id",
-                      foreignField: "_id",
-                      as: "order_payment_detail",
-                    },
+                {
+                  $lookup: {
+                    from: "order_payments",
+                    localField: "orders.order_payment_id",
+                    foreignField: "_id",
+                    as: "order_payment_detail",
                   },
-                  { $unwind: "$order_payment_detail" },
+                },
+                { $unwind: "$order_payment_detail" },
 
-                  {
-                    $lookup: {
-                      from: "stores",
-                      localField: "order_detail.store_id",
-                      foreignField: "_id",
-                      as: "store_detail",
-                    },
+                {
+                  $lookup: {
+                    from: "stores",
+                    localField: "order_detail.store_id",
+                    foreignField: "_id",
+                    as: "store_detail",
                   },
-                  {
-                    $unwind: {
-                      path: "$store_detail",
-                      preserveNullAndEmptyArrays: true,
-                    },
+                },
+                {
+                  $unwind: {
+                    path: "$store_detail",
+                    preserveNullAndEmptyArrays: true,
                   },
+                },
 
-                  {
-                    $project: {
-                      created_at: "$created_at",
-                      delivery_status: "$delivery_status",
-                      provider_profit:
-                        "$order_payment_detail.total_provider_income",
-                      completed_at: "$completed_at",
-                      unique_id: "$unique_id",
-                      delivery_type: "$order_detail.delivery_type",
-                      total: "$order_payment_detail.total",
-                      total_service_price:
-                        "$order_payment_detail.total_service_price",
-                      total_order_price:
-                        "$order_payment_detail.total_order_price",
-                      currency: "$country_detail.currency_sign",
-                      store_detail: {
-                        name: {
-                          $cond: ["$store_detail", "$store_detail.name", ""],
-                        },
-                        image_url: {
-                          $cond: [
-                            "$store_detail",
-                            "$store_detail.image_url",
-                            "",
-                          ],
-                        },
+                {
+                  $project: {
+                    created_at: "$created_at",
+                    delivery_status: "$delivery_status",
+                    provider_profit:
+                      "$order_payment_detail.total_provider_income",
+                    completed_at: "$completed_at",
+                    unique_id: "$unique_id",
+                    delivery_type: "$order_detail.delivery_type",
+                    total: "$order_payment_detail.total",
+                    total_service_price:
+                      "$order_payment_detail.total_service_price",
+                    total_order_price:
+                      "$order_payment_detail.total_order_price",
+                    currency: "$country_detail.currency_sign",
+                    store_detail: {
+                      name: {
+                        $cond: ["$store_detail", "$store_detail.name", ""],
                       },
-                      user_detail: {
-                        first_name: "$user_detail.first_name",
-                        last_name: "$user_detail.last_name",
-                        image_url: "$user_detail.image_url",
+                      image_url: {
+                        $cond: ["$store_detail", "$store_detail.image_url", ""],
                       },
                     },
+                    user_detail: {
+                      first_name: "$user_detail.first_name",
+                      last_name: "$user_detail.last_name",
+                      image_url: "$user_detail.image_url",
+                    },
                   },
-                ]).then(
-                  (requests) => {
-                    if (requests.length == 0) {
-                      response_data.json({
-                        success: false,
-                        error_code: PROVIDER_ERROR_CODE.ORDER_HISTORY_NOT_FOUND,
-                      });
-                    } else {
-                      response_data.json({
-                        success: true,
-                        message:
-                          PROVIDER_MESSAGE_CODE.ORDER_HISTORY_SUCCESSFULLY,
-                        request_list: requests,
-                      });
-                    }
-                  },
-                  (error) => {
-                    console.log(error);
+                },
+              ]).then(
+                (requests) => {
+                  if (requests.length == 0) {
                     response_data.json({
                       success: false,
-                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                      error_code: PROVIDER_ERROR_CODE.ORDER_HISTORY_NOT_FOUND,
+                    });
+                  } else {
+                    response_data.json({
+                      success: true,
+                      message: PROVIDER_MESSAGE_CODE.ORDER_HISTORY_SUCCESSFULLY,
+                      request_list: requests,
                     });
                   }
-                );
-              }
+                },
+                (error) => {
+                  console.log(error);
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
             } else {
               response_data.json({
                 success: false,
@@ -2875,94 +2721,77 @@ exports.provider_rating_to_user = function (request_data, response_data) {
         Provider.findOne({ _id: request_data_body.provider_id }).then(
           (provider) => {
             if (provider) {
-              if (
-                request_data_body.server_token !== null &&
-                provider.server_token != request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                Request.findOne({ _id: request_data_body.request_id }).then(
-                  (request) => {
-                    if (request) {
-                      Order.findOne({ _id: request.orders[0].order_id }).then(
-                        (order) => {
-                          if (order) {
-                            Review.findOne({ order_id: order._id }).then(
-                              (review) => {
-                                if (review) {
-                                  var provider_rating_to_user =
-                                    request_data_body.provider_rating_to_user;
+              Request.findOne({ _id: request_data_body.request_id }).then(
+                (request) => {
+                  if (request) {
+                    Order.findOne({ _id: request.orders[0].order_id }).then(
+                      (order) => {
+                        if (order) {
+                          Review.findOne({ order_id: order._id }).then(
+                            (review) => {
+                              if (review) {
+                                var provider_rating_to_user =
+                                  request_data_body.provider_rating_to_user;
 
-                                  review.provider_rating_to_user =
-                                    provider_rating_to_user;
-                                  review.provider_review_to_user =
-                                    request_data_body.provider_review_to_user;
+                                review.provider_rating_to_user =
+                                  provider_rating_to_user;
+                                review.provider_review_to_user =
+                                  request_data_body.provider_review_to_user;
 
-                                  var delivery_status = request.delivery_status;
-                                  if (
-                                    delivery_status ==
-                                    ORDER_STATE.ORDER_COMPLETED
-                                  ) {
-                                    User.findOne({ _id: order.user_id }).then(
-                                      (user) => {
-                                        if (user) {
-                                          var old_rate = user.provider_rate;
-                                          var old_rate_count =
-                                            user.provider_rate_count;
-                                          var new_rate_counter =
-                                            old_rate_count + 1;
+                                var delivery_status = request.delivery_status;
+                                if (
+                                  delivery_status == ORDER_STATE.ORDER_COMPLETED
+                                ) {
+                                  User.findOne({ _id: order.user_id }).then(
+                                    (user) => {
+                                      if (user) {
+                                        var old_rate = user.provider_rate;
+                                        var old_rate_count =
+                                          user.provider_rate_count;
+                                        var new_rate_counter =
+                                          old_rate_count + 1;
 
-                                          var new_rate =
-                                            (old_rate * old_rate_count +
-                                              provider_rating_to_user) /
-                                            new_rate_counter;
-                                          new_rate = utils.precisionRoundTwo(
-                                            Number(new_rate)
-                                          );
-                                          user.provider_rate = new_rate;
-                                          user.provider_rate_count =
-                                            user.provider_rate_count + 1;
-                                          order.is_provider_rated_to_user = true;
-                                          order.save().then(
-                                            () => {
-                                              user.save();
-                                              review.save();
-                                              response_data.json({
-                                                success: true,
-                                                message:
-                                                  PROVIDER_MESSAGE_CODE.GIVE_RATING_TO_USER_SUCCESSFULLY,
-                                              });
-                                            },
-                                            (error) => {
-                                              console.log(error);
-                                              response_data.json({
-                                                success: false,
-                                                error_code:
-                                                  ERROR_CODE.SOMETHING_WENT_WRONG,
-                                              });
-                                            }
-                                          );
-                                        }
-                                      },
-                                      (error) => {
-                                        console.log(error);
-                                        response_data.json({
-                                          success: false,
-                                          error_code:
-                                            ERROR_CODE.SOMETHING_WENT_WRONG,
-                                        });
+                                        var new_rate =
+                                          (old_rate * old_rate_count +
+                                            provider_rating_to_user) /
+                                          new_rate_counter;
+                                        new_rate = utils.precisionRoundTwo(
+                                          Number(new_rate)
+                                        );
+                                        user.provider_rate = new_rate;
+                                        user.provider_rate_count =
+                                          user.provider_rate_count + 1;
+                                        order.is_provider_rated_to_user = true;
+                                        order.save().then(
+                                          () => {
+                                            user.save();
+                                            review.save();
+                                            response_data.json({
+                                              success: true,
+                                              message:
+                                                PROVIDER_MESSAGE_CODE.GIVE_RATING_TO_USER_SUCCESSFULLY,
+                                            });
+                                          },
+                                          (error) => {
+                                            console.log(error);
+                                            response_data.json({
+                                              success: false,
+                                              error_code:
+                                                ERROR_CODE.SOMETHING_WENT_WRONG,
+                                            });
+                                          }
+                                        );
                                       }
-                                    );
-                                  } else {
-                                    response_data.json({
-                                      success: false,
-                                      error_code:
-                                        ORDER_ERROR_CODE.ORDER_NOT_FOUND,
-                                    });
-                                  }
+                                    },
+                                    (error) => {
+                                      console.log(error);
+                                      response_data.json({
+                                        success: false,
+                                        error_code:
+                                          ERROR_CODE.SOMETHING_WENT_WRONG,
+                                      });
+                                    }
+                                  );
                                 } else {
                                   response_data.json({
                                     success: false,
@@ -2970,41 +2799,46 @@ exports.provider_rating_to_user = function (request_data, response_data) {
                                       ORDER_ERROR_CODE.ORDER_NOT_FOUND,
                                   });
                                 }
-                              },
-                              (error) => {
-                                console.log(error);
+                              } else {
                                 response_data.json({
                                   success: false,
-                                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                                  error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
                                 });
                               }
-                            );
-                          }
-                        },
-                        (error) => {
-                          console.log(error);
-                          response_data.json({
-                            success: false,
-                            error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                          });
+                            },
+                            (error) => {
+                              console.log(error);
+                              response_data.json({
+                                success: false,
+                                error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                              });
+                            }
+                          );
                         }
-                      );
-                    } else {
-                      response_data.json({
-                        success: false,
-                        error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
-                      });
-                    }
-                  },
-                  (error) => {
-                    console.log(error);
+                      },
+                      (error) => {
+                        console.log(error);
+                        response_data.json({
+                          success: false,
+                          error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                        });
+                      }
+                    );
+                  } else {
                     response_data.json({
                       success: false,
-                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                      error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
                     });
                   }
-                );
-              }
+                },
+                (error) => {
+                  console.log(error);
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
             } else {
               response_data.json({
                 success: false,
@@ -3042,94 +2876,77 @@ exports.provider_rating_to_store = function (request_data, response_data) {
         Provider.findOne({ _id: request_data_body.provider_id }).then(
           (provider) => {
             if (provider) {
-              if (
-                request_data_body.server_token !== null &&
-                provider.server_token != request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                Request.findOne({ _id: request_data_body.request_id }).then(
-                  (request) => {
-                    if (request) {
-                      Order.findOne({ _id: request.orders[0].order_id }).then(
-                        (order) => {
-                          if (order) {
-                            Review.findOne({ order_id: order._id }).then(
-                              (review) => {
-                                if (review) {
-                                  var provider_rating_to_store =
-                                    request_data_body.provider_rating_to_store;
+              Request.findOne({ _id: request_data_body.request_id }).then(
+                (request) => {
+                  if (request) {
+                    Order.findOne({ _id: request.orders[0].order_id }).then(
+                      (order) => {
+                        if (order) {
+                          Review.findOne({ order_id: order._id }).then(
+                            (review) => {
+                              if (review) {
+                                var provider_rating_to_store =
+                                  request_data_body.provider_rating_to_store;
 
-                                  review.provider_rating_to_store =
-                                    provider_rating_to_store;
-                                  review.provider_review_to_store =
-                                    request_data_body.provider_review_to_store;
+                                review.provider_rating_to_store =
+                                  provider_rating_to_store;
+                                review.provider_review_to_store =
+                                  request_data_body.provider_review_to_store;
 
-                                  var delivery_status = request.delivery_status;
+                                var delivery_status = request.delivery_status;
 
-                                  if (
-                                    delivery_status ==
-                                    ORDER_STATE.ORDER_COMPLETED
-                                  ) {
-                                    Store.findOne({ _id: order.store_id }).then(
-                                      (store) => {
-                                        if (store) {
-                                          var old_rate = store.provider_rate;
-                                          var old_rate_count =
-                                            store.provider_rate_count;
-                                          var new_rate_counter =
-                                            old_rate_count + 1;
-                                          var new_rate =
-                                            (old_rate * old_rate_count +
-                                              provider_rating_to_store) /
-                                            new_rate_counter;
-                                          new_rate = utils.precisionRoundTwo(
-                                            Number(new_rate)
-                                          );
-                                          store.provider_rate = new_rate;
-                                          store.provider_rate_count =
-                                            store.provider_rate_count + 1;
-                                          order.is_provider_rated_to_store = true;
-                                          order.save().then(
-                                            () => {
-                                              store.save();
-                                              review.save();
-                                              response_data.json({
-                                                success: true,
-                                                message:
-                                                  PROVIDER_MESSAGE_CODE.GIVE_RATING_TO_STORE_SUCCESSFULLY,
-                                              });
-                                            },
-                                            (error) => {
-                                              console.log(error);
-                                              response_data.json({
-                                                success: false,
-                                                error_code:
-                                                  ERROR_CODE.SOMETHING_WENT_WRONG,
-                                              });
-                                            }
-                                          );
-                                        }
-                                      },
-                                      (error) => {
-                                        console.log(error);
-                                        response_data.json({
-                                          success: false,
-                                          error_code:
-                                            ERROR_CODE.SOMETHING_WENT_WRONG,
-                                        });
+                                if (
+                                  delivery_status == ORDER_STATE.ORDER_COMPLETED
+                                ) {
+                                  Store.findOne({ _id: order.store_id }).then(
+                                    (store) => {
+                                      if (store) {
+                                        var old_rate = store.provider_rate;
+                                        var old_rate_count =
+                                          store.provider_rate_count;
+                                        var new_rate_counter =
+                                          old_rate_count + 1;
+                                        var new_rate =
+                                          (old_rate * old_rate_count +
+                                            provider_rating_to_store) /
+                                          new_rate_counter;
+                                        new_rate = utils.precisionRoundTwo(
+                                          Number(new_rate)
+                                        );
+                                        store.provider_rate = new_rate;
+                                        store.provider_rate_count =
+                                          store.provider_rate_count + 1;
+                                        order.is_provider_rated_to_store = true;
+                                        order.save().then(
+                                          () => {
+                                            store.save();
+                                            review.save();
+                                            response_data.json({
+                                              success: true,
+                                              message:
+                                                PROVIDER_MESSAGE_CODE.GIVE_RATING_TO_STORE_SUCCESSFULLY,
+                                            });
+                                          },
+                                          (error) => {
+                                            console.log(error);
+                                            response_data.json({
+                                              success: false,
+                                              error_code:
+                                                ERROR_CODE.SOMETHING_WENT_WRONG,
+                                            });
+                                          }
+                                        );
                                       }
-                                    );
-                                  } else {
-                                    response_data.json({
-                                      success: false,
-                                      error_code:
-                                        ORDER_ERROR_CODE.ORDER_NOT_FOUND,
-                                    });
-                                  }
+                                    },
+                                    (error) => {
+                                      console.log(error);
+                                      response_data.json({
+                                        success: false,
+                                        error_code:
+                                          ERROR_CODE.SOMETHING_WENT_WRONG,
+                                      });
+                                    }
+                                  );
                                 } else {
                                   response_data.json({
                                     success: false,
@@ -3137,36 +2954,41 @@ exports.provider_rating_to_store = function (request_data, response_data) {
                                       ORDER_ERROR_CODE.ORDER_NOT_FOUND,
                                   });
                                 }
-                              },
-                              (error) => {
-                                console.log(error);
+                              } else {
                                 response_data.json({
                                   success: false,
-                                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                                  error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
                                 });
                               }
-                            );
-                          }
-                        },
-                        (error) => {
-                          console.log(error);
-                          response_data.json({
-                            success: false,
-                            error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                          });
+                            },
+                            (error) => {
+                              console.log(error);
+                              response_data.json({
+                                success: false,
+                                error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                              });
+                            }
+                          );
                         }
-                      );
-                    }
-                  },
-                  (error) => {
-                    console.log(error);
-                    response_data.json({
-                      success: false,
-                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                    });
+                      },
+                      (error) => {
+                        console.log(error);
+                        response_data.json({
+                          success: false,
+                          error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                        });
+                      }
+                    );
                   }
-                );
-              }
+                },
+                (error) => {
+                  console.log(error);
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
             } else {
               response_data.json({
                 success: false,
@@ -3197,87 +3019,77 @@ exports.get_request_count = function (request_data, response_data) {
       Provider.findOne({ _id: request_data_body.provider_id }).then(
         (provider) => {
           if (provider) {
-            if (
-              request_data_body.server_token !== null &&
-              provider.server_token != request_data_body.server_token
-            ) {
-              response_data.json({
-                success: false,
-                error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              });
-            } else {
-              Request.aggregate([
-                {
-                  $match: {
-                    $or: [
-                      {
-                        current_provider: {
-                          $eq: Schema(request_data_body.provider_id),
-                        },
+            Request.aggregate([
+              {
+                $match: {
+                  $or: [
+                    {
+                      current_provider: {
+                        $eq: Schema(request_data_body.provider_id),
                       },
-                      {
-                        provider_id: {
-                          $eq: Schema(request_data_body.provider_id),
-                        },
+                    },
+                    {
+                      provider_id: {
+                        $eq: Schema(request_data_body.provider_id),
                       },
-                    ],
-                  },
+                    },
+                  ],
                 },
+              },
 
-                { $unwind: "$orders" },
-                {
-                  $lookup: {
-                    from: "orders",
-                    localField: "orders.order_id",
-                    foreignField: "_id",
-                    as: "order_detail",
-                  },
+              { $unwind: "$orders" },
+              {
+                $lookup: {
+                  from: "orders",
+                  localField: "orders.order_id",
+                  foreignField: "_id",
+                  as: "order_detail",
                 },
-                { $unwind: "$order_detail" },
-                {
-                  $match: {
-                    $or: [
-                      {
-                        $and: [
-                          {
-                            "order_detail.is_provider_show_invoice": {
-                              $eq: false,
-                            },
+              },
+              { $unwind: "$order_detail" },
+              {
+                $match: {
+                  $or: [
+                    {
+                      $and: [
+                        {
+                          "order_detail.is_provider_show_invoice": {
+                            $eq: false,
                           },
-                          { "order_detail.order_status_id": { $eq: 10 } },
-                        ],
-                      },
-                      { "order_detail.order_status_id": { $eq: 1 } },
-                    ],
-                  },
+                        },
+                        { "order_detail.order_status_id": { $eq: 10 } },
+                      ],
+                    },
+                    { "order_detail.order_status_id": { $eq: 1 } },
+                  ],
                 },
-              ]).then(
-                (requests) => {
-                  if (requests.length == 0) {
-                    response_data.json({
-                      success: true,
-                      message:
-                        PROVIDER_MESSAGE_CODE.GET_REQUEST_COUNT_SUCCESSFULLY,
-                      request_count: 0,
-                    });
-                  } else {
-                    response_data.json({
-                      success: true,
-                      message:
-                        PROVIDER_MESSAGE_CODE.GET_REQUEST_COUNT_SUCCESSFULLY,
-                      request_count: requests.length,
-                    });
-                  }
-                },
-                (error) => {
-                  console.log(error);
+              },
+            ]).then(
+              (requests) => {
+                if (requests.length == 0) {
                   response_data.json({
-                    success: false,
-                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                    success: true,
+                    message:
+                      PROVIDER_MESSAGE_CODE.GET_REQUEST_COUNT_SUCCESSFULLY,
+                    request_count: 0,
+                  });
+                } else {
+                  response_data.json({
+                    success: true,
+                    message:
+                      PROVIDER_MESSAGE_CODE.GET_REQUEST_COUNT_SUCCESSFULLY,
+                    request_count: requests.length,
                   });
                 }
-              );
-            }
+              },
+              (error) => {
+                console.log(error);
+                response_data.json({
+                  success: false,
+                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                });
+              }
+            );
           } else {
             response_data.json({
               success: false,

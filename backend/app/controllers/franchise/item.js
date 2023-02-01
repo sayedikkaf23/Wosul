@@ -25,44 +25,28 @@ exports.add_item = function (request_data, response_data) {
     { _id: request_data_body.franchise_id },
     function (error, franchise_detail) {
       if (franchise_detail) {
-        // jwt.verify(request_data_body.server_token, 'yeepeey', function(err, decoded) {
-        //     if(decoded){
-        //     } else {
-        //         response_data.json({success: false, error_code: ERROR_CODE.INVALID_SERVER_TOKEN});
-        //     }
-        // });
-        if (
-          request_data_body.server_token !== null &&
-          franchise_detail.server_token !== request_data_body.server_token
-        ) {
-          response_data.json({
-            success: false,
-            error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-          });
-        } else {
-          var item = new FranchiseItem(request_data_body);
-          item.save(function (error) {
-            for (var i = 0; i < item.store_id.length; i++) {
-              utils.copy_item_franchise(
-                request_data_body.franchise_id,
-                item.store_id[i],
-                item
-              );
-            }
-            if (error) {
-              response_data.json({
-                success: false,
-                error_code: ITEM_ERROR_CODE.ITEM_DATA_ADD_FAILED,
-              });
-            } else {
-              response_data.json({
-                success: true,
-                message: ITEM_MESSAGE_CODE.ITEM_ADD_SUCCESSFULLY,
-                item: item,
-              });
-            }
-          });
-        }
+        var item = new FranchiseItem(request_data_body);
+        item.save(function (error) {
+          for (var i = 0; i < item.store_id.length; i++) {
+            utils.copy_item_franchise(
+              request_data_body.franchise_id,
+              item.store_id[i],
+              item
+            );
+          }
+          if (error) {
+            response_data.json({
+              success: false,
+              error_code: ITEM_ERROR_CODE.ITEM_DATA_ADD_FAILED,
+            });
+          } else {
+            response_data.json({
+              success: true,
+              message: ITEM_MESSAGE_CODE.ITEM_ADD_SUCCESSFULLY,
+              item: item,
+            });
+          }
+        });
       } else {
         response_data.json({
           success: false,
@@ -181,71 +165,53 @@ exports.get_for_store_product_item_list = function (
   var franchise_id = request_data_body.franchise_id;
   Franchise.findOne({ _id: franchise_id }, function (error, detail) {
     if (detail) {
-      // jwt.verify(request_data_body.server_token, 'yeepeey', function(err, decoded) {
-      //     if(decoded){
-      //     } else {
-      //         response_data.json({success: false, error_code: ERROR_CODE.INVALID_SERVER_TOKEN});
-      //     }
-      // });
-      if (
-        request_data_body.server_token !== null &&
-        detail.server_token !== request_data_body.server_token
-      ) {
-        response_data.json({
-          success: false,
-          error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-        });
-      } else {
-        var ads = [];
-        Store.findOne(
-          { _id: request_data_body.store_id },
-          function (error, detail) {
-            Country.findOne(
-              { _id: detail.country_id },
-              function (error, country_data) {
-                if (country_data) {
-                  var currency = country_data.currency_sign;
-                  var items_array = {
-                    $lookup: {
-                      from: "items",
-                      localField: "_id",
-                      foreignField: "product_id",
-                      as: "items",
+      var ads = [];
+      Store.findOne(
+        { _id: request_data_body.store_id },
+        function (error, detail) {
+          Country.findOne(
+            { _id: detail.country_id },
+            function (error, country_data) {
+              if (country_data) {
+                var currency = country_data.currency_sign;
+                var items_array = {
+                  $lookup: {
+                    from: "items",
+                    localField: "_id",
+                    foreignField: "product_id",
+                    as: "items",
+                  },
+                };
+                var condition = {
+                  $match: {
+                    store_id: {
+                      $eq: mongoose.Types.ObjectId(request_data_body.store_id),
                     },
-                  };
-                  var condition = {
-                    $match: {
-                      store_id: {
-                        $eq: mongoose.Types.ObjectId(
-                          request_data_body.store_id
-                        ),
-                      },
-                    },
-                  };
-                  Product.aggregate(
-                    [condition, items_array],
-                    function (error, products) {
-                      if (error || products.length == 0) {
-                        response_data.json({
-                          success: false,
-                          error_code: ITEM_ERROR_CODE.ITEM_NOT_FOUND,
-                        });
-                      } else {
-                        response_data.json({
-                          success: true,
-                          message: ITEM_MESSAGE_CODE.ITEM_LIST_SUCCESSFULLY,
-                          currency: currency,
-                          products: products,
-                        });
-                      }
+                  },
+                };
+                Product.aggregate(
+                  [condition, items_array],
+                  function (error, products) {
+                    if (error || products.length == 0) {
+                      response_data.json({
+                        success: false,
+                        error_code: ITEM_ERROR_CODE.ITEM_NOT_FOUND,
+                      });
+                    } else {
+                      response_data.json({
+                        success: true,
+                        message: ITEM_MESSAGE_CODE.ITEM_LIST_SUCCESSFULLY,
+                        currency: currency,
+                        products: products,
+                      });
                     }
-                  );
-                }
+                  }
+                );
               }
-            );
-          }
-        );
-      }
+            }
+          );
+        }
+      );
     } else {
       response_data.json({
         success: false,
@@ -269,69 +235,53 @@ exports.get_store_product_item_list = function (request_data, response_data) {
         table = Store;
         var condition1 = {"$match": {}};
     }*/
-  console.log('get_store_product_item_list :>> '+ JSON.stringify(request_data_body));
+  console.log(
+    "get_store_product_item_list :>> " + JSON.stringify(request_data_body)
+  );
   Franchise.findOne({ _id: id }, function (error, detail) {
     if (detail) {
-      // jwt.verify(request_data_body.server_token, 'yeepeey', function(err, decoded) {
-      //     if(decoded){
-      //     } else {
-      //         response_data.json({success: false, error_code: ERROR_CODE.INVALID_SERVER_TOKEN});
-      //     }
-      // });
-      if (
-        request_data_body.server_token !== null &&
-        detail.server_token !== request_data_body.server_token
-      ) {
-        response_data.json({
-          success: false,
-          error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-        });
-      } else {
-        var ads = [];
-        Country.findOne(
-          { _id: detail.country_id },
-          function (error, country_data) {
-            if (country_data) {
-              var currency = country_data.currency_sign;
-              var items_array = {
-                $lookup: {
-                  from: "franchise_items",
-                  localField: "_id",
-                  foreignField: "product_id",
-                  as: "items",
+      var ads = [];
+      Country.findOne(
+        { _id: detail.country_id },
+        function (error, country_data) {
+          if (country_data) {
+            var currency = country_data.currency_sign;
+            var items_array = {
+              $lookup: {
+                from: "franchise_items",
+                localField: "_id",
+                foreignField: "product_id",
+                as: "items",
+              },
+            };
+            var condition = {
+              $match: {
+                franchise_id: {
+                  $eq: mongoose.Types.ObjectId(request_data_body.franchise_id),
                 },
-              };
-              var condition = {
-                $match: {
-                  franchise_id: {
-                    $eq: mongoose.Types.ObjectId(
-                      request_data_body.franchise_id
-                    ),
-                  },
-                },
-              };
-              FranchiseProduct.aggregate(
-                [condition, items_array],
-                function (error, products) {
-                  if (error || products.length == 0) {
-                    response_data.json({
-                      success: false,
-                      error_code: ITEM_ERROR_CODE.ITEM_NOT_FOUND,
-                    });
-                  } else {
-                    response_data.json({
-                      success: true,
-                      message: ITEM_MESSAGE_CODE.ITEM_LIST_SUCCESSFULLY,
-                      currency: currency,
-                      products: products,
-                    });
-                  }
+              },
+            };
+            FranchiseProduct.aggregate(
+              [condition, items_array],
+              function (error, products) {
+                if (error || products.length == 0) {
+                  response_data.json({
+                    success: false,
+                    error_code: ITEM_ERROR_CODE.ITEM_NOT_FOUND,
+                  });
+                } else {
+                  response_data.json({
+                    success: true,
+                    message: ITEM_MESSAGE_CODE.ITEM_LIST_SUCCESSFULLY,
+                    currency: currency,
+                    products: products,
+                  });
                 }
-              );
-            }
+              }
+            );
           }
-        );
-      }
+        }
+      );
     } else {
       response_data.json({
         success: false,
@@ -345,65 +295,49 @@ exports.get_store_product_item_list = function (request_data, response_data) {
 exports.get_item_list = function (request_data, response_data) {
   var request_data_body = request_data.body;
   var franchise_id = request_data_body.franchise_id;
-  console.log('get_item_list :>> ' + JSON.stringify(request_data_body));
+  console.log("get_item_list :>> " + JSON.stringify(request_data_body));
   Franchise.findOne({ _id: franchise_id }, function (error, franchise_detail) {
     if (franchise_detail) {
-      // jwt.verify(request_data_body.server_token, 'yeepeey', function(err, decoded) {
-      //     if(decoded){
-      //     } else {
-      //         response_data.json({success: false, error_code: ERROR_CODE.INVALID_SERVER_TOKEN});
-      //     }
-      // });
-      if (
-        request_data_body.server_token !== null &&
-        franchise_detail.server_token !== request_data_body.server_token
-      ) {
-        response_data.json({
-          success: false,
-          error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-        });
-      } else {
-        Country.findOne(
-          { _id: franchise_detail.country_id },
-          function (error, country_data) {
-            if (country_data) {
-              var currency = country_data.currency_sign;
-              var products_array = {
-                $lookup: {
-                  from: "franchise_products",
-                  localField: "product_id",
-                  foreignField: "_id",
-                  as: "products_detail",
-                },
-              };
-              var array_to_json = { $unwind: "$products_detail" };
-              var condition = {
-                $match: {
-                  franchise_id: { $eq: mongoose.Types.ObjectId(franchise_id) },
-                },
-              };
-              FranchiseItem.aggregate(
-                [condition, products_array, array_to_json],
-                function (error, items) {
-                  if (error || items.length == 0) {
-                    response_data.json({
-                      success: false,
-                      error_code: ITEM_ERROR_CODE.ITEM_NOT_FOUND,
-                    });
-                  } else {
-                    response_data.json({
-                      success: true,
-                      message: ITEM_MESSAGE_CODE.ITEM_LIST_SUCCESSFULLY,
-                      currency: currency,
-                      items: items,
-                    });
-                  }
+      Country.findOne(
+        { _id: franchise_detail.country_id },
+        function (error, country_data) {
+          if (country_data) {
+            var currency = country_data.currency_sign;
+            var products_array = {
+              $lookup: {
+                from: "franchise_products",
+                localField: "product_id",
+                foreignField: "_id",
+                as: "products_detail",
+              },
+            };
+            var array_to_json = { $unwind: "$products_detail" };
+            var condition = {
+              $match: {
+                franchise_id: { $eq: mongoose.Types.ObjectId(franchise_id) },
+              },
+            };
+            FranchiseItem.aggregate(
+              [condition, products_array, array_to_json],
+              function (error, items) {
+                if (error || items.length == 0) {
+                  response_data.json({
+                    success: false,
+                    error_code: ITEM_ERROR_CODE.ITEM_NOT_FOUND,
+                  });
+                } else {
+                  response_data.json({
+                    success: true,
+                    message: ITEM_MESSAGE_CODE.ITEM_LIST_SUCCESSFULLY,
+                    currency: currency,
+                    items: items,
+                  });
                 }
-              );
-            }
+              }
+            );
           }
-        );
-      }
+        }
+      );
     } else {
       response_data.json({
         success: false,
@@ -420,101 +354,85 @@ exports.get_item_data = function (request_data, response_data) {
   var item_id = request_data_body.item_id;
   Franchise.findOne({ _id: franchise_id }, function (error, franchise_detail) {
     if (franchise_detail) {
-      // jwt.verify(request_data_body.server_token, 'yeepeey', function(err, decoded) {
-      //     if(decoded){
-      //     } else {
-      //         response_data.json({success: false, error_code: ERROR_CODE.INVALID_SERVER_TOKEN});
-      //     }
-      // });
-      if (
-        request_data_body.server_token !== null &&
-        franchise_detail.server_token !== request_data_body.server_token
-      ) {
-        response_data.json({
-          success: false,
-          error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-        });
-      } else {
-        FranchiseItem.findOne({ _id: item_id }, function (error, item_data) {
-          if (item_data) {
-            var product_id = item_data.product_id;
-            var specification_array = {
-              $lookup: {
-                from: "franchise_specification_groups",
-                localField: "_id",
-                foreignField: "product_id",
-                as: "specifications_detail",
-              },
-            };
-            var condition = {
-              $match: { _id: { $eq: mongoose.Types.ObjectId(product_id) } },
-            };
-            FranchiseProduct.aggregate(
-              [condition, specification_array],
-              function (error, product) {
-                if (error || product.length == 0) {
-                  response_data.json({
-                    success: false,
-                    error_code: ITEM_ERROR_CODE.ITEM_NOT_FOUND,
-                  });
-                } else {
-                  var franchise_condition = {
-                    $match: {
-                      franchise_id: {
-                        $eq: mongoose.Types.ObjectId(
-                          request_data_body.franchise_id
-                        ),
-                      },
+      FranchiseItem.findOne({ _id: item_id }, function (error, item_data) {
+        if (item_data) {
+          var product_id = item_data.product_id;
+          var specification_array = {
+            $lookup: {
+              from: "franchise_specification_groups",
+              localField: "_id",
+              foreignField: "product_id",
+              as: "specifications_detail",
+            },
+          };
+          var condition = {
+            $match: { _id: { $eq: mongoose.Types.ObjectId(product_id) } },
+          };
+          FranchiseProduct.aggregate(
+            [condition, specification_array],
+            function (error, product) {
+              if (error || product.length == 0) {
+                response_data.json({
+                  success: false,
+                  error_code: ITEM_ERROR_CODE.ITEM_NOT_FOUND,
+                });
+              } else {
+                var franchise_condition = {
+                  $match: {
+                    franchise_id: {
+                      $eq: mongoose.Types.ObjectId(
+                        request_data_body.franchise_id
+                      ),
                     },
-                  };
-                  var product_condition = {
-                    $match: {
-                      product_id: { $eq: mongoose.Types.ObjectId(product_id) },
-                    },
-                  };
-                  var item_condition = {
-                    $match: { _id: { $ne: mongoose.Types.ObjectId(item_id) } },
-                  };
-                  FranchiseItem.aggregate(
-                    [
-                      franchise_condition,
-                      product_condition,
-                      item_condition,
-                      { $project: { a: "$name" } },
-                      { $unwind: "$a" },
-                      { $group: { _id: "a", item_name: { $addToSet: "$a" } } },
-                    ],
-                    function (error, item_array) {
-                      if (error || item_array.length == 0) {
-                        response_data.json({
-                          success: true,
-                          message: ITEM_MESSAGE_CODE.ITEM_LIST_SUCCESSFULLY,
-                          item: item_data,
-                          product: product[0],
-                          item_array: [],
-                        });
-                      } else {
-                        response_data.json({
-                          success: true,
-                          message: ITEM_MESSAGE_CODE.ITEM_LIST_SUCCESSFULLY,
-                          item: item_data,
-                          product: product[0],
-                          item_array: item_array[0].item_name,
-                        });
-                      }
+                  },
+                };
+                var product_condition = {
+                  $match: {
+                    product_id: { $eq: mongoose.Types.ObjectId(product_id) },
+                  },
+                };
+                var item_condition = {
+                  $match: { _id: { $ne: mongoose.Types.ObjectId(item_id) } },
+                };
+                FranchiseItem.aggregate(
+                  [
+                    franchise_condition,
+                    product_condition,
+                    item_condition,
+                    { $project: { a: "$name" } },
+                    { $unwind: "$a" },
+                    { $group: { _id: "a", item_name: { $addToSet: "$a" } } },
+                  ],
+                  function (error, item_array) {
+                    if (error || item_array.length == 0) {
+                      response_data.json({
+                        success: true,
+                        message: ITEM_MESSAGE_CODE.ITEM_LIST_SUCCESSFULLY,
+                        item: item_data,
+                        product: product[0],
+                        item_array: [],
+                      });
+                    } else {
+                      response_data.json({
+                        success: true,
+                        message: ITEM_MESSAGE_CODE.ITEM_LIST_SUCCESSFULLY,
+                        item: item_data,
+                        product: product[0],
+                        item_array: item_array[0].item_name,
+                      });
                     }
-                  );
-                }
+                  }
+                );
               }
-            );
-          } else {
-            response_data.json({
-              success: false,
-              error_code: ITEM_ERROR_CODE.ITEM_NOT_FOUND,
-            });
-          }
-        });
-      }
+            }
+          );
+        } else {
+          response_data.json({
+            success: false,
+            error_code: ITEM_ERROR_CODE.ITEM_NOT_FOUND,
+          });
+        }
+      });
     } else {
       response_data.json({
         success: false,
@@ -562,51 +480,35 @@ exports.update_item = function (request_data, response_data) {
     { _id: request_data_body.franchise_id },
     function (error, franchise_detail) {
       if (franchise_detail) {
-        // jwt.verify(request_data_body.server_token, 'yeepeey', function(err, decoded) {
-        //     if(decoded){
-        //     } else {
-        //         response_data.json({success: false, error_code: ERROR_CODE.INVALID_SERVER_TOKEN});
-        //     }
-        // });
-        if (
-          request_data_body.server_token !== null &&
-          franchise_detail.server_token !== request_data_body.server_token
-        ) {
-          response_data.json({
-            success: false,
-            error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-          });
-        } else {
-          var name = request_data_body.name.trim();
-          name = name.charAt(0).toUpperCase() + name.slice(1);
-          request_data_body.name = name;
-          FranchiseItem.findOneAndUpdate(
-            { _id: item_id },
-            request_data_body,
-            { new: true },
-            function (error, item_data) {
-              if (item_data) {
-                for (var i = 0; i < item_data.store_id.length; i++) {
-                  utils.copy_item_franchise(
-                    request_data_body.franchise_id,
-                    item_data.store_id[i],
-                    item_data
-                  );
-                }
-                response_data.json({
-                  success: true,
-                  message: ITEM_MESSAGE_CODE.UPDATE_SUCCESSFULLY,
-                  item: item_data,
-                });
-              } else {
-                response_data.json({
-                  success: false,
-                  error_code: ITEM_ERROR_CODE.UPDATE_FAILED,
-                });
+        var name = request_data_body.name.trim();
+        name = name.charAt(0).toUpperCase() + name.slice(1);
+        request_data_body.name = name;
+        FranchiseItem.findOneAndUpdate(
+          { _id: item_id },
+          request_data_body,
+          { new: true },
+          function (error, item_data) {
+            if (item_data) {
+              for (var i = 0; i < item_data.store_id.length; i++) {
+                utils.copy_item_franchise(
+                  request_data_body.franchise_id,
+                  item_data.store_id[i],
+                  item_data
+                );
               }
+              response_data.json({
+                success: true,
+                message: ITEM_MESSAGE_CODE.UPDATE_SUCCESSFULLY,
+                item: item_data,
+              });
+            } else {
+              response_data.json({
+                success: false,
+                error_code: ITEM_ERROR_CODE.UPDATE_FAILED,
+              });
             }
-          );
-        }
+          }
+        );
       } else {
         response_data.json({
           success: false,
@@ -624,21 +526,7 @@ exports.delete_item_image = function (request_data, response_data) {
     { _id: request_data_body.franchise_id },
     function (error, franchise_detail) {
       if (franchise_detail) {
-        // jwt.verify(request_data_body.server_token, 'yeepeey', function(err, decoded) {
-        //     if(decoded){
-        //     } else {
-        //         response_data.json({success: false, error_code: ERROR_CODE.INVALID_SERVER_TOKEN});
-        //     }
-        // });
-        if (
-          request_data_body.server_token !== null &&
-          franchise_detail.server_token !== request_data_body.server_token
-        ) {
-          response_data.json({
-            success: false,
-            error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-          });
-        } else {
+        
           FranchiseItem.findOne(
             { _id: request_data_body._id },
             function (error, item) {
@@ -651,7 +539,7 @@ exports.delete_item_image = function (request_data, response_data) {
                     image_file[i];
                     var image_url = item.image_url;
                     var index = image_url.indexOf(image_file[i]);
-                    if(index != -1){
+                    if (index != -1) {
                       image_url.splice(index, 1);
                     }
                     item.image_url = image_url;
@@ -684,7 +572,7 @@ exports.delete_item_image = function (request_data, response_data) {
               }
             }
           );
-        }
+        
       } else {
         response_data.json({
           success: false,
