@@ -32,160 +32,147 @@ exports.create_request = function (request_data, response_data) {
         Store.findOne({ _id: request_data_body.store_id }).then(
           (store) => {
             if (store) {
-              if (
-                request_data_body.server_token !== null &&
-                store.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                Order.findOne({
-                  _id: request_data_body.order_id,
-                  store_id: store._id,
-                }).then(
-                  (order) => {
-                    if (order) {
-                      if (order.request_id == null) {
-                        User.findOne({ _id: order.user_id }).then((user) => {
-                          Cart.findOne({ _id: order.cart_id }).then((cart) => {
-                            var orders_array = {
-                              order_id: order._id,
-                              order_unique_id: order.unique_id,
-                              order_payment_id: order.order_payment_id,
-                              cart_id: order.cart_id,
-                            };
+              Order.findOne({
+                _id: request_data_body.order_id,
+                store_id: store._id,
+              }).then(
+                (order) => {
+                  if (order) {
+                    if (order.request_id == null) {
+                      User.findOne({ _id: order.user_id }).then((user) => {
+                        Cart.findOne({ _id: order.cart_id }).then((cart) => {
+                          var orders_array = {
+                            order_id: order._id,
+                            order_unique_id: order.unique_id,
+                            order_payment_id: order.order_payment_id,
+                            cart_id: order.cart_id,
+                          };
 
-                            var request = new Request({
-                              country_id: order.country_id,
-                              city_id: order.city_id,
-                              timezone: order.timezone,
-                              vehicle_id: null,
-                              orders: orders_array,
-                              user_id: user._id,
-                              user_unique_id: user.unique_id,
-                              request_type: 2,
-                              request_type_id: store._id,
-                              provider_type: 0,
-                              provider_type_id: null,
-                              provider_id: null,
-                              provider_unique_id: 0,
-                              delivery_status:
-                                ORDER_STATE.WAITING_FOR_DELIVERY_MAN,
-                              delivery_status_manage_id:
-                                ORDER_STATUS_ID.RUNNING,
-                              delivery_status_by: null,
-                              current_provider: null,
-                              estimated_time_for_delivery_in_min: 0,
+                          var request = new Request({
+                            country_id: order.country_id,
+                            city_id: order.city_id,
+                            timezone: order.timezone,
+                            vehicle_id: null,
+                            orders: orders_array,
+                            user_id: user._id,
+                            user_unique_id: user.unique_id,
+                            request_type: 2,
+                            request_type_id: store._id,
+                            provider_type: 0,
+                            provider_type_id: null,
+                            provider_id: null,
+                            provider_unique_id: 0,
+                            delivery_status:
+                              ORDER_STATE.WAITING_FOR_DELIVERY_MAN,
+                            delivery_status_manage_id: ORDER_STATUS_ID.RUNNING,
+                            delivery_status_by: null,
+                            current_provider: null,
+                            estimated_time_for_delivery_in_min: 0,
 
-                              providers_id_that_rejected_order_request: [],
-                              confirmation_code_for_pick_up_delivery:
-                                order.confirmation_code_for_pick_up_delivery,
-                              confirmation_code_for_complete_delivery:
-                                order.confirmation_code_for_complete_delivery,
+                            providers_id_that_rejected_order_request: [],
+                            confirmation_code_for_pick_up_delivery:
+                              order.confirmation_code_for_pick_up_delivery,
+                            confirmation_code_for_complete_delivery:
+                              order.confirmation_code_for_complete_delivery,
 
-                              is_forced_assigned: false,
-                              provider_location: [],
-                              provider_previous_location: [],
-                              pickup_addresses: cart.pickup_addresses,
-                              destination_addresses: cart.destination_addresses,
-                              cancel_reasons: [],
-                              cancelled_at: null,
-                              completed_at: null,
-                            });
+                            is_forced_assigned: false,
+                            provider_location: [],
+                            provider_previous_location: [],
+                            pickup_addresses: cart.pickup_addresses,
+                            destination_addresses: cart.destination_addresses,
+                            cancel_reasons: [],
+                            cancelled_at: null,
+                            completed_at: null,
+                          });
 
-                            if (
-                              request_data_body.estimated_time_for_ready_order !=
-                                undefined &&
-                              request_data_body.estimated_time_for_ready_order &&
-                              request_data_body.estimated_time_for_ready_order >
-                                0
-                            ) {
-                              var estimated_time_for_ready_order = moment.utc();
-                              estimated_time_for_ready_order = new Date(
-                                estimated_time_for_ready_order.format()
-                              );
-                              estimated_time_for_ready_order.setMinutes(
-                                estimated_time_for_ready_order.getMinutes() +
-                                  Number(
-                                    request_data_body.estimated_time_for_ready_order
-                                  )
-                              );
-                              order.estimated_time_for_ready_order =
-                                estimated_time_for_ready_order;
-                              request.estimated_time_for_delivery_in_min =
-                                request_data_body.estimated_time_for_ready_order;
-                            } else {
-                              request.estimated_time_for_delivery_in_min =
-                                store.delivery_time_max;
-                            }
-                            order.request_id = request._id;
-                            order.save().then(
-                              () => {
-                                request.save(
-                                  function (error) {
-                                    if (error) {
-                                      response_data.json({
-                                        success: false,
-                                        error_code:
-                                          PROVIDER_ERROR_CODE.NO_PROVIDER_FOUND,
-                                      });
-                                    } else {
-                                      my_request.findNearestProvider(
-                                        request,
-                                        response_data
-                                      );
-                                    }
-                                  },
-                                  (error) => {
-                                    console.log(error);
+                          if (
+                            request_data_body.estimated_time_for_ready_order !=
+                              undefined &&
+                            request_data_body.estimated_time_for_ready_order &&
+                            request_data_body.estimated_time_for_ready_order > 0
+                          ) {
+                            var estimated_time_for_ready_order = moment.utc();
+                            estimated_time_for_ready_order = new Date(
+                              estimated_time_for_ready_order.format()
+                            );
+                            estimated_time_for_ready_order.setMinutes(
+                              estimated_time_for_ready_order.getMinutes() +
+                                Number(
+                                  request_data_body.estimated_time_for_ready_order
+                                )
+                            );
+                            order.estimated_time_for_ready_order =
+                              estimated_time_for_ready_order;
+                            request.estimated_time_for_delivery_in_min =
+                              request_data_body.estimated_time_for_ready_order;
+                          } else {
+                            request.estimated_time_for_delivery_in_min =
+                              store.delivery_time_max;
+                          }
+                          order.request_id = request._id;
+                          order.save().then(
+                            () => {
+                              request.save(
+                                function (error) {
+                                  if (error) {
                                     response_data.json({
                                       success: false,
                                       error_code:
-                                        ERROR_CODE.SOMETHING_WENT_WRONG,
+                                        PROVIDER_ERROR_CODE.NO_PROVIDER_FOUND,
                                     });
+                                  } else {
+                                    my_request.findNearestProvider(
+                                      request,
+                                      response_data
+                                    );
                                   }
-                                );
-                              },
-                              (error) => {
-                                console.log(error);
-                                response_data.json({
-                                  success: false,
-                                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                                });
-                              }
-                            );
-                          });
+                                },
+                                (error) => {
+                                  console.log(error);
+                                  response_data.json({
+                                    success: false,
+                                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                                  });
+                                }
+                              );
+                            },
+                            (error) => {
+                              console.log(error);
+                              response_data.json({
+                                success: false,
+                                error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                              });
+                            }
+                          );
                         });
-                      } else {
-                        // Reassign Request
-                        Request.findOne(
-                          { _id: order.request_id },
-                          function (error, request) {
-                            my_request.findNearestProvider(
-                              request,
-                              response_data
-                            );
-                          }
-                        );
-                      }
-                    } else {
-                      response_data.json({
-                        success: false,
-                        error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
                       });
+                    } else {
+                      // Reassign Request
+                      Request.findOne(
+                        { _id: order.request_id },
+                        function (error, request) {
+                          my_request.findNearestProvider(
+                            request,
+                            response_data
+                          );
+                        }
+                      );
                     }
-                  },
-                  (error) => {
-                    console.log(error);
+                  } else {
                     response_data.json({
                       success: false,
-                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                      error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
                     });
                   }
-                );
-              }
+                },
+                (error) => {
+                  console.log(error);
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
             } else {
               response_data.json({
                 success: false,
@@ -574,77 +561,65 @@ exports.change_request_status = function (request_data, response_data) {
         Provider.findOne({ _id: request_data_body.provider_id }).then(
           (provider) => {
             if (provider) {
-              if (
-                request_data_body.server_token !== null &&
-                provider.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                var delivery_status = Number(request_data_body.delivery_status);
+              var delivery_status = Number(request_data_body.delivery_status);
 
-                if (delivery_status == ORDER_STATE.DELIVERY_MAN_ACCEPTED) {
-                  exports.accept_request(
-                    provider,
-                    request_data,
-                    function (return_data) {
-                      response_data.json(return_data);
-                    }
-                  );
-                } else if (delivery_status == ORDER_STATE.DELIVERY_MAN_COMING) {
-                  exports.coming_for_pickup(
-                    provider,
-                    request_data,
-                    function (return_data) {
-                      response_data.json(return_data);
-                    }
-                  );
-                } else if (
-                  delivery_status == ORDER_STATE.DELIVERY_MAN_ARRIVED
-                ) {
-                  exports.arrived_at_pickup(
-                    provider,
-                    request_data,
-                    function (return_data) {
-                      response_data.json(return_data);
-                    }
-                  );
-                } else if (
-                  delivery_status == ORDER_STATE.DELIVERY_MAN_PICKED_ORDER
-                ) {
-                  exports.pickup_order(
-                    provider,
-                    request_data,
-                    function (return_data) {
-                      response_data.json(return_data);
-                    }
-                  );
-                } else if (
-                  delivery_status == ORDER_STATE.DELIVERY_MAN_STARTED_DELIVERY
-                ) {
-                  exports.started_for_delivery(
-                    provider,
-                    request_data,
-                    function (return_data) {
-                      response_data.json(return_data);
-                    }
-                  );
-                } else if (
-                  delivery_status ==
-                  ORDER_STATE.DELIVERY_MAN_ARRIVED_AT_DESTINATION
-                ) {
-                  exports.arrived_at_destination(
-                    provider,
-                    request_data,
-                    function (return_data) {
-                      response_data.json(return_data);
-                    }
-                  );
-                } else {
-                  response_data.json({ success: false });
-                }
+              if (delivery_status == ORDER_STATE.DELIVERY_MAN_ACCEPTED) {
+                exports.accept_request(
+                  provider,
+                  request_data,
+                  function (return_data) {
+                    response_data.json(return_data);
+                  }
+                );
+              } else if (delivery_status == ORDER_STATE.DELIVERY_MAN_COMING) {
+                exports.coming_for_pickup(
+                  provider,
+                  request_data,
+                  function (return_data) {
+                    response_data.json(return_data);
+                  }
+                );
+              } else if (delivery_status == ORDER_STATE.DELIVERY_MAN_ARRIVED) {
+                exports.arrived_at_pickup(
+                  provider,
+                  request_data,
+                  function (return_data) {
+                    response_data.json(return_data);
+                  }
+                );
+              } else if (
+                delivery_status == ORDER_STATE.DELIVERY_MAN_PICKED_ORDER
+              ) {
+                exports.pickup_order(
+                  provider,
+                  request_data,
+                  function (return_data) {
+                    response_data.json(return_data);
+                  }
+                );
+              } else if (
+                delivery_status == ORDER_STATE.DELIVERY_MAN_STARTED_DELIVERY
+              ) {
+                exports.started_for_delivery(
+                  provider,
+                  request_data,
+                  function (return_data) {
+                    response_data.json(return_data);
+                  }
+                );
+              } else if (
+                delivery_status ==
+                ORDER_STATE.DELIVERY_MAN_ARRIVED_AT_DESTINATION
+              ) {
+                exports.arrived_at_destination(
+                  provider,
+                  request_data,
+                  function (return_data) {
+                    response_data.json(return_data);
+                  }
+                );
+              } else {
+                response_data.json({ success: false });
               }
             } else {
               response_data.json({
@@ -1635,585 +1610,48 @@ exports.complete_request = function (request_data, response_data) {
         Provider.findOne({ _id: request_data_body.provider_id }).then(
           (provider) => {
             if (provider) {
-              if (
-                request_data_body.server_token !== null &&
-                provider.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                City.findOne({ _id: provider.city_id }).then((city) => {
-                  var is_provider_earning_add_in_wallet_on_cash_payment_for_city =
-                    city.is_provider_earning_add_in_wallet_on_cash_payment;
-                  var is_store_earning_add_in_wallet_on_cash_payment_for_city =
-                    city.is_store_earning_add_in_wallet_on_cash_payment;
-                  var is_provider_earning_add_in_wallet_on_other_payment_for_city =
-                    city.is_provider_earning_add_in_wallet_on_other_payment;
-                  var is_store_earning_add_in_wallet_on_other_payment_for_city =
-                    city.is_store_earning_add_in_wallet_on_other_payment;
+              City.findOne({ _id: provider.city_id }).then((city) => {
+                var is_provider_earning_add_in_wallet_on_cash_payment_for_city =
+                  city.is_provider_earning_add_in_wallet_on_cash_payment;
+                var is_store_earning_add_in_wallet_on_cash_payment_for_city =
+                  city.is_store_earning_add_in_wallet_on_cash_payment;
+                var is_provider_earning_add_in_wallet_on_other_payment_for_city =
+                  city.is_provider_earning_add_in_wallet_on_other_payment;
+                var is_store_earning_add_in_wallet_on_other_payment_for_city =
+                  city.is_store_earning_add_in_wallet_on_other_payment;
 
-                  var city_timezone = city.timezone;
-                  var now = new Date();
-                  var today_start_date_time = utils.get_date_now_at_city(
-                    now,
-                    city_timezone
-                  );
-                  var tag_date = moment(today_start_date_time).format(
-                    DATE_FORMATE.DDMMYYYY
-                  );
+                var city_timezone = city.timezone;
+                var now = new Date();
+                var today_start_date_time = utils.get_date_now_at_city(
+                  now,
+                  city_timezone
+                );
+                var tag_date = moment(today_start_date_time).format(
+                  DATE_FORMATE.DDMMYYYY
+                );
 
-                  Request.findOne({
-                    _id: request_id,
-                    provider_id: request_data_body.provider_id,
-                    delivery_status_manage_id: ORDER_STATUS_ID.RUNNING,
-                  }).then(
-                    (request) => {
-                      if (request) {
-                        User.findOne({ _id: request.user_id }).then(
-                          (user) => {
-                            var user_device_type = user.device_type;
-                            var user_device_token = user.device_token;
-
-                            Order.findOne({
-                              _id: request.orders[0].order_id,
-                            }).then(
-                              (order_detail) => {
-                                if (order_detail) {
-                                  var country_id = order_detail.country_id;
-
-                                  Store.findOne({
-                                    _id: order_detail.store_id,
-                                  }).then(
-                                    (store) => {
-                                      if (
-                                        country_id == null &&
-                                        country_id == undefined
-                                      ) {
-                                        country_id = store.country_id;
-                                      }
-
-                                      Country.findOne({ _id: country_id }).then(
-                                        (country) => {
-                                          var currency = "";
-                                          if (country) {
-                                            currency = country.currency_sign;
-                                          }
-
-                                          var device_type = store.device_type;
-                                          var device_token = store.device_token;
-                                          var phone_with_code =
-                                            store.country_phone_code +
-                                            store.phone;
-
-                                          request.delivery_status_manage_id =
-                                            ORDER_STATUS_ID.COMPLETED;
-                                          request.delivery_status_by =
-                                            request_data_body.provider_id;
-                                          request.delivery_status =
-                                            ORDER_STATE.ORDER_COMPLETED;
-                                          request.completed_at = now;
-                                          request.completed_date_tag = tag_date;
-                                          request.completed_date_in_city_timezone =
-                                            today_start_date_time;
-
-                                          var index =
-                                            request.date_time.findIndex(
-                                              (x) =>
-                                                x.status ==
-                                                ORDER_STATE.ORDER_COMPLETED
-                                            );
-                                          if (index == -1) {
-                                            request.date_time.push({
-                                              status:
-                                                ORDER_STATE.ORDER_COMPLETED,
-                                              date: new Date(),
-                                            });
-                                          } else {
-                                            request.date_time[index].date =
-                                              new Date();
-                                          }
-                                          request.markModified("date_time");
-                                          request.save();
-
-                                          order_detail.order_status_manage_id =
-                                            ORDER_STATUS_ID.COMPLETED;
-                                          order_detail.order_status_id =
-                                            ORDER_STATUS_ID.COMPLETED;
-                                          order_detail.order_status_by =
-                                            request_data_body.provider_id;
-                                          order_detail.order_status =
-                                            ORDER_STATE.ORDER_COMPLETED;
-                                          order_detail.completed_at = now;
-                                          order_detail.completed_date_tag =
-                                            tag_date;
-                                          order_detail.completed_date_in_city_timezone =
-                                            today_start_date_time;
-
-                                          var index =
-                                            order_detail.date_time.findIndex(
-                                              (x) =>
-                                                x.status ==
-                                                ORDER_STATE.ORDER_COMPLETED
-                                            );
-                                          if (index == -1) {
-                                            order_detail.date_time.push({
-                                              status:
-                                                ORDER_STATE.ORDER_COMPLETED,
-                                              date: new Date(),
-                                            });
-                                          } else {
-                                            order_detail.date_time[index].date =
-                                              new Date();
-                                          }
-                                          // Provider Analytic Table //
-                                          utils.insert_daily_provider_analytics(
-                                            city_timezone,
-                                            provider._id,
-                                            ORDER_STATE.ORDER_COMPLETED,
-                                            false,
-                                            null,
-                                            false,
-                                            null
-                                          );
-
-                                          order_detail.save();
-                                          Order_payment.findOne({
-                                            _id: order_detail.order_payment_id,
-                                          }).then(
-                                            (order_payment) => {
-                                              if (order_payment) {
-                                                utils.insert_daily_store_analytics(
-                                                  tag_date,
-                                                  order_detail.store_id,
-                                                  ORDER_STATE.ORDER_COMPLETED,
-                                                  order_payment.total_item_count,
-                                                  false
-                                                );
-
-                                                var payment_gateway_name =
-                                                  "Cash";
-                                                var is_payment_mode_cash =
-                                                  order_payment.is_payment_mode_cash;
-
-                                                var store_have_service_payment = 0;
-                                                var store_have_order_payment = 0;
-                                                var total_store_have_payment = 0;
-                                                var pay_to_store = 0;
-                                                var provider_have_cash_payment = 0;
-                                                var provider_paid_order_payment = 0;
-                                                var total_provider_have_payment = 0;
-                                                var pay_to_provider = 0;
-
-                                                if (
-                                                  store.is_store_pay_delivery_fees &&
-                                                  order_payment.total_order_price >=
-                                                    store.free_delivery_for_above_order_price
-                                                ) {
-                                                  store_have_service_payment =
-                                                    order_payment.total_delivery_price;
-                                                  store_have_service_payment =
-                                                    utils.precisionRoundTwo(
-                                                      store_have_service_payment
-                                                    );
-                                                }
-
-                                                if (is_payment_mode_cash) {
-                                                  provider_have_cash_payment =
-                                                    order_payment.cash_payment;
-                                                  if (
-                                                    !order_payment.is_order_price_paid_by_store
-                                                  ) {
-                                                    store_have_order_payment =
-                                                      order_payment.total_order_price;
-                                                    store_have_order_payment =
-                                                      utils.precisionRoundTwo(
-                                                        store_have_order_payment
-                                                      );
-                                                    provider_paid_order_payment =
-                                                      order_payment.total_order_price;
-                                                    provider_paid_order_payment =
-                                                      utils.precisionRoundTwo(
-                                                        provider_paid_order_payment
-                                                      );
-                                                  }
-                                                }
-                                                var other_promo_payment_loyalty =
-                                                  order_payment.other_promo_payment_loyalty;
-                                                total_store_have_payment =
-                                                  +store_have_service_payment +
-                                                  +store_have_order_payment;
-                                                total_store_have_payment =
-                                                  utils.precisionRoundTwo(
-                                                    total_store_have_payment
-                                                  );
-                                                pay_to_store =
-                                                  order_payment.total_store_income -
-                                                  total_store_have_payment -
-                                                  other_promo_payment_loyalty;
-                                                pay_to_store =
-                                                  utils.precisionRoundTwo(
-                                                    pay_to_store
-                                                  );
-
-                                                total_provider_have_payment =
-                                                  provider_have_cash_payment -
-                                                  provider_paid_order_payment;
-                                                total_provider_have_payment =
-                                                  utils.precisionRoundTwo(
-                                                    total_provider_have_payment
-                                                  );
-                                                pay_to_provider =
-                                                  order_payment.total_provider_income -
-                                                  total_provider_have_payment;
-                                                pay_to_provider =
-                                                  utils.precisionRoundTwo(
-                                                    pay_to_provider
-                                                  );
-
-                                                order_payment.pay_to_store =
-                                                  pay_to_store;
-                                                order_payment.pay_to_provider =
-                                                  pay_to_provider;
-                                                order_payment.completed_at =
-                                                  now;
-                                                order_payment.completed_date_tag =
-                                                  tag_date;
-                                                order_payment.completed_date_in_city_timezone =
-                                                  today_start_date_time;
-
-                                                Payment_gateway.findOne({
-                                                  _id: order_payment.payment_id,
-                                                }).then((payment_gateway) => {
-                                                  if (!is_payment_mode_cash) {
-                                                    payment_gateway_name =
-                                                      payment_gateway.name;
-                                                  }
-                                                  if (
-                                                    (setting_detail.is_provider_earning_add_in_wallet_on_cash_payment &&
-                                                      is_provider_earning_add_in_wallet_on_cash_payment_for_city) ||
-                                                    (setting_detail.is_provider_earning_add_in_wallet_on_other_payment &&
-                                                      is_provider_earning_add_in_wallet_on_other_payment_for_city)
-                                                  ) {
-                                                    if (pay_to_provider < 0) {
-                                                      var total_wallet_amount =
-                                                        wallet_history.add_wallet_history(
-                                                          ADMIN_DATA_ID.PROVIDER,
-                                                          provider.unique_id,
-                                                          provider._id,
-                                                          provider.country_id,
-                                                          provider.wallet_currency_code,
-                                                          order_payment.order_currency_code,
-                                                          1,
-                                                          Math.abs(
-                                                            pay_to_provider
-                                                          ),
-                                                          provider.wallet,
-                                                          WALLET_STATUS_ID.REMOVE_WALLET_AMOUNT,
-                                                          WALLET_COMMENT_ID.SET_ORDER_PROFIT,
-                                                          "Profit Of This Order : " +
-                                                            order_detail.unique_id
-                                                        );
-
-                                                      provider.wallet =
-                                                        total_wallet_amount;
-                                                    } else {
-                                                      var total_wallet_amount =
-                                                        wallet_history.add_wallet_history(
-                                                          ADMIN_DATA_ID.PROVIDER,
-                                                          provider.unique_id,
-                                                          provider._id,
-                                                          provider.country_id,
-                                                          provider.wallet_currency_code,
-                                                          order_payment.order_currency_code,
-                                                          1,
-                                                          pay_to_provider,
-                                                          provider.wallet,
-                                                          WALLET_STATUS_ID.ADD_WALLET_AMOUNT,
-                                                          WALLET_COMMENT_ID.SET_ORDER_PROFIT,
-                                                          "Profit Of This Order : " +
-                                                            order_detail.unique_id
-                                                        );
-
-                                                      provider.wallet =
-                                                        total_wallet_amount;
-                                                    }
-                                                    provider.save();
-                                                    order_payment.is_provider_income_set_in_wallet = true;
-                                                    order_payment.provider_income_set_in_wallet =
-                                                      Math.abs(pay_to_provider);
-                                                  }
-                                                  if (
-                                                    (setting_detail.is_store_earning_add_in_wallet_on_cash_payment &&
-                                                      is_store_earning_add_in_wallet_on_cash_payment_for_city) ||
-                                                    (setting_detail.is_store_earning_add_in_wallet_on_other_payment &&
-                                                      is_store_earning_add_in_wallet_on_other_payment_for_city)
-                                                  ) {
-                                                    if (pay_to_store < 0) {
-                                                      var store_total_wallet_amount =
-                                                        wallet_history.add_wallet_history(
-                                                          ADMIN_DATA_ID.STORE,
-                                                          store.unique_id,
-                                                          store._id,
-                                                          store.country_id,
-                                                          store.wallet_currency_code,
-                                                          order_payment.order_currency_code,
-                                                          1,
-                                                          Math.abs(
-                                                            pay_to_store
-                                                          ),
-                                                          store.wallet,
-                                                          WALLET_STATUS_ID.REMOVE_WALLET_AMOUNT,
-                                                          WALLET_COMMENT_ID.SET_ORDER_PROFIT,
-                                                          "Profit Of This Order : " +
-                                                            order_detail.unique_id
-                                                        );
-
-                                                      store.wallet =
-                                                        store_total_wallet_amount;
-                                                    } else {
-                                                      var store_total_wallet_amount =
-                                                        wallet_history.add_wallet_history(
-                                                          ADMIN_DATA_ID.STORE,
-                                                          store.unique_id,
-                                                          store._id,
-                                                          store.country_id,
-                                                          store.wallet_currency_code,
-                                                          order_payment.order_currency_code,
-                                                          1,
-                                                          pay_to_store,
-                                                          store.wallet,
-                                                          WALLET_STATUS_ID.ADD_WALLET_AMOUNT,
-                                                          WALLET_COMMENT_ID.SET_ORDER_PROFIT,
-                                                          "Profit Of This Order : " +
-                                                            order_detail.unique_id
-                                                        );
-
-                                                      store.wallet =
-                                                        store_total_wallet_amount;
-                                                    }
-
-                                                    store.save();
-                                                    order_payment.is_store_income_set_in_wallet = true;
-                                                    order_payment.store_income_set_in_wallet =
-                                                      Math.abs(pay_to_store);
-                                                  }
-
-                                                  if (
-                                                    setting_detail.is_sms_notification
-                                                  ) {
-                                                    SMS.sendOtherSMS(
-                                                      phone_with_code,
-                                                      SMS_UNIQUE_ID.STORE_ORDER_COMPLETED,
-                                                      ""
-                                                    );
-                                                  }
-
-                                                  if (
-                                                    setting_detail.is_mail_notification
-                                                  ) {
-                                                    emails.sendUserOrderCompleteEmail(
-                                                      request_data,
-                                                      user
-                                                    );
-                                                    emails.sendStoreOrderCompleteEmail(
-                                                      request_data,
-                                                      store
-                                                    );
-                                                    emails.sendStoreInvoiceEmail(
-                                                      request_data,
-                                                      user,
-                                                      provider,
-                                                      store,
-                                                      order_payment,
-                                                      currency
-                                                    );
-                                                    emails.sendProviderOrderDeliveredEmail(
-                                                      request_data,
-                                                      provider
-                                                    );
-                                                  }
-
-                                                  order_payment.delivered_at =
-                                                    now;
-                                                  order_payment.provider_id =
-                                                    provider._id;
-                                                  order_payment.save();
-
-                                                  // Entry In Review Table //
-                                                  var reviews = new Review({
-                                                    order_id: order_detail._id,
-                                                    order_unique_id:
-                                                      order_detail.unique_id,
-                                                    user_id:
-                                                      order_detail.user_id,
-                                                    store_id:
-                                                      order_detail.store_id,
-                                                    provider_id: provider._id,
-                                                  });
-                                                  reviews.save();
-
-                                                  var order_data = {
-                                                    order_id: order_detail._id,
-                                                    unique_id:
-                                                      order_detail.unique_id,
-                                                    store_name: store.name,
-                                                    store_image:
-                                                      store.image_url,
-                                                  };
-
-                                                  utils.sendPushNotificationWithPushData(
-                                                    ADMIN_DATA_ID.USER,
-                                                    user_device_type,
-                                                    user_device_token,
-                                                    USER_PUSH_CODE.DELIVERY_MAN_COMPLETE_ORDER,
-                                                    PUSH_NOTIFICATION_SOUND_FILE.PUSH_NOTIFICATION_SOUND_FILE_IN_IOS,
-                                                    order_data,
-                                                    ""
-                                                  );
-                                                  utils.sendPushNotification(
-                                                    ADMIN_DATA_ID.STORE,
-                                                    device_type,
-                                                    device_token,
-                                                    STORE_PUSH_CODE.DELIVERY_MAN_COMPLETE_ORDER,
-                                                    PUSH_NOTIFICATION_SOUND_FILE.PUSH_NOTIFICATION_SOUND_FILE_IN_IOS
-                                                  );
-                                                  response_data.json({
-                                                    success: true,
-                                                    message:
-                                                      ORDER_MESSAGE_CODE.ORDER_COMPLETED_SUCCESSFULLY,
-                                                    request_id: request._id,
-                                                    delivery_status:
-                                                      request.delivery_status,
-                                                    order_id: order_detail._id,
-                                                    order_status:
-                                                      order_detail.order_status,
-                                                    currency: currency,
-                                                    payment_gateway_name:
-                                                      payment_gateway_name,
-                                                    order_payment:
-                                                      order_payment,
-                                                  });
-                                                });
-                                              } else {
-                                                response_data.json({
-                                                  success: false,
-                                                  error_code:
-                                                    ORDER_ERROR_CODE.ORDER_COMPLETE_FAILED,
-                                                });
-                                              }
-                                            },
-                                            (error) => {
-                                              console.log(error);
-                                              response_data.json({
-                                                success: false,
-                                                error_code:
-                                                  ERROR_CODE.SOMETHING_WENT_WRONG,
-                                              });
-                                            }
-                                          );
-                                        }
-                                      );
-                                    },
-                                    (error) => {
-                                      console.log(error);
-                                      response_data.json({
-                                        success: false,
-                                        error_code:
-                                          ERROR_CODE.SOMETHING_WENT_WRONG,
-                                      });
-                                    }
-                                  );
-                                }
-                              },
-                              (error) => {
-                                console.log(error);
-                                response_data.json({
-                                  success: false,
-                                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                                });
-                              }
-                            );
-                          },
-                          (error) => {
-                            console.log(error);
-                            response_data.json({
-                              success: false,
-                              error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                            });
-                          }
-                        );
-                      } else {
-                        response_data.json({
-                          success: false,
-                          error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
-                        });
-                      }
-                    },
-                    (error) => {
-                      console.log(error);
-                      response_data.json({
-                        success: false,
-                        error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                      });
-                    }
-                  );
-                });
-              }
-            } else {
-              response_data.json({
-                success: false,
-                error_code: PROVIDER_ERROR_CODE.PROVIDER_DATA_NOT_FOUND,
-              });
-            }
-          },
-          (error) => {
-            console.log(error);
-            response_data.json({
-              success: false,
-              error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-            });
-          }
-        );
-      } else {
-        response_data.json(response);
-      }
-    }
-  );
-};
-
-exports.show_request_invoice = function (request_data, response_data) {
-  utils.check_request_params(
-    request_data.body,
-    [{ name: "request_id", type: "string" }],
-    function (response) {
-      if (response.success) {
-        var request_data_body = request_data.body;
-        Provider.findOne({ _id: request_data_body.provider_id }).then(
-          (provider) => {
-            if (provider) {
-              if (
-                request_data_body.server_token !== null &&
-                provider.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                Request.findOne({ _id: request_data_body.request_id }).then(
+                Request.findOne({
+                  _id: request_id,
+                  provider_id: request_data_body.provider_id,
+                  delivery_status_manage_id: ORDER_STATUS_ID.RUNNING,
+                }).then(
                   (request) => {
                     if (request) {
                       User.findOne({ _id: request.user_id }).then(
                         (user) => {
+                          var user_device_type = user.device_type;
+                          var user_device_token = user.device_token;
+
                           Order.findOne({
                             _id: request.orders[0].order_id,
                           }).then(
-                            (order) => {
-                              if (order) {
-                                var country_id = order.country_id;
-                                Store.findOne({ _id: order.store_id }).then(
+                            (order_detail) => {
+                              if (order_detail) {
+                                var country_id = order_detail.country_id;
+
+                                Store.findOne({
+                                  _id: order_detail.store_id,
+                                }).then(
                                   (store) => {
                                     if (
                                       country_id == null &&
@@ -2221,6 +1659,7 @@ exports.show_request_invoice = function (request_data, response_data) {
                                     ) {
                                       country_id = store.country_id;
                                     }
+
                                     Country.findOne({ _id: country_id }).then(
                                       (country) => {
                                         var currency = "";
@@ -2228,32 +1667,398 @@ exports.show_request_invoice = function (request_data, response_data) {
                                           currency = country.currency_sign;
                                         }
 
+                                        var device_type = store.device_type;
+                                        var device_token = store.device_token;
+                                        var phone_with_code =
+                                          store.country_phone_code +
+                                          store.phone;
+
+                                        request.delivery_status_manage_id =
+                                          ORDER_STATUS_ID.COMPLETED;
+                                        request.delivery_status_by =
+                                          request_data_body.provider_id;
+                                        request.delivery_status =
+                                          ORDER_STATE.ORDER_COMPLETED;
+                                        request.completed_at = now;
+                                        request.completed_date_tag = tag_date;
+                                        request.completed_date_in_city_timezone =
+                                          today_start_date_time;
+
+                                        var index = request.date_time.findIndex(
+                                          (x) =>
+                                            x.status ==
+                                            ORDER_STATE.ORDER_COMPLETED
+                                        );
+                                        if (index == -1) {
+                                          request.date_time.push({
+                                            status: ORDER_STATE.ORDER_COMPLETED,
+                                            date: new Date(),
+                                          });
+                                        } else {
+                                          request.date_time[index].date =
+                                            new Date();
+                                        }
+                                        request.markModified("date_time");
+                                        request.save();
+
+                                        order_detail.order_status_manage_id =
+                                          ORDER_STATUS_ID.COMPLETED;
+                                        order_detail.order_status_id =
+                                          ORDER_STATUS_ID.COMPLETED;
+                                        order_detail.order_status_by =
+                                          request_data_body.provider_id;
+                                        order_detail.order_status =
+                                          ORDER_STATE.ORDER_COMPLETED;
+                                        order_detail.completed_at = now;
+                                        order_detail.completed_date_tag =
+                                          tag_date;
+                                        order_detail.completed_date_in_city_timezone =
+                                          today_start_date_time;
+
+                                        var index =
+                                          order_detail.date_time.findIndex(
+                                            (x) =>
+                                              x.status ==
+                                              ORDER_STATE.ORDER_COMPLETED
+                                          );
+                                        if (index == -1) {
+                                          order_detail.date_time.push({
+                                            status: ORDER_STATE.ORDER_COMPLETED,
+                                            date: new Date(),
+                                          });
+                                        } else {
+                                          order_detail.date_time[index].date =
+                                            new Date();
+                                        }
+                                        // Provider Analytic Table //
+                                        utils.insert_daily_provider_analytics(
+                                          city_timezone,
+                                          provider._id,
+                                          ORDER_STATE.ORDER_COMPLETED,
+                                          false,
+                                          null,
+                                          false,
+                                          null
+                                        );
+
+                                        order_detail.save();
                                         Order_payment.findOne({
-                                          _id: order.order_payment_id,
+                                          _id: order_detail.order_payment_id,
                                         }).then(
                                           (order_payment) => {
-                                            order.is_provider_show_invoice =
-                                              request_data_body.is_provider_show_invoice;
-                                            provider.total_completed_requests =
-                                              provider.total_completed_requests +
-                                              1;
-                                            provider.save();
+                                            if (order_payment) {
+                                              utils.insert_daily_store_analytics(
+                                                tag_date,
+                                                order_detail.store_id,
+                                                ORDER_STATE.ORDER_COMPLETED,
+                                                order_payment.total_item_count,
+                                                false
+                                              );
 
-                                            emails.sendProviderInvoiceEmail(
-                                              request_data,
-                                              user,
-                                              provider,
-                                              store,
-                                              order_payment,
-                                              currency
-                                            );
-                                            order.save();
+                                              var payment_gateway_name = "Cash";
+                                              var is_payment_mode_cash =
+                                                order_payment.is_payment_mode_cash;
 
-                                            response_data.json({
-                                              success: true,
-                                              message:
-                                                ORDER_MESSAGE_CODE.SHOW_INVOICE_SUCCESSFULLY,
-                                            });
+                                              var store_have_service_payment = 0;
+                                              var store_have_order_payment = 0;
+                                              var total_store_have_payment = 0;
+                                              var pay_to_store = 0;
+                                              var provider_have_cash_payment = 0;
+                                              var provider_paid_order_payment = 0;
+                                              var total_provider_have_payment = 0;
+                                              var pay_to_provider = 0;
+
+                                              if (
+                                                store.is_store_pay_delivery_fees &&
+                                                order_payment.total_order_price >=
+                                                  store.free_delivery_for_above_order_price
+                                              ) {
+                                                store_have_service_payment =
+                                                  order_payment.total_delivery_price;
+                                                store_have_service_payment =
+                                                  utils.precisionRoundTwo(
+                                                    store_have_service_payment
+                                                  );
+                                              }
+
+                                              if (is_payment_mode_cash) {
+                                                provider_have_cash_payment =
+                                                  order_payment.cash_payment;
+                                                if (
+                                                  !order_payment.is_order_price_paid_by_store
+                                                ) {
+                                                  store_have_order_payment =
+                                                    order_payment.total_order_price;
+                                                  store_have_order_payment =
+                                                    utils.precisionRoundTwo(
+                                                      store_have_order_payment
+                                                    );
+                                                  provider_paid_order_payment =
+                                                    order_payment.total_order_price;
+                                                  provider_paid_order_payment =
+                                                    utils.precisionRoundTwo(
+                                                      provider_paid_order_payment
+                                                    );
+                                                }
+                                              }
+                                              var other_promo_payment_loyalty =
+                                                order_payment.other_promo_payment_loyalty;
+                                              total_store_have_payment =
+                                                +store_have_service_payment +
+                                                +store_have_order_payment;
+                                              total_store_have_payment =
+                                                utils.precisionRoundTwo(
+                                                  total_store_have_payment
+                                                );
+                                              pay_to_store =
+                                                order_payment.total_store_income -
+                                                total_store_have_payment -
+                                                other_promo_payment_loyalty;
+                                              pay_to_store =
+                                                utils.precisionRoundTwo(
+                                                  pay_to_store
+                                                );
+
+                                              total_provider_have_payment =
+                                                provider_have_cash_payment -
+                                                provider_paid_order_payment;
+                                              total_provider_have_payment =
+                                                utils.precisionRoundTwo(
+                                                  total_provider_have_payment
+                                                );
+                                              pay_to_provider =
+                                                order_payment.total_provider_income -
+                                                total_provider_have_payment;
+                                              pay_to_provider =
+                                                utils.precisionRoundTwo(
+                                                  pay_to_provider
+                                                );
+
+                                              order_payment.pay_to_store =
+                                                pay_to_store;
+                                              order_payment.pay_to_provider =
+                                                pay_to_provider;
+                                              order_payment.completed_at = now;
+                                              order_payment.completed_date_tag =
+                                                tag_date;
+                                              order_payment.completed_date_in_city_timezone =
+                                                today_start_date_time;
+
+                                              Payment_gateway.findOne({
+                                                _id: order_payment.payment_id,
+                                              }).then((payment_gateway) => {
+                                                if (!is_payment_mode_cash) {
+                                                  payment_gateway_name =
+                                                    payment_gateway.name;
+                                                }
+                                                if (
+                                                  (setting_detail.is_provider_earning_add_in_wallet_on_cash_payment &&
+                                                    is_provider_earning_add_in_wallet_on_cash_payment_for_city) ||
+                                                  (setting_detail.is_provider_earning_add_in_wallet_on_other_payment &&
+                                                    is_provider_earning_add_in_wallet_on_other_payment_for_city)
+                                                ) {
+                                                  if (pay_to_provider < 0) {
+                                                    var total_wallet_amount =
+                                                      wallet_history.add_wallet_history(
+                                                        ADMIN_DATA_ID.PROVIDER,
+                                                        provider.unique_id,
+                                                        provider._id,
+                                                        provider.country_id,
+                                                        provider.wallet_currency_code,
+                                                        order_payment.order_currency_code,
+                                                        1,
+                                                        Math.abs(
+                                                          pay_to_provider
+                                                        ),
+                                                        provider.wallet,
+                                                        WALLET_STATUS_ID.REMOVE_WALLET_AMOUNT,
+                                                        WALLET_COMMENT_ID.SET_ORDER_PROFIT,
+                                                        "Profit Of This Order : " +
+                                                          order_detail.unique_id
+                                                      );
+
+                                                    provider.wallet =
+                                                      total_wallet_amount;
+                                                  } else {
+                                                    var total_wallet_amount =
+                                                      wallet_history.add_wallet_history(
+                                                        ADMIN_DATA_ID.PROVIDER,
+                                                        provider.unique_id,
+                                                        provider._id,
+                                                        provider.country_id,
+                                                        provider.wallet_currency_code,
+                                                        order_payment.order_currency_code,
+                                                        1,
+                                                        pay_to_provider,
+                                                        provider.wallet,
+                                                        WALLET_STATUS_ID.ADD_WALLET_AMOUNT,
+                                                        WALLET_COMMENT_ID.SET_ORDER_PROFIT,
+                                                        "Profit Of This Order : " +
+                                                          order_detail.unique_id
+                                                      );
+
+                                                    provider.wallet =
+                                                      total_wallet_amount;
+                                                  }
+                                                  provider.save();
+                                                  order_payment.is_provider_income_set_in_wallet = true;
+                                                  order_payment.provider_income_set_in_wallet =
+                                                    Math.abs(pay_to_provider);
+                                                }
+                                                if (
+                                                  (setting_detail.is_store_earning_add_in_wallet_on_cash_payment &&
+                                                    is_store_earning_add_in_wallet_on_cash_payment_for_city) ||
+                                                  (setting_detail.is_store_earning_add_in_wallet_on_other_payment &&
+                                                    is_store_earning_add_in_wallet_on_other_payment_for_city)
+                                                ) {
+                                                  if (pay_to_store < 0) {
+                                                    var store_total_wallet_amount =
+                                                      wallet_history.add_wallet_history(
+                                                        ADMIN_DATA_ID.STORE,
+                                                        store.unique_id,
+                                                        store._id,
+                                                        store.country_id,
+                                                        store.wallet_currency_code,
+                                                        order_payment.order_currency_code,
+                                                        1,
+                                                        Math.abs(pay_to_store),
+                                                        store.wallet,
+                                                        WALLET_STATUS_ID.REMOVE_WALLET_AMOUNT,
+                                                        WALLET_COMMENT_ID.SET_ORDER_PROFIT,
+                                                        "Profit Of This Order : " +
+                                                          order_detail.unique_id
+                                                      );
+
+                                                    store.wallet =
+                                                      store_total_wallet_amount;
+                                                  } else {
+                                                    var store_total_wallet_amount =
+                                                      wallet_history.add_wallet_history(
+                                                        ADMIN_DATA_ID.STORE,
+                                                        store.unique_id,
+                                                        store._id,
+                                                        store.country_id,
+                                                        store.wallet_currency_code,
+                                                        order_payment.order_currency_code,
+                                                        1,
+                                                        pay_to_store,
+                                                        store.wallet,
+                                                        WALLET_STATUS_ID.ADD_WALLET_AMOUNT,
+                                                        WALLET_COMMENT_ID.SET_ORDER_PROFIT,
+                                                        "Profit Of This Order : " +
+                                                          order_detail.unique_id
+                                                      );
+
+                                                    store.wallet =
+                                                      store_total_wallet_amount;
+                                                  }
+
+                                                  store.save();
+                                                  order_payment.is_store_income_set_in_wallet = true;
+                                                  order_payment.store_income_set_in_wallet =
+                                                    Math.abs(pay_to_store);
+                                                }
+
+                                                if (
+                                                  setting_detail.is_sms_notification
+                                                ) {
+                                                  SMS.sendOtherSMS(
+                                                    phone_with_code,
+                                                    SMS_UNIQUE_ID.STORE_ORDER_COMPLETED,
+                                                    ""
+                                                  );
+                                                }
+
+                                                if (
+                                                  setting_detail.is_mail_notification
+                                                ) {
+                                                  emails.sendUserOrderCompleteEmail(
+                                                    request_data,
+                                                    user
+                                                  );
+                                                  emails.sendStoreOrderCompleteEmail(
+                                                    request_data,
+                                                    store
+                                                  );
+                                                  emails.sendStoreInvoiceEmail(
+                                                    request_data,
+                                                    user,
+                                                    provider,
+                                                    store,
+                                                    order_payment,
+                                                    currency
+                                                  );
+                                                  emails.sendProviderOrderDeliveredEmail(
+                                                    request_data,
+                                                    provider
+                                                  );
+                                                }
+
+                                                order_payment.delivered_at =
+                                                  now;
+                                                order_payment.provider_id =
+                                                  provider._id;
+                                                order_payment.save();
+
+                                                // Entry In Review Table //
+                                                var reviews = new Review({
+                                                  order_id: order_detail._id,
+                                                  order_unique_id:
+                                                    order_detail.unique_id,
+                                                  user_id: order_detail.user_id,
+                                                  store_id:
+                                                    order_detail.store_id,
+                                                  provider_id: provider._id,
+                                                });
+                                                reviews.save();
+
+                                                var order_data = {
+                                                  order_id: order_detail._id,
+                                                  unique_id:
+                                                    order_detail.unique_id,
+                                                  store_name: store.name,
+                                                  store_image: store.image_url,
+                                                };
+
+                                                utils.sendPushNotificationWithPushData(
+                                                  ADMIN_DATA_ID.USER,
+                                                  user_device_type,
+                                                  user_device_token,
+                                                  USER_PUSH_CODE.DELIVERY_MAN_COMPLETE_ORDER,
+                                                  PUSH_NOTIFICATION_SOUND_FILE.PUSH_NOTIFICATION_SOUND_FILE_IN_IOS,
+                                                  order_data,
+                                                  ""
+                                                );
+                                                utils.sendPushNotification(
+                                                  ADMIN_DATA_ID.STORE,
+                                                  device_type,
+                                                  device_token,
+                                                  STORE_PUSH_CODE.DELIVERY_MAN_COMPLETE_ORDER,
+                                                  PUSH_NOTIFICATION_SOUND_FILE.PUSH_NOTIFICATION_SOUND_FILE_IN_IOS
+                                                );
+                                                response_data.json({
+                                                  success: true,
+                                                  message:
+                                                    ORDER_MESSAGE_CODE.ORDER_COMPLETED_SUCCESSFULLY,
+                                                  request_id: request._id,
+                                                  delivery_status:
+                                                    request.delivery_status,
+                                                  order_id: order_detail._id,
+                                                  order_status:
+                                                    order_detail.order_status,
+                                                  currency: currency,
+                                                  payment_gateway_name:
+                                                    payment_gateway_name,
+                                                  order_payment: order_payment,
+                                                });
+                                              });
+                                            } else {
+                                              response_data.json({
+                                                success: false,
+                                                error_code:
+                                                  ORDER_ERROR_CODE.ORDER_COMPLETE_FAILED,
+                                              });
+                                            }
                                           },
                                           (error) => {
                                             console.log(error);
@@ -2310,7 +2115,146 @@ exports.show_request_invoice = function (request_data, response_data) {
                     });
                   }
                 );
-              }
+              });
+            } else {
+              response_data.json({
+                success: false,
+                error_code: PROVIDER_ERROR_CODE.PROVIDER_DATA_NOT_FOUND,
+              });
+            }
+          },
+          (error) => {
+            console.log(error);
+            response_data.json({
+              success: false,
+              error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+            });
+          }
+        );
+      } else {
+        response_data.json(response);
+      }
+    }
+  );
+};
+
+exports.show_request_invoice = function (request_data, response_data) {
+  utils.check_request_params(
+    request_data.body,
+    [{ name: "request_id", type: "string" }],
+    function (response) {
+      if (response.success) {
+        var request_data_body = request_data.body;
+        Provider.findOne({ _id: request_data_body.provider_id }).then(
+          (provider) => {
+            if (provider) {
+              Request.findOne({ _id: request_data_body.request_id }).then(
+                (request) => {
+                  if (request) {
+                    User.findOne({ _id: request.user_id }).then(
+                      (user) => {
+                        Order.findOne({
+                          _id: request.orders[0].order_id,
+                        }).then(
+                          (order) => {
+                            if (order) {
+                              var country_id = order.country_id;
+                              Store.findOne({ _id: order.store_id }).then(
+                                (store) => {
+                                  if (
+                                    country_id == null &&
+                                    country_id == undefined
+                                  ) {
+                                    country_id = store.country_id;
+                                  }
+                                  Country.findOne({ _id: country_id }).then(
+                                    (country) => {
+                                      var currency = "";
+                                      if (country) {
+                                        currency = country.currency_sign;
+                                      }
+
+                                      Order_payment.findOne({
+                                        _id: order.order_payment_id,
+                                      }).then(
+                                        (order_payment) => {
+                                          order.is_provider_show_invoice =
+                                            request_data_body.is_provider_show_invoice;
+                                          provider.total_completed_requests =
+                                            provider.total_completed_requests +
+                                            1;
+                                          provider.save();
+
+                                          emails.sendProviderInvoiceEmail(
+                                            request_data,
+                                            user,
+                                            provider,
+                                            store,
+                                            order_payment,
+                                            currency
+                                          );
+                                          order.save();
+
+                                          response_data.json({
+                                            success: true,
+                                            message:
+                                              ORDER_MESSAGE_CODE.SHOW_INVOICE_SUCCESSFULLY,
+                                          });
+                                        },
+                                        (error) => {
+                                          console.log(error);
+                                          response_data.json({
+                                            success: false,
+                                            error_code:
+                                              ERROR_CODE.SOMETHING_WENT_WRONG,
+                                          });
+                                        }
+                                      );
+                                    }
+                                  );
+                                },
+                                (error) => {
+                                  console.log(error);
+                                  response_data.json({
+                                    success: false,
+                                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                                  });
+                                }
+                              );
+                            }
+                          },
+                          (error) => {
+                            console.log(error);
+                            response_data.json({
+                              success: false,
+                              error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                            });
+                          }
+                        );
+                      },
+                      (error) => {
+                        console.log(error);
+                        response_data.json({
+                          success: false,
+                          error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                        });
+                      }
+                    );
+                  } else {
+                    response_data.json({
+                      success: false,
+                      error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
+                    });
+                  }
+                },
+                (error) => {
+                  console.log(error);
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
             } else {
               response_data.json({
                 success: false,
@@ -2344,134 +2288,123 @@ exports.provider_get_invoice = function (request_data, response_data) {
         Provider.findOne({ _id: request_data_body.provider_id }).then(
           (provider) => {
             if (provider) {
-              if (
-                request_data_body.server_token !== null &&
-                provider.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                Request.findOne({ _id: request_id }).then(
-                  (request) => {
-                    if (request) {
-                      Order.findOne({ _id: request.orders[0].order_id }).then(
-                        (order) => {
-                          if (order) {
-                            var country_id = order.country_id;
-                            Store.findOne({ _id: order.store_id }).then(
-                              (store) => {
-                                if (
-                                  order.country_id == null &&
-                                  order.country_id == undefined
-                                ) {
-                                  country_id = store.country_id;
-                                }
-                                Country.findOne({ _id: country_id }).then(
-                                  (country) => {
-                                    var currency = country.currency_sign;
+              Request.findOne({ _id: request_id }).then(
+                (request) => {
+                  if (request) {
+                    Order.findOne({ _id: request.orders[0].order_id }).then(
+                      (order) => {
+                        if (order) {
+                          var country_id = order.country_id;
+                          Store.findOne({ _id: order.store_id }).then(
+                            (store) => {
+                              if (
+                                order.country_id == null &&
+                                order.country_id == undefined
+                              ) {
+                                country_id = store.country_id;
+                              }
+                              Country.findOne({ _id: country_id }).then(
+                                (country) => {
+                                  var currency = country.currency_sign;
 
-                                    Order_payment.findOne({
-                                      _id: request.orders[0].order_payment_id,
-                                    }).then(
-                                      (order_payment_detail) => {
-                                        if (order_payment_detail) {
-                                          Provider.findOne({
-                                            _id: request.current_provider,
-                                          }).then((provider_data) => {
-                                            var provider_detail = {};
-                                            if (provider_data) {
-                                              provider_detail = provider_data;
-                                            }
+                                  Order_payment.findOne({
+                                    _id: request.orders[0].order_payment_id,
+                                  }).then(
+                                    (order_payment_detail) => {
+                                      if (order_payment_detail) {
+                                        Provider.findOne({
+                                          _id: request.current_provider,
+                                        }).then((provider_data) => {
+                                          var provider_detail = {};
+                                          if (provider_data) {
+                                            provider_detail = provider_data;
+                                          }
 
-                                            Payment_gateway.findOne({
-                                              _id: order_payment_detail.payment_id,
-                                            }).then(
-                                              (payment_gateway) => {
-                                                var payment_gateway_name =
-                                                  "Cash";
-                                                if (
-                                                  order_payment_detail.is_payment_mode_cash ==
-                                                  false
-                                                ) {
-                                                  payment_gateway_name =
-                                                    payment_gateway.name;
-                                                }
-
-                                                response_data.json({
-                                                  success: true,
-                                                  message:
-                                                    USER_MESSAGE_CODE.GET_INVOICE_SUCCESSFULLY,
-                                                  payment_gateway_name:
-                                                    payment_gateway_name,
-                                                  currency: currency,
-                                                  provider_detail:
-                                                    provider_detail,
-                                                  request: request,
-                                                  order_payment:
-                                                    order_payment_detail,
-                                                });
-                                              },
-                                              (error) => {
-                                                console.log(error);
-                                                response_data.json({
-                                                  success: false,
-                                                  error_code:
-                                                    ERROR_CODE.SOMETHING_WENT_WRONG,
-                                                });
+                                          Payment_gateway.findOne({
+                                            _id: order_payment_detail.payment_id,
+                                          }).then(
+                                            (payment_gateway) => {
+                                              var payment_gateway_name = "Cash";
+                                              if (
+                                                order_payment_detail.is_payment_mode_cash ==
+                                                false
+                                              ) {
+                                                payment_gateway_name =
+                                                  payment_gateway.name;
                                               }
-                                            );
-                                          });
-                                        } else {
-                                          response_data.json({
-                                            success: false,
-                                            error_code:
-                                              USER_ERROR_CODE.INVOICE_NOT_FOUND,
-                                          });
-                                        }
-                                      },
-                                      (error) => {
-                                        console.log(error);
+
+                                              response_data.json({
+                                                success: true,
+                                                message:
+                                                  USER_MESSAGE_CODE.GET_INVOICE_SUCCESSFULLY,
+                                                payment_gateway_name:
+                                                  payment_gateway_name,
+                                                currency: currency,
+                                                provider_detail:
+                                                  provider_detail,
+                                                request: request,
+                                                order_payment:
+                                                  order_payment_detail,
+                                              });
+                                            },
+                                            (error) => {
+                                              console.log(error);
+                                              response_data.json({
+                                                success: false,
+                                                error_code:
+                                                  ERROR_CODE.SOMETHING_WENT_WRONG,
+                                              });
+                                            }
+                                          );
+                                        });
+                                      } else {
                                         response_data.json({
                                           success: false,
                                           error_code:
-                                            ERROR_CODE.SOMETHING_WENT_WRONG,
+                                            USER_ERROR_CODE.INVOICE_NOT_FOUND,
                                         });
                                       }
-                                    );
-                                  }
-                                );
-                              },
-                              (error) => {
-                                console.log(error);
-                                response_data.json({
-                                  success: false,
-                                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                                });
-                              }
-                            );
-                          }
-                        },
-                        (error) => {
-                          console.log(error);
-                          response_data.json({
-                            success: false,
-                            error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                          });
+                                    },
+                                    (error) => {
+                                      console.log(error);
+                                      response_data.json({
+                                        success: false,
+                                        error_code:
+                                          ERROR_CODE.SOMETHING_WENT_WRONG,
+                                      });
+                                    }
+                                  );
+                                }
+                              );
+                            },
+                            (error) => {
+                              console.log(error);
+                              response_data.json({
+                                success: false,
+                                error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                              });
+                            }
+                          );
                         }
-                      );
-                    }
-                  },
-                  (error) => {
-                    console.log(error);
-                    response_data.json({
-                      success: false,
-                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                    });
+                      },
+                      (error) => {
+                        console.log(error);
+                        response_data.json({
+                          success: false,
+                          error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                        });
+                      }
+                    );
                   }
-                );
-              }
+                },
+                (error) => {
+                  console.log(error);
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
             } else {
               response_data.json({
                 success: false,
@@ -2507,41 +2440,31 @@ exports.provider_cancel_or_reject_request = function (
         Provider.findOne({ _id: request_data_body.provider_id }).then(
           (provider) => {
             if (provider) {
-              if (
-                request_data_body.server_token !== null &&
-                provider.server_token !== request_data_body.server_token
+              var delivery_status = Number(request_data_body.delivery_status);
+
+              if (delivery_status == ORDER_STATE.DELIVERY_MAN_REJECTED) {
+                exports.provider_reject_request(
+                  provider,
+                  request_data,
+                  function (return_data) {
+                    response_data.json(return_data);
+                  }
+                );
+              } else if (
+                delivery_status == ORDER_STATE.DELIVERY_MAN_CANCELLED
               ) {
+                exports.provider_cancel_request(
+                  provider,
+                  request_data,
+                  function (return_data) {
+                    response_data.json(return_data);
+                  }
+                );
+              } else {
                 response_data.json({
                   success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
+                  error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
                 });
-              } else {
-                var delivery_status = Number(request_data_body.delivery_status);
-
-                if (delivery_status == ORDER_STATE.DELIVERY_MAN_REJECTED) {
-                  exports.provider_reject_request(
-                    provider,
-                    request_data,
-                    function (return_data) {
-                      response_data.json(return_data);
-                    }
-                  );
-                } else if (
-                  delivery_status == ORDER_STATE.DELIVERY_MAN_CANCELLED
-                ) {
-                  exports.provider_cancel_request(
-                    provider,
-                    request_data,
-                    function (return_data) {
-                      response_data.json(return_data);
-                    }
-                  );
-                } else {
-                  response_data.json({
-                    success: false,
-                    error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
-                  });
-                }
               }
             } else {
               response_data.json({

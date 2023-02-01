@@ -1045,13 +1045,6 @@ exports.get_order_data = function (request_data, response_data) {
     { _id: request_data_body.franchise_id },
     function (error, franchise_detail) {
       if (franchise_detail) {
-        // jwt.verify(request_data_body.server_token, 'yeepeey', function(err, decoded) {
-        //     if(decoded){
-        //     } else {
-        //         response_data.json({success: false, error_code: ERROR_CODE.INVALID_SERVER_TOKEN});
-        //     }
-        // });
-
         stores_array = [];
         if (franchise_detail.store_ids.length == 0) {
           response_data.json({

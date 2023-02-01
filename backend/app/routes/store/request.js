@@ -1,20 +1,46 @@
 var requests = require("../../controllers/store/request"); // include request controller ////
-
+const { authMiddleware } = require("../../middleware/checkAuth");
 module.exports = function (app) {
-  app.route("/api/store/create_request").post(requests.create_request);
-  app
-    .route("/api/provider/change_request_status")
-    .post(requests.change_request_status);
+  app.post(
+    "/api/store/create_request",
+    authMiddleware,
+    requests.create_request
+  );
 
-  app.route("/api/provider/complete_request").post(requests.complete_request);
-  app
-    .route("/api/provider/show_request_invoice")
-    .post(requests.show_request_invoice);
-  app
-    .route("/api/provider/provider_cancel_or_reject_request")
-    .post(requests.provider_cancel_or_reject_request);
+  app.post(
+    "/api/provider/change_request_status",
+    authMiddleware,
+    requests.change_request_status
+  );
 
-  app.route("/api/provider/get_invoice").post(requests.provider_get_invoice);
+  app.post(
+    "/api/provider/complete_request",
+    authMiddleware,
+    requests.complete_request
+  );
+
+  app.post(
+    "/api/provider/show_request_invoice",
+    authMiddleware,
+    requests.show_request_invoice
+  );
+
+  app.post(
+    "/api/provider/provider_cancel_or_reject_request",
+    authMiddleware,
+    requests.provider_cancel_or_reject_request
+  );
+
+  app.post(
+    "/api/provider/get_invoice",
+    authMiddleware,
+    requests.provider_get_invoice
+  );
   app.route("/api/store/get_vehicle_list").post(requests.get_vehicle_list);
-  app.route("/api/store/get_vehicles_list").post(requests.get_vehicles_list);
+
+  app.post(
+    "/api/store/get_vehicles_list",
+    authMiddleware,
+    requests.get_vehicles_list
+  );
 };

@@ -1,20 +1,33 @@
 var franchises = require("../../controllers/franchise/franchise"); // include store controller ////
 
+const { authMiddleware } = require("../../middleware/checkAuth");
+
 module.exports = function (app) {
   app.route("/api/franchise/register").post(franchises.franchise_register);
   app.route("/api/franchise/login").post(franchises.franchise_login);
-  app
-    .route("/api/franchise/get_franchise_data")
-    .post(franchises.get_franchise_data);
+  app.post(
+    "/api/franchise/get_franchise_data",
+    authMiddleware,
+    franchises.get_franchise_data
+  );
   app.route("/api/franchise/get_store_data").post(franchises.get_store_data);
-  app.route("/api/franchise/logout").post(franchises.logout);
+
+  app.post("/api/franchise/logout", authMiddleware, franchises.logout);
+
   app
     .route("/api/franchise/approve_decline_business_store")
     .post(franchises.approve_decline_business_store);
-  app.route("/api/franchise/update").post(franchises.franchise_update);
-  app
-    .route("/api/franchise/get_order_detail")
-    .post(franchises.get_order_detail);
+
+  app.post(
+    "/api/franchise/update",
+    authMiddleware,
+    franchises.franchise_update
+  );
+  app.post(
+    "/api/franchise/get_order_detail",
+    authMiddleware,
+    franchises.get_order_detail
+  );
 
   /*app.route('/api/store/order_list').post(stores.order_list);
     app.route('/api/store/update_store_time').post(stores.update_store_time);
