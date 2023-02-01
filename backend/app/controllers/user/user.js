@@ -330,7 +330,7 @@ const capitalize = (s) => {
 
 // USER REGISTER API
 exports.user_register = function (request_data, response_data) {
-  console.log('user_register: >>>>' + JSON.stringify(request_data.body));
+  console.log("user_register: >>>>" + JSON.stringify(request_data.body));
   utils.check_request_params(
     request_data.body,
     [
@@ -352,15 +352,15 @@ exports.user_register = function (request_data, response_data) {
       var cart_unique_token = request_data_body.cart_unique_token;
       const setting = await Setting.findOne({});
       var social_id_array = [];
-       
-      if(!social_id && !email && !phoneNumber){
+
+      if (!social_id && !email && !phoneNumber) {
         response_data.json({
           success: false,
           error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
           error_message: "email,phone or social_id any one is required",
         });
         return;
-      } 
+      }
       if (social_id == undefined || social_id == null || social_id == "") {
         social_id = null;
       } else {
@@ -688,7 +688,7 @@ exports.user_register = function (request_data, response_data) {
 
 //USER LOGIN API
 exports.user_login = function (request_data, response_data) {
-  console.log('user_login: >>>>' + JSON.stringify(request_data.body));
+  console.log("user_login: >>>>" + JSON.stringify(request_data.body));
   utils.check_request_params(
     request_data.body,
     [{ name: "email", type: "string" }],
@@ -3130,8 +3130,8 @@ exports.get_store_list = function (req, res) {
           // else{
           //   store.rating_type='Top Rated';
           // }
-          if(!store.rating_type){
-             store.rating_type='';
+          if (!store.rating_type) {
+            store.rating_type = "";
           }
           store.distance = utils.getDistanceFromTwoLocation(
             [latitude, longitude],
@@ -8100,7 +8100,7 @@ exports.get_courier_order_invoice = function (request_data, response_data) {
 
 // PAY ORDER PAYMENT
 exports.pay_order_payment = function (request_data, response_data) {
-  console.log('pay_order_payment: '+ JSON.stringify(request_data.body));
+  console.log("pay_order_payment: " + JSON.stringify(request_data.body));
   utils.check_request_params(
     request_data.body,
     [
@@ -9959,6 +9959,7 @@ exports.remove_favourite_store = function (request_data, response_data) {
 };
 
 // user get_order_detail
+
 exports.get_order_detail = function (request_data, response_data) {
   utils.check_request_params(
     request_data.body,
@@ -9969,147 +9970,137 @@ exports.get_order_detail = function (request_data, response_data) {
         User.findOne({ _id: request_data_body.user_id }).then(
           (user_detail) => {
             if (user_detail) {
-              if (
-                request_data_body.server_token !== null &&
-                user_detail.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                var order_condition = {
-                  $match: {
-                    _id: {
-                      $eq: mongoose.Types.ObjectId(request_data_body.order_id),
-                    },
+              var order_condition = {
+                $match: {
+                  _id: {
+                    $eq: mongoose.Types.ObjectId(request_data_body.order_id),
                   },
-                };
+                },
+              };
 
-                var store_query = {
-                  $lookup: {
-                    from: "stores",
-                    localField: "store_id",
-                    foreignField: "_id",
-                    as: "store_detail",
-                  },
-                };
-                var array_to_json_store_detail = {
-                  $unwind: {
-                    path: "$store_detail",
-                    preserveNullAndEmptyArrays: true,
-                  },
-                };
+              var store_query = {
+                $lookup: {
+                  from: "stores",
+                  localField: "store_id",
+                  foreignField: "_id",
+                  as: "store_detail",
+                },
+              };
+              var array_to_json_store_detail = {
+                $unwind: {
+                  path: "$store_detail",
+                  preserveNullAndEmptyArrays: true,
+                },
+              };
 
-                var country_query = {
-                  $lookup: {
-                    from: "countries",
-                    localField: "order_payment_detail.country_id",
-                    foreignField: "_id",
-                    as: "country_detail",
-                  },
-                };
+              var country_query = {
+                $lookup: {
+                  from: "countries",
+                  localField: "order_payment_detail.country_id",
+                  foreignField: "_id",
+                  as: "country_detail",
+                },
+              };
 
-                var array_to_json_country_query = {
-                  $unwind: "$country_detail",
-                };
+              var array_to_json_country_query = {
+                $unwind: "$country_detail",
+              };
 
-                var order_payment_query = {
-                  $lookup: {
-                    from: "order_payments",
-                    localField: "order_payment_id",
-                    foreignField: "_id",
-                    as: "order_payment_detail",
-                  },
-                };
-                var array_to_json_order_payment_query = {
-                  $unwind: "$order_payment_detail",
-                };
+              var order_payment_query = {
+                $lookup: {
+                  from: "order_payments",
+                  localField: "order_payment_id",
+                  foreignField: "_id",
+                  as: "order_payment_detail",
+                },
+              };
+              var array_to_json_order_payment_query = {
+                $unwind: "$order_payment_detail",
+              };
 
-                var payment_gateway_query = {
-                  $lookup: {
-                    from: "payment_gateways",
-                    localField: "order_payment_detail.payment_id",
-                    foreignField: "_id",
-                    as: "payment_gateway_detail",
-                  },
-                };
-                var cart_query = {
-                  $lookup: {
-                    from: "carts",
-                    localField: "cart_id",
-                    foreignField: "_id",
-                    as: "cart_detail",
-                  },
-                };
+              var payment_gateway_query = {
+                $lookup: {
+                  from: "payment_gateways",
+                  localField: "order_payment_detail.payment_id",
+                  foreignField: "_id",
+                  as: "payment_gateway_detail",
+                },
+              };
+              var cart_query = {
+                $lookup: {
+                  from: "carts",
+                  localField: "cart_id",
+                  foreignField: "_id",
+                  as: "cart_detail",
+                },
+              };
 
-                var array_to_json_cart_query = { $unwind: "$cart_detail" };
+              var array_to_json_cart_query = { $unwind: "$cart_detail" };
 
-                var request_query = {
-                  $lookup: {
-                    from: "requests",
-                    localField: "request_id",
-                    foreignField: "_id",
-                    as: "request_detail",
-                  },
-                };
+              var request_query = {
+                $lookup: {
+                  from: "requests",
+                  localField: "request_id",
+                  foreignField: "_id",
+                  as: "request_detail",
+                },
+              };
 
-                var array_to_json_request_query = {
-                  $unwind: {
-                    path: "$request_detail",
-                    preserveNullAndEmptyArrays: true,
-                  },
-                };
+              var array_to_json_request_query = {
+                $unwind: {
+                  path: "$request_detail",
+                  preserveNullAndEmptyArrays: true,
+                },
+              };
 
-                var provider_query = {
-                  $lookup: {
-                    from: "providers",
-                    localField: "request_detail.provider_id",
-                    foreignField: "_id",
-                    as: "provider_detail",
-                  },
-                };
+              var provider_query = {
+                $lookup: {
+                  from: "providers",
+                  localField: "request_detail.provider_id",
+                  foreignField: "_id",
+                  as: "provider_detail",
+                },
+              };
 
-                Order.aggregate([
-                  order_condition,
-                  order_payment_query,
-                  cart_query,
-                  request_query,
-                  store_query,
-                  array_to_json_store_detail,
-                  array_to_json_request_query,
-                  provider_query,
-                  array_to_json_cart_query,
-                  array_to_json_order_payment_query,
-                  country_query,
-                  array_to_json_country_query,
-                  payment_gateway_query,
-                ]).then(
-                  (order) => {
-                    if (order.length === 0) {
-                      response_data.json({
-                        success: false,
-                        error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
-                        pages: 0,
-                      });
-                    } else {
-                      response_data.json({
-                        success: true,
-                        message: ORDER_MESSAGE_CODE.GET_ORDER_DATA_SUCCESSFULLY,
-                        is_confirmation_code_required_at_complete_delivery:
-                          setting_detail.is_confirmation_code_required_at_complete_delivery,
-                        order: order[0],
-                      });
-                    }
-                  },
-                  (error) => {
+              Order.aggregate([
+                order_condition,
+                order_payment_query,
+                cart_query,
+                request_query,
+                store_query,
+                array_to_json_store_detail,
+                array_to_json_request_query,
+                provider_query,
+                array_to_json_cart_query,
+                array_to_json_order_payment_query,
+                country_query,
+                array_to_json_country_query,
+                payment_gateway_query,
+              ]).then(
+                (order) => {
+                  if (order.length === 0) {
                     response_data.json({
                       success: false,
-                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                      error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
+                      pages: 0,
+                    });
+                  } else {
+                    response_data.json({
+                      success: true,
+                      message: ORDER_MESSAGE_CODE.GET_ORDER_DATA_SUCCESSFULLY,
+                      is_confirmation_code_required_at_complete_delivery:
+                        setting_detail.is_confirmation_code_required_at_complete_delivery,
+                      order: order[0],
                     });
                   }
-                );
-              }
+                },
+                (error) => {
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
             } else {
               response_data.json({
                 success: false,

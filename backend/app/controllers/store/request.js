@@ -3047,112 +3047,103 @@ exports.get_vehicle_list = function (request_data, response_data) {
       }
       Table.findOne({ _id: id }).then((detail) => {
         // if (detail) {
-        if (
-          detail &&
-          request_data_body.server_token !== null &&
-          detail.server_token !== request_data_body.server_token
-        ) {
-          response_data.json({
-            success: false,
-            error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-          });
-        } else {
-          Order_payment.findOne(
-            { order_id: request_data_body.order_id },
-            function (error, order_payment_detail) {
-              var lookup = {
-                $lookup: {
-                  from: "vehicles",
-                  localField: "vehicle_id",
-                  foreignField: "_id",
-                  as: "vehicle_detail",
+
+        Order_payment.findOne(
+          { order_id: request_data_body.order_id },
+          function (error, order_payment_detail) {
+            var lookup = {
+              $lookup: {
+                from: "vehicles",
+                localField: "vehicle_id",
+                foreignField: "_id",
+                as: "vehicle_detail",
+              },
+            };
+            var unwind = { $unwind: "$vehicle_detail" };
+            var mongoose = require("mongoose");
+            var condition = { $match: {} };
+
+            var delivery_type = DELIVERY_TYPE.STORE;
+            if (request_data_body.delivery_type) {
+              delivery_type = request_data_body.delivery_type;
+            }
+
+            if (detail && detail.city_id) {
+              condition = { $match: { city_id: { $eq: detail.city_id } } };
+            } else {
+              condition = {
+                $match: {
+                  city_id: { $eq: Schema(request_data_body.city_id) },
                 },
               };
-              var unwind = { $unwind: "$vehicle_detail" };
-              var mongoose = require("mongoose");
-              var condition = { $match: {} };
+            }
 
-              var delivery_type = DELIVERY_TYPE.STORE;
-              if (request_data_body.delivery_type) {
-                delivery_type = request_data_body.delivery_type;
-              }
-
-              if (detail && detail.city_id) {
-                condition = { $match: { city_id: { $eq: detail.city_id } } };
-              } else {
-                condition = {
-                  $match: {
-                    city_id: { $eq: Schema(request_data_body.city_id) },
-                  },
-                };
-              }
-
-              var condition1 = { $match: { is_business: { $eq: true } } };
-              var type_query = { $match: {} };
-              if (
-                order_payment_detail.delivery_price_used_type ==
-                  ADMIN_DATA_ID.STORE &&
-                request_data_body.store_id
-              ) {
-                type_query = { $match: { type_id: detail._id } };
-              } else {
-                type_query = { $match: { type_id: null } };
-              }
-              var group = {
-                $group: {
-                  _id: null,
-                  vehicles: {
-                    $push: {
-                      $cond: {
-                        if: { $eq: ["$vehicle_detail.is_business", true] },
-                        then: "$vehicle_detail",
-                        else: null,
-                      },
+            var condition1 = { $match: { is_business: { $eq: true } } };
+            var type_query = { $match: {} };
+            if (
+              order_payment_detail.delivery_price_used_type ==
+                ADMIN_DATA_ID.STORE &&
+              request_data_body.store_id
+            ) {
+              type_query = { $match: { type_id: detail._id } };
+            } else {
+              type_query = { $match: { type_id: null } };
+            }
+            var group = {
+              $group: {
+                _id: null,
+                vehicles: {
+                  $push: {
+                    $cond: {
+                      if: { $eq: ["$vehicle_detail.is_business", true] },
+                      then: "$vehicle_detail",
+                      else: null,
                     },
                   },
                 },
-              };
-              var delivery_type_query = {
-                $match: { delivery_type: { $eq: delivery_type } },
-              };
+              },
+            };
+            var delivery_type_query = {
+              $match: { delivery_type: { $eq: delivery_type } },
+            };
 
-              Service.aggregate([
-                condition,
-                condition1,
-                delivery_type_query,
-                type_query,
-                lookup,
-                unwind,
-                group,
-              ]).then(
-                (services) => {
-                  console.log(services);
+            Service.aggregate([
+              condition,
+              condition1,
+              delivery_type_query,
+              type_query,
+              lookup,
+              unwind,
+              group,
+            ]).then(
+              (services) => {
+                console.log(services);
 
-                  if (services.length > 0) {
-                    services[0].vehicles = services[0].vehicles.filter(
-                      (v) => v != null
-                    );
-                    response_data.json({
-                      success: true,
-                      vehicles: services[0].vehicles,
-                    });
-                  } else {
-                    response_data.json({
-                      success: false,
-                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                    });
-                  }
-                },
-                (error) => {
+                if (services.length > 0) {
+                  services[0].vehicles = services[0].vehicles.filter(
+                    (v) => v != null
+                  );
+                  response_data.json({
+                    success: true,
+                    vehicles: services[0].vehicles,
+                  });
+                } else {
                   response_data.json({
                     success: false,
                     error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
                   });
                 }
-              );
-            }
-          );
-        }
+              },
+              (error) => {
+                response_data.json({
+                  success: false,
+                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                });
+              }
+            );
+          }
+        );
+
         // } else {
         //     response_data.json({success: false, error_code: STORE_ERROR_CODE.STORE_DATA_NOT_FOUND});
         // }

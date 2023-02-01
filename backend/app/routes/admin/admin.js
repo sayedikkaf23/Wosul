@@ -26,8 +26,8 @@ module.exports = function (app) {
   // REGULAR API FOR APP.
   app.route("/api/admin/forgot_password").post(admin.forgot_password);
   app.route("/api/admin/otp_verification").post(admin.otp_verification);
-  app.route("/api/admin/check_detail").post(admin.check_detail);
-  app.route("/api/admin/new_password").post(admin.new_password);
+  app.post("/api/admin/check_detail", authMiddleware, admin.check_detail);
+  app.post("/api/admin/new_password", authMiddleware, admin.new_password);
   app.route("/api/admin/check_referral").post(admin.check_referral);
   // add middleware
   app.post("/api/admin/get_setting_detail", admin.get_setting_detail);
@@ -71,7 +71,11 @@ module.exports = function (app) {
     .route("/api/admin/get_delivery_list_for_city")
     .post(delivery.get_delivery_list_for_city);
 
-  app.route("/api/admin/get_document_list").post(document.get_document_list);
+  app.post(
+    "/api/admin/get_document_list",
+    authMiddleware,
+    document.get_document_list
+  );
   app.route("/api/admin/upload_document").post(document.upload_document);
 
   //Define routes for ftp_server

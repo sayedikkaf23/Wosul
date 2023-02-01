@@ -197,20 +197,10 @@ exports.check_detail = function (request_data, response_data) {
       Table.findOne({ _id: request_data_body.id }).then(
         (detail) => {
           if (detail) {
-            if (
-              request_data_body.server_token !== null &&
-              detail.server_token !== request_data_body.server_token
-            ) {
-              response_data.json({
-                success: false,
-                error_code: ERROR_CODE.TOKEN_EXPIRED,
-              });
-            } else {
-              response_data.json({
-                success: true,
-                message: MESSAGE_CODE.DETAIL_VALID,
-              });
-            }
+            response_data.json({
+              success: true,
+              message: MESSAGE_CODE.DETAIL_VALID,
+            });
           } else {
             response_data.json({
               success: false,
@@ -231,6 +221,7 @@ exports.check_detail = function (request_data, response_data) {
     }
   });
 };
+
 
 // new_password
 exports.new_password = function (request_data, response_data) {
@@ -257,34 +248,22 @@ exports.new_password = function (request_data, response_data) {
       Table.findOne({ _id: request_data_body.id }).then(
         (detail) => {
           if (detail) {
-            if (
-              request_data_body.server_token !== null &&
-              detail.server_token !== request_data_body.server_token
-            ) {
-              response_data.json({
-                success: false,
-                error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              });
-            } else {
-              detail.password = utils.encryptPassword(
-                request_data_body.password
-              );
-              detail.server_token = utils.generateServerToken(32);
+            detail.password = utils.encryptPassword(request_data_body.password);
+            detail.server_token = utils.generateServerToken(32);
 
-              detail.save(function (error) {
-                if (error) {
-                  response_data.json({
-                    success: false,
-                    error_code: ERROR_CODE.SET_PASSWORD_FAILED,
-                  });
-                } else {
-                  response_data.json({
-                    success: true,
-                    message: MESSAGE_CODE.PASSWORD_SET_SUCESSFULLY,
-                  });
-                }
-              });
-            }
+            detail.save(function (error) {
+              if (error) {
+                response_data.json({
+                  success: false,
+                  error_code: ERROR_CODE.SET_PASSWORD_FAILED,
+                });
+              } else {
+                response_data.json({
+                  success: true,
+                  message: MESSAGE_CODE.PASSWORD_SET_SUCESSFULLY,
+                });
+              }
+            });
           } else {
             response_data.json({
               success: false,

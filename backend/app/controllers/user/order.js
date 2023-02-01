@@ -1418,7 +1418,7 @@ exports.admin_change_order_store = async function (req, res) {
     console.log("store_id :>> " + store_id);
     order.store_id = store_id;
     order_payment.store_id = store_id;
-    cart.store_id=store_id;
+    cart.store_id = store_id;
     await order.save();
     await order_payment.save();
     await cart.save();
@@ -3596,6 +3596,7 @@ exports.show_invoice = function (request_data, response_data) {
 };
 
 // get_order_detail
+
 exports.get_order_detail = function (request_data, response_data) {
   utils.check_request_params(
     request_data.body,
@@ -3623,110 +3624,100 @@ exports.get_order_detail = function (request_data, response_data) {
           (detail) => {
             console.log("ïkkaf");
             if (detail) {
-              if (
-                request_data_body.server_token !== null &&
-                detail.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                Order.findOne({ _id: request_data_body.order_id }).then(
-                  (order) => {
-                    if (order) {
-                      User.findOne({ _id: order.user_id }).then(
-                        (user) => {
-                          Store.findOne({ _id: order.store_id }).then(
-                            (store) => {
-                              Request.findOne({ _id: order.request_id }).then(
-                                (request) => {
-                                  Provider.findOne({
-                                    _id: request.provider_id,
-                                  }).then(
-                                    (provider) => {
-                                      var user_detail = {
-                                        first_name: user.first_name,
-                                        last_name: user.last_name,
-                                        image_url: user.image_url,
+              Order.findOne({ _id: request_data_body.order_id }).then(
+                (order) => {
+                  if (order) {
+                    User.findOne({ _id: order.user_id }).then(
+                      (user) => {
+                        Store.findOne({ _id: order.store_id }).then(
+                          (store) => {
+                            Request.findOne({ _id: order.request_id }).then(
+                              (request) => {
+                                Provider.findOne({
+                                  _id: request.provider_id,
+                                }).then(
+                                  (provider) => {
+                                    var user_detail = {
+                                      first_name: user.first_name,
+                                      last_name: user.last_name,
+                                      image_url: user.image_url,
+                                    };
+
+                                    var provider_detail = {
+                                      first_name: provider.first_name,
+                                      last_name: provider.last_name,
+                                      image_url: provider.image_url,
+                                    };
+
+                                    var store_detail = {};
+
+                                    if (store) {
+                                      store_detail = {
+                                        name: store.name,
+                                        image_url: store.image_url,
                                       };
-
-                                      var provider_detail = {
-                                        first_name: provider.first_name,
-                                        last_name: provider.last_name,
-                                        image_url: provider.image_url,
-                                      };
-
-                                      var store_detail = {};
-
-                                      if (store) {
-                                        store_detail = {
-                                          name: store.name,
-                                          image_url: store.image_url,
-                                        };
-                                      }
-
-                                      response_data.json({
-                                        success: true,
-                                        message:
-                                          ORDER_MESSAGE_CODE.SHOW_INVOICE_SUCCESSFULLY,
-                                        user_detail: user_detail,
-                                        provider_detail: provider_detail,
-                                        store_detail: store_detail,
-                                      });
-                                    },
-                                    (error) => {
-                                      console.log(error);
-                                      response_data.json({
-                                        success: false,
-                                        error_code:
-                                          ERROR_CODE.SOMETHING_WENT_WRONG,
-                                      });
                                     }
-                                  );
-                                },
-                                (error) => {
-                                  console.log(error);
-                                  response_data.json({
-                                    success: false,
-                                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                                  });
-                                }
-                              );
-                            },
-                            (error) => {
-                              console.log(error);
-                              response_data.json({
-                                success: false,
-                                error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                              });
-                            }
-                          );
-                        },
-                        (error) => {
-                          console.log(error);
-                          response_data.json({
-                            success: false,
-                            error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                          });
-                        }
-                      );
-                    } else {
-                      response_data.json({
-                        success: false,
-                        error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
-                      });
-                    }
-                  },
-                  (error) => {
-                    console.log(error);
+
+                                    response_data.json({
+                                      success: true,
+                                      message:
+                                        ORDER_MESSAGE_CODE.SHOW_INVOICE_SUCCESSFULLY,
+                                      user_detail: user_detail,
+                                      provider_detail: provider_detail,
+                                      store_detail: store_detail,
+                                    });
+                                  },
+                                  (error) => {
+                                    console.log(error);
+                                    response_data.json({
+                                      success: false,
+                                      error_code:
+                                        ERROR_CODE.SOMETHING_WENT_WRONG,
+                                    });
+                                  }
+                                );
+                              },
+                              (error) => {
+                                console.log(error);
+                                response_data.json({
+                                  success: false,
+                                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                                });
+                              }
+                            );
+                          },
+                          (error) => {
+                            console.log(error);
+                            response_data.json({
+                              success: false,
+                              error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                            });
+                          }
+                        );
+                      },
+                      (error) => {
+                        console.log(error);
+                        response_data.json({
+                          success: false,
+                          error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                        });
+                      }
+                    );
+                  } else {
                     response_data.json({
                       success: false,
-                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                      error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
                     });
                   }
-                );
-              }
+                },
+                (error) => {
+                  console.log(error);
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
             } else {
               response_data.json({
                 success: false,

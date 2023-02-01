@@ -78,7 +78,7 @@ module.exports = function (app) {
     item.delete_item_image
   );
 
-  app.route("/api/get_item_detail").post(item.get_item_detail);
+  app.post("/api/get_item_detail", authMiddleware, item.get_item_detail);
   app
     .route("/api/store/update_sequence_number")
     .post(item.update_sequence_number);

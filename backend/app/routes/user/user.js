@@ -4,6 +4,7 @@ const {
   getHomePageItemList,
   bulkRegister,
 } = require("../../controllers/user/user.controller");
+const { authMiddleware } = require("../../middleware/checkAuth");
 
 module.exports = function (app) {
   app
@@ -105,7 +106,11 @@ module.exports = function (app) {
   app
     .route("/api/user/remove_favourite_store")
     .post(users.remove_favourite_store);
-  app.route("/api/user/get_order_detail").post(users.get_order_detail);
+  app.post(
+    "/api/user/get_order_detail",
+    authMiddleware,
+    users.get_order_detail
+  );
   app
     .route("/api/user/get_favourite_store_list")
     .post(users.get_favourite_store_list);

@@ -36,7 +36,11 @@ module.exports = function (app) {
     authMiddleware,
     requests.provider_get_invoice
   );
-  app.route("/api/store/get_vehicle_list").post(requests.get_vehicle_list);
+  app.post(
+    "/api/store/get_vehicle_list",
+    authMiddleware,
+    requests.get_vehicle_list
+  );
 
   app.post(
     "/api/store/get_vehicles_list",
