@@ -428,7 +428,7 @@
           style="height: calc(100vh - 163px); overflow: auto"
         >
           <div class="row">
-            <div class="col-md-12" style="font-size: 7px;">
+            <div class="col-md-12" style="font-size: 7px">
               <label>{{ title.note_for_image }}: </label
               ><span
                 >{{ title.image_note1 }} {{ image_setting.image_min_width }}x{{
@@ -596,6 +596,17 @@
           </div>
           <div class="row" style="margin-top: 10px">
             <div class="col-md-3 col-sm-3 col-xs-3">
+              <label>Purchase Cost</label>
+              <input
+                type="number"
+                class="form-control"
+                [(ngModel)]="item_detail.purchase_cost"
+                #purchase_cost="ngModel"
+                name="purchase_cost"
+                required
+              />
+            </div>
+            <div class="col-md-3 col-sm-3 col-xs-3">
               <label>Splash Price</label>
               <textarea
                 style="max-width: 100%; max-height: 80px"
@@ -606,7 +617,7 @@
                 required
               ></textarea>
             </div>
-            <div class="col-md-9 col-sm-9 col-xs-9">
+            <div class="col-md-6 col-sm-6 col-xs-6">
               <label>{{ helper.title.details }}</label>
               <textarea
                 style="max-width: 100%; max-height: 80px"

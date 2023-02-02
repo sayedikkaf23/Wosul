@@ -575,7 +575,7 @@
             <div class="col-md-3 col-sm-3 col-xs-3">
               <label>{{ helper.title.item_price  }}</label>
               <input
-                type="text"
+                type="number"
                 class="form-control"
                 [(ngModel)]="item_detail.price"
                 #price="ngModel"
@@ -584,6 +584,34 @@
               />
             </div>
             <div class="col-md-3 col-sm-3 col-xs-3">
+              <label>Purchase Price</label>
+              <input
+                type="number"
+                class="form-control"
+                [(ngModel)]="item_detail.purchase_cost"
+                #purchase_cost="ngModel"
+                name="purchase_cost"
+                required
+              />
+            </div>
+            
+            <label *ngIf="item_already_exist">{{
+              helper.message.item_already_exist 
+            }}</label>
+          </div>
+          <div class="row" style="margin-top: 10px">
+            <div class="col-md-6 col-sm-6 col-xs-6">
+              <label>{{ helper.title.details  }}</label>
+              <textarea
+                style="max-width: 100%; max-height: 80px"
+                class="form-control"
+                [(ngModel)]="item_detail.details"
+                #details="ngModel"
+                name="details"
+                required
+              ></textarea>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6">
               <label>{{ helper.title.vat  }}</label>
               <input
                 type="text"
@@ -594,22 +622,6 @@
                 name="tax"
                 required
               />
-            </div>
-            <label *ngIf="item_already_exist">{{
-              helper.message.item_already_exist 
-            }}</label>
-          </div>
-          <div class="row" style="margin-top: 10px">
-            <div class="col-md-12 col-sm-12 col-xs-12">
-              <label>{{ helper.title.details  }}</label>
-              <textarea
-                style="max-width: 100%; max-height: 80px"
-                class="form-control"
-                [(ngModel)]="item_detail.details"
-                #details="ngModel"
-                name="details"
-                required
-              ></textarea>
             </div>
           </div>
 
