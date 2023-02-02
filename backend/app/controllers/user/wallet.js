@@ -46,88 +46,78 @@ exports.add_wallet_amount = function (request_data, response_data) {
         Table.findOne({ _id: request_data_body.user_id }).then(
           (detail) => {
             if (detail) {
-              if (
-                request_data_body.server_token !== null &&
-                detail.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                var payment_id = request_data_body.payment_id;
-                var wallet = utils.precisionRoundTwo(
-                  Number(request_data_body.wallet)
-                );
+              var payment_id = request_data_body.payment_id;
+              var wallet = utils.precisionRoundTwo(
+                Number(request_data_body.wallet)
+              );
 
-                utils.pay_payment_for_selected_payment_gateway(
-                  0,
-                  detail._id,
-                  payment_id,
-                  wallet,
-                  detail.wallet_currency_code,
-                  function (payment_paid) {
-                    if (payment_paid) {
-                      Country.findOne({ _id: detail.country_id }).then(
-                        (country) => {
-                          if (country && setting_detail) {
-                            var wallet_currency_code = country.currency_code;
+              utils.pay_payment_for_selected_payment_gateway(
+                0,
+                detail._id,
+                payment_id,
+                wallet,
+                detail.wallet_currency_code,
+                function (payment_paid) {
+                  if (payment_paid) {
+                    Country.findOne({ _id: detail.country_id }).then(
+                      (country) => {
+                        if (country && setting_detail) {
+                          var wallet_currency_code = country.currency_code;
 
-                            var total_wallet_amount =
-                              wallet_history.add_wallet_history(
-                                type,
-                                detail.unique_id,
-                                detail._id,
-                                detail.country_id,
-                                wallet_currency_code,
-                                wallet_currency_code,
-                                1,
-                                wallet,
-                                detail.wallet,
-                                WALLET_STATUS_ID.ADD_WALLET_AMOUNT,
-                                WALLET_COMMENT_ID.ADDED_BY_CARD,
-                                "Card : " + payment_paid.card_number
-                              );
-
-                            detail.wallet = total_wallet_amount;
-                            detail.save().then(
-                              () => {
-                                response_data.json({
-                                  success: true,
-                                  message:
-                                    USER_MESSAGE_CODE.WALLET_AMOUNT_ADD_SUCCESSFULLY,
-                                  wallet: detail.wallet,
-                                  wallet_currency_code:
-                                    detail.wallet_currency_code,
-                                });
-                              },
-                              (error) => {
-                                console.log(error);
-                                response_data.json({
-                                  success: false,
-                                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                                });
-                              }
+                          var total_wallet_amount =
+                            wallet_history.add_wallet_history(
+                              type,
+                              detail.unique_id,
+                              detail._id,
+                              detail.country_id,
+                              wallet_currency_code,
+                              wallet_currency_code,
+                              1,
+                              wallet,
+                              detail.wallet,
+                              WALLET_STATUS_ID.ADD_WALLET_AMOUNT,
+                              WALLET_COMMENT_ID.ADDED_BY_CARD,
+                              "Card : " + payment_paid.card_number
                             );
-                          }
-                        },
-                        (error) => {
-                          console.log(error);
-                          response_data.json({
-                            success: false,
-                            error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                          });
+
+                          detail.wallet = total_wallet_amount;
+                          detail.save().then(
+                            () => {
+                              response_data.json({
+                                success: true,
+                                message:
+                                  USER_MESSAGE_CODE.WALLET_AMOUNT_ADD_SUCCESSFULLY,
+                                wallet: detail.wallet,
+                                wallet_currency_code:
+                                  detail.wallet_currency_code,
+                              });
+                            },
+                            (error) => {
+                              console.log(error);
+                              response_data.json({
+                                success: false,
+                                error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                              });
+                            }
+                          );
                         }
-                      );
-                    } else {
-                      response_data.json({
-                        success: false,
-                        error_code: USER_ERROR_CODE.WALLET_AMOUNT_ADD_FAILED,
-                      });
-                    }
+                      },
+                      (error) => {
+                        console.log(error);
+                        response_data.json({
+                          success: false,
+                          error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                        });
+                      }
+                    );
+                  } else {
+                    response_data.json({
+                      success: false,
+                      error_code: USER_ERROR_CODE.WALLET_AMOUNT_ADD_FAILED,
+                    });
                   }
-                );
-              }
+                }
+              );
             } else {
               response_data.json({
                 success: false,
@@ -157,34 +147,24 @@ exports.change_user_wallet_status = function (request_data, response_data) {
       var request_data_body = request_data.body;
       User.findOne({ _id: request_data_body.user_id }).then((user) => {
         if (user) {
-          if (
-            request_data_body.server_token !== null &&
-            user.server_token !== request_data_body.server_token
-          ) {
-            response_data.json({
-              success: false,
-              error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-            });
-          } else {
-            var status = request_data_body.is_use_wallet;
-            user.is_use_wallet = status;
-            user.save().then(
-              () => {
-                response_data.json({
-                  success: true,
-                  message: USER_MESSAGE_CODE.CHANGE_WALLET_STATUS_SUCCESSFULLY,
-                  is_use_wallet: user.is_use_wallet,
-                });
-              },
-              (error) => {
-                console.log(error);
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                });
-              }
-            );
-          }
+          var status = request_data_body.is_use_wallet;
+          user.is_use_wallet = status;
+          user.save().then(
+            () => {
+              response_data.json({
+                success: true,
+                message: USER_MESSAGE_CODE.CHANGE_WALLET_STATUS_SUCCESSFULLY,
+                is_use_wallet: user.is_use_wallet,
+              });
+            },
+            (error) => {
+              console.log(error);
+              response_data.json({
+                success: false,
+                error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+              });
+            }
+          );
         } else {
           response_data.json({
             success: false,
@@ -225,45 +205,35 @@ exports.get_wallet_history = function (request_data, response_data) {
         Table.findOne({ _id: request_data_body.id }).then(
           (detail) => {
             if (detail) {
-              if (
-                request_data_body.server_token !== null &&
-                detail.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                Wallet.find(
-                  { user_id: request_data_body.id, user_type: type },
-                  null,
-                  { sort: { unique_id: -1 } }
-                ).then(
-                  (wallet_history) => {
-                    if (wallet_history.length == 0) {
-                      response_data.json({
-                        success: false,
-                        error_code:
-                          WALLET_REQUEST_ERROR_CODE.WALLET_HISTORY_NOT_FOUND,
-                      });
-                    } else {
-                      response_data.json({
-                        success: true,
-                        message:
-                          WALLET_REQUEST_MESSAGE_CODE.WALLET_HISTORY_GET_SUCCESSFULLY,
-                        wallet_history: wallet_history,
-                      });
-                    }
-                  },
-                  (error) => {
-                    console.log(error);
+              Wallet.find(
+                { user_id: request_data_body.id, user_type: type },
+                null,
+                { sort: { unique_id: -1 } }
+              ).then(
+                (wallet_history) => {
+                  if (wallet_history.length == 0) {
                     response_data.json({
                       success: false,
-                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                      error_code:
+                        WALLET_REQUEST_ERROR_CODE.WALLET_HISTORY_NOT_FOUND,
+                    });
+                  } else {
+                    response_data.json({
+                      success: true,
+                      message:
+                        WALLET_REQUEST_MESSAGE_CODE.WALLET_HISTORY_GET_SUCCESSFULLY,
+                      wallet_history: wallet_history,
                     });
                   }
-                );
-              }
+                },
+                (error) => {
+                  console.log(error);
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
             }
           },
           (error) => {

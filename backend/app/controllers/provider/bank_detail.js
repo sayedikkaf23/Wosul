@@ -432,15 +432,7 @@ exports.get_bank_detail = function (request_data, response_data) {
         Table.findOne({ _id: request_data_body.bank_holder_id }).then(
           (detail) => {
             if (detail) {
-              if (
-                request_data_body.server_token !== null &&
-                detail.server_token != request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
+              
                 Bank_detail.find({
                   bank_holder_type: bank_holder_type,
                   bank_holder_id: request_data_body.bank_holder_id,
@@ -459,7 +451,7 @@ exports.get_bank_detail = function (request_data, response_data) {
                     });
                   }
                 });
-              }
+              
             }
           },
           (error) => {
@@ -641,6 +633,7 @@ exports.delete_bank_detail = function (request_data, response_data) {
 };
 
 // select_bank_detail
+
 exports.select_bank_detail = function (request_data, response_data) {
   utils.check_request_params(
     request_data.body,
@@ -671,77 +664,66 @@ exports.select_bank_detail = function (request_data, response_data) {
         Table.findOne({ _id: request_data_body.bank_holder_id }).then(
           (detail) => {
             if (detail) {
-              if (
-                request_data_body.server_token !== null &&
-                detail.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                Bank_detail.findOne({
-                  _id: request_data_body.bank_detail_id,
-                  bank_holder_type: bank_holder_type,
-                  bank_holder_id: request_data_body.bank_holder_id,
-                }).then(
-                  (bank_detail) => {
-                    if (!bank_detail) {
-                      response_data.json({
-                        success: false,
-                        error_code:
-                          BANK_DETAIL_ERROR_CODE.BANK_DETAIL_NOT_FOUND,
-                      });
-                    } else {
-                      bank_detail.is_selected = true;
-                      bank_detail.save().then(
-                        () => {
-                          Bank_detail.findOneAndUpdate(
-                            {
-                              _id: { $nin: request_data_body.bank_detail_id },
-                              bank_holder_type: bank_holder_type,
-                              bank_holder_id: request_data_body.bank_holder_id,
-                              is_selected: true,
-                            },
-                            { is_selected: false }
-                          ).then(
-                            (bank_details) => {
-                              detail.selected_bank_id = bank_detail._id;
-                              detail.save();
-                              response_data.json({
-                                success: true,
-                                message:
-                                  BANK_DETAIL_MESSAGE_CODE.BANK_DETAIL_SELECT_SUCCESSFULLY,
-                              });
-                            },
-                            (error) => {
-                              console.log(error);
-                              response_data.json({
-                                success: false,
-                                error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                              });
-                            }
-                          );
-                        },
-                        (error) => {
-                          console.log(error);
-                          response_data.json({
-                            success: false,
-                            error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                          });
-                        }
-                      );
-                    }
-                  },
-                  (error) => {
-                    console.log(error);
+              Bank_detail.findOne({
+                _id: request_data_body.bank_detail_id,
+                bank_holder_type: bank_holder_type,
+                bank_holder_id: request_data_body.bank_holder_id,
+              }).then(
+                (bank_detail) => {
+                  if (!bank_detail) {
                     response_data.json({
                       success: false,
-                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                      error_code: BANK_DETAIL_ERROR_CODE.BANK_DETAIL_NOT_FOUND,
                     });
+                  } else {
+                    bank_detail.is_selected = true;
+                    bank_detail.save().then(
+                      () => {
+                        Bank_detail.findOneAndUpdate(
+                          {
+                            _id: { $nin: request_data_body.bank_detail_id },
+                            bank_holder_type: bank_holder_type,
+                            bank_holder_id: request_data_body.bank_holder_id,
+                            is_selected: true,
+                          },
+                          { is_selected: false }
+                        ).then(
+                          (bank_details) => {
+                            detail.selected_bank_id = bank_detail._id;
+                            detail.save();
+                            response_data.json({
+                              success: true,
+                              message:
+                                BANK_DETAIL_MESSAGE_CODE.BANK_DETAIL_SELECT_SUCCESSFULLY,
+                            });
+                          },
+                          (error) => {
+                            console.log(error);
+                            response_data.json({
+                              success: false,
+                              error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                            });
+                          }
+                        );
+                      },
+                      (error) => {
+                        console.log(error);
+                        response_data.json({
+                          success: false,
+                          error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                        });
+                      }
+                    );
                   }
-                );
-              }
+                },
+                (error) => {
+                  console.log(error);
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
             } else {
               response_data.json({
                 success: false,

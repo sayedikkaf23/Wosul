@@ -43,292 +43,280 @@ exports.add_item_in_cart = function (request_data, response_data) {
           request_data_body.user_id = null;
         }
         const user = await User.findOne({ _id: request_data_body.user_id });
-        if (
-          user &&
-          request_data_body.server_token !== null &&
-          user.server_token !== request_data_body.server_token
-        ) {
-          response_data.json({
-            success: false,
-            error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-          });
-        } else {
-          var cart_id = null;
-          if (request_data_body.cart_id != undefined) {
-            cart_id = request_data_body.cart_id;
-          } else {
-            cart_id = null;
-          }
-          var user_id = null;
 
-          var delivery_type = DELIVERY_TYPE.STORE;
-          if (request_data_body.delivery_type) {
-            delivery_type = request_data_body.delivery_type;
+        var cart_id = null;
+        if (request_data_body.cart_id != undefined) {
+          cart_id = request_data_body.cart_id;
+        } else {
+          cart_id = null;
+        }
+        var user_id = null;
+
+        var delivery_type = DELIVERY_TYPE.STORE;
+        if (request_data_body.delivery_type) {
+          delivery_type = request_data_body.delivery_type;
+        }
+        if (delivery_type == DELIVERY_TYPE.COURIER) {
+          request_data_body.store_id = null;
+        }
+        const store = await Store.findOne({
+          _id: request_data_body.store_id,
+          is_business: true,
+        });
+        // if (store) {
+        var country_id = request_data_body.country_id;
+        var city_id = request_data_body.city_id;
+        var store_id = null;
+        if (
+          !["", null, undefined].includes(request_data_body.min_order_price)
+        ) {
+          store.min_order_price = request_data_body.min_order_price;
+          store.save();
+        }
+
+        if (store) {
+          country_id = store.country_id;
+          city_id = store.city_id;
+          store_id = store._id;
+
+          request_data_body.pickup_addresses[0].address = store.address;
+          request_data_body.pickup_addresses[0].location = store.location;
+          request_data_body.pickup_addresses[0].user_details.country_phone_code =
+            store.country_phone_code;
+          request_data_body.pickup_addresses[0].user_details.email =
+            store.email;
+          request_data_body.pickup_addresses[0].user_details.name = store.name;
+          request_data_body.pickup_addresses[0].user_details.phone =
+            store.phone;
+        }
+        const country_detail = await Country.findOne({ _id: country_id });
+        var country_phone_code = "";
+        var wallet_currency_code = "";
+        var country_code = "";
+
+        if (country_detail) {
+          country_id = country_detail._id;
+          country_phone_code = country_detail.country_phone_code;
+          wallet_currency_code = country_detail.currency_code;
+          country_code = country_detail.country_code;
+        }
+
+        var phone =
+          request_data_body.destination_addresses[0].user_details.phone;
+        var email =
+          request_data_body.destination_addresses[0].user_details.email;
+        var query = { $or: [{ email: email }, { phone: phone }] };
+        const user_phone_data = await User.findOne(query);
+        if (
+          user_type == ADMIN_DATA_ID.STORE &&
+          request_data_body.destination_addresses.length > 0
+        ) {
+          if (user_phone_data) {
+            user_phone_data.cart_id = cart_id;
+            user_phone_data.save();
+            user = user_phone_data;
+          } else {
+            var server_token = utils.generateServerToken(32);
+            var password = "123456";
+            password = utils.encryptPassword(password);
+
+            var first_name =
+              request_data_body.destination_addresses[0].user_details.name.trim();
+            if (
+              first_name != "" &&
+              first_name != undefined &&
+              first_name != null
+            ) {
+              first_name =
+                first_name.charAt(0).toUpperCase() + first_name.slice(1);
+            } else {
+              first_name = "";
+            }
+            var referral_code = await utils.generateReferralCode(phone);
+            var user_data = new User({
+              user_type: ADMIN_DATA_ID.STORE,
+              admin_type: ADMIN_DATA_ID.USER,
+              first_name: first_name,
+              email: email,
+              password: password,
+              country_phone_code: country_phone_code,
+              phone: phone,
+              country_id: country_id,
+              server_token: server_token,
+              referral_code: referral_code,
+              wallet_currency_code: wallet_currency_code,
+              cart_id: cart_id,
+            });
+            user_id = user_data._id;
+            cart_id = user_data.cart_id;
+            cart_unique_token = null;
+
+            utils.insert_documets_for_new_users(
+              user_data,
+              null,
+              ADMIN_DATA_ID.USER,
+              country_id,
+              function (document_response) {
+                user_data.is_document_uploaded =
+                  document_response.is_document_uploaded;
+                user_data.save();
+                user = user_data;
+              }
+            );
           }
-          if (delivery_type == DELIVERY_TYPE.COURIER) {
-            request_data_body.store_id = null;
+        }
+
+        if (user) {
+          cart_id = user.cart_id;
+          user_id = user._id;
+          cart_unique_token = null;
+        }
+        items = request_data_body.order_details[0].items;
+        console.log(">>>>> item >>>");
+        console.log(items);
+        if (items) {
+          for (let i = 0; i < items.length; i++) {
+            const item = await Item.findOne({
+              _id: items[i].item_id,
+            });
+            if (item) {
+              item.note_for_item = items[i].note_for_item;
+              await item.save();
+            }
           }
-          const store = await Store.findOne({
-            _id: request_data_body.store_id,
-            is_business: true,
-          });
-          // if (store) {
-          var country_id = request_data_body.country_id;
-          var city_id = request_data_body.city_id;
-          var store_id = null;
+        }
+        const cart = await Cart.findOne({
+          $or: [{ _id: cart_id }, { cart_unique_token: cart_unique_token }],
+        });
+        if (
+          cart &&
+          (!cart.store_id || cart.store_id.equals(store_id) || !store_id)
+        ) {
           if (
-            !["", null, undefined].includes(request_data_body.min_order_price)
+            request_data_body.user_id != "" &&
+            request_data_body.user_id != null
           ) {
-            store.min_order_price = request_data_body.min_order_price;
-            store.save();
+            cart.cart_unique_token = "";
           }
+          cart.delivery_type = delivery_type;
+          cart.user_id = user_id;
+          cart.user_type_id = user_id;
+          cart.user_type = request_data_body.user_type;
+          cart.city_id = city_id;
+          cart.destination_addresses = request_data_body.destination_addresses;
+          cart.order_details = request_data_body.order_details;
+          cart.pickup_addresses = request_data_body.pickup_addresses;
+          cart.store_id = store_id;
+
+          var total_cart_price = request_data_body.total_cart_price;
+          var total_item_tax = 0;
+          cart.total_cart_price = total_cart_price;
 
           if (store) {
-            country_id = store.country_id;
-            city_id = store.city_id;
-            store_id = store._id;
-
-            request_data_body.pickup_addresses[0].address = store.address;
-            request_data_body.pickup_addresses[0].location = store.location;
-            request_data_body.pickup_addresses[0].user_details.country_phone_code =
-              store.country_phone_code;
-            request_data_body.pickup_addresses[0].user_details.email =
-              store.email;
-            request_data_body.pickup_addresses[0].user_details.name =
-              store.name;
-            request_data_body.pickup_addresses[0].user_details.phone =
-              store.phone;
-          }
-          const country_detail = await Country.findOne({ _id: country_id });
-          var country_phone_code = "";
-          var wallet_currency_code = "";
-          var country_code = "";
-
-          if (country_detail) {
-            country_id = country_detail._id;
-            country_phone_code = country_detail.country_phone_code;
-            wallet_currency_code = country_detail.currency_code;
-            country_code = country_detail.country_code;
-          }
-
-          var phone =
-            request_data_body.destination_addresses[0].user_details.phone;
-          var email =
-            request_data_body.destination_addresses[0].user_details.email;
-          var query = { $or: [{ email: email }, { phone: phone }] };
-          const user_phone_data = await User.findOne(query);
-          if (
-            user_type == ADMIN_DATA_ID.STORE &&
-            request_data_body.destination_addresses.length > 0
-          ) {
-            if (user_phone_data) {
-              user_phone_data.cart_id = cart_id;
-              user_phone_data.save();
-              user = user_phone_data;
+            if (store.is_use_item_tax) {
+              if (request_data_body.total_item_tax) {
+                total_item_tax = request_data_body.total_item_tax;
+              }
             } else {
-              var server_token = utils.generateServerToken(32);
-              var password = "123456";
-              password = utils.encryptPassword(password);
-
-              var first_name =
-                request_data_body.destination_addresses[0].user_details.name.trim();
-              if (
-                first_name != "" &&
-                first_name != undefined &&
-                first_name != null
-              ) {
-                first_name =
-                  first_name.charAt(0).toUpperCase() + first_name.slice(1);
+              if (total_cart_price) {
+                total_item_tax = total_cart_price * store.item_tax * 0.01;
               } else {
-                first_name = "";
-              }
-              var referral_code = await utils.generateReferralCode(phone);
-              var user_data = new User({
-                user_type: ADMIN_DATA_ID.STORE,
-                admin_type: ADMIN_DATA_ID.USER,
-                first_name: first_name,
-                email: email,
-                password: password,
-                country_phone_code: country_phone_code,
-                phone: phone,
-                country_id: country_id,
-                server_token: server_token,
-                referral_code: referral_code,
-                wallet_currency_code: wallet_currency_code,
-                cart_id: cart_id,
-              });
-              user_id = user_data._id;
-              cart_id = user_data.cart_id;
-              cart_unique_token = null;
-
-              utils.insert_documets_for_new_users(
-                user_data,
-                null,
-                ADMIN_DATA_ID.USER,
-                country_id,
-                function (document_response) {
-                  user_data.is_document_uploaded =
-                    document_response.is_document_uploaded;
-                  user_data.save();
-                  user = user_data;
-                }
-              );
-            }
-          }
-
-          if (user) {
-            cart_id = user.cart_id;
-            user_id = user._id;
-            cart_unique_token = null;
-          }
-          items = request_data_body.order_details[0].items;
-          console.log(">>>>> item >>>");
-          console.log(items);
-          if (items) {
-            for (let i = 0; i < items.length; i++) {
-              const item = await Item.findOne({
-                _id: items[i].item_id,
-              });
-              if (item) {
-                item.note_for_item = items[i].note_for_item;
-                await item.save();
+                total_cart_price = 0;
               }
             }
           }
-          const cart = await Cart.findOne({
-            $or: [{ _id: cart_id }, { cart_unique_token: cart_unique_token }],
+
+          total_item_tax = utils.precisionRoundTwo(Number(total_item_tax));
+          cart.total_item_tax = total_item_tax;
+          cart.save().then(
+            () => {
+              response_data.json({
+                success: true,
+                message: CART_MESSAGE_CODE.CART_UPDATED_SUCCESSFULLY,
+                cart_id: cart._id,
+                city_id: city_id,
+                user_id: user_id,
+              });
+            },
+            (error) => {
+              response_data.json({
+                success: false,
+                error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+              });
+            }
+          );
+
+          //response_data.json({success: false, error_code: STORE_ERROR_CODE.MISMATCH_STORE_ID});
+        } else {
+          var total_cart_price = request_data_body.total_cart_price;
+          var total_item_tax = 0;
+          if (store) {
+            if (store.is_use_item_tax) {
+              if (request_data_body.total_item_tax) {
+                total_item_tax = request_data_body.total_item_tax;
+              }
+            } else {
+              if (total_cart_price) {
+                total_item_tax = total_cart_price * store.item_tax * 0.01;
+              } else {
+                total_cart_price = 0;
+              }
+            }
+          }
+
+          total_item_tax = utils.precisionRoundTwo(Number(total_item_tax));
+
+          var new_cart = new Cart({
+            cart_unique_token: request_data_body.cart_unique_token,
+            user_id: user_id,
+            user_type: request_data_body.user_type,
+            delivery_type: delivery_type,
+            user_type_id: user_id,
+            store_id: store_id,
+            order_payment_id: null,
+            order_id: null,
+            city_id: city_id,
+            pickup_addresses: request_data_body.pickup_addresses,
+            destination_addresses: request_data_body.destination_addresses,
+            order_details: request_data_body.order_details,
+            total_cart_price: total_cart_price,
+            total_item_tax: total_item_tax,
           });
+
           if (
-            cart &&
-            (!cart.store_id || cart.store_id.equals(store_id) || !store_id)
+            request_data_body.user_id != "" &&
+            request_data_body.user_id != undefined
           ) {
-            if (
-              request_data_body.user_id != "" &&
-              request_data_body.user_id != null
-            ) {
-              cart.cart_unique_token = "";
-            }
-            cart.delivery_type = delivery_type;
-            cart.user_id = user_id;
-            cart.user_type_id = user_id;
-            cart.user_type = request_data_body.user_type;
-            cart.city_id = city_id;
-            cart.destination_addresses =
-              request_data_body.destination_addresses;
-            cart.order_details = request_data_body.order_details;
-            cart.pickup_addresses = request_data_body.pickup_addresses;
-            cart.store_id = store_id;
-
-            var total_cart_price = request_data_body.total_cart_price;
-            var total_item_tax = 0;
-            cart.total_cart_price = total_cart_price;
-
-            if (store) {
-              if (store.is_use_item_tax) {
-                if (request_data_body.total_item_tax) {
-                  total_item_tax = request_data_body.total_item_tax;
-                }
-              } else {
-                if (total_cart_price) {
-                  total_item_tax = total_cart_price * store.item_tax * 0.01;
-                } else {
-                  total_cart_price = 0;
-                }
-              }
-            }
-
-            total_item_tax = utils.precisionRoundTwo(Number(total_item_tax));
-            cart.total_item_tax = total_item_tax;
-            cart.save().then(
-              () => {
-                response_data.json({
-                  success: true,
-                  message: CART_MESSAGE_CODE.CART_UPDATED_SUCCESSFULLY,
-                  cart_id: cart._id,
-                  city_id: city_id,
-                  user_id: user_id,
-                });
-              },
-              (error) => {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                });
-              }
-            );
-
-            //response_data.json({success: false, error_code: STORE_ERROR_CODE.MISMATCH_STORE_ID});
-          } else {
-            var total_cart_price = request_data_body.total_cart_price;
-            var total_item_tax = 0;
-            if (store) {
-              if (store.is_use_item_tax) {
-                if (request_data_body.total_item_tax) {
-                  total_item_tax = request_data_body.total_item_tax;
-                }
-              } else {
-                if (total_cart_price) {
-                  total_item_tax = total_cart_price * store.item_tax * 0.01;
-                } else {
-                  total_cart_price = 0;
-                }
-              }
-            }
-
-            total_item_tax = utils.precisionRoundTwo(Number(total_item_tax));
-
-            var new_cart = new Cart({
-              cart_unique_token: request_data_body.cart_unique_token,
-              user_id: user_id,
-              user_type: request_data_body.user_type,
-              delivery_type: delivery_type,
-              user_type_id: user_id,
-              store_id: store_id,
-              order_payment_id: null,
-              order_id: null,
-              city_id: city_id,
-              pickup_addresses: request_data_body.pickup_addresses,
-              destination_addresses: request_data_body.destination_addresses,
-              order_details: request_data_body.order_details,
-              total_cart_price: total_cart_price,
-              total_item_tax: total_item_tax,
-            });
-
-            if (
-              request_data_body.user_id != "" &&
-              request_data_body.user_id != undefined
-            ) {
-              new_cart.cart_unique_token = "";
-            }
-
-            new_cart.save().then(
-              () => {
-                if (user) {
-                  user.cart_id = new_cart._id;
-                  user.save();
-                }
-
-                response_data.json({
-                  success: true,
-                  message: CART_MESSAGE_CODE.CART_ADDED_SUCCESSFULLY,
-                  cart_id: new_cart._id,
-                  city_id: city_id,
-                  user_id: user_id,
-                });
-              },
-              (error) => {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                });
-              }
-            );
+            new_cart.cart_unique_token = "";
           }
-          // } else
-          // {
-          //     response_data.json({success: false, error_code: STORE_ERROR_CODE.STORE_BUSINESS_OFF});
-          // }
+
+          new_cart.save().then(
+            () => {
+              if (user) {
+                user.cart_id = new_cart._id;
+                user.save();
+              }
+
+              response_data.json({
+                success: true,
+                message: CART_MESSAGE_CODE.CART_ADDED_SUCCESSFULLY,
+                cart_id: new_cart._id,
+                city_id: city_id,
+                user_id: user_id,
+              });
+            },
+            (error) => {
+              response_data.json({
+                success: false,
+                error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+              });
+            }
+          );
         }
+        // } else
+        // {
+        //     response_data.json({success: false, error_code: STORE_ERROR_CODE.STORE_BUSINESS_OFF});
+        // }
       } else {
         response_data.json(response);
       }
@@ -655,449 +643,436 @@ exports.ramadan_add_item_in_cart = function (request_data, response_data) {
           ? request_data_body.f
           : request_data_body.server_token;
 
-        if (user && serverToken !== null && user.server_token !== serverToken) {
-          response_data.json({
-            success: false,
-            error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-          });
+        var cart_id = null;
+        if (request_data_body.cart_id != undefined) {
+          cart_id = request_data_body.cart_id;
         } else {
-          var cart_id = null;
-          if (request_data_body.cart_id != undefined) {
-            cart_id = request_data_body.cart_id;
-          } else {
-            cart_id = null;
-          }
-          var user_id = null;
+          cart_id = null;
+        }
+        var user_id = null;
 
-          var delivery_type = DELIVERY_TYPE.STORE;
-          if (request_data_body.delivery_type) {
-            delivery_type = request_data_body.delivery_type;
-          }
-          if (delivery_type == DELIVERY_TYPE.COURIER) {
-            request_data_body.store_id = null;
+        var delivery_type = DELIVERY_TYPE.STORE;
+        if (request_data_body.delivery_type) {
+          delivery_type = request_data_body.delivery_type;
+        }
+        if (delivery_type == DELIVERY_TYPE.COURIER) {
+          request_data_body.store_id = null;
+        }
+
+        const store = await Store.findOne({
+          _id: request_data_body.store_id,
+          is_business: true,
+        });
+        if (store) {
+          // if (store) {
+          var country_id = request_data_body.country_id;
+          var city_id = request_data_body.city_id;
+          var store_id = null;
+          if (
+            !["", null, undefined].includes(request_data_body.min_order_price)
+          ) {
+            store.min_order_price = request_data_body.min_order_price;
+            store.save();
           }
 
-          const store = await Store.findOne({
-            _id: request_data_body.store_id,
-            is_business: true,
-          });
           if (store) {
-            // if (store) {
-            var country_id = request_data_body.country_id;
-            var city_id = request_data_body.city_id;
-            var store_id = null;
-            if (
-              !["", null, undefined].includes(request_data_body.min_order_price)
-            ) {
-              store.min_order_price = request_data_body.min_order_price;
-              store.save();
-            }
+            country_id = store.country_id;
+            city_id = store.city_id;
+            store_id = store._id;
 
-            if (store) {
-              country_id = store.country_id;
-              city_id = store.city_id;
-              store_id = store._id;
+            request_data_body.pickup_addresses[0].address = store.address;
+            request_data_body.pickup_addresses[0].location = store.location;
+            request_data_body.pickup_addresses[0].user_details.country_phone_code =
+              store.country_phone_code;
+            request_data_body.pickup_addresses[0].user_details.email =
+              store.email;
+            request_data_body.pickup_addresses[0].user_details.name =
+              store.name;
+            request_data_body.pickup_addresses[0].user_details.phone =
+              store.phone;
+          }
 
-              request_data_body.pickup_addresses[0].address = store.address;
-              request_data_body.pickup_addresses[0].location = store.location;
-              request_data_body.pickup_addresses[0].user_details.country_phone_code =
-                store.country_phone_code;
-              request_data_body.pickup_addresses[0].user_details.email =
-                store.email;
-              request_data_body.pickup_addresses[0].user_details.name =
-                store.name;
-              request_data_body.pickup_addresses[0].user_details.phone =
-                store.phone;
-            }
-
-            const country_detail = await Country.findOne({ _id: country_id });
-            var country_phone_code = "";
-            var wallet_currency_code = "";
-            var country_code = "";
+          const country_detail = await Country.findOne({ _id: country_id });
+          var country_phone_code = "";
+          var wallet_currency_code = "";
+          var country_code = "";
+          if (country_detail) {
             if (country_detail) {
-              if (country_detail) {
-                country_id = country_detail._id;
-                country_phone_code = country_detail.country_phone_code;
-                wallet_currency_code = country_detail.currency_code;
-                country_code = country_detail.country_code;
-              }
-
-              var phone =
-                request_data_body.destination_addresses[0].user_details.phone;
-              var email =
-                request_data_body.destination_addresses[0].user_details.email;
-              var query = { $or: [{ email: email }, { phone: phone }] };
-
-              User.findOne(query).then(
-                async (user_phone_data) => {
-                  if (
-                    user_type == ADMIN_DATA_ID.STORE &&
-                    request_data_body.destination_addresses.length > 0
-                  ) {
-                    if (user_phone_data) {
-                      user_phone_data.cart_id = cart_id;
-                      user_phone_data.save();
-                      user = user_phone_data;
-                    } else {
-                      var server_token = utils.generateServerToken(32);
-                      var password = "123456";
-                      password = utils.encryptPassword(password);
-
-                      var first_name =
-                        request_data_body.destination_addresses[0].user_details.name.trim();
-                      if (
-                        first_name != "" &&
-                        first_name != undefined &&
-                        first_name != null
-                      ) {
-                        first_name =
-                          first_name.charAt(0).toUpperCase() +
-                          first_name.slice(1);
-                      } else {
-                        first_name = "";
-                      }
-                      var referral_code = await utils.generateReferralCode(
-                        phone
-                      );
-                      var user_data = new User({
-                        user_type: ADMIN_DATA_ID.STORE,
-                        admin_type: ADMIN_DATA_ID.USER,
-                        first_name: first_name,
-                        email: email,
-                        password: password,
-                        country_phone_code: country_phone_code,
-                        phone: phone,
-                        country_id: country_id,
-                        server_token: server_token,
-                        referral_code: referral_code,
-                        wallet_currency_code: wallet_currency_code,
-                        cart_id: cart_id,
-                      });
-                      user_id = user_data._id;
-                      cart_id = user_data.cart_id;
-                      cart_unique_token = null;
-
-                      utils.insert_documets_for_new_users(
-                        user_data,
-                        null,
-                        ADMIN_DATA_ID.USER,
-                        country_id,
-                        function (document_response) {
-                          user_data.is_document_uploaded =
-                            document_response.is_document_uploaded;
-                          user_data.save();
-                          user = user_data;
-                        }
-                      );
-                    }
-                  }
-
-                  if (user) {
-                    cart_id = user.cart_id;
-                    user_id = user._id;
-                    cart_unique_token = null;
-                  }
-
-                  Cart.findOne({
-                    $or: [
-                      { _id: cart_id },
-                      { cart_unique_token: cart_unique_token },
-                    ],
-                  }).then(
-                    async (cart) => {
-                      if (
-                        cart &&
-                        (!cart.store_id ||
-                          cart.store_id.equals(store_id) ||
-                          !store_id)
-                      ) {
-                        if (
-                          request_data_body.user_id != "" &&
-                          request_data_body.user_id != null
-                        ) {
-                          cart.cart_unique_token = "";
-                        }
-                        var total_item_count = 0;
-                        var order_details = {};
-                        var categories =
-                          request_data_body.order_object.package_id;
-                        var quantities =
-                          request_data_body.order_object.quantity;
-                        var products = [];
-                        var items = [];
-                        var total_cart_price = 0;
-                        for (let i = 0; i < categories.length; i++) {
-                          if (categories[i]) {
-                            var product = await Product.findOne({
-                              category_id: categories[i],
-                            });
-                            products.push(product);
-                          }
-                        }
-
-                        for (let i = 0; i < products.length; i++) {
-                          if (products[i]) {
-                            var item = await Item.find({
-                              product_id: products[i]._id,
-                            });
-                            item.forEach((item) => {
-                              var ordered_item = {
-                                details: item.details,
-                                image_url: item.image_url,
-                                item_id: item._id,
-                                item_name: item.name,
-                                note_for_item: item.note_for_item,
-                                specifications: item.specifications
-                                  ? item.specifications
-                                  : [],
-                                item_price: item.price,
-                                item_tax: item.tax,
-                                max_item_quantity: item.max_item_quantity,
-                                quantity: quantities[i],
-                                total_item_price: quantities[i] * item.price,
-                                total_item_tax: 0,
-                                total_item_price: quantities[i] * item.price,
-                                total_specification_price: 0,
-                                total_specification_tax: 0,
-                                total_tax: 0,
-                                unique_id: item.unique_id,
-                                unique_id_for_store_data:
-                                  item.unique_id_for_store_data,
-                              };
-                              total_item_count = total_item_count + 1;
-                              total_cart_price =
-                                total_cart_price + quantities[i] * item.price;
-                              items.push(ordered_item);
-                            });
-                          }
-                        }
-                        order_details.items = items;
-
-                        cart.delivery_type = delivery_type;
-                        cart.user_id = user_id;
-                        cart.user_type_id = user_id;
-                        cart.user_type = request_data_body.user_type;
-                        cart.city_id = city_id;
-                        cart.destination_addresses =
-                          request_data_body.destination_addresses;
-                        cart.order_details = order_details;
-                        cart.pickup_addresses =
-                          request_data_body.pickup_addresses;
-                        cart.store_id = store_id;
-                        var total_item_tax = 0;
-                        cart.total_cart_price = total_cart_price;
-                        cart.total_item_count = total_item_count;
-                        cart.is_ramadan_order = true;
-                        if (store) {
-                          if (store.is_use_item_tax) {
-                            if (request_data_body.total_item_tax) {
-                              total_item_tax = request_data_body.total_item_tax;
-                            }
-                          } else {
-                            if (total_cart_price) {
-                              total_item_tax =
-                                total_cart_price * store.item_tax * 0.01;
-                            } else {
-                              total_cart_price = 0;
-                            }
-                          }
-                        }
-
-                        total_item_tax = utils.precisionRoundTwo(
-                          Number(total_item_tax)
-                        );
-                        cart.total_item_tax = total_item_tax;
-                        Cart.updateOne({ _id: cart_id }, { $set: cart }).then(
-                          () => {
-                            response_data.json({
-                              success: true,
-                              message:
-                                CART_MESSAGE_CODE.CART_UPDATED_SUCCESSFULLY,
-                              cart_id: cart._id,
-                              city_id: city_id,
-                              user_id: user_id,
-                              cart,
-                            });
-                          },
-                          (error) => {
-                            console.log("ramadan_cart api1", error);
-                            response_data.json({
-                              success: false,
-                              error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                            });
-                          }
-                        );
-
-                        //response_data.json({success: false, error_code: STORE_ERROR_CODE.MISMATCH_STORE_ID});
-                      } else {
-                        var total_cart_price = 0;
-
-                        var total_item_tax = 0;
-                        if (store) {
-                          if (store.is_use_item_tax) {
-                            if (request_data_body.total_item_tax) {
-                              total_item_tax = request_data_body.total_item_tax;
-                            }
-                          } else {
-                            if (total_cart_price) {
-                              total_item_tax =
-                                total_cart_price * store.item_tax * 0.01;
-                            } else {
-                              total_cart_price = 0;
-                            }
-                          }
-                        }
-                        var total_item_count = 0;
-                        var order_details = {};
-                        var categories =
-                          request_data_body.order_object.package_id;
-                        var quantities =
-                          request_data_body.order_object.quantity;
-                        var products = [];
-                        var items = [];
-                        for (let i = 0; i < categories.length; i++) {
-                          if (categories[i]) {
-                            var product = await Product.findOne({
-                              category_id: categories[i],
-                            });
-                            products.push(product);
-                          }
-                        }
-
-                        for (let i = 0; i < products.length; i++) {
-                          if (products[i]) {
-                            var item = await Item.find({
-                              product_id: products[i]._id,
-                            });
-                            item.forEach((item) => {
-                              var ordered_item = {
-                                details: item.details,
-                                image_url: item.image_url,
-                                item_id: item._id,
-                                item_name: item.name,
-                                note_for_item: item.note_for_item,
-                                specifications: item.specifications
-                                  ? item.specifications
-                                  : [],
-                                item_price: item.price,
-                                item_tax: item.tax,
-                                max_item_quantity: item.max_item_quantity,
-                                quantity: quantities[i],
-                                total_item_price: quantities[i] * item.price,
-                                total_item_tax: 0,
-                                total_item_price: quantities[i] * item.price,
-                                total_specification_price: 0,
-                                total_specification_tax: 0,
-                                total_tax: 0,
-                                unique_id: item.unique_id,
-                                unique_id_for_store_data:
-                                  item.unique_id_for_store_data,
-                              };
-                              total_item_count = total_item_count + 1;
-                              total_cart_price =
-                                total_cart_price + quantities[i] * item.price;
-                              items.push(ordered_item);
-                            });
-                          }
-                        }
-                        order_details.items = items;
-
-                        total_item_tax = utils.precisionRoundTwo(
-                          Number(total_item_tax)
-                        );
-
-                        var cart = new Cart({
-                          cart_unique_token:
-                            request_data_body.cart_unique_token,
-                          user_id: user_id,
-                          user_type: request_data_body.user_type,
-                          delivery_type: delivery_type,
-                          user_type_id: user_id,
-                          store_id: store_id,
-                          order_payment_id: null,
-                          order_id: null,
-                          city_id: city_id,
-                          pickup_addresses: request_data_body.pickup_addresses,
-                          destination_addresses:
-                            request_data_body.destination_addresses,
-                          order_details: order_details,
-                          total_cart_price: total_cart_price,
-                          total_item_tax: total_item_tax,
-                          total_item_count: total_item_count,
-                          is_ramadan_order: true,
-                        });
-
-                        if (
-                          request_data_body.user_id != "" &&
-                          request_data_body.user_id != undefined
-                        ) {
-                          cart.cart_unique_token = "";
-                        }
-
-                        cart.save().then(
-                          () => {
-                            if (user) {
-                              user.cart_id = cart._id;
-                              user.save();
-                            }
-
-                            response_data.json({
-                              success: true,
-                              message:
-                                CART_MESSAGE_CODE.CART_ADDED_SUCCESSFULLY,
-                              cart_id: cart._id,
-                              city_id: city_id,
-                              user_id: user_id,
-                              cart,
-                            });
-                          },
-                          (error) => {
-                            console.log(
-                              "ramadan_cart api2" + JSON.stringify(error)
-                            );
-                            response_data.json({
-                              success: false,
-                              error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                            });
-                          }
-                        );
-                      }
-                    },
-                    (error) => {
-                      console.log("ramadan_cart api3", error);
-                      response_data.json({
-                        success: false,
-                        error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                      });
-                    }
-                  );
-                },
-                (error) => {
-                  console.log("ramadan_cart api4", error);
-                  response_data.json({
-                    success: false,
-                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                  });
-                }
-              );
-            } else {
-              console.log("ramadan_cart api5");
-              response_data.json({
-                success: false,
-                error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-              });
+              country_id = country_detail._id;
+              country_phone_code = country_detail.country_phone_code;
+              wallet_currency_code = country_detail.currency_code;
+              country_code = country_detail.country_code;
             }
-            // } else
-            // {
-            //     response_data.json({success: false, error_code: STORE_ERROR_CODE.STORE_BUSINESS_OFF});
-            // }
+
+            var phone =
+              request_data_body.destination_addresses[0].user_details.phone;
+            var email =
+              request_data_body.destination_addresses[0].user_details.email;
+            var query = { $or: [{ email: email }, { phone: phone }] };
+
+            User.findOne(query).then(
+              async (user_phone_data) => {
+                if (
+                  user_type == ADMIN_DATA_ID.STORE &&
+                  request_data_body.destination_addresses.length > 0
+                ) {
+                  if (user_phone_data) {
+                    user_phone_data.cart_id = cart_id;
+                    user_phone_data.save();
+                    user = user_phone_data;
+                  } else {
+                    var server_token = utils.generateServerToken(32);
+                    var password = "123456";
+                    password = utils.encryptPassword(password);
+
+                    var first_name =
+                      request_data_body.destination_addresses[0].user_details.name.trim();
+                    if (
+                      first_name != "" &&
+                      first_name != undefined &&
+                      first_name != null
+                    ) {
+                      first_name =
+                        first_name.charAt(0).toUpperCase() +
+                        first_name.slice(1);
+                    } else {
+                      first_name = "";
+                    }
+                    var referral_code = await utils.generateReferralCode(phone);
+                    var user_data = new User({
+                      user_type: ADMIN_DATA_ID.STORE,
+                      admin_type: ADMIN_DATA_ID.USER,
+                      first_name: first_name,
+                      email: email,
+                      password: password,
+                      country_phone_code: country_phone_code,
+                      phone: phone,
+                      country_id: country_id,
+                      server_token: server_token,
+                      referral_code: referral_code,
+                      wallet_currency_code: wallet_currency_code,
+                      cart_id: cart_id,
+                    });
+                    user_id = user_data._id;
+                    cart_id = user_data.cart_id;
+                    cart_unique_token = null;
+
+                    utils.insert_documets_for_new_users(
+                      user_data,
+                      null,
+                      ADMIN_DATA_ID.USER,
+                      country_id,
+                      function (document_response) {
+                        user_data.is_document_uploaded =
+                          document_response.is_document_uploaded;
+                        user_data.save();
+                        user = user_data;
+                      }
+                    );
+                  }
+                }
+
+                if (user) {
+                  cart_id = user.cart_id;
+                  user_id = user._id;
+                  cart_unique_token = null;
+                }
+
+                Cart.findOne({
+                  $or: [
+                    { _id: cart_id },
+                    { cart_unique_token: cart_unique_token },
+                  ],
+                }).then(
+                  async (cart) => {
+                    if (
+                      cart &&
+                      (!cart.store_id ||
+                        cart.store_id.equals(store_id) ||
+                        !store_id)
+                    ) {
+                      if (
+                        request_data_body.user_id != "" &&
+                        request_data_body.user_id != null
+                      ) {
+                        cart.cart_unique_token = "";
+                      }
+                      var total_item_count = 0;
+                      var order_details = {};
+                      var categories =
+                        request_data_body.order_object.package_id;
+                      var quantities = request_data_body.order_object.quantity;
+                      var products = [];
+                      var items = [];
+                      var total_cart_price = 0;
+                      for (let i = 0; i < categories.length; i++) {
+                        if (categories[i]) {
+                          var product = await Product.findOne({
+                            category_id: categories[i],
+                          });
+                          products.push(product);
+                        }
+                      }
+
+                      for (let i = 0; i < products.length; i++) {
+                        if (products[i]) {
+                          var item = await Item.find({
+                            product_id: products[i]._id,
+                          });
+                          item.forEach((item) => {
+                            var ordered_item = {
+                              details: item.details,
+                              image_url: item.image_url,
+                              item_id: item._id,
+                              item_name: item.name,
+                              note_for_item: item.note_for_item,
+                              specifications: item.specifications
+                                ? item.specifications
+                                : [],
+                              item_price: item.price,
+                              item_tax: item.tax,
+                              max_item_quantity: item.max_item_quantity,
+                              quantity: quantities[i],
+                              total_item_price: quantities[i] * item.price,
+                              total_item_tax: 0,
+                              total_item_price: quantities[i] * item.price,
+                              total_specification_price: 0,
+                              total_specification_tax: 0,
+                              total_tax: 0,
+                              unique_id: item.unique_id,
+                              unique_id_for_store_data:
+                                item.unique_id_for_store_data,
+                            };
+                            total_item_count = total_item_count + 1;
+                            total_cart_price =
+                              total_cart_price + quantities[i] * item.price;
+                            items.push(ordered_item);
+                          });
+                        }
+                      }
+                      order_details.items = items;
+
+                      cart.delivery_type = delivery_type;
+                      cart.user_id = user_id;
+                      cart.user_type_id = user_id;
+                      cart.user_type = request_data_body.user_type;
+                      cart.city_id = city_id;
+                      cart.destination_addresses =
+                        request_data_body.destination_addresses;
+                      cart.order_details = order_details;
+                      cart.pickup_addresses =
+                        request_data_body.pickup_addresses;
+                      cart.store_id = store_id;
+                      var total_item_tax = 0;
+                      cart.total_cart_price = total_cart_price;
+                      cart.total_item_count = total_item_count;
+                      cart.is_ramadan_order = true;
+                      if (store) {
+                        if (store.is_use_item_tax) {
+                          if (request_data_body.total_item_tax) {
+                            total_item_tax = request_data_body.total_item_tax;
+                          }
+                        } else {
+                          if (total_cart_price) {
+                            total_item_tax =
+                              total_cart_price * store.item_tax * 0.01;
+                          } else {
+                            total_cart_price = 0;
+                          }
+                        }
+                      }
+
+                      total_item_tax = utils.precisionRoundTwo(
+                        Number(total_item_tax)
+                      );
+                      cart.total_item_tax = total_item_tax;
+                      Cart.updateOne({ _id: cart_id }, { $set: cart }).then(
+                        () => {
+                          response_data.json({
+                            success: true,
+                            message:
+                              CART_MESSAGE_CODE.CART_UPDATED_SUCCESSFULLY,
+                            cart_id: cart._id,
+                            city_id: city_id,
+                            user_id: user_id,
+                            cart,
+                          });
+                        },
+                        (error) => {
+                          console.log("ramadan_cart api1", error);
+                          response_data.json({
+                            success: false,
+                            error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                          });
+                        }
+                      );
+
+                      //response_data.json({success: false, error_code: STORE_ERROR_CODE.MISMATCH_STORE_ID});
+                    } else {
+                      var total_cart_price = 0;
+
+                      var total_item_tax = 0;
+                      if (store) {
+                        if (store.is_use_item_tax) {
+                          if (request_data_body.total_item_tax) {
+                            total_item_tax = request_data_body.total_item_tax;
+                          }
+                        } else {
+                          if (total_cart_price) {
+                            total_item_tax =
+                              total_cart_price * store.item_tax * 0.01;
+                          } else {
+                            total_cart_price = 0;
+                          }
+                        }
+                      }
+                      var total_item_count = 0;
+                      var order_details = {};
+                      var categories =
+                        request_data_body.order_object.package_id;
+                      var quantities = request_data_body.order_object.quantity;
+                      var products = [];
+                      var items = [];
+                      for (let i = 0; i < categories.length; i++) {
+                        if (categories[i]) {
+                          var product = await Product.findOne({
+                            category_id: categories[i],
+                          });
+                          products.push(product);
+                        }
+                      }
+
+                      for (let i = 0; i < products.length; i++) {
+                        if (products[i]) {
+                          var item = await Item.find({
+                            product_id: products[i]._id,
+                          });
+                          item.forEach((item) => {
+                            var ordered_item = {
+                              details: item.details,
+                              image_url: item.image_url,
+                              item_id: item._id,
+                              item_name: item.name,
+                              note_for_item: item.note_for_item,
+                              specifications: item.specifications
+                                ? item.specifications
+                                : [],
+                              item_price: item.price,
+                              item_tax: item.tax,
+                              max_item_quantity: item.max_item_quantity,
+                              quantity: quantities[i],
+                              total_item_price: quantities[i] * item.price,
+                              total_item_tax: 0,
+                              total_item_price: quantities[i] * item.price,
+                              total_specification_price: 0,
+                              total_specification_tax: 0,
+                              total_tax: 0,
+                              unique_id: item.unique_id,
+                              unique_id_for_store_data:
+                                item.unique_id_for_store_data,
+                            };
+                            total_item_count = total_item_count + 1;
+                            total_cart_price =
+                              total_cart_price + quantities[i] * item.price;
+                            items.push(ordered_item);
+                          });
+                        }
+                      }
+                      order_details.items = items;
+
+                      total_item_tax = utils.precisionRoundTwo(
+                        Number(total_item_tax)
+                      );
+
+                      var cart = new Cart({
+                        cart_unique_token: request_data_body.cart_unique_token,
+                        user_id: user_id,
+                        user_type: request_data_body.user_type,
+                        delivery_type: delivery_type,
+                        user_type_id: user_id,
+                        store_id: store_id,
+                        order_payment_id: null,
+                        order_id: null,
+                        city_id: city_id,
+                        pickup_addresses: request_data_body.pickup_addresses,
+                        destination_addresses:
+                          request_data_body.destination_addresses,
+                        order_details: order_details,
+                        total_cart_price: total_cart_price,
+                        total_item_tax: total_item_tax,
+                        total_item_count: total_item_count,
+                        is_ramadan_order: true,
+                      });
+
+                      if (
+                        request_data_body.user_id != "" &&
+                        request_data_body.user_id != undefined
+                      ) {
+                        cart.cart_unique_token = "";
+                      }
+
+                      cart.save().then(
+                        () => {
+                          if (user) {
+                            user.cart_id = cart._id;
+                            user.save();
+                          }
+
+                          response_data.json({
+                            success: true,
+                            message: CART_MESSAGE_CODE.CART_ADDED_SUCCESSFULLY,
+                            cart_id: cart._id,
+                            city_id: city_id,
+                            user_id: user_id,
+                            cart,
+                          });
+                        },
+                        (error) => {
+                          console.log(
+                            "ramadan_cart api2" + JSON.stringify(error)
+                          );
+                          response_data.json({
+                            success: false,
+                            error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                          });
+                        }
+                      );
+                    }
+                  },
+                  (error) => {
+                    console.log("ramadan_cart api3", error);
+                    response_data.json({
+                      success: false,
+                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                    });
+                  }
+                );
+              },
+              (error) => {
+                console.log("ramadan_cart api4", error);
+                response_data.json({
+                  success: false,
+                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                });
+              }
+            );
           } else {
-            console.log("ramadan_cart api6");
+            console.log("ramadan_cart api5");
             response_data.json({
               success: false,
               error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
             });
           }
+          // } else
+          // {
+          //     response_data.json({success: false, error_code: STORE_ERROR_CODE.STORE_BUSINESS_OFF});
+          // }
+        } else {
+          console.log("ramadan_cart api6");
+          response_data.json({
+            success: false,
+            error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+          });
         }
       } else {
         console.log("ramadan_cart api7");
@@ -1122,451 +1097,434 @@ exports.add_item_in_ramadan_cart = function (request_data, response_data) {
         }
         const user = await User.findOne({ _id: request_data_body.user_id });
 
-        if (
-          user &&
-          request_data_body.server_token !== null &&
-          user.server_token !== request_data_body.server_token
-        ) {
-          response_data.json({
-            success: false,
-            error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-          });
+        var cart_id = null;
+        if (request_data_body.cart_id != undefined) {
+          cart_id = request_data_body.cart_id;
         } else {
-          var cart_id = null;
-          if (request_data_body.cart_id != undefined) {
-            cart_id = request_data_body.cart_id;
-          } else {
-            cart_id = null;
-          }
-          var user_id = null;
+          cart_id = null;
+        }
+        var user_id = null;
 
-          var delivery_type = DELIVERY_TYPE.STORE;
-          if (request_data_body.delivery_type) {
-            delivery_type = request_data_body.delivery_type;
-          }
-          if (delivery_type == DELIVERY_TYPE.COURIER) {
-            request_data_body.store_id = null;
+        var delivery_type = DELIVERY_TYPE.STORE;
+        if (request_data_body.delivery_type) {
+          delivery_type = request_data_body.delivery_type;
+        }
+        if (delivery_type == DELIVERY_TYPE.COURIER) {
+          request_data_body.store_id = null;
+        }
+
+        const store = await Store.findOne({
+          _id: request_data_body.store_id,
+          is_business: true,
+        });
+        if (store) {
+          // if (store) {
+          var country_id = request_data_body.country_id;
+          var city_id = request_data_body.city_id;
+          var store_id = null;
+          if (
+            !["", null, undefined].includes(request_data_body.min_order_price)
+          ) {
+            store.min_order_price = request_data_body.min_order_price;
+            store.save();
           }
 
-          const store = await Store.findOne({
-            _id: request_data_body.store_id,
-            is_business: true,
-          });
           if (store) {
-            // if (store) {
-            var country_id = request_data_body.country_id;
-            var city_id = request_data_body.city_id;
-            var store_id = null;
-            if (
-              !["", null, undefined].includes(request_data_body.min_order_price)
-            ) {
-              store.min_order_price = request_data_body.min_order_price;
-              store.save();
-            }
+            country_id = store.country_id;
+            city_id = store.city_id;
+            store_id = store._id;
 
-            if (store) {
-              country_id = store.country_id;
-              city_id = store.city_id;
-              store_id = store._id;
+            request_data_body.pickup_addresses[0].address = store.address;
+            request_data_body.pickup_addresses[0].location = store.location;
+            request_data_body.pickup_addresses[0].user_details.country_phone_code =
+              store.country_phone_code;
+            request_data_body.pickup_addresses[0].user_details.email =
+              store.email;
+            request_data_body.pickup_addresses[0].user_details.name =
+              store.name;
+            request_data_body.pickup_addresses[0].user_details.phone =
+              store.phone;
+          }
 
-              request_data_body.pickup_addresses[0].address = store.address;
-              request_data_body.pickup_addresses[0].location = store.location;
-              request_data_body.pickup_addresses[0].user_details.country_phone_code =
-                store.country_phone_code;
-              request_data_body.pickup_addresses[0].user_details.email =
-                store.email;
-              request_data_body.pickup_addresses[0].user_details.name =
-                store.name;
-              request_data_body.pickup_addresses[0].user_details.phone =
-                store.phone;
-            }
-
-            const country_detail = await Country.findOne({ _id: country_id });
-            var country_phone_code = "";
-            var wallet_currency_code = "";
-            var country_code = "";
+          const country_detail = await Country.findOne({ _id: country_id });
+          var country_phone_code = "";
+          var wallet_currency_code = "";
+          var country_code = "";
+          if (country_detail) {
             if (country_detail) {
-              if (country_detail) {
-                country_id = country_detail._id;
-                country_phone_code = country_detail.country_phone_code;
-                wallet_currency_code = country_detail.currency_code;
-                country_code = country_detail.country_code;
-              }
-
-              var phone =
-                request_data_body.destination_addresses[0].user_details.phone;
-              var email =
-                request_data_body.destination_addresses[0].user_details.email;
-              var query = { $or: [{ email: email }, { phone: phone }] };
-
-              User.findOne(query).then(
-                async (user_phone_data) => {
-                  if (
-                    user_type == ADMIN_DATA_ID.STORE &&
-                    request_data_body.destination_addresses.length > 0
-                  ) {
-                    if (user_phone_data) {
-                      user_phone_data.cart_id = cart_id;
-                      user_phone_data.save();
-                      user = user_phone_data;
-                    } else {
-                      var server_token = utils.generateServerToken(32);
-                      var password = "123456";
-                      password = utils.encryptPassword(password);
-
-                      var first_name =
-                        request_data_body.destination_addresses[0].user_details.name.trim();
-                      if (
-                        first_name != "" &&
-                        first_name != undefined &&
-                        first_name != null
-                      ) {
-                        first_name =
-                          first_name.charAt(0).toUpperCase() +
-                          first_name.slice(1);
-                      } else {
-                        first_name = "";
-                      }
-                      var referral_code = await utils.generateReferralCode(
-                        phone
-                      );
-                      var user_data = new User({
-                        user_type: ADMIN_DATA_ID.STORE,
-                        admin_type: ADMIN_DATA_ID.USER,
-                        first_name: first_name,
-                        email: email,
-                        password: password,
-                        country_phone_code: country_phone_code,
-                        phone: phone,
-                        country_id: country_id,
-                        server_token: server_token,
-                        referral_code: referral_code,
-                        wallet_currency_code: wallet_currency_code,
-                        cart_id: cart_id,
-                      });
-                      user_id = user_data._id;
-                      cart_id = user_data.cart_id;
-                      cart_unique_token = null;
-
-                      utils.insert_documets_for_new_users(
-                        user_data,
-                        null,
-                        ADMIN_DATA_ID.USER,
-                        country_id,
-                        function (document_response) {
-                          user_data.is_document_uploaded =
-                            document_response.is_document_uploaded;
-                          user_data.save();
-                          user = user_data;
-                        }
-                      );
-                    }
-                  }
-
-                  if (user) {
-                    cart_id = user.cart_id;
-                    user_id = user._id;
-                    cart_unique_token = null;
-                  }
-
-                  Cart.findOne({
-                    $or: [
-                      { _id: cart_id },
-                      { cart_unique_token: cart_unique_token },
-                    ],
-                  }).then(
-                    async (cart) => {
-                      if (
-                        cart &&
-                        (!cart.store_id ||
-                          cart.store_id.equals(store_id) ||
-                          !store_id)
-                      ) {
-                        if (
-                          request_data_body.user_id != "" &&
-                          request_data_body.user_id != null
-                        ) {
-                          cart.cart_unique_token = "";
-                        }
-                        var total_item_count = 0;
-                        var order_details = {};
-                        var categories =
-                          request_data_body.order_object.package_id;
-                        var quantities =
-                          request_data_body.order_object.quantity;
-                        var products = [];
-                        var items = [];
-                        var total_cart_price = 0;
-                        for (let i = 0; i < categories.length; i++) {
-                          if (categories[i]) {
-                            var product = await Product.findOne({
-                              category_id: categories[i],
-                            });
-                            products.push(product);
-                          }
-                        }
-
-                        for (let i = 0; i < products.length; i++) {
-                          if (products[i]) {
-                            var item = await Item.find({
-                              product_id: products[i]._id,
-                            });
-                            item.forEach((item) => {
-                              var ordered_item = {
-                                details: item.details,
-                                image_url: item.image_url,
-                                item_id: item._id,
-                                item_name: item.name,
-                                note_for_item: item.note_for_item,
-                                specifications: item.specifications
-                                  ? item.specifications
-                                  : [],
-                                item_price: item.price,
-                                item_tax: item.tax,
-                                max_item_quantity: item.max_item_quantity,
-                                quantity: quantities[i],
-                                total_item_price: quantities[i] * item.price,
-                                total_item_tax: 0,
-                                total_item_price: quantities[i] * item.price,
-                                total_specification_price: 0,
-                                total_specification_tax: 0,
-                                total_tax: 0,
-                                unique_id: item.unique_id,
-                                unique_id_for_store_data:
-                                  item.unique_id_for_store_data,
-                              };
-                              total_item_count = total_item_count + 1;
-                              total_cart_price =
-                                total_cart_price + quantities[i] * item.price;
-                              items.push(ordered_item);
-                            });
-                          }
-                        }
-                        order_details.items = items;
-
-                        cart.delivery_type = delivery_type;
-                        cart.user_id = user_id;
-                        cart.user_type_id = user_id;
-                        cart.user_type = request_data_body.user_type;
-                        cart.city_id = city_id;
-                        cart.destination_addresses =
-                          request_data_body.destination_addresses;
-                        cart.order_details = order_details;
-                        cart.pickup_addresses =
-                          request_data_body.pickup_addresses;
-                        cart.store_id = store_id;
-                        var total_item_tax = 0;
-                        cart.total_cart_price = total_cart_price;
-                        cart.total_item_count = total_item_count;
-                        cart.is_ramadan_order = true;
-                        if (store) {
-                          if (store.is_use_item_tax) {
-                            if (request_data_body.total_item_tax) {
-                              total_item_tax = request_data_body.total_item_tax;
-                            }
-                          } else {
-                            if (total_cart_price) {
-                              total_item_tax =
-                                total_cart_price * store.item_tax * 0.01;
-                            } else {
-                              total_cart_price = 0;
-                            }
-                          }
-                        }
-
-                        total_item_tax = utils.precisionRoundTwo(
-                          Number(total_item_tax)
-                        );
-                        cart.total_item_tax = total_item_tax;
-                        cart.save().then(
-                          () => {
-                            response_data.json({
-                              success: true,
-                              message:
-                                CART_MESSAGE_CODE.CART_UPDATED_SUCCESSFULLY,
-                              cart_id: cart._id,
-                              city_id: city_id,
-                              user_id: user_id,
-                              cart,
-                            });
-                          },
-                          (error) => {
-                            console.log("error: 5" + error);
-                            response_data.json({
-                              success: false,
-                              error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                            });
-                          }
-                        );
-
-                        //response_data.json({success: false, error_code: STORE_ERROR_CODE.MISMATCH_STORE_ID});
-                      } else {
-                        var total_cart_price = 0;
-
-                        var total_item_tax = 0;
-                        if (store) {
-                          if (store.is_use_item_tax) {
-                            if (request_data_body.total_item_tax) {
-                              total_item_tax = request_data_body.total_item_tax;
-                            }
-                          } else {
-                            if (total_cart_price) {
-                              total_item_tax =
-                                total_cart_price * store.item_tax * 0.01;
-                            } else {
-                              total_cart_price = 0;
-                            }
-                          }
-                        }
-                        var total_item_count = 0;
-                        var order_details = {};
-                        var categories =
-                          request_data_body.order_object.package_id;
-                        var quantities =
-                          request_data_body.order_object.quantity;
-                        var products = [];
-                        var items = [];
-                        for (let i = 0; i < categories.length; i++) {
-                          if (categories[i]) {
-                            var product = await Product.findOne({
-                              category_id: categories[i],
-                            });
-                            products.push(product);
-                          }
-                        }
-
-                        for (let i = 0; i < products.length; i++) {
-                          if (products[i]) {
-                            var item = await Item.find({
-                              product_id: products[i]._id,
-                            });
-                            item.forEach((item) => {
-                              var ordered_item = {
-                                details: item.details,
-                                image_url: item.image_url,
-                                item_id: item._id,
-                                item_name: item.name,
-                                note_for_item: item.note_for_item,
-                                specifications: item.specifications
-                                  ? item.specifications
-                                  : [],
-                                item_price: item.price,
-                                item_tax: item.tax,
-                                max_item_quantity: item.max_item_quantity,
-                                quantity: quantities[i],
-                                total_item_price: quantities[i] * item.price,
-                                total_item_tax: 0,
-                                total_item_price: quantities[i] * item.price,
-                                total_specification_price: 0,
-                                total_specification_tax: 0,
-                                total_tax: 0,
-                                unique_id: item.unique_id,
-                                unique_id_for_store_data:
-                                  item.unique_id_for_store_data,
-                              };
-                              total_item_count = total_item_count + 1;
-                              total_cart_price =
-                                total_cart_price + quantities[i] * item.price;
-                              items.push(ordered_item);
-                            });
-                          }
-                        }
-                        order_details.items = items;
-
-                        total_item_tax = utils.precisionRoundTwo(
-                          Number(total_item_tax)
-                        );
-
-                        var cart = new Cart({
-                          cart_unique_token:
-                            request_data_body.cart_unique_token,
-                          user_id: user_id,
-                          user_type: request_data_body.user_type,
-                          delivery_type: delivery_type,
-                          user_type_id: user_id,
-                          store_id: store_id,
-                          order_payment_id: null,
-                          order_id: null,
-                          city_id: city_id,
-                          pickup_addresses: request_data_body.pickup_addresses,
-                          destination_addresses:
-                            request_data_body.destination_addresses,
-                          order_details: order_details,
-                          total_cart_price: total_cart_price,
-                          total_item_tax: total_item_tax,
-                          total_item_count: total_item_count,
-                          is_ramadan_order: true,
-                        });
-
-                        if (
-                          request_data_body.user_id != "" &&
-                          request_data_body.user_id != undefined
-                        ) {
-                          cart.cart_unique_token = "";
-                        }
-
-                        cart.save().then(
-                          () => {
-                            if (user) {
-                              user.cart_id = cart._id;
-                              user.save();
-                            }
-
-                            response_data.json({
-                              success: true,
-                              message:
-                                CART_MESSAGE_CODE.CART_ADDED_SUCCESSFULLY,
-                              cart_id: cart._id,
-                              city_id: city_id,
-                              user_id: user_id,
-                              cart,
-                            });
-                          },
-                          (error) => {
-                            console.log("error: 6" + error);
-                            response_data.json({
-                              success: false,
-                              error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                            });
-                          }
-                        );
-                      }
-                    },
-                    (error) => {
-                      console.log("error: 1" + error);
-                      response_data.json({
-                        success: false,
-                        error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                      });
-                    }
-                  );
-                },
-                (error) => {
-                  console.log("error: 2" + error);
-                  response_data.json({
-                    success: false,
-                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                  });
-                }
-              );
-            } else {
-              console.log("error: 3");
-              response_data.json({
-                success: false,
-                error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-              });
+              country_id = country_detail._id;
+              country_phone_code = country_detail.country_phone_code;
+              wallet_currency_code = country_detail.currency_code;
+              country_code = country_detail.country_code;
             }
-            // } else
-            // {
-            //     response_data.json({success: false, error_code: STORE_ERROR_CODE.STORE_BUSINESS_OFF});
-            // }
+
+            var phone =
+              request_data_body.destination_addresses[0].user_details.phone;
+            var email =
+              request_data_body.destination_addresses[0].user_details.email;
+            var query = { $or: [{ email: email }, { phone: phone }] };
+
+            User.findOne(query).then(
+              async (user_phone_data) => {
+                if (
+                  user_type == ADMIN_DATA_ID.STORE &&
+                  request_data_body.destination_addresses.length > 0
+                ) {
+                  if (user_phone_data) {
+                    user_phone_data.cart_id = cart_id;
+                    user_phone_data.save();
+                    user = user_phone_data;
+                  } else {
+                    var server_token = utils.generateServerToken(32);
+                    var password = "123456";
+                    password = utils.encryptPassword(password);
+
+                    var first_name =
+                      request_data_body.destination_addresses[0].user_details.name.trim();
+                    if (
+                      first_name != "" &&
+                      first_name != undefined &&
+                      first_name != null
+                    ) {
+                      first_name =
+                        first_name.charAt(0).toUpperCase() +
+                        first_name.slice(1);
+                    } else {
+                      first_name = "";
+                    }
+                    var referral_code = await utils.generateReferralCode(phone);
+                    var user_data = new User({
+                      user_type: ADMIN_DATA_ID.STORE,
+                      admin_type: ADMIN_DATA_ID.USER,
+                      first_name: first_name,
+                      email: email,
+                      password: password,
+                      country_phone_code: country_phone_code,
+                      phone: phone,
+                      country_id: country_id,
+                      server_token: server_token,
+                      referral_code: referral_code,
+                      wallet_currency_code: wallet_currency_code,
+                      cart_id: cart_id,
+                    });
+                    user_id = user_data._id;
+                    cart_id = user_data.cart_id;
+                    cart_unique_token = null;
+
+                    utils.insert_documets_for_new_users(
+                      user_data,
+                      null,
+                      ADMIN_DATA_ID.USER,
+                      country_id,
+                      function (document_response) {
+                        user_data.is_document_uploaded =
+                          document_response.is_document_uploaded;
+                        user_data.save();
+                        user = user_data;
+                      }
+                    );
+                  }
+                }
+
+                if (user) {
+                  cart_id = user.cart_id;
+                  user_id = user._id;
+                  cart_unique_token = null;
+                }
+
+                Cart.findOne({
+                  $or: [
+                    { _id: cart_id },
+                    { cart_unique_token: cart_unique_token },
+                  ],
+                }).then(
+                  async (cart) => {
+                    if (
+                      cart &&
+                      (!cart.store_id ||
+                        cart.store_id.equals(store_id) ||
+                        !store_id)
+                    ) {
+                      if (
+                        request_data_body.user_id != "" &&
+                        request_data_body.user_id != null
+                      ) {
+                        cart.cart_unique_token = "";
+                      }
+                      var total_item_count = 0;
+                      var order_details = {};
+                      var categories =
+                        request_data_body.order_object.package_id;
+                      var quantities = request_data_body.order_object.quantity;
+                      var products = [];
+                      var items = [];
+                      var total_cart_price = 0;
+                      for (let i = 0; i < categories.length; i++) {
+                        if (categories[i]) {
+                          var product = await Product.findOne({
+                            category_id: categories[i],
+                          });
+                          products.push(product);
+                        }
+                      }
+
+                      for (let i = 0; i < products.length; i++) {
+                        if (products[i]) {
+                          var item = await Item.find({
+                            product_id: products[i]._id,
+                          });
+                          item.forEach((item) => {
+                            var ordered_item = {
+                              details: item.details,
+                              image_url: item.image_url,
+                              item_id: item._id,
+                              item_name: item.name,
+                              note_for_item: item.note_for_item,
+                              specifications: item.specifications
+                                ? item.specifications
+                                : [],
+                              item_price: item.price,
+                              item_tax: item.tax,
+                              max_item_quantity: item.max_item_quantity,
+                              quantity: quantities[i],
+                              total_item_price: quantities[i] * item.price,
+                              total_item_tax: 0,
+                              total_item_price: quantities[i] * item.price,
+                              total_specification_price: 0,
+                              total_specification_tax: 0,
+                              total_tax: 0,
+                              unique_id: item.unique_id,
+                              unique_id_for_store_data:
+                                item.unique_id_for_store_data,
+                            };
+                            total_item_count = total_item_count + 1;
+                            total_cart_price =
+                              total_cart_price + quantities[i] * item.price;
+                            items.push(ordered_item);
+                          });
+                        }
+                      }
+                      order_details.items = items;
+
+                      cart.delivery_type = delivery_type;
+                      cart.user_id = user_id;
+                      cart.user_type_id = user_id;
+                      cart.user_type = request_data_body.user_type;
+                      cart.city_id = city_id;
+                      cart.destination_addresses =
+                        request_data_body.destination_addresses;
+                      cart.order_details = order_details;
+                      cart.pickup_addresses =
+                        request_data_body.pickup_addresses;
+                      cart.store_id = store_id;
+                      var total_item_tax = 0;
+                      cart.total_cart_price = total_cart_price;
+                      cart.total_item_count = total_item_count;
+                      cart.is_ramadan_order = true;
+                      if (store) {
+                        if (store.is_use_item_tax) {
+                          if (request_data_body.total_item_tax) {
+                            total_item_tax = request_data_body.total_item_tax;
+                          }
+                        } else {
+                          if (total_cart_price) {
+                            total_item_tax =
+                              total_cart_price * store.item_tax * 0.01;
+                          } else {
+                            total_cart_price = 0;
+                          }
+                        }
+                      }
+
+                      total_item_tax = utils.precisionRoundTwo(
+                        Number(total_item_tax)
+                      );
+                      cart.total_item_tax = total_item_tax;
+                      cart.save().then(
+                        () => {
+                          response_data.json({
+                            success: true,
+                            message:
+                              CART_MESSAGE_CODE.CART_UPDATED_SUCCESSFULLY,
+                            cart_id: cart._id,
+                            city_id: city_id,
+                            user_id: user_id,
+                            cart,
+                          });
+                        },
+                        (error) => {
+                          console.log("error: 5" + error);
+                          response_data.json({
+                            success: false,
+                            error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                          });
+                        }
+                      );
+
+                      //response_data.json({success: false, error_code: STORE_ERROR_CODE.MISMATCH_STORE_ID});
+                    } else {
+                      var total_cart_price = 0;
+
+                      var total_item_tax = 0;
+                      if (store) {
+                        if (store.is_use_item_tax) {
+                          if (request_data_body.total_item_tax) {
+                            total_item_tax = request_data_body.total_item_tax;
+                          }
+                        } else {
+                          if (total_cart_price) {
+                            total_item_tax =
+                              total_cart_price * store.item_tax * 0.01;
+                          } else {
+                            total_cart_price = 0;
+                          }
+                        }
+                      }
+                      var total_item_count = 0;
+                      var order_details = {};
+                      var categories =
+                        request_data_body.order_object.package_id;
+                      var quantities = request_data_body.order_object.quantity;
+                      var products = [];
+                      var items = [];
+                      for (let i = 0; i < categories.length; i++) {
+                        if (categories[i]) {
+                          var product = await Product.findOne({
+                            category_id: categories[i],
+                          });
+                          products.push(product);
+                        }
+                      }
+
+                      for (let i = 0; i < products.length; i++) {
+                        if (products[i]) {
+                          var item = await Item.find({
+                            product_id: products[i]._id,
+                          });
+                          item.forEach((item) => {
+                            var ordered_item = {
+                              details: item.details,
+                              image_url: item.image_url,
+                              item_id: item._id,
+                              item_name: item.name,
+                              note_for_item: item.note_for_item,
+                              specifications: item.specifications
+                                ? item.specifications
+                                : [],
+                              item_price: item.price,
+                              item_tax: item.tax,
+                              max_item_quantity: item.max_item_quantity,
+                              quantity: quantities[i],
+                              total_item_price: quantities[i] * item.price,
+                              total_item_tax: 0,
+                              total_item_price: quantities[i] * item.price,
+                              total_specification_price: 0,
+                              total_specification_tax: 0,
+                              total_tax: 0,
+                              unique_id: item.unique_id,
+                              unique_id_for_store_data:
+                                item.unique_id_for_store_data,
+                            };
+                            total_item_count = total_item_count + 1;
+                            total_cart_price =
+                              total_cart_price + quantities[i] * item.price;
+                            items.push(ordered_item);
+                          });
+                        }
+                      }
+                      order_details.items = items;
+
+                      total_item_tax = utils.precisionRoundTwo(
+                        Number(total_item_tax)
+                      );
+
+                      var cart = new Cart({
+                        cart_unique_token: request_data_body.cart_unique_token,
+                        user_id: user_id,
+                        user_type: request_data_body.user_type,
+                        delivery_type: delivery_type,
+                        user_type_id: user_id,
+                        store_id: store_id,
+                        order_payment_id: null,
+                        order_id: null,
+                        city_id: city_id,
+                        pickup_addresses: request_data_body.pickup_addresses,
+                        destination_addresses:
+                          request_data_body.destination_addresses,
+                        order_details: order_details,
+                        total_cart_price: total_cart_price,
+                        total_item_tax: total_item_tax,
+                        total_item_count: total_item_count,
+                        is_ramadan_order: true,
+                      });
+
+                      if (
+                        request_data_body.user_id != "" &&
+                        request_data_body.user_id != undefined
+                      ) {
+                        cart.cart_unique_token = "";
+                      }
+
+                      cart.save().then(
+                        () => {
+                          if (user) {
+                            user.cart_id = cart._id;
+                            user.save();
+                          }
+
+                          response_data.json({
+                            success: true,
+                            message: CART_MESSAGE_CODE.CART_ADDED_SUCCESSFULLY,
+                            cart_id: cart._id,
+                            city_id: city_id,
+                            user_id: user_id,
+                            cart,
+                          });
+                        },
+                        (error) => {
+                          console.log("error: 6" + error);
+                          response_data.json({
+                            success: false,
+                            error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                          });
+                        }
+                      );
+                    }
+                  },
+                  (error) => {
+                    console.log("error: 1" + error);
+                    response_data.json({
+                      success: false,
+                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                    });
+                  }
+                );
+              },
+              (error) => {
+                console.log("error: 2" + error);
+                response_data.json({
+                  success: false,
+                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                });
+              }
+            );
           } else {
-            console.log("error: 4");
+            console.log("error: 3");
             response_data.json({
               success: false,
               error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
             });
           }
+          // } else
+          // {
+          //     response_data.json({success: false, error_code: STORE_ERROR_CODE.STORE_BUSINESS_OFF});
+          // }
+        } else {
+          console.log("error: 4");
+          response_data.json({
+            success: false,
+            error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+          });
         }
       } else {
         response_data.json(response);
@@ -1589,146 +1547,133 @@ exports.get_cart = function (request_data, response_data) {
           request_data_body.user_id = null;
         }
         const user = await User.findOne({ _id: request_data_body.user_id });
-        if (
-          user &&
-          request_data_body.server_token !== null &&
-          user.server_token !== request_data_body.server_token
-        ) {
+
+        var cart_id = null;
+        var user_id = null;
+
+        if (user) {
+          cart_id = user.cart_id;
+          user_id = user._id;
+          cart_unique_token = null;
+        }
+        const cart_detail = await Cart.findOne({
+          $or: [{ _id: cart_id }, { cart_unique_token: cart_unique_token }],
+        });
+        if (!cart_detail) {
           response_data.json({
             success: false,
-            error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
+            error_code: CART_ERROR_CODE.CART_NOT_FOUND,
           });
-        } else {
-          var cart_id = null;
-          var user_id = null;
-
+          return;
+        }
+        cart_id = cart_detail._id;
+        let store = await Store.findOne({
+          _id: cart_detail.store_id,
+        }).lean();
+        if (!store) {
+          response_data.json({
+            success: false,
+            error_code: STORE_ERROR_CODE.STORE_DATA_NOT_FOUND,
+          });
+          return;
+        }
+        if (!store.is_business) {
           if (user) {
-            cart_id = user.cart_id;
-            user_id = user._id;
-            cart_unique_token = null;
+            user.cart_id = null;
+            user.save();
           }
-          const cart_detail = await Cart.findOne({
-            $or: [{ _id: cart_id }, { cart_unique_token: cart_unique_token }],
+          response_data.json({
+            success: false,
+            error_code: STORE_ERROR_CODE.STORE_BUSINESS_OFF,
           });
-          if (!cart_detail) {
-            response_data.json({
-              success: false,
-              error_code: CART_ERROR_CODE.CART_NOT_FOUND,
-            });
-            return;
-          }
-          cart_id = cart_detail._id;
-          let store = await Store.findOne({
-            _id: cart_detail.store_id,
-          }).lean();
-          if (!store) {
-            response_data.json({
-              success: false,
-              error_code: STORE_ERROR_CODE.STORE_DATA_NOT_FOUND,
-            });
-            return;
-          }
-          if (!store.is_business) {
-            if (user) {
-              user.cart_id = null;
-              user.save();
-            }
-            response_data.json({
-              success: false,
-              error_code: STORE_ERROR_CODE.STORE_BUSINESS_OFF,
-            });
-            return;
-          }
-          const country = await Country.findOne({ _id: store.country_id });
-          var currency = "";
-          if (country) {
-            currency = country.currency_sign;
-          }
+          return;
+        }
+        const country = await Country.findOne({ _id: store.country_id });
+        var currency = "";
+        if (country) {
+          currency = country.currency_sign;
+        }
 
-          let cart = await getCart(cart_id);
-          if (cart.length == 0) {
-            response_data.json({
-              success: false,
-              error_code: CART_ERROR_CODE.CART_NOT_FOUND,
-            });
-            return;
-          }
-          if (
-            store &&
-            store.radius_regions &&
-            store.radius_regions.length &&
-            request_data_body.latitude &&
-            request_data_body.longitude
-          ) {
-            await setUseRadiusZone(
-              store,
-              request_data_body.latitude,
-              request_data_body.longitude,
-              cart_id
-            );
-          }
-          if (cart.length) {
-            const order_details = cart[0].order_details;
-            if (order_details.length) {
-              if (order_details[0].items && order_details[0].items.length) {
-                const item = order_details[0].items[0];
-                if (item && item.SkuCode) {
-                  cart[0].order_details = [];
-                }
+        let cart = await getCart(cart_id);
+        if (cart.length == 0) {
+          response_data.json({
+            success: false,
+            error_code: CART_ERROR_CODE.CART_NOT_FOUND,
+          });
+          return;
+        }
+        if (
+          store &&
+          store.radius_regions &&
+          store.radius_regions.length &&
+          request_data_body.latitude &&
+          request_data_body.longitude
+        ) {
+          await setUseRadiusZone(
+            store,
+            request_data_body.latitude,
+            request_data_body.longitude,
+            cart_id
+          );
+        }
+        if (cart.length) {
+          const order_details = cart[0].order_details;
+          if (order_details.length) {
+            if (order_details[0].items && order_details[0].items.length) {
+              const item = order_details[0].items[0];
+              if (item && item.SkuCode) {
+                cart[0].order_details = [];
               }
             }
           }
-          //check user exists or not
-          if (user) {
-            const userSetting = await UserSetting.findOne({ userId: user._id });
-            if (userSetting && userSetting.free_delivery) {
-              store.free_delivery_for_above_order_price =
-                userSetting.free_delivery_amount;
-              store.is_show_free_delivery_above_order =
-                userSetting.free_delivery;
-            }
-            response_data.json({
-              success: true,
-              message: CART_MESSAGE_CODE.CART_GET_SUCCESSFULLY,
-              currency: currency,
-              min_order_price: store.min_order_price,
-              cart_id: cart_detail._id,
-              city_id: cart_detail.city_id,
-              store_id: store._id,
-              store_details: store,
-              // user_radius_zone,
-              store_time: store.store_time,
-              is_use_item_tax: store.is_use_item_tax,
-              item_tax: store.item_tax,
-              name: store.name,
-              max_item_quantity_add_by_user:
-                store.max_item_quantity_add_by_user,
-              destination_addresses: cart_detail.destination_addresses,
-              pickup_addresses: cart_detail.pickup_addresses,
-              cart: cart[0],
-            });
-          } else {
-            response_data.json({
-              success: true,
-              message: CART_MESSAGE_CODE.CART_GET_SUCCESSFULLY,
-              currency: currency,
-              min_order_price: store.min_order_price,
-              cart_id: cart_detail._id,
-              city_id: cart_detail.city_id,
-              store_id: store._id,
-              store_details: store,
-              // user_radius_zone,
-              store_time: store.store_time,
-              is_use_item_tax: store.is_use_item_tax,
-              item_tax: store.item_tax,
-              name: store.name,
-              max_item_quantity_add_by_user:
-                store.max_item_quantity_add_by_user,
-              destination_addresses: cart_detail.destination_addresses,
-              pickup_addresses: cart_detail.pickup_addresses,
-              cart: cart[0],
-            });
+        }
+        //check user exists or not
+        if (user) {
+          const userSetting = await UserSetting.findOne({ userId: user._id });
+          if (userSetting && userSetting.free_delivery) {
+            store.free_delivery_for_above_order_price =
+              userSetting.free_delivery_amount;
+            store.is_show_free_delivery_above_order = userSetting.free_delivery;
           }
+          response_data.json({
+            success: true,
+            message: CART_MESSAGE_CODE.CART_GET_SUCCESSFULLY,
+            currency: currency,
+            min_order_price: store.min_order_price,
+            cart_id: cart_detail._id,
+            city_id: cart_detail.city_id,
+            store_id: store._id,
+            store_details: store,
+            // user_radius_zone,
+            store_time: store.store_time,
+            is_use_item_tax: store.is_use_item_tax,
+            item_tax: store.item_tax,
+            name: store.name,
+            max_item_quantity_add_by_user: store.max_item_quantity_add_by_user,
+            destination_addresses: cart_detail.destination_addresses,
+            pickup_addresses: cart_detail.pickup_addresses,
+            cart: cart[0],
+          });
+        } else {
+          response_data.json({
+            success: true,
+            message: CART_MESSAGE_CODE.CART_GET_SUCCESSFULLY,
+            currency: currency,
+            min_order_price: store.min_order_price,
+            cart_id: cart_detail._id,
+            city_id: cart_detail.city_id,
+            store_id: store._id,
+            store_details: store,
+            // user_radius_zone,
+            store_time: store.store_time,
+            is_use_item_tax: store.is_use_item_tax,
+            item_tax: store.item_tax,
+            name: store.name,
+            max_item_quantity_add_by_user: store.max_item_quantity_add_by_user,
+            destination_addresses: cart_detail.destination_addresses,
+            pickup_addresses: cart_detail.pickup_addresses,
+            cart: cart[0],
+          });
         }
       } else {
         response_data.json(response);
@@ -1756,18 +1701,6 @@ exports.clear_cart = function (request_data, response_data) {
 
       try {
         const user = await User.findOne({ _id: request_data_body.user_id });
-
-        if (
-          user &&
-          request_data_body.server_token !== null &&
-          user.server_token !== request_data_body.server_token
-        ) {
-          response_data.json({
-            success: false,
-            error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-          });
-          return;
-        }
 
         const cart = await Cart.findOne({ _id: cart_id });
         if (!cart) {

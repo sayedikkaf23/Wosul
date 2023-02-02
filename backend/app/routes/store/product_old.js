@@ -1,11 +1,22 @@
 var product = require("../../controllers/store/product"); // include product controller ////
+const { authMiddleware } = require("../../middleware/checkAuth");
 
 module.exports = function (app) {
-  app.route("/api/store/add_product").post(product.add_product);
-  app.route("/api/store/get_product_list").post(product.get_product_list);
-  app.route("/api/store/update_product").post(product.update_product);
+  app.post("/api/store/add_product", authMiddleware, product.add_product);
 
-  app.route("/api/store/get_product_data").post(product.get_product_data);
+  app.post(
+    "/api/store/get_product_list",
+    authMiddleware,
+    product.get_product_list
+  );
+
+  app.post("/api/store/update_product", authMiddleware, product.update_product);
+
+  app.post(
+    "/api/store/get_product_data",
+    authMiddleware,
+    product.get_product_data
+  );
 
   app
     .route("/api/get_product_item_detail")

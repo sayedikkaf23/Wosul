@@ -46,92 +46,77 @@ exports.create_wallet_request = function (request_data, response_data) {
         Table.findOne({ _id: request_data_body.id }).then(
           (detail) => {
             if (detail) {
-              if (
-                request_data_body.server_token !== null &&
-                detail.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                if (
-                  detail.wallet >= request_data_body.requested_wallet_amount
-                ) {
-                  Country.findOne({ _id: detail.country_id }).then(
-                    (country) => {
-                      if (country && setting_detail) {
-                        var wallet_currency_code = country.currency_code;
-                        var admin_currency_code =
-                          setting_detail.admin_currency_code;
-                        utils.getCurrencyConvertRate(
-                          1,
-                          wallet_currency_code,
-                          admin_currency_code,
-                          function (response) {
-                            if (response.success) {
-                              wallet_to_admin_current_rate =
-                                response.current_rate;
-                            } else {
-                              wallet_to_admin_current_rate = 1;
-                            }
+              if (detail.wallet >= request_data_body.requested_wallet_amount) {
+                Country.findOne({ _id: detail.country_id }).then((country) => {
+                  if (country && setting_detail) {
+                    var wallet_currency_code = country.currency_code;
+                    var admin_currency_code =
+                      setting_detail.admin_currency_code;
+                    utils.getCurrencyConvertRate(
+                      1,
+                      wallet_currency_code,
+                      admin_currency_code,
+                      function (response) {
+                        if (response.success) {
+                          wallet_to_admin_current_rate = response.current_rate;
+                        } else {
+                          wallet_to_admin_current_rate = 1;
+                        }
 
-                            var wallet_request = new Wallet_request({
-                              user_id: request_data_body.id,
-                              user_type: request_data_body.type,
-                              user_unique_id: detail.unique_id,
-                              country_id: detail.country_id,
-                              wallet_currency_code: wallet_currency_code,
-                              admin_currency_code:
-                                setting_detail.admin_currency_code,
-                              wallet_to_admin_current_rate:
-                                wallet_to_admin_current_rate,
-                              requested_wallet_amount:
-                                request_data_body.requested_wallet_amount,
-                              total_wallet_amount: detail.wallet,
-                              approved_requested_wallet_amount: 0,
-                              after_total_wallet_amount: 0,
-                              wallet_status: WALLET_REQUEST_STATUS.CREATED,
-                              is_payment_mode_cash:
-                                request_data_body.is_payment_mode_cash,
-                              description_for_request_wallet_amount:
-                                request_data_body.description_for_request_wallet_amount,
-                              transaction_details:
-                                request_data_body.transaction_details,
-                              transaction_date: null,
-                              completed_date: null,
-                              wallet_request_accepted_id: null,
-                              wallet_request_transaction_id: null,
-                              wallet_request_cancelled_id: null,
+                        var wallet_request = new Wallet_request({
+                          user_id: request_data_body.id,
+                          user_type: request_data_body.type,
+                          user_unique_id: detail.unique_id,
+                          country_id: detail.country_id,
+                          wallet_currency_code: wallet_currency_code,
+                          admin_currency_code:
+                            setting_detail.admin_currency_code,
+                          wallet_to_admin_current_rate:
+                            wallet_to_admin_current_rate,
+                          requested_wallet_amount:
+                            request_data_body.requested_wallet_amount,
+                          total_wallet_amount: detail.wallet,
+                          approved_requested_wallet_amount: 0,
+                          after_total_wallet_amount: 0,
+                          wallet_status: WALLET_REQUEST_STATUS.CREATED,
+                          is_payment_mode_cash:
+                            request_data_body.is_payment_mode_cash,
+                          description_for_request_wallet_amount:
+                            request_data_body.description_for_request_wallet_amount,
+                          transaction_details:
+                            request_data_body.transaction_details,
+                          transaction_date: null,
+                          completed_date: null,
+                          wallet_request_accepted_id: null,
+                          wallet_request_transaction_id: null,
+                          wallet_request_cancelled_id: null,
+                        });
+                        wallet_request.save().then(
+                          () => {
+                            response_data.json({
+                              success: true,
+                              message:
+                                WALLET_REQUEST_MESSAGE_CODE.WALLET_REQUEST_CREATE_SUCCESSFULLY,
+                              wallet_request: wallet_request,
                             });
-                            wallet_request.save().then(
-                              () => {
-                                response_data.json({
-                                  success: true,
-                                  message:
-                                    WALLET_REQUEST_MESSAGE_CODE.WALLET_REQUEST_CREATE_SUCCESSFULLY,
-                                  wallet_request: wallet_request,
-                                });
-                              },
-                              (error) => {
-                                console.log(error);
-                                response_data.json({
-                                  success: false,
-                                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                                });
-                              }
-                            );
+                          },
+                          (error) => {
+                            console.log(error);
+                            response_data.json({
+                              success: false,
+                              error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                            });
                           }
                         );
                       }
-                    }
-                  );
-                } else {
-                  response_data.json({
-                    success: false,
-                    error_code: ERROR_CODE.INSUFFICIENT_BALANCE,
-                  });
-                }
+                    );
+                  }
+                });
+              } else {
+                response_data.json({
+                  success: false,
+                  error_code: ERROR_CODE.INSUFFICIENT_BALANCE,
+                });
               }
             } else {
               response_data.json({
@@ -155,6 +140,7 @@ exports.create_wallet_request = function (request_data, response_data) {
   );
 };
 
+// test
 // get_wallet_request_list
 exports.get_wallet_request_list = function (request_data, response_data) {
   utils.check_request_params(
@@ -179,46 +165,36 @@ exports.get_wallet_request_list = function (request_data, response_data) {
         Table.findOne({ _id: request_data_body.id }).then(
           (detail) => {
             if (detail) {
-              if (
-                request_data_body.server_token !== null &&
-                detail.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                Wallet_request.find(
-                  { user_id: request_data_body.id, user_type: type },
-                  null,
-                  { sort: { unique_id: -1 } }
-                ).then(
-                  (wallet_request_detail) => {
-                    //Wallet_request.find({user_id: request_data_body.id, user_type: type}, function (error, wallet_request_detail) {
-                    if (wallet_request_detail.length == 0) {
-                      response_data.json({
-                        success: false,
-                        error_code:
-                          WALLET_REQUEST_ERROR_CODE.WALLET_REQUEST_DETAILS_NOT_FOUND,
-                      });
-                    } else {
-                      response_data.json({
-                        success: true,
-                        message:
-                          WALLET_REQUEST_MESSAGE_CODE.WALLET_REQUEST_GET_SUCCESSFULLY,
-                        wallet_request_detail: wallet_request_detail,
-                      });
-                    }
-                  },
-                  (error) => {
-                    console.log(error);
+              Wallet_request.find(
+                { user_id: request_data_body.id, user_type: type },
+                null,
+                { sort: { unique_id: -1 } }
+              ).then(
+                (wallet_request_detail) => {
+                  //Wallet_request.find({user_id: request_data_body.id, user_type: type}, function (error, wallet_request_detail) {
+                  if (wallet_request_detail.length == 0) {
                     response_data.json({
                       success: false,
-                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                      error_code:
+                        WALLET_REQUEST_ERROR_CODE.WALLET_REQUEST_DETAILS_NOT_FOUND,
+                    });
+                  } else {
+                    response_data.json({
+                      success: true,
+                      message:
+                        WALLET_REQUEST_MESSAGE_CODE.WALLET_REQUEST_GET_SUCCESSFULLY,
+                      wallet_request_detail: wallet_request_detail,
                     });
                   }
-                );
-              }
+                },
+                (error) => {
+                  console.log(error);
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
             }
           },
           (error) => {

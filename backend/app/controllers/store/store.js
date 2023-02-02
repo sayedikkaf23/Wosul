@@ -924,15 +924,6 @@ exports.store_update = function (request_data, response_data) {
           if (store) {
             if (
               request_data_body.type !== ADMIN_DATA_ID.ADMIN &&
-              request_data_body.server_token !== null &&
-              store.server_token !== request_data_body.server_token
-            ) {
-              response_data.json({
-                success: false,
-                error_code: STORE_ERROR_CODE.INVALID_SERVER_TOKEN,
-              });
-            } else if (
-              request_data_body.type !== ADMIN_DATA_ID.ADMIN &&
               social_id == null &&
               old_password != "" &&
               old_password != store.password
@@ -1241,97 +1232,87 @@ exports.store_otp_verification = function (request_data, response_data) {
       Store.findOne({ _id: request_data_body.store_id }).then(
         (store) => {
           if (store) {
-            if (
-              request_data_body.server_token !== null &&
-              store.server_token !== request_data_body.server_token
-            ) {
-              response_data.json({
-                success: false,
-                error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              });
-            } else {
-              if (request_data_body.is_phone_number_verified != undefined) {
-                store.is_phone_number_verified =
-                  request_data_body.is_phone_number_verified;
-                if (store.phone != request_data_body.phone) {
-                  Store.findOne({ phone: request_data_body.phone }).then(
-                    (store_phone_detail) => {
-                      if (store_phone_detail) {
-                        store_phone_detail.phone =
-                          "00" + store_phone_detail.phone;
-                        store_phone_detail.save();
-                      }
+            if (request_data_body.is_phone_number_verified != undefined) {
+              store.is_phone_number_verified =
+                request_data_body.is_phone_number_verified;
+              if (store.phone != request_data_body.phone) {
+                Store.findOne({ phone: request_data_body.phone }).then(
+                  (store_phone_detail) => {
+                    if (store_phone_detail) {
+                      store_phone_detail.phone =
+                        "00" + store_phone_detail.phone;
+                      store_phone_detail.save();
                     }
-                  );
-                }
-                store.phone = request_data_body.phone;
-                store.save();
-              } else if (request_data_body.is_email_verified != undefined) {
-                store.is_email_verified = request_data_body.is_email_verified;
-                if (store.email != request_data_body.email) {
-                  Store.findOne({ email: request_data_body.email }).then(
-                    (store_email_detail) => {
-                      if (store_email_detail) {
-                        store_email_detail.email =
-                          "notverified" + store_email_detail.email;
-                        store_email_detail.save();
-                      }
+                  }
+                );
+              }
+              store.phone = request_data_body.phone;
+              store.save();
+            } else if (request_data_body.is_email_verified != undefined) {
+              store.is_email_verified = request_data_body.is_email_verified;
+              if (store.email != request_data_body.email) {
+                Store.findOne({ email: request_data_body.email }).then(
+                  (store_email_detail) => {
+                    if (store_email_detail) {
+                      store_email_detail.email =
+                        "notverified" + store_email_detail.email;
+                      store_email_detail.save();
                     }
-                  );
-                }
-
-                store.email = request_data_body.email;
-                store.save();
-              } else if (
-                request_data_body.is_phone_number_verified != undefined &&
-                request_data_body.is_email_verified != undefined
-              ) {
-                store.is_phone_number_verified =
-                  request_data_body.is_phone_number_verified;
-                if (store.phone != request_data_body.phone) {
-                  Store.findOne({ phone: request_data_body.phone }).then(
-                    (store_phone_detail) => {
-                      if (store_phone_detail) {
-                        store_phone_detail.phone =
-                          "00" + store_phone_detail.phone;
-                        store_phone_detail.save();
-                      }
-                    }
-                  );
-                }
-                store.is_email_verified = request_data_body.is_email_verified;
-                if (store.phone != request_data_body.phone) {
-                  Store.findOne({ email: request_data_body.email }).then(
-                    (store_email_detail) => {
-                      if (store_email_detail) {
-                        store_email_detail.email =
-                          "notverified" + store_email_detail.email;
-                        store_email_detail.save();
-                      }
-                    }
-                  );
-                }
-                store.phone = request_data_body.phone;
-                store.email = request_data_body.email;
-                store.save();
+                  }
+                );
               }
 
-              store.save().then(
-                () => {
-                  response_data.json({
-                    success: true,
-                    message: STORE_MESSAGE_CODE.OTP_VERIFICATION_SUCCESSFULLY,
-                  });
-                },
-                (error) => {
-                  console.log(error);
-                  response_data.json({
-                    success: false,
-                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                  });
-                }
-              );
+              store.email = request_data_body.email;
+              store.save();
+            } else if (
+              request_data_body.is_phone_number_verified != undefined &&
+              request_data_body.is_email_verified != undefined
+            ) {
+              store.is_phone_number_verified =
+                request_data_body.is_phone_number_verified;
+              if (store.phone != request_data_body.phone) {
+                Store.findOne({ phone: request_data_body.phone }).then(
+                  (store_phone_detail) => {
+                    if (store_phone_detail) {
+                      store_phone_detail.phone =
+                        "00" + store_phone_detail.phone;
+                      store_phone_detail.save();
+                    }
+                  }
+                );
+              }
+              store.is_email_verified = request_data_body.is_email_verified;
+              if (store.phone != request_data_body.phone) {
+                Store.findOne({ email: request_data_body.email }).then(
+                  (store_email_detail) => {
+                    if (store_email_detail) {
+                      store_email_detail.email =
+                        "notverified" + store_email_detail.email;
+                      store_email_detail.save();
+                    }
+                  }
+                );
+              }
+              store.phone = request_data_body.phone;
+              store.email = request_data_body.email;
+              store.save();
             }
+
+            store.save().then(
+              () => {
+                response_data.json({
+                  success: true,
+                  message: STORE_MESSAGE_CODE.OTP_VERIFICATION_SUCCESSFULLY,
+                });
+              },
+              (error) => {
+                console.log(error);
+                response_data.json({
+                  success: false,
+                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                });
+              }
+            );
           } else {
             response_data.json({
               success: false,
@@ -1419,68 +1400,48 @@ exports.get_detail = function (request_data, response_data) {
       Store.findOne({ _id: request_data_body.store_id }).then(
         (store) => {
           if (store) {
-            // jwt.verify(request_data_body.server_token, 'yeepeey', function(err, decoded) {
-            //   if(decoded){
-
-            //   } else {
-            //     response_data.json({
-            //       success: false,
-            //       error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-            //     });
-            //   }
-            // });
             if (store.is_approved) {
-              if (
-                request_data_body.server_token !== null &&
-                store.server_token != request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                Country.findOne({ _id: store.country_id }).then(
-                  (country) => {
-                    City.findOne({ _id: store.city_id }).then((city) => {
-                      var timezone = city.timezone;
-                      store.app_version = request_data_body.app_version;
-                      if (request_data_body.device_token != undefined) {
-                        store.device_token = request_data_body.device_token;
-                      }
+              Country.findOne({ _id: store.country_id }).then(
+                (country) => {
+                  City.findOne({ _id: store.city_id }).then((city) => {
+                    var timezone = city.timezone;
+                    store.app_version = request_data_body.app_version;
+                    if (request_data_body.device_token != undefined) {
+                      store.device_token = request_data_body.device_token;
+                    }
 
-                      store.save().then(
-                        () => {
-                          response_data.json({
-                            success: true,
-                            message: STORE_MESSAGE_CODE.GET_DETAIL_SUCCESSFULLY,
-                            timezone: timezone,
-                            currency: country.currency_sign,
-                            minimum_phone_number_length:
-                              country.minimum_phone_number_length,
-                            maximum_phone_number_length:
-                              country.maximum_phone_number_length,
-                            store: store,
-                          });
-                        },
-                        (error) => {
-                          console.log(error);
-                          response_data.json({
-                            success: false,
-                            error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                          });
-                        }
-                      );
-                    });
-                  },
-                  (error) => {
-                    console.log(error);
-                    response_data.json({
-                      success: false,
-                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                    });
-                  }
-                );
-              }
+                    store.save().then(
+                      () => {
+                        response_data.json({
+                          success: true,
+                          message: STORE_MESSAGE_CODE.GET_DETAIL_SUCCESSFULLY,
+                          timezone: timezone,
+                          currency: country.currency_sign,
+                          minimum_phone_number_length:
+                            country.minimum_phone_number_length,
+                          maximum_phone_number_length:
+                            country.maximum_phone_number_length,
+                          store: store,
+                        });
+                      },
+                      (error) => {
+                        console.log(error);
+                        response_data.json({
+                          success: false,
+                          error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                        });
+                      }
+                    );
+                  });
+                },
+                (error) => {
+                  console.log(error);
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
             } else {
               response_data.json({
                 success: false,
@@ -1519,41 +1480,22 @@ exports.update_device_token = function (request_data, response_data) {
         Store.findOne({ _id: request_data_body.store_id }).then(
           (store) => {
             if (store) {
-              // jwt.verify(request_data_body.server_token, 'yeepeey', function(err, decoded) {
-              //   if(decoded){
-              //   } else {
-              //     response_data.json({
-              //       success: false,
-              //       error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              //     });
-              //   }
-              // });
-              if (
-                request_data_body.server_token !== null &&
-                store.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                store.device_token = request_data_body.device_token;
-                store.save().then(
-                  () => {
-                    response_data.json({
-                      success: true,
-                      message:
-                        STORE_MESSAGE_CODE.DEVICE_TOKEN_UPDATE_SUCCESSFULLY,
-                    });
-                  },
-                  (error) => {
-                    response_data.json({
-                      success: false,
-                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                    });
-                  }
-                );
-              }
+              store.device_token = request_data_body.device_token;
+              store.save().then(
+                () => {
+                  response_data.json({
+                    success: true,
+                    message:
+                      STORE_MESSAGE_CODE.DEVICE_TOKEN_UPDATE_SUCCESSFULLY,
+                  });
+                },
+                (error) => {
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
             } else {
               response_data.json({
                 success: false,
@@ -1584,24 +1526,7 @@ exports.logout = function (request_data, response_data) {
       Store.findOne({ _id: request_data_body.store_id }).then(
         (store) => {
           if (store) {
-            // jwt.verify(request_data_body.server_token, 'yeepeey', function(err, decoded) {
-            //   if(decoded){
-            //   } else {
-            //     response_data.json({
-            //       success: false,
-            //       error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-            //     });
-            //   }
-            // });
-            if (
-              request_data_body.server_token !== null &&
-              store.server_token !== request_data_body.server_token
-            ) {
-              response_data.json({
-                success: false,
-                error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              });
-            } else {
+         
               store.server_token = "";
               store.save().then(
                 () => {
@@ -1618,7 +1543,7 @@ exports.logout = function (request_data, response_data) {
                   });
                 }
               );
-            }
+            
           } else {
             response_data.json({
               success: false,
@@ -1652,25 +1577,7 @@ exports.order_list = function (request_data, response_data) {
         Store.findOne({ _id: request_data_body.store_id }).then(
           (store_detail) => {
             if (store_detail) {
-              // jwt.verify(request_data_body.server_token, 'yeepeey', function(err, decoded) {
-              //   if(decoded){
-              //   } else {
-              //     response_data.json({
-              //       success: false,
-              //       error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              //     });
-              //   }
-              // });
-              if (
-                request_data_body.server_token !== null &&
-                store_detail.server_token !== request_data_body.server_token &&
-                false
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
+            
                 Country.findOne({ _id: store_detail.country_id }).then(
                   (country_detail) => {
                     if (country_detail) {
@@ -1908,7 +1815,7 @@ exports.order_list = function (request_data, response_data) {
                     }
                   }
                 );
-              }
+              
             } else {
               response_data.json({
                 success: false,
@@ -1939,25 +1846,7 @@ exports.get_store_data = function (request_data, response_data) {
       Store.findOne({ _id: request_data_body.store_id }).then(
         (store) => {
           if (store) {
-            // jwt.verify(request_data_body.server_token, 'yeepeey', function(err, decoded) {
-            //   if(decoded){
-            //   } else {
-            //     response_data.json({
-            //       success: false,
-            //       error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-            //     });
-            //   }
-            // });
-            if (
-              request_data_body.type !== ADMIN_DATA_ID.ADMIN &&
-              request_data_body.server_token !== null &&
-              store.server_token !== request_data_body.server_token
-            ) {
-              response_data.json({
-                success: false,
-                error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              });
-            } else {
+         
               var country_query = {
                 $lookup: {
                   from: "countries",
@@ -2118,7 +2007,7 @@ exports.get_store_data = function (request_data, response_data) {
                   });
                 }
               );
-            }
+            
           } else {
             response_data.json({
               success: false,
@@ -2169,16 +2058,7 @@ exports.update_store_time = function (request_data, response_data) {
         Store.findOne({ _id: request_data_body.store_id }).then(
           (store) => {
             if (store) {
-              if (
-                request_data_body.type !== ADMIN_DATA_ID.ADMIN &&
-                request_data_body.server_token !== null &&
-                store.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else if (
+          if (
                 social_id == null &&
                 old_password != "" &&
                 old_password != store.password
@@ -2258,24 +2138,7 @@ exports.order_history = function (request_data, response_data) {
         var request_data_body = request_data.body;
         Store.findOne({ _id: request_data_body.store_id }).then((store) => {
           if (store) {
-            // jwt.verify(request_data_body.server_token, 'yeepeey', function(err, decoded) {
-            //   if(decoded){
-            //   } else {
-            //     response_data.json({
-            //       success: false,
-            //       error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-            //     });
-            //   }
-            // });
-            if (
-              request_data_body.server_token !== null &&
-              store.server_token !== request_data_body.server_token
-            ) {
-              response_data.json({
-                success: false,
-                error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              });
-            } else {
+     
               var city_id = store.city_id;
               City.findOne({ _id: city_id }).then(
                 (city) => {
@@ -2460,7 +2323,7 @@ exports.order_history = function (request_data, response_data) {
                   });
                 }
               );
-            }
+            
           } else {
             response_data.json({
               success: false,
@@ -2491,24 +2354,7 @@ exports.order_history_detail = function (request_data, response_data) {
         Store.findOne({ _id: request_data_body.store_id }).then(
           (store) => {
             if (store) {
-              // jwt.verify(request_data_body.server_token, 'yeepeey', function(err, decoded) {
-              //   if(decoded){
-              //   } else {
-              //     response_data.json({
-              //       success: false,
-              //       error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              //     });
-              //   }
-              // });
-              if (
-                request_data_body.server_token !== null &&
-                store.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
+            
                 Order.findOne({ _id: request_data_body.order_id }).then(
                   (order_detail) => {
                     if (order_detail) {
@@ -2811,7 +2657,7 @@ exports.order_history_detail = function (request_data, response_data) {
                     });
                   }
                 );
-              }
+              
             } else {
               response_data.json({
                 success: false,
@@ -2851,24 +2697,7 @@ exports.order_payment_status_set_on_cash_on_delivery = function (
         Store.findOne({ _id: request_data_body.store_id }).then(
           (store) => {
             if (store) {
-              // jwt.verify(request_data_body.server_token, 'yeepeey', function(err, decoded) {
-              //   if(decoded){
-              //   } else {
-              //     response_data.json({
-              //       success: false,
-              //       error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              //     });
-              //   }
-              // });
-              if (
-                request_data_body.server_token !== null &&
-                store.server_token != request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
+         
                 Order_payment.findOne({
                   _id: request_data_body.order_payment_id,
                   store_id: request_data_body.store_id,
@@ -2982,7 +2811,7 @@ exports.order_payment_status_set_on_cash_on_delivery = function (
                     });
                   }
                 );
-              }
+              
             } else {
               response_data.json({
                 success: false,
@@ -3017,24 +2846,7 @@ exports.check_order_status = function (request_data, response_data) {
         Store.findOne({ _id: request_data_body.store_id }).then(
           async (store_detail) => {
             if (store_detail) {
-              // jwt.verify(request_data_body.server_token, 'yeepeey', function(err, decoded) {
-              //   if(decoded){
-              //   } else {
-              //     response_data.json({
-              //       success: false,
-              //       error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              //     });
-              //   }
-              // });
-              if (
-                request_data_body.server_token !== null &&
-                store_detail.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
+     
                 var timezone;
                 var city = await City.findOne({ _id: store_detail.city_id });
                 if (city) {
@@ -3265,7 +3077,7 @@ exports.check_order_status = function (request_data, response_data) {
                     });
                   }
                 );
-              }
+              
             } else {
               response_data.json({
                 success: false,
@@ -3303,24 +3115,7 @@ exports.store_rating_to_user = function (request_data, response_data) {
         Store.findOne({ _id: request_data_body.store_id }).then(
           (store_detail) => {
             if (store_detail) {
-              // jwt.verify(request_data_body.server_token, 'yeepeey', function(err, decoded) {
-              //   if(decoded){
-              //   } else {
-              //     response_data.json({
-              //       success: false,
-              //       error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              //     });
-              //   }
-              // });
-              if (
-                request_data_body.server_token !== null &&
-                store_detail.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
+            
                 Order.findOne({ _id: request_data_body.order_id }).then(
                   (order) => {
                     if (order) {
@@ -3412,7 +3207,7 @@ exports.store_rating_to_user = function (request_data, response_data) {
                     });
                   }
                 );
-              }
+              
             } else {
               response_data.json({
                 success: false,
@@ -3450,24 +3245,7 @@ exports.store_rating_to_provider = function (request_data, response_data) {
         Store.findOne({ _id: request_data_body.store_id }).then(
           (store_detail) => {
             if (store_detail) {
-              // jwt.verify(request_data_body.server_token, 'yeepeey', function(err, decoded) {
-              //   if(decoded){
-              //   } else {
-              //     response_data.json({
-              //       success: false,
-              //       error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              //     });
-              //   }
-              // });
-              if (
-                request_data_body.server_token !== null &&
-                store_detail.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
+            
                 Order.findOne({ _id: request_data_body.order_id }).then(
                   (order) => {
                     if (order) {
@@ -3565,7 +3343,7 @@ exports.store_rating_to_provider = function (request_data, response_data) {
                     });
                   }
                 );
-              }
+              
             } else {
               response_data.json({
                 success: false,
@@ -3599,24 +3377,7 @@ exports.store_cancel_request = function (request_data, response_data) {
         Store.findOne({ _id: request_data_body.store_id }).then(
           (store_detail) => {
             if (store_detail) {
-              // jwt.verify(request_data_body.server_token, 'yeepeey', function(err, decoded) {
-              //   if(decoded){
-              //   } else {
-              //     response_data.json({
-              //       success: false,
-              //       error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              //     });
-              //   }
-              // });
-              if (
-                request_data_body.server_token !== null &&
-                store_detail.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
+          
                 Request.findOne({
                   _id: request_data_body.request_id,
                   delivery_status_manage_id: ORDER_STATUS_ID.RUNNING,
@@ -3721,7 +3482,7 @@ exports.store_cancel_request = function (request_data, response_data) {
                     });
                   }
                 );
-              }
+              
             } else {
               response_data.json({
                 success: false,
@@ -3755,24 +3516,7 @@ exports.get_order_detail = function (request_data, response_data) {
         Store.findOne({ _id: request_data_body.store_id }).then(
           (store_detail) => {
             if (store_detail) {
-              // jwt.verify(request_data_body.server_token, 'yeepeey', function(err, decoded) {
-              //   if(decoded){
-              //   } else {
-              //     response_data.json({
-              //       success: false,
-              //       error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              //     });
-              //   }
-              // });
-              if (
-                request_data_body.server_token !== null &&
-                store_detail.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
+              
                 var order_condition = {
                   $match: {
                     _id: {
@@ -3897,7 +3641,7 @@ exports.get_order_detail = function (request_data, response_data) {
                     });
                   }
                 );
-              }
+              
             } else {
               response_data.json({
                 success: false,
@@ -3934,24 +3678,7 @@ exports.get_user = function (request_data, response_data) {
         Store.findOne({ _id: request_data_body.store_id }).then(
           (store_detail) => {
             if (store_detail) {
-              // jwt.verify(request_data_body.server_token, 'yeepeey', function(err, decoded) {
-              //   if(decoded){
-              //   } else {
-              //     response_data.json({
-              //       success: false,
-              //       error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              //     });
-              //   }
-              // });
-              if (
-                request_data_body.server_token !== null &&
-                store_detail.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
+           
                 var email = request_data_body.email.trim().toLowerCase();
                 var phone = request_data_body.phone;
                 var country_id = request_data_body.country_id;
@@ -4110,7 +3837,7 @@ exports.get_user = function (request_data, response_data) {
                     });
                   }
                 );
-              }
+              
             }
           },
           (error) => {
@@ -4183,25 +3910,7 @@ exports.store_complete_order = function (request_data, response_data) {
         Store.findOne({ _id: request_data_body.store_id }).then(
           (store) => {
             if (store) {
-              // jwt.verify(request_data_body.server_token, 'yeepeey', function(err, decoded) {
-              //   if(decoded){
-
-              //   } else {
-              //     response_data.json({
-              //       success: false,
-              //       error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              //     });
-              //   }
-              // });
-              if (
-                request_data_body.server_token !== null &&
-                store.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
+             
                 City.findOne({ _id: store.city_id }).then(
                   (city) => {
                     var is_store_earning_add_in_wallet_on_cash_payment_for_city =
@@ -4516,7 +4225,7 @@ exports.store_complete_order = function (request_data, response_data) {
                     });
                   }
                 );
-              }
+              
             } else {
               response_data.json({
                 success: false,
@@ -4549,24 +4258,7 @@ exports.store_change_delivery_address = function (request_data, response_data) {
         Store.findOne({ _id: request_data_body.store_id }).then(
           (store) => {
             if (store) {
-              // jwt.verify(request_data_body.server_token, 'yeepeey', function(err, decoded) {
-              //   if(decoded){
-              //   } else {
-              //     response_data.json({
-              //       success: false,
-              //       error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              //     });
-              //   }
-              // });
-              if (
-                request_data_body.server_token !== null &&
-                store.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
+            
                 var city_id = store.city_id;
                 City.findOne({ _id: city_id }).then((city) => {
                   var latlong = [
@@ -4612,7 +4304,7 @@ exports.store_change_delivery_address = function (request_data, response_data) {
                     }
                   }
                 });
-              }
+              
             } else {
               response_data.json({
                 success: false,
@@ -4651,24 +4343,7 @@ exports.store_create_order = function (request_data, response_data) {
         Store.findOne({ _id: request_data_body.store_id }).then(
           (store) => {
             if (store) {
-              // jwt.verify(request_data_body.server_token, 'yeepeey', function(err, decoded) {
-              //   if(decoded){
-              //   } else {
-              //     response_data.json({
-              //       success: false,
-              //       error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              //     });
-              //   }
-              // });
-              if (
-                request_data_body.server_token !== null &&
-                store.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
+           
                 Cart.findOne({ _id: request_data_body.cart_id }).then(
                   async (cart) => {
                     if (cart) {
@@ -4893,7 +4568,7 @@ exports.store_create_order = function (request_data, response_data) {
                     }
                   }
                 );
-              }
+              
             } else {
               response_data.json({
                 success: false,
@@ -4929,24 +4604,7 @@ exports.store_update_order = function (request_data, response_data) {
         Store.findOne({ _id: request_data_body.store_id }).then(
           (store) => {
             if (store) {
-              // jwt.verify(request_data_body.server_token, 'yeepeey', function(err, decoded) {
-              //   if(decoded){
-              //   } else {
-              //     response_data.json({
-              //       success: false,
-              //       error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              //     });
-              //   }
-              // });
-              if (
-                request_data_body.server_token !== null &&
-                store.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
+              
                 Order.findOne({
                   _id: request_data_body.order_id,
                   store_id: request_data_body.store_id,
@@ -5243,7 +4901,7 @@ exports.store_update_order = function (request_data, response_data) {
                     });
                   }
                 );
-              }
+              
             } else {
               response_data.json({
                 success: false,
@@ -5294,24 +4952,7 @@ exports.check_request_status = function (request_data, response_data) {
         Store.findOne({ _id: request_data_body.store_id }).then(
           (store_detail) => {
             if (store_detail) {
-              // jwt.verify(request_data_body.server_token, 'yeepeey', function(err, decoded) {
-              //   if(decoded){
-              //   } else {
-              //     response_data.json({
-              //       success: false,
-              //       error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              //     });
-              //   }
-              // });
-              if (
-                request_data_body.server_token !== null &&
-                store_detail.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
+           
                 Request.findOne({ _id: request_data_body.request_id }).then(
                   (request) => {
                     if (request) {
@@ -5558,7 +5199,7 @@ exports.check_request_status = function (request_data, response_data) {
                     });
                   }
                 );
-              }
+              
             } else {
               response_data.json({
                 success: false,
@@ -5580,3 +5221,4 @@ exports.check_request_status = function (request_data, response_data) {
     }
   );
 };
+

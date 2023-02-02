@@ -143,12 +143,12 @@ exports.get_card_list = function (request_data, response_data) {
       var card = await Card.find({ user_id });
       const setting = await Installation_setting.findOne({});
       var CKO_SECRET_KEY = setting.CKO_SECRET_KEY;
-     
+
       var CKO_PUBLIC_KEY = setting.CKO_PUBLIC_KEY;
       console.log(CKO_PUBLIC_KEY, CKO_SECRET_KEY);
       var user = await User.findOne({ _id: user_id });
       var loyalty_points = user.loyalty_points;
-      console.log(loyalty_points)
+      console.log(loyalty_points);
       var city = {};
       var store = {};
       if (user && user.city) {
@@ -220,34 +220,23 @@ exports.delete_card = function (request_data, response_data) {
       if (response.success) {
         var request_data_body = request_data.body;
 
-        if (
-          false &&
-          request_data_body.server_token !== null &&
-          detail.server_token !== request_data_body.server_token
-        ) {
-          response_data.json({
-            success: false,
-            error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-          });
-        } else {
-          Card.deleteOne({
-            _id: request_data_body.card_id,
-          }).then(
-            () => {
-              response_data.json({
-                success: true,
-                message: CARD_MESSAGE_CODE.CARD_DELETE_SUCCESSFULLY,
-              });
-            },
-            (error) => {
-              console.log(error);
-              response_data.json({
-                success: false,
-                error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-              });
-            }
-          );
-        }
+        Card.deleteOne({
+          _id: request_data_body.card_id,
+        }).then(
+          () => {
+            response_data.json({
+              success: true,
+              message: CARD_MESSAGE_CODE.CARD_DELETE_SUCCESSFULLY,
+            });
+          },
+          (error) => {
+            console.log(error);
+            response_data.json({
+              success: false,
+              error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+            });
+          }
+        );
       } else {
         response_data.json(response);
       }
@@ -313,65 +302,54 @@ exports.select_card = function (request_data, response_data) {
         Table.findOne({ _id: request_data_body.user_id }).then(
           (detail) => {
             if (detail) {
-              if (
-                request_data_body.server_token !== null &&
-                detail.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                Card.findOneAndUpdate(
-                  {
-                    _id: { $nin: request_data_body.card_id },
-                    user_id: request_data_body.user_id,
-                    user_type: type,
-                    is_default: true,
-                  },
-                  { is_default: false }
-                ).then((card) => {});
-                Card.findOne({
-                  _id: request_data_body.card_id,
+              Card.findOneAndUpdate(
+                {
+                  _id: { $nin: request_data_body.card_id },
                   user_id: request_data_body.user_id,
                   user_type: type,
-                }).then(
-                  (card) => {
-                    if (card) {
-                      card.is_default = true;
-                      card.save().then(
-                        () => {
-                          response_data.json({
-                            success: true,
-                            message:
-                              CARD_MESSAGE_CODE.CARD_SELECTED_SUCCESSFULLY,
-                            card: card,
-                          });
-                        },
-                        (error) => {
-                          console.log(error);
-                          response_data.json({
-                            success: false,
-                            error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                          });
-                        }
-                      );
-                    } else {
-                      response_data.json({
-                        success: false,
-                        error_code: CARD_ERROR_CODE.CARD_DATA_NOT_FOUND,
-                      });
-                    }
-                  },
-                  (error) => {
-                    console.log(error);
+                  is_default: true,
+                },
+                { is_default: false }
+              ).then((card) => {});
+              Card.findOne({
+                _id: request_data_body.card_id,
+                user_id: request_data_body.user_id,
+                user_type: type,
+              }).then(
+                (card) => {
+                  if (card) {
+                    card.is_default = true;
+                    card.save().then(
+                      () => {
+                        response_data.json({
+                          success: true,
+                          message: CARD_MESSAGE_CODE.CARD_SELECTED_SUCCESSFULLY,
+                          card: card,
+                        });
+                      },
+                      (error) => {
+                        console.log(error);
+                        response_data.json({
+                          success: false,
+                          error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                        });
+                      }
+                    );
+                  } else {
                     response_data.json({
                       success: false,
-                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                      error_code: CARD_ERROR_CODE.CARD_DATA_NOT_FOUND,
                     });
                   }
-                );
-              }
+                },
+                (error) => {
+                  console.log(error);
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
             } else {
               response_data.json({
                 success: false,
@@ -394,87 +372,78 @@ exports.select_card = function (request_data, response_data) {
   );
 };
 
-
-exports.google_pay = async function(req, res){
-  const {
-    token_data
-  } = req.body
+exports.google_pay = async function (req, res) {
+  const { token_data } = req.body;
   const setting = await Installation_setting.findOne({});
   const cko = new Checkout(setting.CKO_SECRET_KEY, {
     pk: setting.CKO_PUBLIC_KEY,
     timeout: 7000,
   });
 
-try{
-  const token = await cko.tokens.request({
-    type : "googlepay",
-    token_data : token_data
-  })
-  const instrument = await cko.instruments.create({
-    token: token.token,
-  })        
-  // payment_type: "Regular",
-  // const payment = await cko.payments.request({
-  //   source: {
-  //     type: "id",
-  //     token: token.token,
-  //     id: instrument.id,
-  //     // cvv: req.body.cvv ? req.body.cvv : "",
-  //   },
-  //   amount : 1000,
-  //   currency: "USD",
-  // });
-  res.json({
-    success : true,
-    token : token,
-    instrument : instrument,
-    // payment : payment
-  })
-}catch(error){
-  res.json({
-    success : false,
-    message : error.message,
-    error : error
-  })
-}
-
-
-}
-
-exports.apple_pay = async function(req, res){
-  const {
-    token_data
-  } = req.body
-  const setting = await Installation_setting.findOne({});
-  const cko = new Checkout(setting.CKO_SECRET_KEY, {
-    pk: setting.CKO_PUBLIC_KEY,
-    timeout: 7000,
-  });
-
-try{
-  const token = await cko.tokens.request({
-    type : "applepay",
-    token_data : token_data
-  })
-  const payment = await cko.payments.request({
-    source: {
-      type: "token",
+  try {
+    const token = await cko.tokens.request({
+      type: "googlepay",
+      token_data: token_data,
+    });
+    const instrument = await cko.instruments.create({
       token: token.token,
-    },
-    amount : 1000,
-    currency: "USD",
+    });
+    // payment_type: "Regular",
+    // const payment = await cko.payments.request({
+    //   source: {
+    //     type: "id",
+    //     token: token.token,
+    //     id: instrument.id,
+    //     // cvv: req.body.cvv ? req.body.cvv : "",
+    //   },
+    //   amount : 1000,
+    //   currency: "USD",
+    // });
+    res.json({
+      success: true,
+      token: token,
+      instrument: instrument,
+      // payment : payment
+    });
+  } catch (error) {
+    res.json({
+      success: false,
+      message: error.message,
+      error: error,
+    });
+  }
+};
+
+exports.apple_pay = async function (req, res) {
+  const { token_data } = req.body;
+  const setting = await Installation_setting.findOne({});
+  const cko = new Checkout(setting.CKO_SECRET_KEY, {
+    pk: setting.CKO_PUBLIC_KEY,
+    timeout: 7000,
   });
-  res.json({
-    success : true,
-    token : token,
-    payment : payment
-  })
-}catch(error){
-  res.json({
-    message : error.message,
-    error : error
-  })
-}
 
-
-}
+  try {
+    const token = await cko.tokens.request({
+      type: "applepay",
+      token_data: token_data,
+    });
+    const payment = await cko.payments.request({
+      source: {
+        type: "token",
+        token: token.token,
+      },
+      amount: 1000,
+      currency: "USD",
+    });
+    res.json({
+      success: true,
+      token: token,
+      payment: payment,
+    });
+  } catch (error) {
+    res.json({
+      message: error.message,
+      error: error,
+    });
+  }
+};

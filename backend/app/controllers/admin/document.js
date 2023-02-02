@@ -19,6 +19,7 @@ var Document = require("mongoose").model("document");
 var Provider_vehicle = require("mongoose").model("provider_vehicle");
 
 // get document list
+
 exports.get_document_list = function (request_data, response_data) {
   utils.check_request_params(request_data.body, [], function (response) {
     if (response.success) {
@@ -44,75 +45,64 @@ exports.get_document_list = function (request_data, response_data) {
       Table.findOne({ _id: request_data_body.id }).then(
         (detail) => {
           if (detail) {
-            if (
-              type != ADMIN_DATA_ID.PROVIDER_VEHICLE &&
-              request_data_body.server_token !== null &&
-              detail.server_token !== request_data_body.server_token
-            ) {
-              response_data.json({
-                success: false,
-                error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              });
-            } else {
-              var document_query = {
-                $lookup: {
-                  from: "documents",
-                  localField: "document_id",
-                  foreignField: "_id",
-                  as: "document_details",
-                },
-              };
+            var document_query = {
+              $lookup: {
+                from: "documents",
+                localField: "document_id",
+                foreignField: "_id",
+                as: "document_details",
+              },
+            };
 
-              var array_to_json_document_query = {
-                $unwind: "$document_details",
-              };
+            var array_to_json_document_query = {
+              $unwind: "$document_details",
+            };
 
-              var document_visible_condition = {
-                $match: { "document_details.is_show": true },
-              };
+            var document_visible_condition = {
+              $match: { "document_details.is_show": true },
+            };
 
-              var condition = {
-                $match: {
-                  user_id: {
-                    $eq: mongoose.Types.ObjectId(request_data_body.id),
-                  },
+            var condition = {
+              $match: {
+                user_id: {
+                  $eq: mongoose.Types.ObjectId(request_data_body.id),
                 },
-              };
-              var type_condition = {
-                $match: {
-                  document_for: { $eq: Number(request_data_body.type) },
-                },
-              };
-              Document_uploaded_list.aggregate([
-                document_query,
-                array_to_json_document_query,
-                type_condition,
-                condition,
-              ]).then(
-                (documents) => {
-                  if (documents.length == 0) {
-                    response_data.json({
-                      success: false,
-                      error_code: DOCUMENT_ERROR_CODE.DOCUMENT_NOT_FOUND,
-                    });
-                  } else {
-                    response_data.json({
-                      success: true,
-                      message: DOCUMENT_MESSAGE_CODE.DOCUMENT_LIST_SUCCESSFULLY,
-                      documents: documents,
-                      is_document_uploaded: detail.is_document_uploaded,
-                    });
-                  }
-                },
-                (error) => {
-                  console.log(error);
+              },
+            };
+            var type_condition = {
+              $match: {
+                document_for: { $eq: Number(request_data_body.type) },
+              },
+            };
+            Document_uploaded_list.aggregate([
+              document_query,
+              array_to_json_document_query,
+              type_condition,
+              condition,
+            ]).then(
+              (documents) => {
+                if (documents.length == 0) {
                   response_data.json({
                     success: false,
-                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                    error_code: DOCUMENT_ERROR_CODE.DOCUMENT_NOT_FOUND,
+                  });
+                } else {
+                  response_data.json({
+                    success: true,
+                    message: DOCUMENT_MESSAGE_CODE.DOCUMENT_LIST_SUCCESSFULLY,
+                    documents: documents,
+                    is_document_uploaded: detail.is_document_uploaded,
                   });
                 }
-              );
-            }
+              },
+              (error) => {
+                console.log(error);
+                response_data.json({
+                  success: false,
+                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                });
+              }
+            );
           } else {
             response_data.json({
               success: false,

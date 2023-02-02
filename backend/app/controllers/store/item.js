@@ -18,7 +18,10 @@ var Promo_code = require("mongoose").model("promo_code");
 var Order_payment = require("mongoose").model("order_payment");
 var Notification = require("mongoose").model("notifications");
 var jwt = require("jsonwebtoken");
-const { remove_loyalty_and_promo_both, apply_promo } = require("../user/promo_code");
+const {
+  remove_loyalty_and_promo_both,
+  apply_promo,
+} = require("../user/promo_code");
 
 var getUpdatedCart = (cart) => {
   let totalCartPrice = 0;
@@ -157,11 +160,6 @@ exports.update_cart_detail = async function (request_data, response_data) {
   Store.findOne({ _id: request_data_body.store_id }).then(
     (store) => {
       if (store) {
-        //if (request_data_body.server_token !== null && store.server_token !== request_data_body.server_token) {
-        //    response_data.json({success: false, error_code: ERROR_CODE.INVALID_SERVER_TOKEN});
-        //
-        //} else
-        //{
         Cart.findOne({ _id: cart_id }).then(
           (cart) => {
             if (cart) {
@@ -674,89 +672,69 @@ exports.get_substitute_items = function (request_data, response_data) {
       Store.findOne({ _id: store_id }).then(
         (store_detail) => {
           if (store_detail) {
-            // jwt.verify(request_data_body.server_token, 'yeepeey', function(err, decoded) {
-            //     if(decoded){
-            //     } else {
-            //         response_data.json({success: false, error_code: ERROR_CODE.INVALID_SERVER_TOKEN});
-            //     }
-            // });
-            if (
-              request_data_body.server_token !== null &&
-              store_detail.server_token !== request_data_body.server_token
-            ) {
-              response_data.json({
-                success: false,
-                error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              });
-            } else {
-              Country.findOne({ _id: store_detail.country_id }).then(
-                (country_data) => {
-                  if (country_data) {
-                    var currency = country_data.currency_sign;
-                    Item.findOne(
-                      { _id: item_id },
-                      function (error, item_detail) {
-                        if (item_detail) {
-                          Item.find(
-                            { _id: { $in: item_detail.substitute_items } },
-                            function (error, items) {
-                              if (items.length == 0) {
-                                response_data.json({
-                                  success: false,
-                                  error_code: ITEM_ERROR_CODE.ITEM_NOT_FOUND,
-                                });
-                              } else {
-                                response_data.json({
-                                  success: true,
-                                  message:
-                                    ITEM_MESSAGE_CODE.ITEM_LIST_SUCCESSFULLY,
-                                  currency: currency,
-                                  items: items,
-                                });
-                              }
-                            }
-                          );
+            Country.findOne({ _id: store_detail.country_id }).then(
+              (country_data) => {
+                if (country_data) {
+                  var currency = country_data.currency_sign;
+                  Item.findOne({ _id: item_id }, function (error, item_detail) {
+                    if (item_detail) {
+                      Item.find(
+                        { _id: { $in: item_detail.substitute_items } },
+                        function (error, items) {
+                          if (items.length == 0) {
+                            response_data.json({
+                              success: false,
+                              error_code: ITEM_ERROR_CODE.ITEM_NOT_FOUND,
+                            });
+                          } else {
+                            response_data.json({
+                              success: true,
+                              message: ITEM_MESSAGE_CODE.ITEM_LIST_SUCCESSFULLY,
+                              currency: currency,
+                              items: items,
+                            });
+                          }
                         }
-                      }
-                    );
-
-                    //    var products_array = {
-                    //        $lookup:
-                    //                {
-                    //                    from: "products",
-                    //                    localField: "product_id",
-                    //                    foreignField: "_id",
-                    //                    as: "products_detail"
-                    //                }
-                    //    };
-                    //    var array_to_json = {$unwind: "$products_detail"};
-                    //    var condition = {"$match": {'store_id': {$eq: mongoose.Types.ObjectId(store_id)}}};
-                    //    Item.aggregate([condition, products_array, array_to_json]).then((items) => {
-                    //        if (items.length == 0) {
-                    //            response_data.json({success: false, error_code: ITEM_ERROR_CODE.ITEM_NOT_FOUND});
-                    //        } else {
-                    //            response_data.json({success: true,
-                    //                message: ITEM_MESSAGE_CODE.ITEM_LIST_SUCCESSFULLY,
-                    //                currency: currency, items: items
-                    //            });
-                    //        }
-                    //    }, (error) => {
-                    //
-                    //        response_data.json({
-                    //            success: false,
-                    //            error_code: ERROR_CODE.SOMETHING_WENT_WRONG
-                    //        });
-                    //    });
-                  }
-                },
-                (error) => {
-                  response_data.json({
-                    success: false,
-                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                      );
+                    }
                   });
+
+                  //    var products_array = {
+                  //        $lookup:
+                  //                {
+                  //                    from: "products",
+                  //                    localField: "product_id",
+                  //                    foreignField: "_id",
+                  //                    as: "products_detail"
+                  //                }
+                  //    };
+                  //    var array_to_json = {$unwind: "$products_detail"};
+                  //    var condition = {"$match": {'store_id': {$eq: mongoose.Types.ObjectId(store_id)}}};
+                  //    Item.aggregate([condition, products_array, array_to_json]).then((items) => {
+                  //        if (items.length == 0) {
+                  //            response_data.json({success: false, error_code: ITEM_ERROR_CODE.ITEM_NOT_FOUND});
+                  //        } else {
+                  //            response_data.json({success: true,
+                  //                message: ITEM_MESSAGE_CODE.ITEM_LIST_SUCCESSFULLY,
+                  //                currency: currency, items: items
+                  //            });
+                  //        }
+                  //    }, (error) => {
+                  //
+                  //        response_data.json({
+                  //            success: false,
+                  //            error_code: ERROR_CODE.SOMETHING_WENT_WRONG
+                  //        });
+                  //    });
                 }
-              );
-            }
+              },
+              (error) => {
+                response_data.json({
+                  success: false,
+                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                });
+              }
+            );
           } else {
             response_data.json({
               success: false,
@@ -786,132 +764,116 @@ exports.select_substitute_item = function (request_data, response_data) {
   Store.findOne({ _id: request_data_body.store_id }).then(
     (store) => {
       if (store) {
-        // jwt.verify(request_data_body.server_token, 'yeepeey', function(err, decoded) {
-        //     if(decoded){
-        //     } else {
-        //         response_data.json({success: false, error_code: ERROR_CODE.INVALID_SERVER_TOKEN});
-        //     }
-        // });
-        if (
-          request_data_body.server_token !== null &&
-          store.server_token !== request_data_body.server_token
-        ) {
-          response_data.json({
-            success: false,
-            error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-          });
-        } else {
-          Item.findOne({ _id: item_id }).then(
-            (item_detail) => {
-              if (item_detail) {
-                Cart.findOne({ _id: cart_id }).then(
-                  (cart) => {
-                    if (cart) {
-                      var product_index = cart.order_details.findIndex(
-                        (x) => x.product_id == item_detail.product_id
-                      );
-                      if (product_index != -1) {
-                        cart.order_details.forEach(async function (product) {
-                          var index = product.items.findIndex(
-                            (x) => x.unique_id == item_detail.unique_id
-                          );
-                          if (index != -1) {
-                            var existedSubstitute =
-                              cart.order_details[product_index].items[index]
-                                .substitute_items;
-                            if (
-                              existedSubstitute &&
-                              Array.isArray(existedSubstitute) &&
-                              existedSubstitute.length > 1
-                            ) {
-                              response_data.json({
-                                success: false,
-                                message:
-                                  ITEM_MESSAGE_CODE.ITEM_SUBSTITUTE_ALREADY_EXIST,
-                              });
-                              return;
-                            } else {
-                              console.log(
-                                "substitute_item_id" +
-                                  JSON.stringify(substitute_item_id)
-                              );
-                              cart.order_details[product_index].items[
-                                index
-                              ].substitute_items = Array.isArray(
-                                substitute_item_id
-                              )
-                                ? substitute_item_id
-                                : [substitute_item_id];
-                              cart.order_details[product_index].items[
-                                index
-                              ].original_item = [
-                                item_id,
-                                item_detail.name,
-                                item_detail.details,
-                                item_detail.image_url[0],
-                                item_detail.price.toString(),
-                              ];
-                              cart.order_details[product_index].items[
-                                index
-                              ].substitute_set_at = Date.now();
-                            }
+        Item.findOne({ _id: item_id }).then(
+          (item_detail) => {
+            if (item_detail) {
+              Cart.findOne({ _id: cart_id }).then(
+                (cart) => {
+                  if (cart) {
+                    var product_index = cart.order_details.findIndex(
+                      (x) => x.product_id == item_detail.product_id
+                    );
+                    if (product_index != -1) {
+                      cart.order_details.forEach(async function (product) {
+                        var index = product.items.findIndex(
+                          (x) => x.unique_id == item_detail.unique_id
+                        );
+                        if (index != -1) {
+                          var existedSubstitute =
+                            cart.order_details[product_index].items[index]
+                              .substitute_items;
+                          if (
+                            existedSubstitute &&
+                            Array.isArray(existedSubstitute) &&
+                            existedSubstitute.length > 1
+                          ) {
+                            response_data.json({
+                              success: false,
+                              message:
+                                ITEM_MESSAGE_CODE.ITEM_SUBSTITUTE_ALREADY_EXIST,
+                            });
+                            return;
+                          } else {
+                            console.log(
+                              "substitute_item_id" +
+                                JSON.stringify(substitute_item_id)
+                            );
+                            cart.order_details[product_index].items[
+                              index
+                            ].substitute_items = Array.isArray(
+                              substitute_item_id
+                            )
+                              ? substitute_item_id
+                              : [substitute_item_id];
+                            cart.order_details[product_index].items[
+                              index
+                            ].original_item = [
+                              item_id,
+                              item_detail.name,
+                              item_detail.details,
+                              item_detail.image_url[0],
+                              item_detail.price.toString(),
+                            ];
+                            cart.order_details[product_index].items[
+                              index
+                            ].substitute_set_at = Date.now();
                           }
-                          await Cart.findByIdAndUpdate(cart_id, {
-                            order_details: cart.order_details,
-                          });
-                        });
-                      }
-
-                      Order.findOne({ _id: cart.order_id }).then((order) => {
-                        if (order) {
-                          var order_id = order._id;
-                          order.is_user_confirmed = false;
-                          order.is_sent_notification = false;
-                          order.save();
-
-                          item_detail.is_item_in_stock = false;
-                          item_detail.save().then(
-                            () => {
-                              response_data.json({
-                                success: true,
-                                message:
-                                  ITEM_MESSAGE_CODE.ITEM_SUBSTITUTE_SUCCESSFULLY,
-                                order_details: cart.order_details,
-                              });
-                            },
-                            (error) => {
-                              response_data.json({
-                                success: false,
-                                error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                              });
-                            }
-                          );
-                        } else {
-                          response_data.json({
-                            success: false,
-                            error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                          });
                         }
+                        await Cart.findByIdAndUpdate(cart_id, {
+                          order_details: cart.order_details,
+                        });
                       });
                     }
-                  },
-                  (error) => {
-                    response_data.json({
-                      success: false,
-                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+
+                    Order.findOne({ _id: cart.order_id }).then((order) => {
+                      if (order) {
+                        var order_id = order._id;
+                        order.is_user_confirmed = false;
+                        order.is_sent_notification = false;
+                        order.save();
+
+                        item_detail.is_item_in_stock = false;
+                        item_detail.save().then(
+                          () => {
+                            response_data.json({
+                              success: true,
+                              message:
+                                ITEM_MESSAGE_CODE.ITEM_SUBSTITUTE_SUCCESSFULLY,
+                              order_details: cart.order_details,
+                            });
+                          },
+                          (error) => {
+                            response_data.json({
+                              success: false,
+                              error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                            });
+                          }
+                        );
+                      } else {
+                        response_data.json({
+                          success: false,
+                          error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                        });
+                      }
                     });
                   }
-                );
-              }
-            },
-            (error) => {
-              response_data.json({
-                success: false,
-                error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-              });
+                },
+                (error) => {
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
             }
-          );
-        }
+          },
+          (error) => {
+            response_data.json({
+              success: false,
+              error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+            });
+          }
+        );
       } else {
         response_data.json({
           success: false,
@@ -940,11 +902,6 @@ exports.assign_substitute_item = function (request_data, response_data) {
   Store.findOne({ _id: request_data_body.store_id }).then(
     (store) => {
       if (store) {
-        //if (request_data_body.server_token !== null && store.server_token !== request_data_body.server_token) {
-        //    response_data.json({success: false, error_code: ERROR_CODE.INVALID_SERVER_TOKEN});
-        //
-        //} else
-        //{
         Item.findOne({ _id: item_id }).then(
           (item_detail) => {
             if (item_detail) {
@@ -1260,18 +1217,13 @@ exports.update_cart_item_price = async function (request_data, response_data) {
   console.log(
     "update_cart_item_price ->body: >>" + JSON.stringify(request_data_body)
   );
-    
+
   const promoOrderPayment = await Order_payment.findOne({
     cart_id: Schema(cart_id),
   }).lean();
   Store.findOne({ _id: request_data_body.store_id }).then(
     (store) => {
       if (store) {
-        //if (request_data_body.server_token !== null && store.server_token !== request_data_body.server_token) {
-        //    response_data.json({success: false, error_code: ERROR_CODE.INVALID_SERVER_TOKEN});
-        //
-        //} else
-        //{
         Cart.findOne({ _id: cart_id }).then(
           async (cart) => {
             let notification = "",
@@ -1777,54 +1729,43 @@ exports.add_item = function (request_data, response_data) {
         Store.findOne({ _id: request_data_body.store_id }).then(
           (store_detail) => {
             if (store_detail) {
-              if (
-                request_data_body.type != ADMIN_DATA_ID.ADMIN &&
-                request_data_body.server_token !== null &&
-                store_detail.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                Item.findOne({
-                  store_id: request_data_body.store_id,
-                  product_id: request_data_body.product_id,
-                  name: { $regex: request_data_body.name, $options: "i" },
-                }).then(
-                  (item_data) => {
-                    if (item_data) {
-                      response_data.json({
-                        success: false,
-                        error_code: ITEM_ERROR_CODE.ITEM_ALREADY_EXIST,
-                      });
-                    } else {
-                      var item = new Item(request_data_body);
-                      item.save().then(
-                        () => {
-                          response_data.json({
-                            success: true,
-                            message: ITEM_MESSAGE_CODE.ITEM_ADD_SUCCESSFULLY,
-                            item: item,
-                          });
-                        },
-                        (error) => {
-                          response_data.json({
-                            success: false,
-                            error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                          });
-                        }
-                      );
-                    }
-                  },
-                  (error) => {
+              Item.findOne({
+                store_id: request_data_body.store_id,
+                product_id: request_data_body.product_id,
+                name: { $regex: request_data_body.name, $options: "i" },
+              }).then(
+                (item_data) => {
+                  if (item_data) {
                     response_data.json({
                       success: false,
-                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                      error_code: ITEM_ERROR_CODE.ITEM_ALREADY_EXIST,
                     });
+                  } else {
+                    var item = new Item(request_data_body);
+                    item.save().then(
+                      () => {
+                        response_data.json({
+                          success: true,
+                          message: ITEM_MESSAGE_CODE.ITEM_ADD_SUCCESSFULLY,
+                          item: item,
+                        });
+                      },
+                      (error) => {
+                        response_data.json({
+                          success: false,
+                          error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                        });
+                      }
+                    );
                   }
-                );
-              }
+                },
+                (error) => {
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
             } else {
               response_data.json({
                 success: false,
@@ -2030,101 +1971,83 @@ exports.get_store_product_item_list = function (request_data, response_data) {
       table.findOne({ _id: id }).then(
         (detail) => {
           if (detail) {
-            // jwt.verify(request_data_body.server_token, 'yeepeey', function(err, decoded) {
-            //     if(decoded){
-            //     } else {
-            //         response_data.json({success: false, error_code: ERROR_CODE.INVALID_SERVER_TOKEN});
-            //     }
-            // });
-            if (
-              false &&
-              request_data_body.type != ADMIN_DATA_ID.ADMIN &&
-              request_data_body.server_token !== null &&
-              detail.server_token !== request_data_body.server_token
-            ) {
-              response_data.json({
-                success: false,
-                error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              });
-            } else {
-              Country.findOne({ _id: detail.country_id }).then(
-                (country_data) => {
-                  if (country_data) {
-                    var currency = country_data.currency_sign;
-                    var items_array = {
-                      $lookup: {
-                        from: "items",
-                        localField: "_id",
-                        foreignField: "product_id",
-                        as: "items",
+            Country.findOne({ _id: detail.country_id }).then(
+              (country_data) => {
+                if (country_data) {
+                  var currency = country_data.currency_sign;
+                  var items_array = {
+                    $lookup: {
+                      from: "items",
+                      localField: "_id",
+                      foreignField: "product_id",
+                      as: "items",
+                    },
+                  };
+                  var condition = {
+                    $match: {
+                      store_id: {
+                        $eq: mongoose.Types.ObjectId(
+                          request_data_body.store_id
+                        ),
                       },
-                    };
-                    var condition = {
+                    },
+                  };
+
+                  var category_condition = { $match: {} };
+                  if (request_data_body.category_id) {
+                    category_condition = {
                       $match: {
-                        store_id: {
+                        category_id: {
                           $eq: mongoose.Types.ObjectId(
-                            request_data_body.store_id
+                            request_data_body.category_id
                           ),
                         },
                       },
                     };
+                  }
+                  let $skip = (page - 1) * number_of_rec;
+                  let $limit = number_of_rec;
 
-                    var category_condition = { $match: {} };
-                    if (request_data_body.category_id) {
-                      category_condition = {
-                        $match: {
-                          category_id: {
-                            $eq: mongoose.Types.ObjectId(
-                              request_data_body.category_id
-                            ),
-                          },
-                        },
-                      };
-                    }
-                    let $skip = (page - 1) * number_of_rec;
-                    let $limit = number_of_rec;
-
-                    Product.aggregate([
-                      condition,
-                      category_condition,
-                      condition1,
-                      condition2,
-                      items_array,
-                      { $skip },
-                      { $limit },
-                    ]).then(
-                      (products) => {
-                        if (products.length == 0) {
-                          response_data.json({
-                            success: false,
-                            error_code: ITEM_ERROR_CODE.ITEM_NOT_FOUND,
-                          });
-                        } else {
-                          response_data.json({
-                            success: true,
-                            message: ITEM_MESSAGE_CODE.ITEM_LIST_SUCCESSFULLY,
-                            currency: currency,
-                            products: products,
-                          });
-                        }
-                      },
-                      (error) => {
+                  Product.aggregate([
+                    condition,
+                    category_condition,
+                    condition1,
+                    condition2,
+                    items_array,
+                    { $skip },
+                    { $limit },
+                  ]).then(
+                    (products) => {
+                      if (products.length == 0) {
                         response_data.json({
                           success: false,
-                          error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                          error_code: ITEM_ERROR_CODE.ITEM_NOT_FOUND,
+                        });
+                      } else {
+                        response_data.json({
+                          success: true,
+                          message: ITEM_MESSAGE_CODE.ITEM_LIST_SUCCESSFULLY,
+                          currency: currency,
+                          products: products,
                         });
                       }
-                    );
-                  }
-                },
-                (error) => {
-                  response_data.json({
-                    success: false,
-                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                  });
+                    },
+                    (error) => {
+                      response_data.json({
+                        success: false,
+                        error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                      });
+                    }
+                  );
                 }
-              );
-            }
+              },
+              (error) => {
+                response_data.json({
+                  success: false,
+                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                });
+              }
+            );
           } else {
             response_data.json({
               success: false,
@@ -2173,71 +2096,60 @@ exports.get_item_list = function (request_data, response_data) {
       Store.findOne({ _id: store_id }).then(
         (store_detail) => {
           if (store_detail) {
-            if (
-              request_data_body.type != ADMIN_DATA_ID.ADMIN &&
-              request_data_body.server_token !== null &&
-              store_detail.server_token !== request_data_body.server_token
-            ) {
-              response_data.json({
-                success: false,
-                error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              });
-            } else {
-              Country.findOne({ _id: store_detail.country_id }).then(
-                (country_data) => {
-                  if (country_data) {
-                    var currency = country_data.currency_sign;
-                    var products_array = {
-                      $lookup: {
-                        from: "products",
-                        localField: "product_id",
-                        foreignField: "_id",
-                        as: "products_detail",
-                      },
-                    };
-                    var array_to_json = { $unwind: "$products_detail" };
-                    var condition = {
-                      $match: {
-                        store_id: { $eq: mongoose.Types.ObjectId(store_id) },
-                      },
-                    };
-                    Item.aggregate([
-                      condition,
-                      products_array,
-                      array_to_json,
-                    ]).then(
-                      (items) => {
-                        if (items.length == 0) {
-                          response_data.json({
-                            success: false,
-                            error_code: ITEM_ERROR_CODE.ITEM_NOT_FOUND,
-                          });
-                        } else {
-                          response_data.json({
-                            success: true,
-                            message: ITEM_MESSAGE_CODE.ITEM_LIST_SUCCESSFULLY,
-                            currency: currency,
-                            items: items,
-                          });
-                        }
-                      },
-                      (error) => {
+            Country.findOne({ _id: store_detail.country_id }).then(
+              (country_data) => {
+                if (country_data) {
+                  var currency = country_data.currency_sign;
+                  var products_array = {
+                    $lookup: {
+                      from: "products",
+                      localField: "product_id",
+                      foreignField: "_id",
+                      as: "products_detail",
+                    },
+                  };
+                  var array_to_json = { $unwind: "$products_detail" };
+                  var condition = {
+                    $match: {
+                      store_id: { $eq: mongoose.Types.ObjectId(store_id) },
+                    },
+                  };
+                  Item.aggregate([
+                    condition,
+                    products_array,
+                    array_to_json,
+                  ]).then(
+                    (items) => {
+                      if (items.length == 0) {
                         response_data.json({
                           success: false,
-                          error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                          error_code: ITEM_ERROR_CODE.ITEM_NOT_FOUND,
+                        });
+                      } else {
+                        response_data.json({
+                          success: true,
+                          message: ITEM_MESSAGE_CODE.ITEM_LIST_SUCCESSFULLY,
+                          currency: currency,
+                          items: items,
                         });
                       }
-                    );
-                  }
-                },
-                (error) => {
-                  response_data.json({
-                    success: false,
-                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                  });
+                    },
+                    (error) => {
+                      response_data.json({
+                        success: false,
+                        error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                      });
+                    }
+                  );
                 }
-              );
-            }
+              },
+              (error) => {
+                response_data.json({
+                  success: false,
+                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                });
+              }
+            );
           } else {
             response_data.json({
               success: false,
@@ -2271,133 +2183,117 @@ exports.get_item_data = function (request_data, response_data) {
         Store.findOne({ _id: store_id }).then(
           (store_detail) => {
             if (store_detail) {
-              // jwt.verify(request_data_body.server_token, 'yeepeey', function(err, decoded) {
-              //     if(decoded){
-              //     } else {
-              //         response_data.json({success: false, error_code: ERROR_CODE.INVALID_SERVER_TOKEN});
-              //     }
-              // });
-              if (
-                request_data_body.server_token !== null &&
-                store_detail.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                Item.findOne({ _id: item_id }).then(
-                  (item_data) => {
-                    if (item_data) {
-                      var product_id = item_data.product_id;
-                      var specification_array = {
-                        $lookup: {
-                          from: "specification_groups",
-                          localField: "_id",
-                          foreignField: "product_id",
-                          as: "specifications_detail",
-                        },
-                      };
-                      var condition = {
-                        $match: {
-                          _id: { $eq: mongoose.Types.ObjectId(product_id) },
-                        },
-                      };
-                      Product.aggregate([condition, specification_array]).then(
-                        (product) => {
-                          if (product.length == 0) {
-                            response_data.json({
-                              success: false,
-                              error_code: ITEM_ERROR_CODE.ITEM_NOT_FOUND,
-                            });
-                          } else {
-                            var store_condition = {
-                              $match: {
-                                store_id: {
-                                  $eq: mongoose.Types.ObjectId(
-                                    request_data_body.store_id
-                                  ),
-                                },
-                              },
-                            };
-                            var product_condition = {
-                              $match: {
-                                product_id: {
-                                  $eq: mongoose.Types.ObjectId(product_id),
-                                },
-                              },
-                            };
-                            var item_condition = {
-                              $match: {
-                                _id: { $ne: mongoose.Types.ObjectId(item_id) },
-                              },
-                            };
-
-                            Item.aggregate([
-                              store_condition,
-                              product_condition,
-                              item_condition,
-                              { $project: { a: "$name" } },
-                              { $unwind: "$a" },
-                              {
-                                $group: {
-                                  _id: "a",
-                                  item_name: { $addToSet: "$a" },
-                                },
-                              },
-                            ]).then(
-                              (items_array) => {
-                                if (item_array.length == 0) {
-                                  response_data.json({
-                                    success: true,
-                                    message:
-                                      ITEM_MESSAGE_CODE.ITEM_LIST_SUCCESSFULLY,
-                                    item: item_data,
-                                    product: product[0],
-                                    item_array: [],
-                                  });
-                                } else {
-                                  response_data.json({
-                                    success: true,
-                                    message:
-                                      ITEM_MESSAGE_CODE.ITEM_LIST_SUCCESSFULLY,
-                                    item: item_data,
-                                    product: product[0],
-                                    item_array: item_array[0].item_name,
-                                  });
-                                }
-                              },
-                              (error) => {
-                                response_data.json({
-                                  success: false,
-                                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                                });
-                              }
-                            );
-                          }
-                        },
-                        (error) => {
+              Item.findOne({ _id: item_id }).then(
+                (item_data) => {
+                  if (item_data) {
+                    var product_id = item_data.product_id;
+                    var specification_array = {
+                      $lookup: {
+                        from: "specification_groups",
+                        localField: "_id",
+                        foreignField: "product_id",
+                        as: "specifications_detail",
+                      },
+                    };
+                    var condition = {
+                      $match: {
+                        _id: { $eq: mongoose.Types.ObjectId(product_id) },
+                      },
+                    };
+                    Product.aggregate([condition, specification_array]).then(
+                      (product) => {
+                        if (product.length == 0) {
                           response_data.json({
                             success: false,
-                            error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                            error_code: ITEM_ERROR_CODE.ITEM_NOT_FOUND,
                           });
+                        } else {
+                          var store_condition = {
+                            $match: {
+                              store_id: {
+                                $eq: mongoose.Types.ObjectId(
+                                  request_data_body.store_id
+                                ),
+                              },
+                            },
+                          };
+                          var product_condition = {
+                            $match: {
+                              product_id: {
+                                $eq: mongoose.Types.ObjectId(product_id),
+                              },
+                            },
+                          };
+                          var item_condition = {
+                            $match: {
+                              _id: { $ne: mongoose.Types.ObjectId(item_id) },
+                            },
+                          };
+
+                          Item.aggregate([
+                            store_condition,
+                            product_condition,
+                            item_condition,
+                            { $project: { a: "$name" } },
+                            { $unwind: "$a" },
+                            {
+                              $group: {
+                                _id: "a",
+                                item_name: { $addToSet: "$a" },
+                              },
+                            },
+                          ]).then(
+                            (items_array) => {
+                              if (item_array.length == 0) {
+                                response_data.json({
+                                  success: true,
+                                  message:
+                                    ITEM_MESSAGE_CODE.ITEM_LIST_SUCCESSFULLY,
+                                  item: item_data,
+                                  product: product[0],
+                                  item_array: [],
+                                });
+                              } else {
+                                response_data.json({
+                                  success: true,
+                                  message:
+                                    ITEM_MESSAGE_CODE.ITEM_LIST_SUCCESSFULLY,
+                                  item: item_data,
+                                  product: product[0],
+                                  item_array: item_array[0].item_name,
+                                });
+                              }
+                            },
+                            (error) => {
+                              response_data.json({
+                                success: false,
+                                error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                              });
+                            }
+                          );
                         }
-                      );
-                    } else {
-                      response_data.json({
-                        success: false,
-                        error_code: ITEM_ERROR_CODE.ITEM_NOT_FOUND,
-                      });
-                    }
-                  },
-                  (error) => {
+                      },
+                      (error) => {
+                        response_data.json({
+                          success: false,
+                          error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                        });
+                      }
+                    );
+                  } else {
                     response_data.json({
                       success: false,
-                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                      error_code: ITEM_ERROR_CODE.ITEM_NOT_FOUND,
                     });
                   }
-                );
-              }
+                },
+                (error) => {
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
             } else {
               response_data.json({
                 success: false,
@@ -2481,33 +2377,22 @@ exports.delete_item = function (request_data, response_data) {
         Store.findOne({ _id: request_data_body.store_id }).then(
           (store_detail) => {
             if (store_detail) {
-              if (
-                request_data_body.type != ADMIN_DATA_ID.ADMIN &&
-                request_data_body.server_token !== null &&
-                store_detail.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                Item.findOneAndRemove(
-                  { _id: item_id },
-                  function (error, item_data) {
-                    if (error) {
-                      response_data.json({
-                        success: false,
-                        error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                      });
-                    } else {
-                      response_data.json({
-                        success: true,
-                        message: ITEM_MESSAGE_CODE.DELETE_SUCCESSFULLY,
-                      });
-                    }
+              Item.findOneAndRemove(
+                { _id: item_id },
+                function (error, item_data) {
+                  if (error) {
+                    response_data.json({
+                      success: false,
+                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                    });
+                  } else {
+                    response_data.json({
+                      success: true,
+                      message: ITEM_MESSAGE_CODE.DELETE_SUCCESSFULLY,
+                    });
                   }
-                );
-              }
+                }
+              );
             } else {
               response_data.json({
                 success: false,
@@ -2563,76 +2448,63 @@ exports.update_item = function (request_data, response_data) {
         Store.findOne({ _id: request_data_body.store_id }).then(
           (store_detail) => {
             if (store_detail) {
-              if (
-                request_data_body.type != ADMIN_DATA_ID.ADMIN &&
-                request_data_body.server_token !== null &&
-                store_detail.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                Item.findOne({
-                  _id: { $ne: request_data_body.item_id },
-                  store_id: request_data_body.store_id,
-                  product_id: request_data_body.product_id,
-                  name: { $regex: request_data_body.name, $options: "i" },
-                }).then(
-                  (item_detail) => {
-                    if (item_detail) {
-                      response_data.json({
-                        success: false,
-                        error_code: ITEM_ERROR_CODE.ITEM_ALREADY_EXIST,
-                      });
-                    } else {
-                      try {
-                        if (request_data_body.price !== undefined) {
-                          Notification.create({
-                            store_id: request_data_body.store_id,
-                            attr_name: "item_id",
-                            attr_id: request_data_body.item_id,
-                            type: "price_change",
-                            message: `${request_data_body.name} price is updated to ${request_data_body.price}`,
-                          });
-                        }
-                      } catch (error) {}
-                      Item.findOneAndUpdate(
-                        { _id: item_id },
-                        request_data_body,
-                        { new: true }
-                      ).then(
-                        (item_data) => {
-                          if (item_data) {
-                            response_data.json({
-                              success: true,
-                              message: ITEM_MESSAGE_CODE.UPDATE_SUCCESSFULLY,
-                              item: item_data,
-                            });
-                          } else {
-                            response_data.json({
-                              success: false,
-                              error_code: ITEM_ERROR_CODE.UPDATE_FAILED,
-                            });
-                          }
-                        },
-                        (error) => {
-                          response_data.json({
-                            success: false,
-                            error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                          });
-                        }
-                      );
-                    }
-                  },
-                  (error) => {
+              Item.findOne({
+                _id: { $ne: request_data_body.item_id },
+                store_id: request_data_body.store_id,
+                product_id: request_data_body.product_id,
+                name: { $regex: request_data_body.name, $options: "i" },
+              }).then(
+                (item_detail) => {
+                  if (item_detail) {
                     response_data.json({
                       success: false,
-                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                      error_code: ITEM_ERROR_CODE.ITEM_ALREADY_EXIST,
                     });
+                  } else {
+                    try {
+                      if (request_data_body.price !== undefined) {
+                        Notification.create({
+                          store_id: request_data_body.store_id,
+                          attr_name: "item_id",
+                          attr_id: request_data_body.item_id,
+                          type: "price_change",
+                          message: `${request_data_body.name} price is updated to ${request_data_body.price}`,
+                        });
+                      }
+                    } catch (error) {}
+                    Item.findOneAndUpdate({ _id: item_id }, request_data_body, {
+                      new: true,
+                    }).then(
+                      (item_data) => {
+                        if (item_data) {
+                          response_data.json({
+                            success: true,
+                            message: ITEM_MESSAGE_CODE.UPDATE_SUCCESSFULLY,
+                            item: item_data,
+                          });
+                        } else {
+                          response_data.json({
+                            success: false,
+                            error_code: ITEM_ERROR_CODE.UPDATE_FAILED,
+                          });
+                        }
+                      },
+                      (error) => {
+                        response_data.json({
+                          success: false,
+                          error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                        });
+                      }
+                    );
                   }
-                );
-              }
+                },
+                (error) => {
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
             } else {
               response_data.json({
                 success: false,
@@ -2662,69 +2534,58 @@ exports.delete_item_image = function (request_data, response_data) {
       Store.findOne({ _id: request_data_body.store_id }).then(
         (store_detail) => {
           if (store_detail) {
-            if (
-              request_data_body.type != ADMIN_DATA_ID.ADMIN &&
-              request_data_body.server_token !== null &&
-              store_detail.server_token !== request_data_body.server_token
-            ) {
-              response_data.json({
-                success: false,
-                error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-              });
-            } else {
-              Item.findOne({ _id: request_data_body._id }).then(
-                (item) => {
-                  if (item) {
-                    var image_file = request_data_body.image_url;
-                    var file_list_size = 0;
-                    if (image_file != undefined && image_file.length > 0) {
-                      file_list_size = image_file.length;
-                      for (i = 0; i < file_list_size; i++) {
-                        image_file[i];
-                        var image_url = item.image_url;
-                        var index = image_url.indexOf(image_file[i]);
-                        if (index != -1) {
-                          image_url.splice(index, 1);
-                        }
-                        item.image_url = image_url;
-                        utils.deleteImageFromFolder(
-                          image_file[i],
-                          FOLDER_NAME.STORE_ITEMS
-                        );
+            Item.findOne({ _id: request_data_body._id }).then(
+              (item) => {
+                if (item) {
+                  var image_file = request_data_body.image_url;
+                  var file_list_size = 0;
+                  if (image_file != undefined && image_file.length > 0) {
+                    file_list_size = image_file.length;
+                    for (i = 0; i < file_list_size; i++) {
+                      image_file[i];
+                      var image_url = item.image_url;
+                      var index = image_url.indexOf(image_file[i]);
+                      if (index != -1) {
+                        image_url.splice(index, 1);
                       }
+                      item.image_url = image_url;
+                      utils.deleteImageFromFolder(
+                        image_file[i],
+                        FOLDER_NAME.STORE_ITEMS
+                      );
                     }
-
-                    item.save().then(
-                      () => {
-                        response_data.json({
-                          success: true,
-                          message:
-                            ITEM_MESSAGE_CODE.ITEM_IMAGE_UPDATE_SUCCESSFULLY,
-                          item: item,
-                        });
-                      },
-                      (error) => {
-                        response_data.json({
-                          success: false,
-                          error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
-                        });
-                      }
-                    );
-                  } else {
-                    response_data.json({
-                      success: false,
-                      error_code: ITEM_ERROR_CODE.ITEM_NOT_FOUND,
-                    });
                   }
-                },
-                (error) => {
+
+                  item.save().then(
+                    () => {
+                      response_data.json({
+                        success: true,
+                        message:
+                          ITEM_MESSAGE_CODE.ITEM_IMAGE_UPDATE_SUCCESSFULLY,
+                        item: item,
+                      });
+                    },
+                    (error) => {
+                      response_data.json({
+                        success: false,
+                        error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                      });
+                    }
+                  );
+                } else {
                   response_data.json({
                     success: false,
-                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                    error_code: ITEM_ERROR_CODE.ITEM_NOT_FOUND,
                   });
                 }
-              );
-            }
+              },
+              (error) => {
+                response_data.json({
+                  success: false,
+                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                });
+              }
+            );
           } else {
             response_data.json({
               success: false,
@@ -2769,44 +2630,28 @@ exports.get_item_detail = function (request_data, response_data) {
         Table.findOne({ _id: request_data_body.id }).then(
           (detail) => {
             if (detail) {
-              // jwt.verify(request_data_body.server_token, 'yeepeey', function(err, decoded) {
-              //     if(decoded){
-              //     } else {
-              //         response_data.json({success: false, error_code: ERROR_CODE.INVALID_SERVER_TOKEN});
-              //     }
-              // });
-              if (
-                request_data_body.server_token !== null &&
-                detail.server_token !== request_data_body.server_token
-              ) {
-                response_data.json({
-                  success: false,
-                  error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-                });
-              } else {
-                Item.find({ _id: { $in: request_data_body.item_array } }).then(
-                  (items) => {
-                    if (items.length == 0) {
-                      response_data.json({
-                        success: false,
-                        error_code: ITEM_ERROR_CODE.ITEM_NOT_FOUND,
-                      });
-                    } else {
-                      response_data.json({
-                        success: true,
-                        message: ITEM_MESSAGE_CODE.ITEM_LIST_SUCCESSFULLY,
-                        items: items,
-                      });
-                    }
-                  },
-                  (error) => {
+              Item.find({ _id: { $in: request_data_body.item_array } }).then(
+                (items) => {
+                  if (items.length == 0) {
                     response_data.json({
                       success: false,
-                      error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                      error_code: ITEM_ERROR_CODE.ITEM_NOT_FOUND,
+                    });
+                  } else {
+                    response_data.json({
+                      success: true,
+                      message: ITEM_MESSAGE_CODE.ITEM_LIST_SUCCESSFULLY,
+                      items: items,
                     });
                   }
-                );
-              }
+                },
+                (error) => {
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
             } else {
               response_data.json({
                 success: false,

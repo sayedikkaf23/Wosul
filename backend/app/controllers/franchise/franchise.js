@@ -431,37 +431,21 @@ exports.logout = function (request_data, response_data) {
     { _id: request_data_body.franchise_id },
     function (error, franchise) {
       if (franchise) {
-        // jwt.verify(request_data_body.server_token, 'yeepeey', function(err, decoded) {
-        //     if(decoded){
-        //     } else {
-        //         response_data.json({success: false, error_code: ERROR_CODE.INVALID_SERVER_TOKEN});
-        //     }
-        // });
-        if (
-          request_data_body.server_token !== null &&
-          franchise.server_token !== request_data_body.server_token
-        ) {
-          response_data.json({
-            success: false,
-            error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-          });
-        } else {
-          franchise.device_token = "";
-          franchise.server_token = "";
-          franchise.save(function (error) {
-            if (error) {
-              response_data.json({
-                success: false,
-                error_code: STORE_ERROR_CODE.LOGOUT_FAILED,
-              });
-            } else {
-              response_data.json({
-                success: true,
-                message: STORE_MESSAGE_CODE.LOGOUT_SUCCESSFULLY,
-              });
-            }
-          });
-        }
+        franchise.device_token = "";
+        franchise.server_token = "";
+        franchise.save(function (error) {
+          if (error) {
+            response_data.json({
+              success: false,
+              error_code: STORE_ERROR_CODE.LOGOUT_FAILED,
+            });
+          } else {
+            response_data.json({
+              success: true,
+              message: STORE_MESSAGE_CODE.LOGOUT_SUCCESSFULLY,
+            });
+          }
+        });
       } else {
         response_data.json({
           success: false,
@@ -471,6 +455,7 @@ exports.logout = function (request_data, response_data) {
     }
   );
 };
+
 exports.franchise_update = function (request_data, response_data) {
   var request_data_body = request_data.body;
   var franchise_id = request_data_body.franchise_id;
@@ -490,14 +475,6 @@ exports.franchise_update = function (request_data, response_data) {
   Franchise.findOne({ _id: franchise_id }, function (error, franchise) {
     if (franchise) {
       if (
-        request_data_body.server_token !== null &&
-        franchise.server_token !== request_data_body.server_token
-      ) {
-        response_data.json({
-          success: false,
-          error_code: STORE_ERROR_CODE.INVALID_SERVER_TOKEN,
-        });
-      } else if (
         social_id == null &&
         old_password != "" &&
         old_password != franchise.password
@@ -730,100 +707,84 @@ exports.get_order_detail = function (request_data, response_data) {
     { _id: request_data_body.franchise_id },
     function (error, franchise_detail) {
       if (franchise_detail) {
-        // jwt.verify(request_data_body.server_token, 'yeepeey', function(err, decoded) {
-        //     if(decoded){
-        //     } else {
-        //         response_data.json({success: false, error_code: ERROR_CODE.INVALID_SERVER_TOKEN});
-        //     }
-        // });
-        if (
-          request_data_body.server_token !== null &&
-          franchise_detail.server_token !== request_data_body.server_token
-        ) {
-          response_data.json({
-            success: false,
-            error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-          });
-        } else {
-          var order_condition = {
-            $match: {
-              _id: { $eq: mongoose.Types.ObjectId(request_data_body.order_id) },
-            },
-          };
-          var user_query = {
-            $lookup: {
-              from: "users",
-              localField: "user_id",
-              foreignField: "_id",
-              as: "user_detail",
-            },
-          };
-          var array_to_json_user_detail = { $unwind: "$user_detail" };
-          var store_query = {
-            $lookup: {
-              from: "stores",
-              localField: "store_id",
-              foreignField: "_id",
-              as: "store_detail",
-            },
-          };
-          var array_to_json_store_detail = { $unwind: "$store_detail" };
-          var order_payment_query = {
-            $lookup: {
-              from: "order_payments",
-              localField: "order_payment_id",
-              foreignField: "_id",
-              as: "order_payment_detail",
-            },
-          };
-          var array_to_json_order_payment_query = {
-            $unwind: "$order_payment_detail",
-          };
-          var provider_query = {
-            $lookup: {
-              from: "providers",
-              localField: "provider_id",
-              foreignField: "_id",
-              as: "provider_detail",
-            },
-          };
-          // var array_to_json_provider_query = {$unwind: "$provider_detail"};
-          // var vehicle_query = {
-          //    $lookup: {
-          //          from: "vehicles",
-          //          localField: "provider_detail.vehicle_id",
-          //          foreignField: "_id",
-          //          as: "vehicle_detail"
-          //    }
-          //};
-          Order.aggregate(
-            [
-              order_condition,
-              user_query,
-              order_payment_query,
-              store_query,
-              provider_query,
-              array_to_json_user_detail,
-              array_to_json_store_detail,
-              array_to_json_order_payment_query,
-            ],
-            function (error, order) {
-              if (error || order.length === 0) {
-                response_data.json({
-                  success: false,
-                  error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
-                  pages: 0,
-                });
-              } else {
-                response_data.json({
-                  success: true,
-                  message: ORDER_MESSAGE_CODE.GET_ORDER_DATA_SUCCESSFULLY,
-                  order: order[0],
-                });
-              }
+        var order_condition = {
+          $match: {
+            _id: { $eq: mongoose.Types.ObjectId(request_data_body.order_id) },
+          },
+        };
+        var user_query = {
+          $lookup: {
+            from: "users",
+            localField: "user_id",
+            foreignField: "_id",
+            as: "user_detail",
+          },
+        };
+        var array_to_json_user_detail = { $unwind: "$user_detail" };
+        var store_query = {
+          $lookup: {
+            from: "stores",
+            localField: "store_id",
+            foreignField: "_id",
+            as: "store_detail",
+          },
+        };
+        var array_to_json_store_detail = { $unwind: "$store_detail" };
+        var order_payment_query = {
+          $lookup: {
+            from: "order_payments",
+            localField: "order_payment_id",
+            foreignField: "_id",
+            as: "order_payment_detail",
+          },
+        };
+        var array_to_json_order_payment_query = {
+          $unwind: "$order_payment_detail",
+        };
+        var provider_query = {
+          $lookup: {
+            from: "providers",
+            localField: "provider_id",
+            foreignField: "_id",
+            as: "provider_detail",
+          },
+        };
+        // var array_to_json_provider_query = {$unwind: "$provider_detail"};
+        // var vehicle_query = {
+        //    $lookup: {
+        //          from: "vehicles",
+        //          localField: "provider_detail.vehicle_id",
+        //          foreignField: "_id",
+        //          as: "vehicle_detail"
+        //    }
+        //};
+        Order.aggregate(
+          [
+            order_condition,
+            user_query,
+            order_payment_query,
+            store_query,
+            provider_query,
+            array_to_json_user_detail,
+            array_to_json_store_detail,
+            array_to_json_order_payment_query,
+          ],
+          function (error, order) {
+            if (error || order.length === 0) {
+              response_data.json({
+                success: false,
+                error_code: ORDER_ERROR_CODE.ORDER_NOT_FOUND,
+                pages: 0,
+              });
+            } else {
+              response_data.json({
+                success: true,
+                message: ORDER_MESSAGE_CODE.GET_ORDER_DATA_SUCCESSFULLY,
+                order: order[0],
+              });
             }
-          );
-        }
+          }
+        );
       } else {
         response_data.json({
           success: false,
@@ -839,22 +800,6 @@ exports.get_franchise_data = function (request_data, response_data) {
     { _id: request_data_body.franchise_id },
     function (error, franchise) {
       if (franchise) {
-        // jwt.verify(request_data_body.server_token, 'yeepeey', function(err, decoded) {
-        //     if(decoded){
-        //     } else {
-        //         response_data.json({success: false, error_code: ERROR_CODE.INVALID_SERVER_TOKEN});
-        //     }
-        // });
-        if (
-          request_data_body.server_token !== null &&
-          franchise.server_token !== request_data_body.server_token
-        ) {
-          response_data.json({
-            success: false,
-            error_code: ERROR_CODE.INVALID_SERVER_TOKEN,
-          });
-        } else {
-        }
         var country_query = {
           $lookup: {
             from: "countries",
@@ -1034,6 +979,7 @@ exports.get_franchise_data = function (request_data, response_data) {
     }
   );
 };
+
 exports.get_store_data = function (request_data, response_data) {
   var request_data_body = request_data.body;
   var store_ids = request_data_body.store_ids;
@@ -1199,7 +1145,7 @@ exports.franchise_login = function (request_data, response_data) {
                 } else {
                   Order.updateMany(
                     { franchise_notify: 0, franchise_id: franchise_detail._id },
-                    { $set : { franchise_notify: 1 }},
+                    { $set: { franchise_notify: 1 } },
                     function (error, order) {}
                   );
                 }
