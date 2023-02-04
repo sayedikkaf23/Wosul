@@ -33,6 +33,7 @@ const { setDeliverIn } = require("../../services/order.service");
 const {
   bulkInsertCategoriesAndSubCategories,
 } = require("../../services/store.service");
+const { getToken } = require("../../middleware/checkAuth");
 
 // store register api
 exports.store_register = async function (request_data, response_data) {
@@ -635,9 +636,13 @@ exports.store_login = function (request_data, response_data) {
                                   PUSH_NOTIFICATION_SOUND_FILE.PUSH_NOTIFICATION_SOUND_FILE_IN_IOS
                                 );
                               }
+                              
+                              const token = getToken(store_detail._id, store_detail.email, "store");
+
                               response_data.json({
                                 success: true,
                                 message: STORE_MESSAGE_CODE.LOGIN_SUCCESSFULLY,
+                                token,
                                 timezone: timezone,
                                 currency: country.currency_sign,
                                 minimum_phone_number_length:

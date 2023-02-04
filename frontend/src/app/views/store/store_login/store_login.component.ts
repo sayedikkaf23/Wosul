@@ -16,6 +16,7 @@ import {
   LoginOptions,
 } from 'ngx-facebook';
 import { UtilsHelperService } from 'src/app/services/utils-helper.service';
+import { AuthService } from 'src/app/services/auth.service';
 declare var gapi;
 
 export interface StoreLogin {
@@ -54,7 +55,8 @@ export class store_loginComponent implements OnInit {
     public vcr: ViewContainerRef,
     private utils: UtilsHelperService,
     private modalService: NgbModal,
-    private activeModal: NgbActiveModal
+    private activeModal: NgbActiveModal,
+    private auth: AuthService
   ) {
     let initParams: InitParams = {
       appId: '601526146700337',
@@ -185,7 +187,6 @@ export class store_loginComponent implements OnInit {
   storeLogin1(logindata) {
     this.helper.http.post(this.helper.POST_METHOD.LOGIN, logindata).subscribe(
       (res_data: any) => {
-        console.log('login response: ', res_data);
         this.myLoading = false;
         if (res_data.success == false) {
           this.helper.data.storage = {
@@ -196,6 +197,9 @@ export class store_loginComponent implements OnInit {
           this.helper.message();
         } else {
           this.store_data = res_data;
+
+          this.auth.setStoreToken(this.store_data.token);
+          
           if (
             this.setting_data.is_store_sms_verification == true &&
             this.store_data.store.is_phone_number_verified == false &&

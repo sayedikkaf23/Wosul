@@ -34,7 +34,7 @@ export class TopnavbarComponent implements OnInit {
     private modalService: NgbModal,
     private activeModal: NgbActiveModal,
     private router: Router
-  ) {}
+  ) { }
 
   toggleNavigation(): void {
     jQuery('body').toggleClass('mini-navbar');
@@ -57,7 +57,7 @@ export class TopnavbarComponent implements OnInit {
     icon: 'web_images/store_logo.png',
   };
 
-  ngAfterViewInit() {}
+  ngAfterViewInit() { }
 
   ngOnInit() {
     this.audio = new Audio();
@@ -331,8 +331,10 @@ export class TopnavbarComponent implements OnInit {
   }
 
   logout() {
-    this.adminModalRef.close();
-    
+    try {
+      this.adminModalRef.close();
+    } catch (e) { }
+
     this.router.navigate(['/store/logout']);
   }
 }
