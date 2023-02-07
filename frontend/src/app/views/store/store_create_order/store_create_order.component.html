@@ -13,7 +13,7 @@
             id="selected_product"
             tabindex="4"
           >
-            <option>{{ title.all  }}</option>
+            <option>{{ title.all }}</option>
             <option
               *ngFor="let product_data of product_list"
               value="{{ product_data._id }}"
@@ -33,7 +33,7 @@
               (keyup)="filter_product(filter_product_name)"
               class="form-control search_box"
               [(ngModel)]="filter_product_name"
-              placeholder="{{ title.item_name  }}"
+              placeholder="{{ title.item_name }}"
               style="color: #000000"
               name="filter_product_name"
             />
@@ -56,7 +56,7 @@
               class="fa fa-shopping-bag pull-left"
               style="margin-top: 2px"
             ></span
-            >{{ button.cart  }}
+            >{{ button.cart }}
             <div
               *ngIf="helper.user_cart.cart_data.total_item > 0"
               class="cart_button"
@@ -67,13 +67,14 @@
         </a>
         <a (click)="helper.create_order_without_item()">
           <button class="btn add_btn pull-right" style="margin-right: 10px">
-            {{ button.create_order_without_item  }}
+            {{ button.create_order_without_item }}
           </button></a
         >
       </div>
     </div>
   </div>
 </div>
+
 <div class="daisection">
   <div class="row">
     <div class="col-md-4 col-xs-12 col-sm-8 pull-right">
@@ -85,7 +86,7 @@
         <div class="cart_data">
           <div>
             <a class="clear_all" (click)="helper.clear_cart()">{{
-              button.clear_all 
+              button.clear_all
             }}</a>
           </div>
           <div
@@ -135,7 +136,7 @@
                 <a
                   class="remove"
                   (click)="helper.remove_from_cart(product_index, item_index)"
-                  >{{ button.remove  }}</a
+                  >{{ button.remove }}</a
                 >
               </div>
             </div>
@@ -151,7 +152,7 @@
             <button style="width: 100%; background-color: black; border: 0">
               <div class="col-md-9 col-sm-9 col-xs-9">
                 <h1 class="totalprice" style="float: left">
-                  {{ button.checkout  }}
+                  {{ button.checkout }}
                 </h1>
               </div>
               <div class="col-md-3 col-sm-3 col-xs-3">
@@ -179,7 +180,7 @@
       class="col-md-12"
       [hidden]="
         product_data.items.length == 0 ||
-        (selected_product !== (title.all ) &&
+        (selected_product !== title.all &&
           selected_product !== product_data._id)
       "
       style="margin-bottom: 10px; padding: 0px"
@@ -192,8 +193,7 @@
     <div
       *ngFor="let i of product_data.items; let item_index = index"
       [hidden]="
-        selected_product !== (title.all ) &&
-        selected_product !== product_data._id
+        selected_product !== title.all && selected_product !== product_data._id
       "
     >
       <div class="col-lg-4 col-sm-6" style="padding: 0px; padding-right: 2px">
@@ -255,7 +255,8 @@
   </div>
 </div>
 
-<ng-template let-modal
+<ng-template
+  let-modal
   keyboard="false"
   backdrop="static"
   cssClass="modal-xl animated"
@@ -385,7 +386,7 @@
               class="radioheader pull-right"
               style="color: #cb212e"
             >
-              {{ title.required  }}
+              {{ title.required }}
             </h1>
           </div>
         </div>
@@ -565,7 +566,7 @@
       >
         <div class="col-md-9 col-sm-9 col-xs-9">
           <h1 class="totalprice" style="float: left">
-            {{ button.add_to_cart  }}
+            {{ button.add_to_cart }}
           </h1>
         </div>
         <div class="col-md-3 col-sm-3 col-xs-3">
@@ -576,7 +577,8 @@
   </div>
 </ng-template>
 
-<ng-template let-modal
+<ng-template
+  let-modal
   keyboard="false"
   backdrop="static"
   cssClass="modal-xs animated fadeInDownBig"
@@ -617,7 +619,7 @@
         (click)="updateSubstituteItemCart()"
         class="btn btn-primary"
       >
-        {{ button.update  }}
+        {{ button.update }}
       </button>
     </div>
   </div>

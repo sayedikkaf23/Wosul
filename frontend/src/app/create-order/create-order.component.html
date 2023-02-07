@@ -1,0 +1,116 @@
+<div class="create-order-main-container">
+  <div class="layout-container">
+    <div class="layout-left">
+      <!-- search-input -->
+      <div class="group">
+        <img class="icon" src="assets/images/search.svg" />
+        <input
+          placeholder="Search product name or product code"
+          type="search"
+          class="input"
+        />
+
+        <!-- search-by-barcode -->
+        <div class="search-by-barcode">
+          <img
+            class="search-by-barcode-img"
+            src="assets/images/search-by-barcode.svg"
+          />
+          <span> Search by Barcode </span>
+        </div>
+      </div>
+
+      <!-- create order new -->
+      <div class="delivery-container">
+        <!-- category -->
+        <div *ngFor="let item of delivery" class="category">
+          <div>{{ item }}</div>
+        </div>
+      </div>
+
+      <!-- create order new -->
+      <div class="category-container">
+        <!-- category -->
+        <div *ngFor="let item of category" class="category delivery">
+          <div>{{ item }}</div>
+        </div>
+      </div>
+
+      <!-- product cart -->
+      <div class="product-cart-main-container">
+        <div class="product-cart">
+          <div class="product-img-main">
+            <img class="product-img" src="assets/images/Product-img.svg" />
+
+            <div class="discount">25% OFF</div>
+
+            <div class="out-of-stock">out-of-stock</div>
+          </div>
+
+          <div class="product-code">
+            <span>(Product Code:TOBACCO) </span>
+
+            <label class="color">Jacket with tobacca tax Wosul </label>
+          </div>
+
+          <div class="sar-main">
+            <label class="">50 SAR</label>
+            <img
+              class="add-icon"
+              src="assets/images/add-circle.svg"
+              alt=""
+              srcset=""
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="layout-right">
+      <div class="store-name-main">
+        <div class="store-name-title">Wosul Store Name</div>
+
+        <div class="order-number-main">
+          <div class="oreder-no">
+            <div class="font">#1004</div>
+            <div class="mt">(Order Number)</div>
+          </div>
+
+          <div class="oreder-no">
+            <div class="font">Counter 2</div>
+            <div class="mt">(Counter Number)</div>
+          </div>
+        </div>
+
+        <div class="store-cart-main">
+            <div class="store-cart">
+
+              <div class="store-cart-img">
+                <img class="store-img" src="assets/images/Product-img.svg" />
+              </div>
+              <div>
+                <div class="store-label">Jacket with Wosul.....</div>
+                
+                <div class="store-product-code">(Product Code:TOBACCO )</div>
+              </div>
+              
+              <div class="add-btn">
+                add
+              </div>
+              
+            </div>
+
+            <div class="store-size">
+              <div>
+
+              </div>
+
+              <div>
+                
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

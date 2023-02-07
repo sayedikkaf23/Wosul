@@ -222,9 +222,10 @@ import { environment } from '../environments/environment';
 import { SocketService } from './services/socket.service';
 import { FtpServerComponent } from './views/admin/ftp_server/ftp_server.component';
 import { TokenInterceptor } from './services/token.interceptor';
+import { CreateOrderComponent } from './create-order/create-order.component';
 
 @NgModule({
-  declarations: [AppComponent, CommonInfoModalComponent, FtpServerComponent],
+  declarations: [AppComponent, CommonInfoModalComponent, FtpServerComponent, CreateOrderComponent],
   imports: [
     BrowserModule,
     HttpClientModule,

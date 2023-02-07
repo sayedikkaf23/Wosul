@@ -4,6 +4,7 @@
 
 export const environment = {
   production: false,
+  // serverUrl: 'http://staging.yeepeey.com/api/',
   serverUrl: 'http://localhost:8000',
 };
 
