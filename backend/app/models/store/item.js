@@ -17,6 +17,7 @@ var item = new schema(
     details_1: { type: String, default: "" },
     name: { type: String, default: "" },
     price: { type: Number, default: 0 },
+    purchase_cost: { type: Number, default: 0 },  
     item_price_without_offer: { type: Number, default: 0 },
     discount_percentage: { type: Number, default: 0 },
     discount_value: { type: Number, default: 0 },

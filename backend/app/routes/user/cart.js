@@ -40,4 +40,6 @@ module.exports = function (app) {
     .route("/api/user/request_card_payment_by_instrument")
     .post(carts.request_card_payment_by_instrument);
   app.route("/api/user/card_online_payment").post(carts.card_online_payment);
+
+  app.route("/api/user/get_item_modifiers").post(carts.get_item_modifiers);
 };

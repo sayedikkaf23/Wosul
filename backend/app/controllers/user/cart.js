@@ -27,6 +27,8 @@ const UserSetting = require("../../models/user/user_setting");
 const paymentDetails = require("../../models/admin/payment_details");
 const moment = require("moment");
 const card = require("../../models/user/card");
+const itemModifier = require("../../models/user/item_modifier");
+const { getItemTotalPrice } = require("../../services/cart.service");
 
 // user add_item_in_cart
 exports.add_item_in_cart = function (request_data, response_data) {
@@ -424,6 +426,7 @@ exports.create_and_update_cart = async function (req, res) {
   user_id = user_id == "" ? null : user_id;
   const user = await User.findOne({ _id: user_id });
   const cart_id = user && user.cart_id ? user.cart_id : null;
+  //const cart_id = "63e24d6cf31ee8c7c059513b";
   const cart = await Cart.findOne({
     $or: [{ _id: cart_id }, { cart_unique_token: cart_unique_token }],
   });
@@ -445,6 +448,7 @@ exports.create_and_update_cart = async function (req, res) {
     });
     return;
   }
+
   country_id = store.country_id;
   city_id = store.city_id;
   store_id = store._id;
@@ -473,6 +477,7 @@ exports.create_and_update_cart = async function (req, res) {
   }
 
   if (cart) {
+    await getItemTotalPrice(order_details);
     cart.cart_unique_token = cart_unique_token;
     cart.delivery_type = delivery_type;
     cart.user_id = user_id;
@@ -487,6 +492,7 @@ exports.create_and_update_cart = async function (req, res) {
 
     total_item_tax = utils.precisionRoundTwo(Number(total_item_tax));
     cart.total_item_tax = total_item_tax;
+
     await cart.save();
     await checkPromo(cart);
     res.json({
@@ -515,6 +521,7 @@ exports.create_and_update_cart = async function (req, res) {
     });
     await new_cart.save();
     if (order_details.length) {
+      await getItemTotalPrice(order_details);
       if (order_details[0].items && order_details[0].items.length) {
         const item = order_details[0].items[0];
         if (item && item.SkuCode) {
@@ -544,6 +551,50 @@ exports.create_and_update_cart = async function (req, res) {
       new_cart,
     });
   }
+};
+
+exports.get_item_modifiers = async function (req, res) {
+  let { store_id, unique_id_for_store_data } = req.body;
+  console.log("get_item_modifiers: >>>" + JSON.stringify(req.body));
+  const store = await Store.findOne({
+    _id: store_id,
+    is_business: true,
+  });
+  if (!store) {
+    res.json({
+      success: false,
+      error_message: "Store not found",
+    });
+    return;
+  }
+
+  const item = await Item.findOne({
+    unique_id_for_store_data,
+  });
+
+  if (!item) {
+    res.json({
+      success: false,
+      error_message: "Item not found.",
+    });
+    return;
+  }
+  const item_modifier = await itemModifier.find({
+    store_id,
+    unique_id_for_store_data,
+    isActive: true,
+  });
+
+  if (!item_modifier) {
+    res.json({
+      success: false,
+      message: "Item modifier not found!",
+    });
+  }
+  res.json({
+    success: true,
+    item_modifier,
+  });
 };
 
 exports.add_update_item_in_cart_v2 = async function (req, res) {

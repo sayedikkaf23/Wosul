@@ -9,7 +9,7 @@ import { environment } from 'src/environments/environment.prod';
 export class AuthService {
   url = environment.serverUrl;
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router) { }
 
   get token() {
     return localStorage.getItem('admin_token');
@@ -22,6 +22,10 @@ export class AuthService {
 
   getToken() {
     return this.token;
+  }
+
+  setStoreToken(token) {
+    localStorage.setItem('admin_token', token);
   }
 
   logOut() {
