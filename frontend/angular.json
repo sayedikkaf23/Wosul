@@ -26,14 +26,10 @@
               "src/manifest.webmanifest"
             ],
             "styles": [
-              "src/styles.css",
               "src/assets/styles/ng-multiselect-dropdown.theme.scss",
               "./node_modules/sweetalert2/dist/sweetalert2.css",
               "./node_modules/metismenujs/dist/metismenujs.css",
               "./node_modules/ngx-ui-switch/ui-switch.component.css",
-              "src/assets/styles/bootstrap.css",
-              "src/assets/styles/styles.css",
-              "src/assets/styles/newstyle.css",
               "src/assets/styles/chosen/bootstrap-chosen.css",
               "src/assets/styles/iCheck/custom.css",
               "src/assets/styles/animate.css",
@@ -41,7 +37,6 @@
               "src/assets/styles/clockpicker/clockpicker.css",
               "src/assets/styles/steps/jquery.steps.css",
               "src/assets/styles/font-awesome.css",
-              "src/assets/styles/jasny/jasny-bootstrap.min.css",
               "./node_modules/ngx-toastr/toastr.css"
             ],
             "scripts": [
@@ -53,7 +48,6 @@
               "src/assets/js/chosen/chosen.jquery.js",
               "src/assets/js/iCheck/icheck.min.js",
               "src/assets/js/clockpicker/clockpicker.js",
-              "src/assets/js/jasny/jasny-bootstrap.min.js",
               "src/assets/js/touchspin/jquery.bootstrap-touchspin.min.js"
             ]
           },

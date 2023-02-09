@@ -1,0 +1,1649 @@
+<ng-container>
+  <div class="content p-0">
+    <div class="row">
+      <div class="col-md-8">
+        <div class="order-categorys">
+          <div class="row">
+            <div class="col-12">
+              <div class="form-field mb-3">
+                <div class="field-icon">
+                  <input
+                    type="text"
+                    class="form-control form-control-lg"
+                    placeholder="Search Product Name or Product Code"
+                  />
+                  <div class="icon">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <ul class="order-checking">
+            <li
+              class="service-tab"
+              *ngFor="let service of serviceDetails"
+              [ngClass]="{ active: service._id === selectedServiceId }"
+              (click)="selectedService(service)"
+            >
+              <a>{{ service?.name }}</a>
+            </li>
+          </ul>
+
+          <div class="category-tabs-border">
+            <div
+              class="category-tabs-wrap category-tab px-0"
+              data-simplebar="true"
+            >
+              <ul class="nav nav-tabs category-tabs" id="myTab2" role="tablist">
+                <li class="nav-item" *ngFor="let cat of category">
+                  <button
+                    class="nav-link"
+                    [ngClass]="{ active: cat._id === selectedCategoryId }"
+                    id=""
+                    data-bs-toggle="tab"
+                    data-bs-target="#category_panel_2"
+                    type="button"
+                    role="tab"
+                    (click)="setCategory(cat)"
+                  >
+                    {{ cat?.name }}
+                  </button>
+                </li>
+              </ul>
+            </div>
+
+            <div
+              class="category-tabs-wrap category-tab px-0"
+              data-simplebar="true"
+            >
+              <ul class="nav nav-tabs category-tabs" id="myTab2" role="tablist">
+                <li class="nav-item" *ngFor="let pro of product">
+                  <button
+                    class="nav-link nav-link-sm active"
+                    id=""
+                    data-bs-toggle="tab"
+                    data-bs-target="#category_panel_2"
+                    type="button"
+                    role="tab"
+                    (click)="setProduct(cat)"
+                  >
+                    {{ pro?.name }}
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="tab-content" id="myTabContent2">
+            <div class="tab-pane fade show active" id="category_panel_1">
+              <div class="product-grid-wrapper">
+                <div class="row gx-3">
+                  <div class="col-6 col-md-4 col-lg-4">
+                    <div class="product-box">
+                      <div class="image">
+                        <div class="box_offer_label bg-success">25% OFF</div>
+                        <div class="box_stock_label bg-danger">
+                          Out of Stock
+                        </div>
+                        <a href="#select_modifier_modal" data-bs-toggle="modal">
+                          <img src="assets/images/Product-img.svg" />
+                        </a>
+                      </div>
+                      <div class="text">
+                        <h6>(Product Code : TOBACCO)</h6>
+                        <h2>
+                          <a
+                            href="#select_modifier_modal"
+                            data-bs-toggle="modal"
+                            >Jacket with tobacco tax Wosul</a
+                          >
+                        </h2>
+                        <div
+                          class="row align-items-center gx-2 justify-content-center"
+                        >
+                          <div class="col-auto">
+                            <div class="price">50 SAR</div>
+                          </div>
+                          <div class="col-auto">
+                            <div class="price-del"><del>75 SAR</del></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-6 col-md-4 col-lg-4">
+                    <div class="product-box">
+                      <div class="image">
+                        <a href="#select_modifier_modal" data-bs-toggle="modal">
+                          <img src="assets/images/Product-img.svg" />
+                        </a>
+                      </div>
+                      <div class="text">
+                        <h6>(Product Code : TOBACCO)</h6>
+                        <h2>
+                          <a
+                            href="#select_modifier_modal"
+                            data-bs-toggle="modal"
+                            >Jacket with tobacco tax Wosul</a
+                          >
+                        </h2>
+                        <div
+                          class="row align-items-center gx-2 justify-content-center"
+                        >
+                          <div class="col-auto">
+                            <div class="price">50 SAR</div>
+                          </div>
+                          <div class="col-auto">
+                            <div class="price-del"><del>75 SAR</del></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-6 col-md-4 col-lg-4">
+                    <div class="product-box">
+                      <div class="image">
+                        <a href="#select_modifier_modal" data-bs-toggle="modal">
+                          <img src="assets/images/Product-img.svg" />
+                        </a>
+                      </div>
+                      <div class="text">
+                        <h6>(Product Code : TOBACCO)</h6>
+                        <h2>
+                          <a
+                            href="#select_modifier_modal"
+                            data-bs-toggle="modal"
+                            >Jacket with tobacco tax Wosul</a
+                          >
+                        </h2>
+                        <div
+                          class="row align-items-center gx-2 justify-content-center"
+                        >
+                          <div class="col-auto">
+                            <div class="price">50 SAR</div>
+                          </div>
+                          <div class="col-auto">
+                            <div class="price-del"><del>75 SAR</del></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-6 col-md-4 col-lg-4">
+                    <div class="product-box">
+                      <div class="image">
+                        <div class="box_offer_label bg-success">25% OFF</div>
+                        <div class="box_stock_label bg-danger">
+                          Out of Stock
+                        </div>
+                        <a href="#select_modifier_modal" data-bs-toggle="modal">
+                          <img src="assets/images/Product-img.svg" />
+                        </a>
+                      </div>
+                      <div class="text">
+                        <h6>(Product Code : TOBACCO)</h6>
+                        <h2>
+                          <a
+                            href="#select_modifier_modal"
+                            data-bs-toggle="modal"
+                            >Jacket with tobacco tax Wosul</a
+                          >
+                        </h2>
+                        <div
+                          class="row align-items-center gx-2 justify-content-center"
+                        >
+                          <div class="col-auto">
+                            <div class="price">50 SAR</div>
+                          </div>
+                          <div class="col-auto">
+                            <div class="price-del"><del>75 SAR</del></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-6 col-md-4 col-lg-4">
+                    <div class="product-box">
+                      <div class="image">
+                        <a href="#select_modifier_modal" data-bs-toggle="modal">
+                          <img src="assets/images/Product-img.svg" />
+                        </a>
+                      </div>
+                      <div class="text">
+                        <h6>(Product Code : TOBACCO)</h6>
+                        <h2>
+                          <a
+                            href="#select_modifier_modal"
+                            data-bs-toggle="modal"
+                            >Jacket with tobacco tax Wosul</a
+                          >
+                        </h2>
+                        <div
+                          class="row align-items-center gx-2 justify-content-center"
+                        >
+                          <div class="col-auto">
+                            <div class="price">50 SAR</div>
+                          </div>
+                          <div class="col-auto">
+                            <div class="price-del"><del>75 SAR</del></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-6 col-md-4 col-lg-4">
+                    <div class="product-box">
+                      <div class="image">
+                        <a href="#select_modifier_modal" data-bs-toggle="modal">
+                          <img src="assets/images/Product-img.svg" />
+                        </a>
+                      </div>
+                      <div class="text">
+                        <h6>(Product Code : TOBACCO)</h6>
+                        <h2>
+                          <a
+                            href="#select_modifier_modal"
+                            data-bs-toggle="modal"
+                            >Jacket with tobacco tax Wosul</a
+                          >
+                        </h2>
+                        <div
+                          class="row align-items-center gx-2 justify-content-center"
+                        >
+                          <div class="col-auto">
+                            <div class="price">50 SAR</div>
+                          </div>
+                          <div class="col-auto">
+                            <div class="price-del"><del>75 SAR</del></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-6 col-md-4 col-lg-4">
+                    <div class="product-box">
+                      <div class="image">
+                        <div class="box_offer_label bg-success">25% OFF</div>
+                        <div class="box_stock_label bg-danger">
+                          Out of Stock
+                        </div>
+                        <a href="#select_modifier_modal" data-bs-toggle="modal">
+                          <img src="assets/images/Product-img.svg" />
+                        </a>
+                      </div>
+                      <div class="text">
+                        <h6>(Product Code : TOBACCO)</h6>
+                        <h2>
+                          <a
+                            href="#select_modifier_modal"
+                            data-bs-toggle="modal"
+                            >Jacket with tobacco tax Wosul</a
+                          >
+                        </h2>
+                        <div
+                          class="row align-items-center gx-2 justify-content-center"
+                        >
+                          <div class="col-auto">
+                            <div class="price">50 SAR</div>
+                          </div>
+                          <div class="col-auto">
+                            <div class="price-del"><del>75 SAR</del></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-6 col-md-4 col-lg-4">
+                    <div class="product-box">
+                      <div class="image">
+                        <a href="#select_modifier_modal" data-bs-toggle="modal">
+                          <img src="assets/images/Product-img.svg" />
+                        </a>
+                      </div>
+                      <div class="text">
+                        <h6>(Product Code : TOBACCO)</h6>
+                        <h2>
+                          <a
+                            href="#select_modifier_modal"
+                            data-bs-toggle="modal"
+                            >Jacket with tobacco tax Wosul</a
+                          >
+                        </h2>
+                        <div
+                          class="row align-items-center gx-2 justify-content-center"
+                        >
+                          <div class="col-auto">
+                            <div class="price">50 SAR</div>
+                          </div>
+                          <div class="col-auto">
+                            <div class="price-del"><del>75 SAR</del></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-6 col-md-4 col-lg-4">
+                    <div class="product-box">
+                      <div class="image">
+                        <a href="#select_modifier_modal" data-bs-toggle="modal">
+                          <img src="assets/images/Product-img.svg" />
+                        </a>
+                      </div>
+                      <div class="text">
+                        <h6>(Product Code : TOBACCO)</h6>
+                        <h2>
+                          <a
+                            href="#select_modifier_modal"
+                            data-bs-toggle="modal"
+                            >Jacket with tobacco tax Wosul</a
+                          >
+                        </h2>
+                        <div
+                          class="row align-items-center gx-2 justify-content-center"
+                        >
+                          <div class="col-auto">
+                            <div class="price">50 SAR</div>
+                          </div>
+                          <div class="col-auto">
+                            <div class="price-del"><del>75 SAR</del></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-6 col-md-4 col-lg-4">
+                    <div class="product-box">
+                      <div class="image">
+                        <div class="box_offer_label bg-success">25% OFF</div>
+                        <div class="box_stock_label bg-danger">
+                          Out of Stock
+                        </div>
+                        <a href="#select_modifier_modal" data-bs-toggle="modal">
+                          <img src="assets/images/Product-img.svg" />
+                        </a>
+                      </div>
+                      <div class="text">
+                        <h6>(Product Code : TOBACCO)</h6>
+                        <h2>
+                          <a
+                            href="#select_modifier_modal"
+                            data-bs-toggle="modal"
+                            >Jacket with tobacco tax Wosul</a
+                          >
+                        </h2>
+                        <div
+                          class="row align-items-center gx-2 justify-content-center"
+                        >
+                          <div class="col-auto">
+                            <div class="price">50 SAR</div>
+                          </div>
+                          <div class="col-auto">
+                            <div class="price-del"><del>75 SAR</del></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-6 col-md-4 col-lg-4">
+                    <div class="product-box">
+                      <div class="image">
+                        <a href="#select_modifier_modal" data-bs-toggle="modal">
+                          <img src="assets/images/Product-img.svg" />
+                        </a>
+                      </div>
+                      <div class="text">
+                        <h6>(Product Code : TOBACCO)</h6>
+                        <h2>
+                          <a
+                            href="#select_modifier_modal"
+                            data-bs-toggle="modal"
+                            >Jacket with tobacco tax Wosul</a
+                          >
+                        </h2>
+                        <div
+                          class="row align-items-center gx-2 justify-content-center"
+                        >
+                          <div class="col-auto">
+                            <div class="price">50 SAR</div>
+                          </div>
+                          <div class="col-auto">
+                            <div class="price-del"><del>75 SAR</del></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-6 col-md-4 col-lg-4">
+                    <div class="product-box">
+                      <div class="image">
+                        <a href="#select_modifier_modal" data-bs-toggle="modal">
+                          <img src="assets/images/Product-img.svg" />
+                        </a>
+                      </div>
+                      <div class="text">
+                        <h6>(Product Code : TOBACCO)</h6>
+                        <h2>
+                          <a
+                            href="#select_modifier_modal"
+                            data-bs-toggle="modal"
+                            >Jacket with tobacco tax Wosul</a
+                          >
+                        </h2>
+                        <div
+                          class="row align-items-center gx-2 justify-content-center"
+                        >
+                          <div class="col-auto">
+                            <div class="price">50 SAR</div>
+                          </div>
+                          <div class="col-auto">
+                            <div class="price-del"><del>75 SAR</del></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="sticky">
+          <div class="add-order-list">
+            <div class="items" data-simplebar="true">
+              <div class="item">
+                <div class="text">
+                  <h3>Jacket with tobacco</h3>
+                  <div class="row gx-2">
+                    <div class="col-auto">
+                      <div class="add_order_varation">SIZE : S | 10.00 SAR</div>
+                    </div>
+                    <div class="col-auto">
+                      <div class="add_order_varation">
+                        COLOR : BLACK | 4.00 SAR
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="add_order_price">50 SAR</div>
+              </div>
+              <div class="item">
+                <div class="text">
+                  <h3>Jacket with tobacco</h3>
+                  <div class="row gx-2">
+                    <div class="col-auto">
+                      <div class="add_order_varation">SIZE : S | 10.00 SAR</div>
+                    </div>
+                    <div class="col-auto">
+                      <div class="add_order_varation">
+                        COLOR : BLACK | 4.00 SAR
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="add_order_price">50 SAR</div>
+              </div>
+              <div class="item">
+                <div class="text">
+                  <h3>Jacket with tobacco</h3>
+                  <div class="row gx-2">
+                    <div class="col-auto">
+                      <div class="add_order_varation">SIZE : S | 10.00 SAR</div>
+                    </div>
+                    <div class="col-auto">
+                      <div class="add_order_varation">
+                        COLOR : BLACK | 4.00 SAR
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="add_order_price">50 SAR</div>
+              </div>
+              <div class="item">
+                <div class="text">
+                  <h3>Jacket with tobacco</h3>
+                  <div class="row gx-2">
+                    <div class="col-auto">
+                      <div class="add_order_varation">SIZE : S | 10.00 SAR</div>
+                    </div>
+                    <div class="col-auto">
+                      <div class="add_order_varation">
+                        COLOR : BLACK | 4.00 SAR
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="add_order_price">50 SAR</div>
+              </div>
+              <div class="item">
+                <div class="text">
+                  <h3>Jacket with tobacco</h3>
+                  <div class="row gx-2">
+                    <div class="col-auto">
+                      <div class="add_order_varation">SIZE : S | 10.00 SAR</div>
+                    </div>
+                    <div class="col-auto">
+                      <div class="add_order_varation">
+                        COLOR : BLACK | 4.00 SAR
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="add_order_price">50 SAR</div>
+              </div>
+              <div class="item">
+                <div class="text">
+                  <h3>Jacket with tobacco</h3>
+                  <div class="row gx-2">
+                    <div class="col-auto">
+                      <div class="add_order_varation">SIZE : S | 10.00 SAR</div>
+                    </div>
+                    <div class="col-auto">
+                      <div class="add_order_varation">
+                        COLOR : BLACK | 4.00 SAR
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="add_order_price">50 SAR</div>
+              </div>
+            </div>
+          </div>
+          <div class="paymentmathed-wrap">
+            <div class="paymentmathed-tab-wrap" data-simplebar="true">
+              <ul
+                class="nav nav-tabs paymentmathed-tabs"
+                id="myTab3"
+                role="tablist"
+              >
+                <li class="nav-item" role="">
+                  <button
+                    class="nav-link active"
+                    id=""
+                    data-bs-toggle="tab"
+                    data-bs-target="#payment_tab_1"
+                    type="button"
+                    role="tab"
+                    aria-selected="true"
+                    tabindex="-1"
+                  >
+                    <span class="icon">
+                      <img
+                        src="assets/images/payment-tab-icons/cash.svg"
+                        alt=""
+                      />
+                    </span>
+                    Cash
+                  </button>
+                </li>
+                <li class="nav-item" role="">
+                  <button
+                    class="nav-link"
+                    id=""
+                    data-bs-toggle="tab"
+                    data-bs-target="#payment_tab_2"
+                    type="button"
+                    role="tab"
+                    aria-selected="false"
+                    tabindex="-1"
+                  >
+                    <span class="icon">
+                      <img
+                        src="assets/images/payment-tab-icons/credit.svg"
+                        alt=""
+                      />
+                    </span>
+                    Credit
+                  </button>
+                </li>
+                <li class="nav-item" role="">
+                  <button
+                    class="nav-link"
+                    id=""
+                    data-bs-toggle="tab"
+                    data-bs-target="#payment_tab_3"
+                    type="button"
+                    role="tab"
+                    aria-selected="false"
+                    tabindex="-1"
+                  >
+                    <span class="icon">
+                      <img
+                        src="assets/images/payment-tab-icons/search-print.svg"
+                        alt=""
+                      />
+                    </span>
+                    Search & Print
+                  </button>
+                </li>
+                <li class="nav-item" role="">
+                  <button
+                    class="nav-link"
+                    id=""
+                    data-bs-toggle="tab"
+                    data-bs-target="#payment_tab_4"
+                    type="button"
+                    role="tab"
+                    aria-selected="false"
+                    tabindex="-1"
+                  >
+                    <span class="icon">
+                      <img
+                        src="assets/images/payment-tab-icons/scane-qr.svg"
+                        alt=""
+                      />
+                    </span>
+                    Scan QR
+                  </button>
+                </li>
+                <li class="nav-item" role="">
+                  <button
+                    class="nav-link"
+                    id=""
+                    data-bs-toggle="tab"
+                    data-bs-target="#payment_tab_5"
+                    type="button"
+                    role="tab"
+                    aria-selected="false"
+                    tabindex="-1"
+                  >
+                    <span class="icon">
+                      <img
+                        src="assets/images/payment-tab-icons/counter.svg"
+                        alt=""
+                      />
+                    </span>
+                    Counter
+                  </button>
+                </li>
+                <li class="nav-item" role="">
+                  <button class="nav-link hold-order-toggle">
+                    <span class="icon">
+                      <img
+                        src="assets/images/payment-tab-icons/hold-order.svg"
+                        alt=""
+                      />
+                    </span>
+                    Hold Orders
+                  </button>
+                </li>
+              </ul>
+            </div>
+            <div
+              class="tab-content paymentmathed-tab-content"
+              id="myTabContent3"
+            >
+              <div
+                class="tab-pane fade show active"
+                id="payment_tab_1"
+                role="tabpanel"
+              >
+                <h2>Cash</h2>
+                <div class="row">
+                  <div class="col-6">
+                    <div class="form-field">
+                      <label class="label">Cash</label>
+                      <input
+                        type="text"
+                        placeholder="0.00"
+                        class="form-control"
+                        required=""
+                      />
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="form-field">
+                      <label class="label">Change</label>
+                      <input
+                        type="text"
+                        placeholder="0.00"
+                        class="form-control"
+                        required=""
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div class="form-field">
+                  <label class="label">Discount</label>
+                  <div class="discount-fields-wrap">
+                    <div class="row gx-3">
+                      <div class="col-12 col-md-12">
+                        <div class="form-field mb-3">
+                          <label class="label">Discount Code</label>
+                          <select
+                            class="form-select form-select-sm"
+                            tabindex="-1"
+                            aria-hidden="true"
+                          >
+                            <option selected="" value="CODE1">CODE1</option>
+                            <option selected="" value="CODE2">CODE2</option>
+                            <option selected="" value="CODE3">CODE3</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="col-7 col-md-7">
+                        <div class="form-field mb-0">
+                          <label class="label">Discount Type</label>
+                          <select
+                            class="form-select form-select-sm"
+                            tabindex="-1"
+                            aria-hidden="true"
+                          >
+                            <option selected="" value="Amount">Amount</option>
+                            <option selected="" value="10">10</option>
+                            <option selected="" value="20">20</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="col-5 col-md-5">
+                        <div class="form-field mb-0">
+                          <label class="label">Discount</label>
+                          <input
+                            type="text"
+                            placeholder="00"
+                            class="form-control form-control-sm"
+                            required=""
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="checkout-data-table">
+                  <table class="table">
+                    <tbody>
+                      <tr>
+                        <td>Cash Counting Machine (x1)</td>
+                        <td align="right"><b>0.00 SAR</b></td>
+                      </tr>
+                      <tr>
+                        <td>Sub Total</td>
+                        <td align="right"><b>0 SAR</b></td>
+                      </tr>
+                      <tr>
+                        <td>Discount</td>
+                        <td align="right"><b>0 SAR</b></td>
+                      </tr>
+                    </tbody>
+                    <tfoot>
+                      <tr class="total-tr">
+                        <td><b>Total Amount</b></td>
+                        <td align="right"><b>0 SAR</b></td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+                <div class="checkout-btn">
+                  <div class="row mb-3">
+                    <div class="col-md-6">
+                      <button
+                        type="button"
+                        class="btn btn-white btn-hover-dark btn-rounded btn-lg w-100"
+                      >
+                        SAVE & PRINT
+                      </button>
+                    </div>
+                    <div class="col-md-6">
+                      <button
+                        type="button"
+                        class="btn btn-danger btn-rounded btn-lg order-menu w-100"
+                      >
+                        HOLD ORDER
+                      </button>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    class="btn btn-warning btn-rounded btn-lg text-dark w-100"
+                  >
+                    SEND TO KITCHEN
+                  </button>
+                </div>
+              </div>
+              <div class="tab-pane fade" id="payment_tab_2" role="tabpanel">
+                <h2>Credit</h2>
+                <div class="row">
+                  <div class="col-6">
+                    <div class="form-field">
+                      <label class="label">Credit</label>
+                      <input
+                        type="text"
+                        placeholder="0.00"
+                        class="form-control"
+                        required=""
+                      />
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="form-field">
+                      <label class="label">Change</label>
+                      <input
+                        type="text"
+                        placeholder="0.00"
+                        class="form-control"
+                        required=""
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div class="form-field">
+                  <label class="label">Payment Method</label>
+                  <select class="form-select" tabindex="-1" aria-hidden="true">
+                    <option selected="" value="Choose Payment Method">
+                      Choose Payment Method
+                    </option>
+                    <option selected="" value="Payment Method 1">
+                      Payment Method 1
+                    </option>
+                    <option selected="" value="Payment Method 2">
+                      Payment Method 2
+                    </option>
+                  </select>
+                </div>
+                <div class="form-field">
+                  <label class="label">Discount</label>
+                  <div class="discount-fields-wrap">
+                    <div class="row g-3">
+                      <div class="col-12 col-md-5">
+                        <div class="form-field mb-0">
+                          <label class="label">Discount Code</label>
+                          <select
+                            class="form-select form-select-sm"
+                            tabindex="-1"
+                            aria-hidden="true"
+                          >
+                            <option selected="" value="CODE1">CODE1</option>
+                            <option selected="" value="CODE2">CODE2</option>
+                            <option selected="" value="CODE3">CODE3</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="col-7 col-md-4">
+                        <div class="form-field mb-0">
+                          <label class="label">Discount Type</label>
+                          <select
+                            class="form-select form-select-sm"
+                            tabindex="-1"
+                            aria-hidden="true"
+                          >
+                            <option selected="" value="Amount">Amount</option>
+                            <option selected="" value="10">10</option>
+                            <option selected="" value="20">20</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="col-5 col-md-3">
+                        <div class="form-field mb-0">
+                          <label class="label">Discount</label>
+                          <input
+                            type="text"
+                            placeholder="00"
+                            class="form-control form-control-sm"
+                            required=""
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="checkout-data-table">
+                  <table class="table">
+                    <tbody>
+                      <tr>
+                        <td>Cash Counting Machine (x1)</td>
+                        <td align="right"><b>0.00 SAR</b></td>
+                      </tr>
+                      <tr>
+                        <td>Sub Total</td>
+                        <td align="right"><b>0 SAR</b></td>
+                      </tr>
+                      <tr>
+                        <td>Discount</td>
+                        <td align="right"><b>0 SAR</b></td>
+                      </tr>
+                    </tbody>
+                    <tfoot>
+                      <tr class="total-tr">
+                        <td><b>Total Amount</b></td>
+                        <td align="right"><b>0 SAR</b></td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+                <div class="checkout-btn">
+                  <div class="row mb-3">
+                    <div class="col-md-6">
+                      <button
+                        type="button"
+                        class="btn btn-white btn-hover-dark btn-rounded btn-lg w-100"
+                      >
+                        SAVE & PRINT
+                      </button>
+                    </div>
+                    <div class="col-md-6">
+                      <button
+                        type="button"
+                        class="btn btn-danger btn-rounded btn-lg order-menu w-100"
+                      >
+                        HOLD ORDER
+                      </button>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    class="btn btn-warning btn-rounded btn-lg text-dark w-100"
+                  >
+                    SEND TO KITCHEN
+                  </button>
+                </div>
+              </div>
+              <div class="tab-pane fade" id="payment_tab_3" role="tabpanel">
+                <h2>Search & Print</h2>
+                <div class="form-field">
+                  <label class="label">Enter Date</label>
+                  <input
+                    type="date"
+                    placeholder="123456789"
+                    class="form-control text-muted"
+                    required=""
+                  />
+                </div>
+                <div class="form-field">
+                  <label class="label">Enter Reference Number</label>
+                  <input
+                    type="text"
+                    placeholder="-"
+                    class="form-control"
+                    required=""
+                  />
+                </div>
+                <div class="checkout-btn mt-3">
+                  <button
+                    type="button"
+                    class="btn btn-warning btn-rounded btn-lg text-dark w-100"
+                  >
+                    SEARCH
+                  </button>
+                </div>
+              </div>
+              <div class="tab-pane fade" id="payment_tab_4" role="tabpanel">
+                <div class="scanqr_wrap">
+                  <h2>Scan QR Code</h2>
+                  <div class="scanqr_code">
+                    <img src="assets/images/qrcode.png" alt="" />
+                  </div>
+                </div>
+              </div>
+              <div class="tab-pane fade" id="payment_tab_5" role="tabpanel">
+                <h2>Close Counter</h2>
+                <div class="row">
+                  <div class="col-6">
+                    <div class="form-field">
+                      <label class="label">Credit</label>
+                      <input
+                        type="text"
+                        placeholder="0.00"
+                        class="form-control"
+                        required=""
+                      />
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="form-field">
+                      <label class="label">Change</label>
+                      <input
+                        type="text"
+                        placeholder="0.00"
+                        class="form-control"
+                        required=""
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div class="form-field">
+                  <label class="label"
+                    >Are you sure you want to close register?</label
+                  >
+                </div>
+                <div class="checkout-btn">
+                  <button
+                    type="button"
+                    class="btn btn-white btn-rounded btn-lg w-100 mb-3"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-warning btn-rounded btn-lg text-dark w-100"
+                  >
+                    SEARCH
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="order-menu-overlay"></div>
+  <div class="order-menubar">
+    <div class="order-menu-head">
+      <h4 class="mb-0">Hold Order (3)</h4>
+      <button
+        type="button"
+        class="btn-close order-menu-close"
+        data-bs-dismiss="modal"
+        aria-label="Close"
+      ></button>
+    </div>
+    <div class="order-menu-body">
+      <div class="form-field">
+        <div class="field-icon">
+          <input
+            type="text"
+            class="form-control form-control-solid"
+            placeholder="Search by order Customer"
+          />
+          <div class="icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+        </div>
+      </div>
+      <div class="hold-order-list">
+        <div class="row justify-content-between mb-0">
+          <div class="col-md-2">
+            <div class="image">
+              <img src="assets/images/logo-icon.png" />
+            </div>
+          </div>
+          <div class="col-md-10">
+            <div class="row justify-content-between">
+              <div class="col-auto">
+                <div class="text">
+                  <h4>#241</h4>
+                </div>
+              </div>
+              <div class="col-auto">
+                <div class="date-text">
+                  <p>15-8-2022 01:15PM</p>
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="store-details">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <h6>Customer Phone</h6>
+                      <h4>9876543210</h4>
+                    </div>
+                    <div class="col-md-6">
+                      <h6>Customer Email</h6>
+                      <h4>test@gmail.com</h4>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="hold-order-list">
+        <div class="row justify-content-between mb-0">
+          <div class="col-md-2">
+            <div class="image">
+              <img src="assets/images/logo-icon.png" />
+            </div>
+          </div>
+          <div class="col-md-10">
+            <div class="row justify-content-between">
+              <div class="col-auto">
+                <div class="text">
+                  <h4>#241</h4>
+                </div>
+              </div>
+              <div class="col-auto">
+                <div class="date-text">
+                  <p>15-8-2022 01:15PM</p>
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="store-details">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <h6>Customer Phone</h6>
+                      <h4>9876543210</h4>
+                    </div>
+                    <div class="col-md-6">
+                      <h6>Customer Email</h6>
+                      <h4>test@gmail.com</h4>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="hold-order-list">
+        <div class="row justify-content-between mb-0">
+          <div class="col-md-2">
+            <div class="image">
+              <img src="assets/images/logo-icon.png" />
+            </div>
+          </div>
+          <div class="col-md-10">
+            <div class="row justify-content-between">
+              <div class="col-auto">
+                <div class="text">
+                  <h4>#241</h4>
+                </div>
+              </div>
+              <div class="col-auto">
+                <div class="date-text">
+                  <p>15-8-2022 01:15PM</p>
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="store-details">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <h6>Customer Phone</h6>
+                      <h4>9876543210</h4>
+                    </div>
+                    <div class="col-md-6">
+                      <h6>Customer Email</h6>
+                      <h4>test@gmail.com</h4>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="hold-order-list">
+        <div class="row justify-content-between mb-0">
+          <div class="col-md-2">
+            <div class="image">
+              <img src="assets/images/logo-icon.png" />
+            </div>
+          </div>
+          <div class="col-md-10">
+            <div class="row justify-content-between">
+              <div class="col-auto">
+                <div class="text">
+                  <h4>#241</h4>
+                </div>
+              </div>
+              <div class="col-auto">
+                <div class="date-text">
+                  <p>15-8-2022 01:15PM</p>
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="store-details">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <h6>Customer Phone</h6>
+                      <h4>9876543210</h4>
+                    </div>
+                    <div class="col-md-6">
+                      <h6>Customer Email</h6>
+                      <h4>test@gmail.com</h4>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="hold-order-list">
+        <div class="row justify-content-between mb-0">
+          <div class="col-md-2">
+            <div class="image">
+              <img src="assets/images/logo-icon.png" />
+            </div>
+          </div>
+          <div class="col-md-10">
+            <div class="row justify-content-between">
+              <div class="col-auto">
+                <div class="text">
+                  <h4>#241</h4>
+                </div>
+              </div>
+              <div class="col-auto">
+                <div class="date-text">
+                  <p>15-8-2022 01:15PM</p>
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="store-details">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <h6>Customer Phone</h6>
+                      <h4>9876543210</h4>
+                    </div>
+                    <div class="col-md-6">
+                      <h6>Customer Email</h6>
+                      <h4>test@gmail.com</h4>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div
+    class="modal store-modal fade"
+    id="store_name-modal"
+    tabindex="5"
+    aria-labelledby="exampleModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Store Name</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div class="store-items-wrap" data-simplebar>
+            <ul class="store-items">
+              <li>
+                <a href="#">
+                  <div class="icon">
+                    <img src="assets/images/min-logo.svg" />
+                  </div>
+                  <div class="text">
+                    <h4>Store Name <small>#12345</small></h4>
+                    <div class="status_open_close status-open">
+                      <span></span> Open
+                    </div>
+                  </div>
+                </a>
+              </li>
+              <li>
+                <a href="#">
+                  <div class="icon">
+                    <img src="assets/images/min-logo.svg" />
+                  </div>
+                  <div class="text">
+                    <h4>Store Name <small>#12345</small></h4>
+                    <div class="status_open_close status-open">
+                      <span></span> Open
+                    </div>
+                  </div>
+                </a>
+              </li>
+              <li>
+                <a href="#">
+                  <div class="icon">
+                    <img src="assets/images/min-logo.svg" />
+                  </div>
+                  <div class="text">
+                    <h4>Store Name <small>#12345</small></h4>
+                    <div class="status_open_close status-close">
+                      <span></span> Close
+                    </div>
+                  </div>
+                </a>
+              </li>
+              <li>
+                <a href="#">
+                  <div class="icon">
+                    <img src="assets/images/min-logo.svg" />
+                  </div>
+                  <div class="text">
+                    <h4>Store Name <small>#12345</small></h4>
+                    <div class="status_open_close status-close">
+                      <span></span> Close
+                    </div>
+                  </div>
+                </a>
+              </li>
+              <li>
+                <a href="#">
+                  <div class="icon">
+                    <img src="assets/images/min-logo.svg" />
+                  </div>
+                  <div class="text">
+                    <h4>Store Name <small>#12345</small></h4>
+                    <div class="status_open_close status-open">
+                      <span></span> Open
+                    </div>
+                  </div>
+                </a>
+              </li>
+              <li>
+                <a href="#">
+                  <div class="icon">
+                    <img src="assets/images/min-logo.svg" />
+                  </div>
+                  <div class="text">
+                    <h4>Store Name <small>#12345</small></h4>
+                    <div class="status_open_close status-open">
+                      <span></span> Open
+                    </div>
+                  </div>
+                </a>
+              </li>
+              <li>
+                <a href="#">
+                  <div class="icon">
+                    <img src="assets/images/min-logo.svg" />
+                  </div>
+                  <div class="text">
+                    <h4>Store Name <small>#12345</small></h4>
+                    <div class="status_open_close status-open">
+                      <span></span> Open
+                    </div>
+                  </div>
+                </a>
+              </li>
+              <li>
+                <a href="#">
+                  <div class="icon">
+                    <img src="assets/images/min-logo.svg" />
+                  </div>
+                  <div class="text">
+                    <h4>Store Name <small>#12345</small></h4>
+                    <div class="status_open_close status-open">
+                      <span></span> Open
+                    </div>
+                  </div>
+                </a>
+              </li>
+              <li>
+                <a href="#">
+                  <div class="icon">
+                    <img src="assets/images/min-logo.svg" />
+                  </div>
+                  <div class="text">
+                    <h4>Store Name <small>#12345</small></h4>
+                    <div class="status_open_close status-open">
+                      <span></span> Open
+                    </div>
+                  </div>
+                </a>
+              </li>
+              <li>
+                <a href="#">
+                  <div class="icon">
+                    <img src="assets/images/min-logo.svg" />
+                  </div>
+                  <div class="text">
+                    <h4>Store Name <small>#12345</small></h4>
+                    <div class="status_open_close status-open">
+                      <span></span> Open
+                    </div>
+                  </div>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div
+    class="modal fade"
+    id="SortCategories"
+    tabindex="-1"
+    aria-labelledby="SortCategories"
+    aria-modal="true"
+    role="dialog"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Sort Categories</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div class="sort-drag-list">
+            <div class="item">
+              <div class="sort-drag-box">Nilesh' Pizzas</div>
+            </div>
+            <div class="item">
+              <div class="sort-drag-box">Bags</div>
+            </div>
+            <div class="item">
+              <div class="sort-drag-box">Burgers</div>
+            </div>
+            <div class="item">
+              <div class="sort-drag-box">Crash</div>
+            </div>
+            <div class="item">
+              <div class="sort-drag-box">Footwear</div>
+            </div>
+            <div class="item">
+              <div class="sort-drag-box">Fruits</div>
+            </div>
+            <div class="item">
+              <div class="sort-drag-box">Jacket</div>
+            </div>
+            <div class="item">
+              <div class="sort-drag-box">Mobiles</div>
+            </div>
+            <div class="item">
+              <div class="sort-drag-box">Hh</div>
+            </div>
+            <div class="item">
+              <div class="sort-drag-box">Wosul</div>
+            </div>
+            <div class="item">
+              <div class="sort-drag-box">Nilesh' Pizzas</div>
+            </div>
+            <div class="item">
+              <div class="sort-drag-box">Bags</div>
+            </div>
+            <div class="item">
+              <div class="sort-drag-box">Burgers</div>
+            </div>
+            <div class="item">
+              <div class="sort-drag-box">Crash</div>
+            </div>
+            <div class="item">
+              <div class="sort-drag-box">Footwear</div>
+            </div>
+            <div class="item">
+              <div class="sort-drag-box">Fruits</div>
+            </div>
+            <div class="item">
+              <div class="sort-drag-box">Jacket</div>
+            </div>
+            <div class="item">
+              <div class="sort-drag-box">Mobiles</div>
+            </div>
+            <div class="item">
+              <div class="sort-drag-box">Hh</div>
+            </div>
+            <div class="item">
+              <div class="sort-drag-box">Wosul</div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer border-0 pt-0 justify-content-center">
+          <a href="#" class="btn btn-primary">Save</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- end modal -->
+
+  <div
+    class="modal fade modal-lg"
+    id="select_modifier_modal"
+    tabindex="-1"
+    aria-labelledby="edit_brand"
+    aria-modal="true"
+    role="dialog"
+  ></div>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title me-3">Select Modifiers</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <h5><b>SMALL</b></h5>
+          <form>
+            <div class="size-n-value-wrap">
+              <ul class="size-n-value size-n-value-combo select_modifier">
+                <li>
+                  <label class="size-wrap">
+                    <input type="radio" name="SMALL" checked />
+                    <span
+                      ><h6><b>SMALL</b></h6>
+                      299.00 SAR</span
+                    >
+                  </label>
+                </li>
+                <li>
+                  <label class="size-wrap">
+                    <input type="radio" name="SMALL" />
+                    <span
+                      ><h6><b>MEDIUM</b></h6>
+                      399.00 SAR</span
+                    >
+                  </label>
+                </li>
+                <li>
+                  <label class="size-wrap">
+                    <input type="radio" name="SMALL" />
+                    <span
+                      ><h6><b>LARGE</b></h6>
+                      499.00 SAR</span
+                    >
+                  </label>
+                </li>
+              </ul>
+            </div>
+          </form>
+        </div>
+        <div class="mb-3">
+          <h5><b>Color</b></h5>
+          <form>
+            <div class="size-n-value-wrap">
+              <ul class="size-n-value size-n-value-combo select_modifier">
+                <li>
+                  <label class="size-wrap">
+                    <input type="radio" name="Color" checked />
+                    <span
+                      ><h6><b>Blue</b></h6>
+                      299.00 SAR</span
+                    >
+                  </label>
+                </li>
+                <li>
+                  <label class="size-wrap">
+                    <input type="radio" name="Color" />
+                    <span
+                      ><h6><b>Green</b></h6>
+                      399.00 SAR</span
+                    >
+                  </label>
+                </li>
+                <li>
+                  <label class="size-wrap">
+                    <input type="radio" name="Color" />
+                    <span
+                      ><h6><b>Yellow</b></h6>
+                      499.00 SAR</span
+                    >
+                  </label>
+                </li>
+                <li>
+                  <label class="size-wrap">
+                    <input type="radio" name="Color" />
+                    <span
+                      ><h6><b>Red</b></h6>
+                      499.00 SAR</span
+                    >
+                  </label>
+                </li>
+                <li>
+                  <label class="size-wrap">
+                    <input type="radio" name="Color" />
+                    <span
+                      ><h6><b>Pink</b></h6>
+                      499.00 SAR</span
+                    >
+                  </label>
+                </li>
+                <li>
+                  <label class="size-wrap">
+                    <input type="radio" name="Color" />
+                    <span
+                      ><h6><b>Black</b></h6>
+                      499.00 SAR</span
+                    >
+                  </label>
+                </li>
+                <li>
+                  <label class="size-wrap">
+                    <input type="radio" name="Color" />
+                    <span
+                      ><h6><b>Orange</b></h6>
+                      499.00 SAR</span
+                    >
+                  </label>
+                </li>
+                <li>
+                  <label class="size-wrap">
+                    <input type="radio" name="Color" />
+                    <span
+                      ><h6><b>Red</b></h6>
+                      499.00 SAR</span
+                    >
+                  </label>
+                </li>
+              </ul>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer border-0 pt-4 pe-0">
+          <button
+            type="button"
+            class="btn btn-light-primary btn-radius"
+            data-bs-dismiss="modal"
+          >
+            Skip
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary btn-radius"
+            data-bs-dismiss="modal"
+          >
+            Apply
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>

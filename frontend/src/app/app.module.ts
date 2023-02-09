@@ -222,10 +222,11 @@ import { environment } from '../environments/environment';
 import { SocketService } from './services/socket.service';
 import { FtpServerComponent } from './views/admin/ftp_server/ftp_server.component';
 import { TokenInterceptor } from './services/token.interceptor';
-import { CreateOrderComponent } from './create-order/create-order.component';
+import { CreateOrderComponent } from './stores-v2/create-order/create-order.component';
+import { StoreLayoutComponent } from './stores-v2/store-layout/store-layout.component';
 
 @NgModule({
-  declarations: [AppComponent, CommonInfoModalComponent, FtpServerComponent, CreateOrderComponent],
+  declarations: [AppComponent, CommonInfoModalComponent, FtpServerComponent, CreateOrderComponent, StoreLayoutComponent],
   imports: [
     BrowserModule,
     HttpClientModule,

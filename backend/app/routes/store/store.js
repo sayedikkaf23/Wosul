@@ -101,4 +101,7 @@ module.exports = function (app) {
   );
 
   app.route("/api/store/set_deliver_in").post(stores.set_deliver_in);
+
+  // for getting services
+  app.route("/api/store/get_services").post(stores.get_services);
 };

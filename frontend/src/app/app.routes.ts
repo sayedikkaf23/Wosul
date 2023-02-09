@@ -192,7 +192,8 @@ import { NotificationSettingsComponent } from './views/admin/notification-settin
 import { GroupNotificationComponent } from './views/admin/group-notification/group-notification.component';
 import { AddTagsComponent } from './views/admin/add-tags/add-tags.component';
 import { FtpServerComponent } from './views/admin/ftp_server/ftp_server.component';
-import { CreateOrderComponent } from './create-order/create-order.component';
+import { CreateOrderComponent } from './stores-v2/create-order/create-order.component';
+import { StoreLayoutComponent } from './stores-v2/store-layout/store-layout.component';
 // import {HistoryCalenderComponent} from "./views/store/history_calender/history_calender.component";
 export const ROUTES: Routes = [
   // Main redirect
@@ -487,6 +488,11 @@ export const ROUTES: Routes = [
   },
   {
     path: '',
+    component:StoreLayoutComponent,
+    children: [{ path: 'store/create_order', component:CreateOrderComponent  }],
+  },
+  {
+    path: 'v2',
     component: store_basicComponent,
     children: [
       { path: 'store/profile', component: ProfileComponent },
