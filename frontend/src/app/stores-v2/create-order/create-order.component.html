@@ -89,7 +89,7 @@
                         <div class="box_stock_label bg-danger">
                           Out of Stock
                         </div> -->
-                        <a href="#select_modifier_modal" data-bs-toggle="modal">
+                        <a class="service-tab" data-bs-toggle="modal">
                           <img
                             [src]="
                               item.image_url?.length !== 0
@@ -1205,160 +1205,163 @@
   </div>
   <!-- end modal -->
 
-  <div style="display: none;"
-    class="modal fade modal-lg"
-    id="select_modifier_modal"
-    tabindex="-1"
-    aria-labelledby="edit_brand"
-    aria-modal="true"
-    role="dialog"
-  ></div>
-  <div class="modal-dialog modal-dialog-centered" style="display: none;">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title me-3">Select Modifiers</h5>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
-      </div>
-      <div class="modal-body">
-        <div class="mb-3">
-          <h5><b>SMALL</b></h5>
-          <form>
-            <div class="size-n-value-wrap">
-              <ul class="size-n-value size-n-value-combo select_modifier">
-                <li>
-                  <label class="size-wrap">
-                    <input type="radio" name="SMALL" checked />
-                    <span
-                      ><h6><b>SMALL</b></h6>
-                      299.00 SAR</span
-                    >
-                  </label>
-                </li>
-                <li>
-                  <label class="size-wrap">
-                    <input type="radio" name="SMALL" />
-                    <span
-                      ><h6><b>MEDIUM</b></h6>
-                      399.00 SAR</span
-                    >
-                  </label>
-                </li>
-                <li>
-                  <label class="size-wrap">
-                    <input type="radio" name="SMALL" />
-                    <span
-                      ><h6><b>LARGE</b></h6>
-                      499.00 SAR</span
-                    >
-                  </label>
-                </li>
-              </ul>
-            </div>
-          </form>
-        </div>
-        <div class="mb-3">
-          <h5><b>Color</b></h5>
-          <form>
-            <div class="size-n-value-wrap">
-              <ul class="size-n-value size-n-value-combo select_modifier">
-                <li>
-                  <label class="size-wrap">
-                    <input type="radio" name="Color" checked />
-                    <span
-                      ><h6><b>Blue</b></h6>
-                      299.00 SAR</span
-                    >
-                  </label>
-                </li>
-                <li>
-                  <label class="size-wrap">
-                    <input type="radio" name="Color" />
-                    <span
-                      ><h6><b>Green</b></h6>
-                      399.00 SAR</span
-                    >
-                  </label>
-                </li>
-                <li>
-                  <label class="size-wrap">
-                    <input type="radio" name="Color" />
-                    <span
-                      ><h6><b>Yellow</b></h6>
-                      499.00 SAR</span
-                    >
-                  </label>
-                </li>
-                <li>
-                  <label class="size-wrap">
-                    <input type="radio" name="Color" />
-                    <span
-                      ><h6><b>Red</b></h6>
-                      499.00 SAR</span
-                    >
-                  </label>
-                </li>
-                <li>
-                  <label class="size-wrap">
-                    <input type="radio" name="Color" />
-                    <span
-                      ><h6><b>Pink</b></h6>
-                      499.00 SAR</span
-                    >
-                  </label>
-                </li>
-                <li>
-                  <label class="size-wrap">
-                    <input type="radio" name="Color" />
-                    <span
-                      ><h6><b>Black</b></h6>
-                      499.00 SAR</span
-                    >
-                  </label>
-                </li>
-                <li>
-                  <label class="size-wrap">
-                    <input type="radio" name="Color" />
-                    <span
-                      ><h6><b>Orange</b></h6>
-                      499.00 SAR</span
-                    >
-                  </label>
-                </li>
-                <li>
-                  <label class="size-wrap">
-                    <input type="radio" name="Color" />
-                    <span
-                      ><h6><b>Red</b></h6>
-                      499.00 SAR</span
-                    >
-                  </label>
-                </li>
-              </ul>
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer border-0 pt-4 pe-0">
+  <ng-template #itemDetails let-modal>
+    <div
+      style="display: none"
+      class="modal fade modal-lg"
+      id="select_modifier_modal"
+      tabindex="-1"
+      aria-labelledby="edit_brand"
+      aria-modal="true"
+      role="dialog"
+    ></div>
+    <div class="modal-dialog modal-dialog-centered" style="display: none">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title me-3">Select Modifiers</h5>
           <button
             type="button"
-            class="btn btn-light-primary btn-radius"
+            class="btn-close"
             data-bs-dismiss="modal"
-          >
-            Skip
-          </button>
-          <button
-            type="button"
-            class="btn btn-primary btn-radius"
-            data-bs-dismiss="modal"
-          >
-            Apply
-          </button>
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <h5><b>SMALL</b></h5>
+            <form>
+              <div class="size-n-value-wrap">
+                <ul class="size-n-value size-n-value-combo select_modifier">
+                  <li>
+                    <label class="size-wrap">
+                      <input type="radio" name="SMALL" checked />
+                      <span
+                        ><h6><b>SMALL</b></h6>
+                        299.00 SAR</span
+                      >
+                    </label>
+                  </li>
+                  <li>
+                    <label class="size-wrap">
+                      <input type="radio" name="SMALL" />
+                      <span
+                        ><h6><b>MEDIUM</b></h6>
+                        399.00 SAR</span
+                      >
+                    </label>
+                  </li>
+                  <li>
+                    <label class="size-wrap">
+                      <input type="radio" name="SMALL" />
+                      <span
+                        ><h6><b>LARGE</b></h6>
+                        499.00 SAR</span
+                      >
+                    </label>
+                  </li>
+                </ul>
+              </div>
+            </form>
+          </div>
+          <div class="mb-3">
+            <h5><b>Color</b></h5>
+            <form>
+              <div class="size-n-value-wrap">
+                <ul class="size-n-value size-n-value-combo select_modifier">
+                  <li>
+                    <label class="size-wrap">
+                      <input type="radio" name="Color" checked />
+                      <span
+                        ><h6><b>Blue</b></h6>
+                        299.00 SAR</span
+                      >
+                    </label>
+                  </li>
+                  <li>
+                    <label class="size-wrap">
+                      <input type="radio" name="Color" />
+                      <span
+                        ><h6><b>Green</b></h6>
+                        399.00 SAR</span
+                      >
+                    </label>
+                  </li>
+                  <li>
+                    <label class="size-wrap">
+                      <input type="radio" name="Color" />
+                      <span
+                        ><h6><b>Yellow</b></h6>
+                        499.00 SAR</span
+                      >
+                    </label>
+                  </li>
+                  <li>
+                    <label class="size-wrap">
+                      <input type="radio" name="Color" />
+                      <span
+                        ><h6><b>Red</b></h6>
+                        499.00 SAR</span
+                      >
+                    </label>
+                  </li>
+                  <li>
+                    <label class="size-wrap">
+                      <input type="radio" name="Color" />
+                      <span
+                        ><h6><b>Pink</b></h6>
+                        499.00 SAR</span
+                      >
+                    </label>
+                  </li>
+                  <li>
+                    <label class="size-wrap">
+                      <input type="radio" name="Color" />
+                      <span
+                        ><h6><b>Black</b></h6>
+                        499.00 SAR</span
+                      >
+                    </label>
+                  </li>
+                  <li>
+                    <label class="size-wrap">
+                      <input type="radio" name="Color" />
+                      <span
+                        ><h6><b>Orange</b></h6>
+                        499.00 SAR</span
+                      >
+                    </label>
+                  </li>
+                  <li>
+                    <label class="size-wrap">
+                      <input type="radio" name="Color" />
+                      <span
+                        ><h6><b>Red</b></h6>
+                        499.00 SAR</span
+                      >
+                    </label>
+                  </li>
+                </ul>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer border-0 pt-4 pe-0">
+            <button
+              type="button"
+              class="btn btn-light-primary btn-radius"
+              data-bs-dismiss="modal"
+            >
+              Skip
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary btn-radius"
+              data-bs-dismiss="modal"
+            >
+              Apply
+            </button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </ng-template>
 </ng-container>

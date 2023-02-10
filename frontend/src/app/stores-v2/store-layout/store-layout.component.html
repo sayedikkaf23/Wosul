@@ -138,11 +138,20 @@
         </ul>
       </div>
     </div>
-    <div class="col-auto ms-auto">
+    <div
+      class="col-auto ms-auto position-relative"
+      (mouseenter)="isLogoutShow = !isLogoutShow"
+      (mouseleave)="isLogoutShow = !isLogoutShow"
+    >
       <div class="header-profile-name btn-hover-wrap">
         <a href="#" class="btn btn-icon btn-outline btn-light btn-rounded p-0">
           <img src="assets/images/addorder-profile.png" alt="" />
         </a>
+      </div>
+      <div *ngIf="isLogoutShow" class="position-absolute logout">
+        <button type="button" class="logout-btn" (click)="logout()">
+          Logout
+        </button>
       </div>
     </div>
   </div>

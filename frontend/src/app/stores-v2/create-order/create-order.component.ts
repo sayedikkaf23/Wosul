@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ProductService } from 'src/app/services/product.service';
 
 export const itemsKeysToRemove = [
@@ -25,6 +26,7 @@ export const itemsKeysToRemove = [
   styleUrls: ['./create-order.component.css'],
 })
 export class CreateOrderComponent implements OnInit {
+  @ViewChild('itemDetails') itemModal: any;
   storeId;
   cartId;
   storesDetails;
@@ -41,7 +43,11 @@ export class CreateOrderComponent implements OnInit {
   itemPage = 1;
   itemsKeysToRemove = itemsKeysToRemove;
 
-  constructor(private productService: ProductService) {}
+  constructor(
+    private productService: ProductService,
+    private modalService: NgbModal,
+    private activeModal: NgbActiveModal
+  ) {}
 
   async ngOnInit() {
     //this.storeId = '63da5627424fc97416a971c7';
@@ -146,6 +152,10 @@ export class CreateOrderComponent implements OnInit {
       });
     }
     return item;
+  }
+
+  openItemModal(item: any) {
+    this.modalService.open(this.itemModal);
   }
 
   getTotalItemPrice(items) {

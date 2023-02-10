@@ -1,0 +1,16 @@
+.logout {
+  right: 0;
+}
+.logout-btn {
+  width: 70px;
+  height: 29px;
+  
+  color: white !important;
+
+  background-color: #1e40af !important;
+
+  font-family: "DM Sans";
+
+  border-color: #1e40af !important;
+  border-radius: 14%;
+}
