@@ -35,7 +35,7 @@ const {
 } = require("../../services/store.service");
 const { getToken } = require("../../middleware/checkAuth");
 
-const {Services} =require('../../models/store/services');
+const Services =require('../../models/store/services');
 // store register api
 exports.store_register = async function (request_data, response_data) {
   utils.check_request_params(
@@ -5178,7 +5178,7 @@ exports.get_services = async (req, res) => {
       res.json({ success: false, message: "Store Not Found!" });
     }
     const service = await Services.find({store_id});
-    if (!service) {
+    if (!service.length) {
       res.json({
         success: false,
         message: "Services Not Found!",
