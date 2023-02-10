@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  serverUrl: 'http://wosul.yeepeey.com/api/',
+serverUrl: 'http://wosul.yeepeey.com',
   url: 'http://localhost:8000/api/',
 };
 

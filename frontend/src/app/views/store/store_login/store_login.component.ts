@@ -70,7 +70,7 @@ export class store_loginComponent implements OnInit {
   ngOnInit() {
     let token = this.helper.getToken();
     if (token) {
-      this.helper.router.navigate(['store/product']);
+      this.helper.router.navigate(['store/create_order']);
     }
 
     this.title = this.helper.title;

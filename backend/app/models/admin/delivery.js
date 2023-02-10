@@ -17,6 +17,7 @@ var delivery = new schema(
     is_deliveries_subtitle: { type: String, default: "" },
     sequence_number: { type: Number, default: 0 },
     famous_products_tags: [{ type: String, default: [] }],
+    base_store_id: { type: schema.Types.ObjectId },
     created_at: {
       type: Date,
       default: Date.now,
