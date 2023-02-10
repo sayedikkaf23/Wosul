@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1675950859446,
+  "timestamp": 1676010827460,
   "index": "/index.html",
   "assetGroups": [
     {
@@ -326,13 +326,13 @@
     "/assets/New_Logo_White.png": "05ca1d55af0f058f96e6b08f9c5fce26fc1967e9",
     "/assets/Yeepeey_New_logo.png": "fad0075800013fa94ed1e444588957b1bd7fccbd",
     "/assets/css/bootstrap.min.css": "7abed070e37ce060c0a561575f1d41a7f248fc74",
-    "/assets/css/gstyle.css": "a0b31627f059aa36619a298d6ca4429cd8a62509",
+    "/assets/css/gstyle.css": "dbdf3d1c4a74dc6f6f6ccc04f903de9ac6df220b",
     "/assets/css/image_processing20191010-27195-1armzrc.png": "5f66c4f4bbed0d1cffcb0002403cf8421d369222",
     "/assets/css/responsive.css": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
     "/assets/css/select2.min.css": "913f9f7b9535aec790ca3ce9d6e35acfaf369993",
     "/assets/css/simplebar.min.css": "393c58cca7889217fc0c528e7902fd5178314e50",
-    "/assets/css/style.css": "6a1a5cd8be286411a5167a862ff3be9ce4f4b10f",
-    "/assets/css/theme.css": "80ef64c5ce6a8578b23d7998d82f7a99b899fad9",
+    "/assets/css/style.css": "394cb673baf96c18f719101d8e883ada557811c3",
+    "/assets/css/theme.css": "03341fbc07c08a75805d998081c27906a8efabd9",
     "/assets/dashboard_graphics/order_details/cancelled.png": "544bbc5b0e737032ac005fa2e5d1d0dceb4e24e6",
     "/assets/dashboard_graphics/order_details/completed.png": "f623973c7ae18eca1b942e08294daf480585aadf",
     "/assets/dashboard_graphics/order_details/deliveries.png": "65767c0f57c99a468b6d4f43fa893394b36b0942",
@@ -460,7 +460,7 @@
     "/assets/js/chosen/chosen.jquery.js": "ceae499e4cfe4e67c2106441e84a0cf4d9a8bd11",
     "/assets/js/chosen/chosen.js": "2c3801177518598f2b870dcdb479f05950f9789c",
     "/assets/js/clockpicker/clockpicker.js": "5ff63dacec3687588160bbee45309b8a14ec65f5",
-    "/assets/js/custom.js": "3ba416a57ef6a121b71b6aa47d36ec72396a0ba0",
+    "/assets/js/custom.js": "a9fade3a00ce181c00fffc674e4d5f8cbff92e49",
     "/assets/js/d3.js": "ec726fe56853cacdd9d32dca7563b20b728f9471",
     "/assets/js/footable/angular-footable.js": "e657f1cf12076c9620a6fa5f77069f20bcb31c7a",
     "/assets/js/footable/footable.all.min.js": "aaa91a64183cd3ac55ac617d84170ccc8fcf1be6",
