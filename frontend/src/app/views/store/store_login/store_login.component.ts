@@ -242,12 +242,12 @@ export class store_loginComponent implements OnInit {
             };
             this.helper.user_cart.cart_data.cart_id = null;
             this.helper.user_cart.cart_unique_token = this.utils.uuid4();
-
-            if (this.store_data.store.is_document_uploaded) {
-              this.helper.router.navigate(['store/create_order']);
-            } else {
-              this.helper.router.navigate(['store/upload_document']);
-            }
+            this.helper.router.navigate(['store/create_order']);
+            // if (this.store_data.store.is_document_uploaded) {
+            //   this.helper.router.navigate(['store/create_order']);
+            // } else {
+            //   this.helper.router.navigate(['store/upload_document']);
+            // }
           }
         }
       },

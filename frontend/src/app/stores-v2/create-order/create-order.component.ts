@@ -82,7 +82,7 @@ export class CreateOrderComponent implements OnInit {
 
   set productId(id) {
     this.selectedProductId = id;
-    //    this.getUserItems();
+    this.getUserItems();
   }
 
   getStoreDetails() {
@@ -117,6 +117,22 @@ export class CreateOrderComponent implements OnInit {
         this.category = res.category;
         const [category] = this.category;
         this.setCategory(category);
+      },
+    });
+  }
+
+  getUserItems() {
+    const payload = {
+      store_id: this.storeId,
+      //user_id: this.auth.user?._id,
+      category_id: this.selectedCategoryId,
+      product_id: this.selectedProductId,
+      page: this.itemPage,
+    };
+
+    this.productService.getUserItems(payload).subscribe({
+      next: (res: any) => {
+        this.items = res.items;
       },
     });
   }
