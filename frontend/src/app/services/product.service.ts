@@ -58,22 +58,22 @@ export class ProductService {
   }
 
   getStoreDetails(payload) {
-    return this.http.post(`${this.url}user/get_store_details`, payload);
+    return this.http.post(`${this.url}/api/user/get_store_details`, payload);
   }
 
   getStoreProductItemList(payload) {
     return this.http.post(
-      `${this.url}user/user_get_store_product_item_list`,
+      `${this.url}/api/user/user_get_store_product_item_list`,
       payload
     );
   }
 
   getUserItems(payload) {
-    return this.http.post(`${this.url}user/user_get_items`, payload);
+    return this.http.post(`${this.url}/api/user/user_get_items`, payload);
   }
 
   getCategoryList(payload) {
-    return this.http.post(`${this.url}user/get_category_list`, payload);
+    return this.http.post(`${this.url}/api/user/get_category_list`, payload);
   }
 
   getCart(payload) {
@@ -113,7 +113,7 @@ export class ProductService {
   }
 
   getStoreService(payload) {
-    return this.http.post(`${this.url}store/get_services`, payload);
+    return this.http.post(`${this.url}/api/store/get_services`, payload);
   }
   
 }
