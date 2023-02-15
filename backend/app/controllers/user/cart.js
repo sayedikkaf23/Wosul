@@ -426,7 +426,7 @@ exports.create_and_update_cart = async function (req, res) {
   user_id = user_id == "" ? null : user_id;
   const user = await User.findOne({ _id: user_id });
   const cart_id = user && user.cart_id ? user.cart_id : null;
-  //const cart_id = "63e24d6cf31ee8c7c059513b";
+  //const cart_id = "63ecd42f6c55a848b83fa722";
   const cart = await Cart.findOne({
     $or: [{ _id: cart_id }, { cart_unique_token: cart_unique_token }],
   });
@@ -457,11 +457,11 @@ exports.create_and_update_cart = async function (req, res) {
   }
   pickup_addresses[0].address = store.address;
   pickup_addresses[0].location = store.location;
-  pickup_addresses[0].user_details.country_phone_code =
-    store.country_phone_code;
-  pickup_addresses[0].user_details.email = store.email;
-  pickup_addresses[0].user_details.name = store.name;
-  pickup_addresses[0].user_details.phone = store.phone;
+  // pickup_addresses[0].user_details.country_phone_code =
+  //   store.country_phone_code;
+  // pickup_addresses[0].user_details.email = store.email;
+  // pickup_addresses[0].user_details.name = store.name;
+  // pickup_addresses[0].user_details.phone = store.phone;
   total_cart_price = getTotalCartPrice(order_details);
   if (store.is_use_item_tax) {
     total_item_tax = total_item_tax ? total_item_tax : 0;
@@ -476,8 +476,8 @@ exports.create_and_update_cart = async function (req, res) {
     cart_unique_token = "";
   }
 
+  let orderDetails = await getItemTotalPrice(order_details);
   if (cart) {
-    await getItemTotalPrice(order_details);
     cart.cart_unique_token = cart_unique_token;
     cart.delivery_type = delivery_type;
     cart.user_id = user_id;
@@ -485,7 +485,7 @@ exports.create_and_update_cart = async function (req, res) {
     cart.user_type = user_type;
     cart.city_id = city_id;
     cart.destination_addresses = destination_addresses;
-    cart.order_details = order_details;
+    cart.order_details = orderDetails;
     cart.pickup_addresses = pickup_addresses;
     cart.store_id = store_id;
     cart.total_cart_price = total_cart_price;
@@ -515,7 +515,7 @@ exports.create_and_update_cart = async function (req, res) {
       city_id: store.city_id,
       pickup_addresses: pickup_addresses,
       destination_addresses: destination_addresses,
-      order_details: order_details,
+      order_details: orderDetails,
       total_cart_price: total_cart_price,
       total_item_tax: total_item_tax,
     });
