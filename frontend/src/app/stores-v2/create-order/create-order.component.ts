@@ -50,9 +50,9 @@ export class CreateOrderComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    this.storeId = '63da5627424fc97416a971c7';
-    //const store = JSON.parse(localStorage.getItem('store'));
-    //this.storeId = store?._id;
+    //this.storeId = '63da5627424fc97416a971c7';
+    const store = JSON.parse(localStorage.getItem('store'));
+    this.storeId = store?._id;
 
     this.getStoreService(this.storeId);
     this.getCategoryList();
