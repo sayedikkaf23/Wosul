@@ -1,3 +1,9 @@
-.service-tab{
-    cursor: pointer;
+.service-tab {
+  cursor: pointer;
+}
+
+.plus-button {
+  margin-left: auto;
+
+  cursor: pointer;
 }

@@ -4,8 +4,8 @@
 
 export const environment = {
   production: false,
-serverUrl: 'http://wosul.yeepeey.com',
-  url: 'http://localhost:8000/api/',
+  serverUrl: 'https://wosul.yeepeey.com',
+  url: 'http://localhost:8000',
 };
 
 /*

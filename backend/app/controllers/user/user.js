@@ -3947,7 +3947,20 @@ exports.user_get_items = async function (req, res) {
   const items = await Item.find(condition)
     .skip(skip)
     .limit(limit)
-    .sort({ order_score: -1, _id: 1 });
+    .sort({ order_score: -1, _id: 1 })
+    .select({
+      substitute_items: 0,
+      super_item_id: 0,
+      current_substitute_item_id: 0,
+      details_1: 0,
+      discount_percentage: 0,
+      discount_value: 0,
+      offer_message_or_percentage: 0,
+      in_cart_quantity: 0,
+      is_express_in_delivery: 0,
+      specifications: 0,
+      specifications_unique_id_count: 0,
+    });
   // .sort({ sequence_number: 1 });
   // items.forEach((itm)=>{
   //   itm.image_url[0] = awsUrl + itm.image_url[0]

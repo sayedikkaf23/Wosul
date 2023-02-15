@@ -50,9 +50,9 @@ export class CreateOrderComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    //this.storeId = '63da5627424fc97416a971c7';
-    const store = JSON.parse(localStorage.getItem('store'));
-    this.storeId = store?._id;
+    this.storeId = '63da5627424fc97416a971c7';
+    //const store = JSON.parse(localStorage.getItem('store'));
+    //this.storeId = store?._id;
 
     this.getStoreService(this.storeId);
     this.getCategoryList();
@@ -152,6 +152,79 @@ export class CreateOrderComponent implements OnInit {
       });
     }
     return item;
+  }
+
+  get totalCartPrice() {
+    return [1, 1];
+  }
+
+  get pickupAddresses() {
+    const store = JSON.parse(localStorage.getItem('store'));
+    return store?.address;
+  }
+
+  addItem(item) {
+    const prodIdx = this.orderDetails.findIndex(
+      (p) => p.product_id === this.selectedProductId
+    );
+
+    this.itemsKeysToRemove.forEach((key) => delete item[key]);
+
+    if (prodIdx != -1) {
+      const itmIdx = this.orderDetails[prodIdx].items.findIndex(
+        (i) => i._id === item._id
+      );
+
+      if (itmIdx != -1) {
+        this.orderDetails[prodIdx].items[itmIdx].quantity++;
+      } else {
+        item.quantity = 1;
+        this.orderDetails[prodIdx].items.push(item);
+      }
+
+      const items = this.orderDetails[prodIdx].items;
+      const [totalItemPrice, totalItemTax] = this.getTotalItemPrice(items);
+      this.orderDetails[prodIdx].total_item_tax = totalItemTax;
+      this.orderDetails[prodIdx].total_item_price = totalItemPrice;
+    } else {
+      item.quantity = 1;
+      this.orderDetails.push({
+        product_id: this.selectedProductId,
+        product_name: this.selectedProduct?.name,
+        total_item_tax: item?.total_item_tax || 0,
+        total_item_price: item?.price,
+        unique_id: this.selectedProduct?.unique_id,
+        items: [item],
+      });
+    }
+    this.createAndUpdateCart(this.orderDetails);
+  }
+
+  createAndUpdateCart(orderDetails) {
+    const [totalCartPrice, totalItemTax] = this.totalCartPrice;
+    const payload = {
+      total_cart_price: totalCartPrice,
+      total_item_tax: totalItemTax,
+      // destination_addresses: this.destinationAddresses,
+      destination_addresses: 'Business Bay',
+      min_order_price: 0,
+      //pickup_addresses: this.pickupAddresses,
+      order_details: orderDetails,
+      store_id: this.storeId,
+      //user_id: this.auth.user?._id,
+      // user_type: 7,
+    };
+    this.productService.createAndUpdateCart(payload).subscribe({
+      next: (res: any) => {
+        if (res.success) {
+          const cart = res.new_cart || res.cart;
+          this.orderDetails = cart?.order_details;
+          this.cartId = cart._id;
+          this.productService.orderDetails = this.orderDetails;
+        }
+      },
+    });
+    localStorage.cartCount = this.productService.cartCount;
   }
 
   openItemModal(item: any) {

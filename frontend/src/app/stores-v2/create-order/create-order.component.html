@@ -116,11 +116,12 @@
                             >{{ item.name }}</a
                           >
                         </h2>
-                        <div
-                          class="row align-items-center gx-2 justify-content-center"
-                        >
-                          <div class="col-auto">
+                        <div class="row gx-2">
+                          <div class="col-auto d-flex w-100">
                             <div class="price">AED {{ item.price }}</div>
+                            <div class="price plus-button" (click)="addItem(item)">
+                              <img src="assets/images/add-item.svg" alt="" />
+                            </div>
                           </div>
                           <!-- <div class="col-auto">
                             <div class="price-del"><del>75 SAR</del></div>

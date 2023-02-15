@@ -73,18 +73,20 @@ module.exports = (function () {
   this.getItemTotalPrice = async (order_details) => {
     if (order_details?.length) {
       for (let i = 0; i < order_details.length; i++) {
+        order_details[i].total_item_price_without_modifier =
+          order_details[i].total_item_price;
         const items = order_details[i]?.items;
-        for (let j = 0; j < items.length; j++) {
+        for (let j = 0; j < items?.length; j++) {
           let item_modifier_price = 0;
-          items[j].total_item_price_without_modifier =
-            items[j].total_item_price;
           const item_modifiers = items[j]?.modifiers;
-          for (let k = 0; k < item_modifiers.length; k++) {
-            const item = item_modifiers[k];
-            item_modifier_price += item.price;
+          if (item_modifiers?.length) {
+            for (let k = 0; k < item_modifiers?.length; k++) {
+              const item = item_modifiers[k];
+              item_modifier_price += item.price;
+            }
           }
-          items[j].total_item_price =
-            items[j].total_item_price + item_modifier_price;
+          order_details[i].total_item_price =
+            order_details[i].total_item_price + item_modifier_price;
         }
       }
       return order_details;

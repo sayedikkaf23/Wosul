@@ -14,7 +14,7 @@ export class ProductService {
   cartId;
   getCartCount;
 
-  getTotalItemPrice(items) {
+getTotalItemPrice(items) {
     let totalItemTax = 0;
     let totalItemPrice = 0;
     items.forEach((item) => {
@@ -101,7 +101,7 @@ export class ProductService {
   }
 
   createAndUpdateCart(payload) {
-    return this.http.post(`${this.url}v2/user/create_and_update_cart`, payload);
+    return this.http.post(`${this.url}/api/v2/user/create_and_update_cart`, payload);
   }
 
   clearCart(payload) {
