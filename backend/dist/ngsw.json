@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1676443932764,
+  "timestamp": 1676461033723,
   "index": "/index.html",
   "assetGroups": [
     {
@@ -97,6 +97,7 @@
         "/assets/images/active-right.svg",
         "/assets/images/add-cart.svg",
         "/assets/images/add-circle.svg",
+        "/assets/images/add-item.svg",
         "/assets/images/addorder-profile.png",
         "/assets/images/barcode-icon.svg",
         "/assets/images/bin.svg",
@@ -405,6 +406,7 @@
     "/assets/images/active-right.svg": "c395c7518520c2b2e5f6df3c0ed80a00c2b98945",
     "/assets/images/add-cart.svg": "801657d756775a0c4059045bfe1c67c18f89c5ad",
     "/assets/images/add-circle.svg": "2bd3c901ae7ab319a404131a9bde73c197f2583d",
+    "/assets/images/add-item.svg": "833f02da127f23504e546ee73f0fd90f175c851e",
     "/assets/images/addorder-profile.png": "5f6d8963b1e768e728138d26a730990b6d998cc9",
     "/assets/images/barcode-icon.svg": "ee6e46042ff7e0f339e2fe3be93bafcfa520729f",
     "/assets/images/bin.svg": "6453b536c803aaa0cacfa76a99e96163ea2c5d21",
