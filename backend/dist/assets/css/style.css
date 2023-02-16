@@ -153,11 +153,12 @@ body.add-order-page .box_offer_label {
 }
 .add-order-list .item {
   display: flex;
-  justify-content: space-between;
+  gap: 15px;
+  margin: 0 0 10px;
+  /* justify-content: space-between; */
   border: 1px solid #e4e8f5;
   padding: 8px;
   border-radius: 10px;
-  margin: 0 0 10px;
 }
 .add-order-list .item .text h3 {
   font-size: 17px;
@@ -171,15 +172,18 @@ body.add-order-page .box_offer_label {
   margin: 0 0 4px 0;
 }
 .add_order_price {
+  height: 33px;
+  width: 78px;
   background: #f4f6fb;
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  margin: -9px -9px -9px 10px;
-  padding: 0 5px;
-  font-size: 15px;
+  /* margin-top: auto; */
+  /* margin: -9px -9px -9px 10px; */
+  /* padding: 0 5px; */
+  font-size: 12px;
   color: var(--primary);
   font-weight: 700;
 }
