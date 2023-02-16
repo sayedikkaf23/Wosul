@@ -119,7 +119,10 @@
                         <div class="row gx-2">
                           <div class="col-auto d-flex w-100">
                             <div class="price">AED {{ item.price }}</div>
-                            <div class="price plus-button" (click)="addItem(item)">
+                            <div
+                              class="price plus-button"
+                              (click)="addItem(item)"
+                            >
                               <img src="assets/images/add-item.svg" alt="" />
                             </div>
                           </div>
@@ -130,143 +133,97 @@
                       </div>
                     </div>
                   </div>
-                  <!-- <div class="col-6 col-md-4 col-lg-4">
-                    <div class="product-box">
-                      <div class="image">
-                        <a href="#select_modifier_modal" data-bs-toggle="modal">
-                          <img src="assets/images/Product-img.svg" />
-                        </a>
-                      </div>
-                      <div class="text">
-                        <h6>(Product Code : TOBACCO)</h6>
-                        <h2>
-                          <a
-                            href="#select_modifier_modal"
-                            data-bs-toggle="modal"
-                            >Jacket with tobacco tax Wosul</a
-                          >
-                        </h2>
-                        <div
-                          class="row align-items-center gx-2 justify-content-center"
-                        >
-                          <div class="col-auto">
-                            <div class="price">50 SAR</div>
-                          </div>
-                          <div class="col-auto">
-                            <div class="price-del"><del>75 SAR</del></div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div> -->
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+
       <div class="col-md-4">
         <div class="sticky">
-          <div class="add-order-list">
-            <div class="items" data-simplebar="true">
-              <div class="item">
-                <div class="text">
-                  <h3>Jacket with tobacco</h3>
-                  <div class="row gx-2">
-                    <div class="col-auto">
-                      <div class="add_order_varation">SIZE : S | 10.00 SAR</div>
-                    </div>
-                    <div class="col-auto">
-                      <div class="add_order_varation">
-                        COLOR : BLACK | 4.00 SAR
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="add_order_price">50 SAR</div>
-              </div>
-              <div class="item">
-                <div class="text">
-                  <h3>Jacket with tobacco</h3>
-                  <div class="row gx-2">
-                    <div class="col-auto">
-                      <div class="add_order_varation">SIZE : S | 10.00 SAR</div>
-                    </div>
-                    <div class="col-auto">
-                      <div class="add_order_varation">
-                        COLOR : BLACK | 4.00 SAR
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="add_order_price">50 SAR</div>
-              </div>
-              <div class="item">
-                <div class="text">
-                  <h3>Jacket with tobacco</h3>
-                  <div class="row gx-2">
-                    <div class="col-auto">
-                      <div class="add_order_varation">SIZE : S | 10.00 SAR</div>
-                    </div>
-                    <div class="col-auto">
-                      <div class="add_order_varation">
-                        COLOR : BLACK | 4.00 SAR
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="add_order_price">50 SAR</div>
-              </div>
-              <div class="item">
-                <div class="text">
-                  <h3>Jacket with tobacco</h3>
-                  <div class="row gx-2">
-                    <div class="col-auto">
-                      <div class="add_order_varation">SIZE : S | 10.00 SAR</div>
-                    </div>
-                    <div class="col-auto">
-                      <div class="add_order_varation">
-                        COLOR : BLACK | 4.00 SAR
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="add_order_price">50 SAR</div>
-              </div>
-              <div class="item">
-                <div class="text">
-                  <h3>Jacket with tobacco</h3>
-                  <div class="row gx-2">
-                    <div class="col-auto">
-                      <div class="add_order_varation">SIZE : S | 10.00 SAR</div>
-                    </div>
-                    <div class="col-auto">
-                      <div class="add_order_varation">
-                        COLOR : BLACK | 4.00 SAR
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="add_order_price">50 SAR</div>
-              </div>
-              <div class="item">
-                <div class="text">
-                  <h3>Jacket with tobacco</h3>
-                  <div class="row gx-2">
-                    <div class="col-auto">
-                      <div class="add_order_varation">SIZE : S | 10.00 SAR</div>
-                    </div>
-                    <div class="col-auto">
-                      <div class="add_order_varation">
-                        COLOR : BLACK | 4.00 SAR
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="add_order_price">50 SAR</div>
+          <div class="add-order-list mt-4">
+            <div class="d-flex">
+              <div class="store">Store Name : {{ storesDetails?.name }}</div>
+              <div class="clear-cart" *ngIf="orderDetails.length">
+                <button 
+                  type="button"
+                  class="btn btn-primary"
+                  (click)="clearCart()"
+                >
+                  Empty Cart
+                </button>
               </div>
             </div>
+
+            <div class="items mt-4" data-simplebar="true">
+              <ng-container *ngFor="let prod of orderDetails">
+                <div
+                  class="position-relative item"
+                  *ngFor="let item of prod?.items"
+                >
+                  <div class="text">
+                    <h3>{{ item?.item_name || item?.name }}</h3>
+                    <div class="row gx-2">
+                      <div class="col-auto">
+                        <div class="add_order_varation">
+                          Barcode :
+                          {{
+                            item.unique_id_for_store_data == ""
+                              ? "NA"
+                              : item.unique_id_for_store_data
+                          }}
+                        </div>
+                      </div>
+                      <div class="col-auto" *ngIf="item.details">
+                        <div
+                          class="add_order_varation cart-item-detail"
+                          [attr.title]="item?.details"
+                        >
+                          Details :
+                          {{ item?.details }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="add_order_price position-absolute cart-item-price"
+                  >
+                    AED {{ item?.price }}
+                  </div>
+
+                  <div class="d-flex cart-item align-items-center">
+                    <div class="service-tab" (click)="minusItem(item)">
+                      <img
+                        class="cart-plus-minus"
+                        src="assets/images/remove-item.svg"
+                        alt=""
+                      />
+                    </div>
+                    <div>{{ item?.quantity }}</div>
+                    <div class="service-tab" (click)="addItem(item)">
+                      <img
+                        class="cart-plus-minus"
+                        src="assets/images/add-item.svg"
+                        alt=""
+                      />
+                    </div>
+                  </div>
+                  <div
+                    class="position-absolute cart-delete-btn"
+                    (click)="remove(item)"
+                  >
+                    <img
+                      class="cart-delete-img"
+                      src="assets/images/delete-item.svg"
+                      alt=""
+                    />
+                  </div>
+                </div>
+              </ng-container>
+            </div>
           </div>
+
           <div class="paymentmathed-wrap">
             <div class="paymentmathed-tab-wrap" data-simplebar="true">
               <ul
@@ -742,6 +699,9 @@
           </div>
         </div>
       </div>
+      <!-- <div class="col-md-4 cart">
+
+    </div> -->
     </div>
   </div>
 

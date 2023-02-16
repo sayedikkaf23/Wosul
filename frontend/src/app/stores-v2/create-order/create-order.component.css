@@ -7,3 +7,52 @@
 
   cursor: pointer;
 }
+
+.cart-item {
+  gap: 5px;
+
+  margin-left: auto;
+
+  width: 63px;
+  height: 25px;
+}
+
+.cart-item-price {
+  bottom: 5px;
+  right: 60px;
+}
+
+.cart-item-detail {
+  width: 110px;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cart-plus-minus {
+  width: 34px;
+  height: 30px;
+}
+
+.cart-delete-btn {
+  bottom: 9px;
+  right: 24px;
+
+  cursor: pointer;
+}
+
+.cart-delete-img {
+  width: 30px;
+  height: 22px;
+}
+
+.store {
+  margin-top: 10px;
+
+  font-size: 17px;
+}
+
+.clear-cart {
+  margin-left: auto;
+}

@@ -77,7 +77,7 @@ getTotalItemPrice(items) {
   }
 
   getCart(payload) {
-    return this.http.post(`${this.url}user/get_cart`, payload).pipe(
+    return this.http.post(`${this.url}/api/user/get_cart`, payload).pipe(
       map((res: any) => {
         if (res.success) {
           res.cart.order_details = res?.cart?.order_details.map((o) => {
@@ -105,7 +105,7 @@ getTotalItemPrice(items) {
   }
 
   clearCart(payload) {
-    return this.http.post(`${this.url}user/clear_cart`, payload);
+    return this.http.post(`${this.url}/api/user/clear_cart`, payload);
   }
 
   getRecommendedProduct(payload) {

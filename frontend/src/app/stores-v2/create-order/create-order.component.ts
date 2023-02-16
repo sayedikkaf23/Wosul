@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { AuthService } from 'src/app/services/auth.service';
 import { ProductService } from 'src/app/services/product.service';
 
 export const itemsKeysToRemove = [
@@ -29,6 +30,7 @@ export class CreateOrderComponent implements OnInit {
   @ViewChild('itemDetails') itemModal: any;
   storeId;
   cartId;
+  cartToken: any;
   storesDetails;
   orderDetails: any = [];
   category: any = [];
@@ -46,7 +48,8 @@ export class CreateOrderComponent implements OnInit {
   constructor(
     private productService: ProductService,
     private modalService: NgbModal,
-    private activeModal: NgbActiveModal
+    private activeModal: NgbActiveModal,
+    private authService: AuthService
   ) {}
 
   async ngOnInit() {
@@ -56,11 +59,16 @@ export class CreateOrderComponent implements OnInit {
 
     this.getStoreService(this.storeId);
     this.getCategoryList();
+    this.getStoreDetails();
   }
 
   set categoryId(id) {
     this.selectedCategoryId = id;
     this.getStoreProductItemList();
+  }
+
+  async getCartToken() {
+    this.cartToken = await this.authService.cartToken;
   }
 
   setCategory(category) {
@@ -163,7 +171,7 @@ export class CreateOrderComponent implements OnInit {
     return store?.address;
   }
 
-  addItem(item) {
+  async addItem(item) {
     const prodIdx = this.orderDetails.findIndex(
       (p) => p.product_id === this.selectedProductId
     );
@@ -197,6 +205,7 @@ export class CreateOrderComponent implements OnInit {
         items: [item],
       });
     }
+    await this.getCartToken();
     this.createAndUpdateCart(this.orderDetails);
   }
 
@@ -205,6 +214,7 @@ export class CreateOrderComponent implements OnInit {
     const payload = {
       total_cart_price: totalCartPrice,
       total_item_tax: totalItemTax,
+      cart_unique_token: this.cartToken,
       // destination_addresses: this.destinationAddresses,
       destination_addresses: 'Business Bay',
       min_order_price: 0,
@@ -225,6 +235,58 @@ export class CreateOrderComponent implements OnInit {
       },
     });
     localStorage.cartCount = this.productService.cartCount;
+  }
+
+  minusItem(item) {
+    if (Array.isArray(this.orderDetails)) {
+      this.orderDetails.forEach((prod) => {
+        let _item = prod.items.find((i) => i._id === item._id);
+        if (_item) _item.quantity = _item.quantity - 1;
+        if (_item && _item.quantity < 1) {
+          prod.items = prod.items.filter((i) => i._id !== item._id);
+        }
+      });
+      this.orderDetails = this.orderDetails.filter((o) => o.items?.length > 0);
+      if (this.orderDetails?.length) {
+        this.createAndUpdateCart(this.orderDetails);
+      } else {
+        this.clearCart();
+      }
+    }
+  }
+
+  clearCart() {
+    const payload = {
+      // user_id: this.auth.user?._id,
+      cart_id: this.cartId,
+    };
+    this.productService.clearCart(payload).subscribe({
+      next: (res: any) => {
+        if (res.success) {
+          this.orderDetails = [];
+        }
+      },
+    });
+  }
+
+  getCart() {
+    const payload = {
+      // user_id: this.auth.user?._id,
+      cart_unique_token: this.cartToken,
+    };
+    this.productService.getCart(payload).subscribe({
+      next: (res: any) => {
+        if (res.success) {
+          this.cartId = res?.cart_id || res?.cart?._id;
+          this.orderDetails = res?.cart?.order_details;
+        }
+      },
+    });
+  }
+
+  remove(item) {
+    item.quantity = 1;
+    this.minusItem(item);
   }
 
   openItemModal(item: any) {

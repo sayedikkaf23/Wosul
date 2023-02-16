@@ -23,6 +23,7 @@
     "@angular/platform-browser-dynamic": "~9.1.13",
     "@angular/router": "~9.1.13",
     "@angular/service-worker": "~9.1.13",
+    "@fingerprintjs/fingerprintjs": "^3.4.0",
     "@metismenu/angular": "^0.0.2",
     "@ng-bootstrap/ng-bootstrap": "^9.1.2",
     "@ngui/sortable": "0.4.1",

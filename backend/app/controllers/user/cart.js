@@ -1782,14 +1782,18 @@ exports.clear_cart = function (request_data, response_data) {
             });
           }
         }
-        await Cart.deleteOne({ _id: cart_id });
-        user.cart_id = null;
+        await Cart.deleteOne({ _id: cart._id });
+
         if (promo_code) {
           promo_code.used_promo_code = promo_code.used_promo_code - 1;
           await promo_code.save();
           user.promo_count = user.promo_count - 1;
         }
-        await user.save();
+
+        if (user) {
+          user.cart_id = null;
+          await user.save();
+        }
 
         response_data.json({
           success: true,
