@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from 'src/app/services/auth.service';
 import { ProductService } from 'src/app/services/product.service';
@@ -28,6 +28,8 @@ export const itemsKeysToRemove = [
 })
 export class CreateOrderComponent implements OnInit {
   @ViewChild('itemDetails') itemModal: any;
+  @ViewChild('cartBox') cartBox: ElementRef;
+
   storeId;
   cartId;
   cartToken: any;
@@ -207,6 +209,7 @@ export class CreateOrderComponent implements OnInit {
     }
     await this.getCartToken();
     this.createAndUpdateCart(this.orderDetails);
+    // await this.scroll();
   }
 
   createAndUpdateCart(orderDetails) {
@@ -287,6 +290,12 @@ export class CreateOrderComponent implements OnInit {
   remove(item) {
     item.quantity = 1;
     this.minusItem(item);
+  }
+
+  scroll() {
+    setTimeout(() => {
+      this.cartBox.nativeElement.scroll(0, 99999999);
+    }, 500);
   }
 
   openItemModal(item: any) {
