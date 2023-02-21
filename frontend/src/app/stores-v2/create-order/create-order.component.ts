@@ -305,4 +305,8 @@ export class CreateOrderComponent implements OnInit {
   getTotalItemPrice(items) {
     return this.productService.getTotalItemPrice(items);
   }
+
+  isItemInCart(item) {
+    return this.getItem(item?._id);
+  }
 }

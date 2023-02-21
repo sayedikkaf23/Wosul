@@ -224,9 +224,24 @@ import { FtpServerComponent } from './views/admin/ftp_server/ftp_server.componen
 import { TokenInterceptor } from './services/token.interceptor';
 import { CreateOrderComponent } from './stores-v2/create-order/create-order.component';
 import { StoreLayoutComponent } from './stores-v2/store-layout/store-layout.component';
+import { StoreOrderListComponent } from './stores-v2/store-order-list/store-order-list.component';
+import { AdminLayoutComponent } from './admin-v2/admin-layout/admin-layout.component';
+import { AdminDashboardComponent } from './admin-v2/admin-dashboard/admin-dashboard.component';
+import { AdminOrderComponent } from './admin-v2/admin-order/admin-order.component';
+
 
 @NgModule({
-  declarations: [AppComponent, CommonInfoModalComponent, FtpServerComponent, CreateOrderComponent, StoreLayoutComponent],
+  declarations: [
+    AppComponent,
+    CommonInfoModalComponent,
+    FtpServerComponent,
+    CreateOrderComponent,
+    StoreLayoutComponent,
+    StoreOrderListComponent,
+    AdminLayoutComponent,
+    AdminDashboardComponent,
+    AdminOrderComponent
+  ],
   imports: [
     BrowserModule,
     HttpClientModule,
@@ -424,7 +439,7 @@ import { StoreLayoutComponent } from './stores-v2/store-layout/store-layout.comp
       useClass: PathLocationStrategy,
     },
     { provide: DEFAULT_CURRENCY_CODE, useValue: 'AED ' },
-    
+
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
     Helper,
     Data,

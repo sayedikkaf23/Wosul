@@ -194,6 +194,10 @@ import { AddTagsComponent } from './views/admin/add-tags/add-tags.component';
 import { FtpServerComponent } from './views/admin/ftp_server/ftp_server.component';
 import { CreateOrderComponent } from './stores-v2/create-order/create-order.component';
 import { StoreLayoutComponent } from './stores-v2/store-layout/store-layout.component';
+import { StoreOrderListComponent } from './stores-v2/store-order-list/store-order-list.component';
+import { AdminLayoutComponent } from './admin-v2/admin-layout/admin-layout.component';
+import { AdminDashboardComponent } from './admin-v2/admin-dashboard/admin-dashboard.component';
+import { AdminOrderComponent } from './admin-v2/admin-order/admin-order.component';
 // import {HistoryCalenderComponent} from "./views/store/history_calender/history_calender.component";
 export const ROUTES: Routes = [
   // Main redirect
@@ -203,7 +207,7 @@ export const ROUTES: Routes = [
 
   // App views
   {
-    path: '',
+    path: 'v3',
     component: admin_basicComponent,
     children: [
       { path: 'admin/country', component: countryComponent },
@@ -488,8 +492,19 @@ export const ROUTES: Routes = [
   },
   {
     path: '',
-    component:StoreLayoutComponent,
-    children: [{ path: 'store/create_order', component:CreateOrderComponent  }],
+    component: StoreLayoutComponent,
+    children: [
+      { path: 'store/create_order', component: CreateOrderComponent },
+      { path: 'store/order_list', component: StoreOrderListComponent },
+    ],
+  },
+  {
+    path: '',
+    component: AdminLayoutComponent,
+    children: [
+      { path: 'admin/dashboard', component: AdminDashboardComponent },
+      { path: 'admin/orders', component: AdminOrderComponent },
+    ],
   },
   {
     path: 'v2',

@@ -1,10 +1,14 @@
+@import "../../../assets/css/responsive.css";
+@import "../../../assets/css/style.css";
+@import "../../../assets/css/theme.css";
+
 .logout {
   right: 0;
 }
 .logout-btn {
   width: 70px;
   height: 29px;
-  
+
   color: white !important;
 
   background-color: #1e40af !important;

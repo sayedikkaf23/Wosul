@@ -23,10 +23,18 @@ export class OrderService {
     return this.http.get(`${this.url}/admin/get_delivery_boys`);
   }
 
+  getOrderList(payload) {
+    return this.http.post(`${this.url}/admin/orders_list`, payload);
+  }
+
+  getMainStoreList(payload) {
+    return this.http.post(`${this.url}/admin/get_main_store_list`, payload);
+  }
+
   addDeliveryBoy(payload: any) {
     return this.http.post(`${this.url}/admin/add_delivery_boy`, payload);
   }
-  
+
   updateDeliveryBoy(payload: any) {
     return this.http.post(`${this.url}/admin/update_delivery_boy`, payload);
   }
@@ -39,4 +47,7 @@ export class OrderService {
     return this.http.post(`${this.url}/api/user/card_online_payment`, payload);
   }
 
+  changeOrderStatus(payload) {
+    return this.http.post(`${this.url}/api/admin/admin_revert_completed_order`, payload);
+  }
 }

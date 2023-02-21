@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { environment } from 'src/environments/environment.prod';
+//import { environment } from 'src/environments/environment.prod';
+import { environment } from 'src/environments/environment';
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
 
 @Injectable({
@@ -39,6 +40,18 @@ export class AuthService {
 
   setStoreToken(token) {
     localStorage.setItem('admin_token', token);
+  }
+
+  checkAuth(payload) {
+    return this.http.post(`${this.url}/admin/check_auth`, payload);
+  }
+
+  getSettingDetail(payload) {
+    return this.http.post(`${this.url}/api/admin/get_setting_detail`, payload);
+  }
+
+  login(payload) {
+    return this.http.post(`${this.url}/login`, payload);
   }
 
   logOut() {

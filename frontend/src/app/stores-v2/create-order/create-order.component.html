@@ -121,9 +121,32 @@
                             <div class="price">AED {{ item.price }}</div>
                             <div
                               class="price plus-button"
+                              *ngIf="!isItemInCart(item)"
                               (click)="addItem(item)"
                             >
                               <img src="assets/images/add-item.svg" alt="" />
+                            </div>
+
+                            <div
+                              *ngIf="isItemInCart(item)"
+                              class="item-quantity d-flex ms-auto"
+                            >
+                              <div
+                                class="item-plus-minus service-tab"
+                                (click)="minusItem(item)"
+                              >
+                                -
+                              </div>
+
+                              <div class="item-plus-minus qty">
+                                {{ isItemInCart(item)?.quantity }}
+                              </div>
+                              <div
+                                class="item-plus-minus service-tab"
+                                (click)="addItem(item)"
+                              >
+                                +
+                              </div>
                             </div>
                           </div>
                           <!-- <div class="col-auto">
@@ -143,35 +166,6 @@
       <div class="col-md-4">
         <div class="sticky">
           <div class="position-relative store-panel mt-4">
-            <!-- <div class="d-flex">
-              <div class="store">Store Name : {{ storesDetails?.name }}</div>
-              <div class="clear-cart" *ngIf="orderDetails.length">
-                <button
-                  type="button"
-                  class="btn btn-primary"
-                  (click)="clearCart()"
-                >
-                  Empty Cart
-                </button>
-              </div>
-            </div> -->
-
-            <!-- <div class="cart-container">
-              <div class="cart-header">
-                <div class="d-flex justify-content-center cart-store">
-                  {{ storesDetails?.name }}
-                </div>
-                <div class="store-content position-relative">
-                  <div class="store-order-counter">
-                    <div class="d-flex">
-                      <div class="store-order">#1004 (Order Number)</div>
-                      <div class="store-order">Counter2 (Counter Number)</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div> -->
-
             <div class="e3071_50170">
               <div class="e3071_50171"></div>
               <div class="e3071_50172">
@@ -185,6 +179,10 @@
                 </div>
                 <span class="e3071_50179">{{ storesDetails?.name }}</span>
               </div>
+              <!-- remove all items -->
+              <div class="clear-cart" *ngIf="orderDetails.length">
+                <a class="remove-all" (click)="clearCart()">Remove All</a>
+              </div>
               <!-- cart items -->
               <div #cartBox class="store-cart" data-simplebar="true">
                 <ng-container *ngFor="let prod of orderDetails">
@@ -192,8 +190,12 @@
                     <div class="d-flex gap-2">
                       <div class="item-img mt-3 ms-3">
                         <img
-                          style="border-radius: 8px"
-                          src="assets/images/Product-img.svg"
+                          class="product-img-border"
+                          [src]="
+                            item.image_url?.length !== 0
+                              ? item.image_url[0]
+                              : 'assets/images/Product-img.svg'
+                          "
                         />
                       </div>
 
@@ -242,12 +244,12 @@
                     <div class="d-flex mt-2 item-price">
                       <div class="currency">AED {{ item?.price }}</div>
 
-                      <div class="note-content d-flex">
+                      <!-- <div class="note-content d-flex">
                         <div class="note-text">Add Note</div>
                         <div class="note-btn position-relative">
                           <div class="note-btn-color position-absolute"></div>
                         </div>
-                      </div>
+                      </div> -->
 
                       <div class="remove-item" (click)="remove(item)">
                         <img src="assets/images/delete-item.svg" alt="" />

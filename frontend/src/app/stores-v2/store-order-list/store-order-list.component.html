@@ -1,0 +1,524 @@
+<ng-container>
+  <div class="content">
+    <div class="page-heading">
+      <div class="row align-items-center justify-content-between">
+        <div class="col-auto">
+          <div class="row align-items-center">
+            <div class="col-auto">
+              <h2>Orders</h2>
+            </div>
+          </div>
+        </div>
+        <div class="col-auto">
+          <div class="row align-items-center">
+            <div class="col-auto">
+              <a
+                href="purchase-order-add.html"
+                class="btn btn-sm btn-light-primary"
+              >
+                <svg
+                  width="15"
+                  height="15"
+                  viewBox="0 0 15 15"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M13.125 9.375V11.875C13.125 12.2065 12.9933 12.5245 12.7589 12.7589C12.5245 12.9933 12.2065 13.125 11.875 13.125H3.125C2.79348 13.125 2.47554 12.9933 2.24112 12.7589C2.0067 12.5245 1.875 12.2065 1.875 11.875V9.375"
+                    stroke="currentColor"
+                    stroke-width="1.25"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></path>
+                  <path
+                    d="M4.375 6.25L7.5 9.375L10.625 6.25"
+                    stroke="currentColor"
+                    stroke-width="1.25"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></path>
+                  <path
+                    d="M7.5 9.375V1.875"
+                    stroke="currentColor"
+                    stroke-width="1.25"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></path>
+                </svg>
+                PDF
+              </a>
+            </div>
+            <div class="col-auto">
+              <div class="form-field page-heading-search-field mb-0">
+                <div class="field-icon">
+                  <input
+                    type="text"
+                    class="form-control form-control-sm form-control-shadow"
+                    placeholder="Search..."
+                  />
+                  <div class="icon">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-auto">
+              <div class="dropdown filter-dropdown">
+                <button
+                  type="button"
+                  class="btn btn-sm btn-icon btn-light-primary"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                  data-bs-auto-close="outside"
+                >
+                  <i class="fa-solid fa-filter"></i>
+                </button>
+                <div class="dropdown-menu p-3 w-365">
+                  <form>
+                    <div class="row g-3">
+                      <div class="col-6">
+                        <div class="form-field">
+                          <label for="" class="form-label">ID</label>
+                          <input
+                            type="text"
+                            class="form-control form-control-sm form-control-solid"
+                            id=""
+                            placeholder=""
+                          />
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="form-field">
+                          <label for="" class="form-label">Start Date </label>
+                          <input
+                            type="date"
+                            class="form-control form-control-sm form-control-solid"
+                            id=""
+                            placeholder=""
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row g-3">
+                      <div class="col-6">
+                        <div class="form-field">
+                          <label for="" class="form-label">Final Amount </label>
+                          <input
+                            type="text"
+                            class="form-control form-control-sm form-control-solid"
+                            id=""
+                            placeholder=""
+                          />
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="form-field">
+                          <label for="" class="form-label">Status</label>
+                          <select
+                            class="form-select form-select-sm form-select-solid"
+                          >
+                            <option>Accepted</option>
+                            <option>Inactive</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <button type="submit" class="btn btn-sm btn-primary w-100">
+                      Filter
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+            <div class="col-auto">
+              <div class="filter-item-field ms-2">
+                <label>Show</label>
+                <div>
+                  <select class="form-select form-select-sm form-select-shadow">
+                    <option>10</option>
+                    <option>20</option>
+                    <option>30</option>
+                    <option>40</option>
+                    <option>50</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-list-data table-hover">
+        <thead class="bg-light">
+          <tr>
+            <th scope="col"><b>ID</b></th>
+            <th scope="col"><b>Start Date</b></th>
+            <th scope="col"><b>User</b></th>
+            <th scope="col"><b>Update Status</b></th>
+            <th scope="col"><b>Status</b></th>
+            <th scope="col"><b>Store</b></th>
+            <th scope="col"><b>Bill Amount</b></th>
+            <th scope="col"><b>Final Amount</b></th>
+            <th scope="col"><b>Checkout Amount</b></th>
+            <th scope="col"><b>Payment By</b></th>
+            <th scope="col"><b>Promo</b></th>
+            <th scope="col"><b>Promo Value</b></th>
+            <th scope="col"><b>Loyalty Payment</b></th>
+            <th scope="col" class="text-end"><b>Action</b></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>10700</b></td>
+            <td>06 Feb 2023 02:49 PM</td>
+            <td>Sandy Chandiramani</td>
+            <td>
+              <span class="badge badge-danger">Inprogress</span>
+            </td>
+            <td>
+              <span class="badge badge-success">Accepted</span>
+            </td>
+            <td>Al Maya Supermarket</td>
+            <td>00.00</td>
+            <td>39.24</td>
+            <td>0</td>
+            <td>
+              <span class="badge badge-success">Cash</span>
+            </td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td class="text-end">
+              <div class="dropdown">
+                <button
+                  class="btn btn-icon btn-sm btn-light dropdown-toggle arrow-none"
+                  type="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <i class="fa-solid fa-ellipsis-vertical"></i>
+                </button>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#">Edit</a></li>
+                  <li><a class="dropdown-item" href="#">View</a></li>
+                  <li><a class="dropdown-item" href="#">Delete</a></li>
+                </ul>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><b>10700</b></td>
+            <td>06 Feb 2023 02:49 PM</td>
+            <td>Sandy Chandiramani</td>
+            <td>
+              <span class="badge badge-danger">Inprogress</span>
+            </td>
+            <td>
+              <span class="badge badge-success">Accepted</span>
+            </td>
+            <td>Al Maya Supermarket</td>
+            <td>00.00</td>
+            <td>39.24</td>
+            <td>0</td>
+            <td>
+              <span class="badge badge-success">Cash</span>
+            </td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td class="text-end">
+              <div class="dropdown">
+                <button
+                  class="btn btn-icon btn-sm btn-light dropdown-toggle arrow-none"
+                  type="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <i class="fa-solid fa-ellipsis-vertical"></i>
+                </button>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#">Edit</a></li>
+                  <li><a class="dropdown-item" href="#">View</a></li>
+                  <li><a class="dropdown-item" href="#">Delete</a></li>
+                </ul>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><b>10700</b></td>
+            <td>06 Feb 2023 02:49 PM</td>
+            <td>Sandy Chandiramani</td>
+            <td>
+              <span class="badge badge-danger">Inprogress</span>
+            </td>
+            <td>
+              <span class="badge badge-success">Accepted</span>
+            </td>
+            <td>Al Maya Supermarket</td>
+            <td>00.00</td>
+            <td>39.24</td>
+            <td>0</td>
+            <td>
+              <span class="badge badge-success">Cash</span>
+            </td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td class="text-end">
+              <div class="dropdown">
+                <button
+                  class="btn btn-icon btn-sm btn-light dropdown-toggle arrow-none"
+                  type="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <i class="fa-solid fa-ellipsis-vertical"></i>
+                </button>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#">Edit</a></li>
+                  <li><a class="dropdown-item" href="#">View</a></li>
+                  <li><a class="dropdown-item" href="#">Delete</a></li>
+                </ul>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><b>10700</b></td>
+            <td>06 Feb 2023 02:49 PM</td>
+            <td>Sandy Chandiramani</td>
+            <td>
+              <span class="badge badge-danger">Inprogress</span>
+            </td>
+            <td>
+              <span class="badge badge-success">Accepted</span>
+            </td>
+            <td>Al Maya Supermarket</td>
+            <td>00.00</td>
+            <td>39.24</td>
+            <td>0</td>
+            <td>
+              <span class="badge badge-success">Cash</span>
+            </td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td class="text-end">
+              <div class="dropdown">
+                <button
+                  class="btn btn-icon btn-sm btn-light dropdown-toggle arrow-none"
+                  type="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <i class="fa-solid fa-ellipsis-vertical"></i>
+                </button>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#">Edit</a></li>
+                  <li><a class="dropdown-item" href="#">View</a></li>
+                  <li><a class="dropdown-item" href="#">Delete</a></li>
+                </ul>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><b>10700</b></td>
+            <td>06 Feb 2023 02:49 PM</td>
+            <td>Sandy Chandiramani</td>
+            <td>
+              <span class="badge badge-danger">Inprogress</span>
+            </td>
+            <td>
+              <span class="badge badge-success">Accepted</span>
+            </td>
+            <td>Al Maya Supermarket</td>
+            <td>00.00</td>
+            <td>39.24</td>
+            <td>0</td>
+            <td>
+              <span class="badge badge-success">Cash</span>
+            </td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td class="text-end">
+              <div class="dropdown">
+                <button
+                  class="btn btn-icon btn-sm btn-light dropdown-toggle arrow-none"
+                  type="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <i class="fa-solid fa-ellipsis-vertical"></i>
+                </button>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#">Edit</a></li>
+                  <li><a class="dropdown-item" href="#">View</a></li>
+                  <li><a class="dropdown-item" href="#">Delete</a></li>
+                </ul>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><b>10700</b></td>
+            <td>06 Feb 2023 02:49 PM</td>
+            <td>Sandy Chandiramani</td>
+            <td>
+              <span class="badge badge-danger">Inprogress</span>
+            </td>
+            <td>
+              <span class="badge badge-success">Accepted</span>
+            </td>
+            <td>Al Maya Supermarket</td>
+            <td>00.00</td>
+            <td>39.24</td>
+            <td>0</td>
+            <td>
+              <span class="badge badge-success">Cash</span>
+            </td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td class="text-end">
+              <div class="dropdown">
+                <button
+                  class="btn btn-icon btn-sm btn-light dropdown-toggle arrow-none"
+                  type="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <i class="fa-solid fa-ellipsis-vertical"></i>
+                </button>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#">Edit</a></li>
+                  <li><a class="dropdown-item" href="#">View</a></li>
+                  <li><a class="dropdown-item" href="#">Delete</a></li>
+                </ul>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><b>10700</b></td>
+            <td>06 Feb 2023 02:49 PM</td>
+            <td>Sandy Chandiramani</td>
+            <td>
+              <span class="badge badge-danger">Inprogress</span>
+            </td>
+            <td>
+              <span class="badge badge-success">Accepted</span>
+            </td>
+            <td>Al Maya Supermarket</td>
+            <td>00.00</td>
+            <td>39.24</td>
+            <td>0</td>
+            <td>
+              <span class="badge badge-success">Cash</span>
+            </td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td class="text-end">
+              <div class="dropdown">
+                <button
+                  class="btn btn-icon btn-sm btn-light dropdown-toggle arrow-none"
+                  type="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <i class="fa-solid fa-ellipsis-vertical"></i>
+                </button>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#">Edit</a></li>
+                  <li><a class="dropdown-item" href="#">View</a></li>
+                  <li><a class="dropdown-item" href="#">Delete</a></li>
+                </ul>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><b>10700</b></td>
+            <td>06 Feb 2023 02:49 PM</td>
+            <td>Sandy Chandiramani</td>
+            <td>
+              <span class="badge badge-danger">Inprogress</span>
+            </td>
+            <td>
+              <span class="badge badge-success">Accepted</span>
+            </td>
+            <td>Al Maya Supermarket</td>
+            <td>00.00</td>
+            <td>39.24</td>
+            <td>0</td>
+            <td>
+              <span class="badge badge-success">Cash</span>
+            </td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td class="text-end">
+              <div class="dropdown">
+                <button
+                  class="btn btn-icon btn-sm btn-light dropdown-toggle arrow-none"
+                  type="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <i class="fa-solid fa-ellipsis-vertical"></i>
+                </button>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#">Edit</a></li>
+                  <li><a class="dropdown-item" href="#">View</a></li>
+                  <li><a class="dropdown-item" href="#">Delete</a></li>
+                </ul>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="data-footer">
+      <div class="row align-items-center justify-content-between">
+        <div class="col-auto">
+          <div class="filter-item-field">
+            <label>Show</label>
+            <div>
+              <select class="form-select form-select-sm form-select-shadow">
+                <option>10</option>
+                <option>20</option>
+                <option>30</option>
+                <option>40</option>
+                <option>50</option>
+              </select>
+            </div>
+            <label class="me-0 ms-2">Entries</label>
+            <label class="ms-4 me-0">Showing 1 to 25 of 92 entries</label>
+          </div>
+        </div>
+        <div class="col-auto">
+          <ul class="pagination">
+            <li class="page-item">
+              <a class="page-link" href="#" aria-label="Previous">
+                <span aria-hidden="true"
+                  ><i class="fa-solid fa-chevron-left"></i
+                ></span>
+              </a>
+            </li>
+            <li class="page-item active">
+              <a class="page-link" href="#">1</a>
+            </li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item"><a class="page-link" href="#">4</a></li>
+            <li class="page-item">
+              <a class="page-link" href="#" aria-label="Next">
+                <span aria-hidden="true"
+                  ><i class="fa-solid fa-chevron-right"></i
+                ></span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>

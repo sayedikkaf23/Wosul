@@ -30,7 +30,7 @@ export class admin_loginComponent implements OnInit {
   }
 
   check_verify(logindata) {
-    this.helper.http.post('/login', logindata).subscribe(
+    this.auth.login(logindata).subscribe(
       (res_data: any) => {
         this.myLoading = false;
         if (res_data.success == true) {
@@ -42,7 +42,9 @@ export class admin_loginComponent implements OnInit {
             message: this.helper.MESSAGE_CODE[res_data.message],
             class: 'alert-info',
           };
-          this.helper.router.navigate(['admin/dashboard']);
+          //this.helper.router.navigate(['admin/dashboard']);
+          this.helper.router.navigate(['admin/orders']);
+
         } else {
           this.helper.data.storage = {
             code: res_data.error_code,
