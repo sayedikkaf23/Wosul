@@ -85,33 +85,57 @@ export class store_loginComponent implements OnInit {
       social_id: '',
     };
 
-    this.helper.http
-      .post(this.helper.POST_METHOD.GET_SETTING_DETAIL, {})
-      .subscribe(
-        (res_data: any) => {
-          this.myLoading = false;
-          this.setting_data = res_data.setting;
+    this.auth.getSettingDetail({}).subscribe((res_data: any) => {
+      this.myLoading = false;
+      this.setting_data = res_data.setting;
 
-          if (
-            this.setting_data.is_store_login_by_phone == true &&
-            this.setting_data.is_store_login_by_email == true
-          ) {
-            this.email_placeholder = 1;
-          } else if (this.setting_data.is_store_login_by_phone == true) {
-            this.email_placeholder = 2;
-          } else if (this.setting_data.is_store_login_by_email == true) {
-            this.email_placeholder = 3;
-          }
+      if (
+        this.setting_data.is_store_login_by_phone == true &&
+        this.setting_data.is_store_login_by_email == true
+      ) {
+        this.email_placeholder = 1;
+      } else if (this.setting_data.is_store_login_by_phone == true) {
+        this.email_placeholder = 2;
+      } else if (this.setting_data.is_store_login_by_email == true) {
+        this.email_placeholder = 3;
+      }
 
-          if (!this.setting_data.is_store_login_by_social) {
-            jQuery('#social').hide();
-          }
-        },
-        (error: any) => {
-          this.myLoading = false;
-          this.helper.http_status(error);
-        }
-      );
+      if (!this.setting_data.is_store_login_by_social) {
+        jQuery('#social').hide();
+      }
+    },
+    (error: any) => {
+      this.myLoading = false;
+      this.helper.http_status(error);
+    }
+  );
+    // this.helper.http
+    //   .post(this.helper.POST_METHOD.GET_SETTING_DETAIL, {})
+    //   .subscribe(
+    //     (res_data: any) => {
+    //       this.myLoading = false;
+    //       this.setting_data = res_data.setting;
+
+    //       if (
+    //         this.setting_data.is_store_login_by_phone == true &&
+    //         this.setting_data.is_store_login_by_email == true
+    //       ) {
+    //         this.email_placeholder = 1;
+    //       } else if (this.setting_data.is_store_login_by_phone == true) {
+    //         this.email_placeholder = 2;
+    //       } else if (this.setting_data.is_store_login_by_email == true) {
+    //         this.email_placeholder = 3;
+    //       }
+
+    //       if (!this.setting_data.is_store_login_by_social) {
+    //         jQuery('#social').hide();
+    //       }
+    //     },
+    //     (error: any) => {
+    //       this.myLoading = false;
+    //       this.helper.http_status(error);
+    //     }
+    //   );
   }
 
   togglePassword() {
@@ -185,7 +209,7 @@ export class store_loginComponent implements OnInit {
   }
 
   storeLogin1(logindata) {
-    this.helper.http.post(this.helper.POST_METHOD.LOGIN, logindata).subscribe(
+    this.auth.storeLogin(logindata).subscribe(
       (res_data: any) => {
         this.myLoading = false;
         if (res_data.success == false) {
@@ -256,6 +280,77 @@ export class store_loginComponent implements OnInit {
         this.helper.http_status(error);
       }
     );
+    // this.helper.http.post(this.helper.POST_METHOD.LOGIN, logindata).subscribe(
+    //   (res_data: any) => {
+    //     this.myLoading = false;
+    //     if (res_data.success == false) {
+    //       this.helper.data.storage = {
+    //         code: res_data.error_code,
+    //         message: this.helper.ERROR_CODE[res_data.error_code],
+    //         class: 'alert-danger',
+    //       };
+    //       this.helper.message();
+    //     } else {
+    //       this.store_data = res_data;
+
+    //       this.auth.setStoreToken(this.store_data.token);
+          
+    //       if (
+    //         this.setting_data.is_store_sms_verification == true &&
+    //         this.store_data.store.is_phone_number_verified == false &&
+    //         this.setting_data.is_store_mail_verification == true &&
+    //         this.store_data.store.is_email_verified == false
+    //       ) {
+    //         var otp_json = {
+    //           type: 2,
+    //           email: this.store_data.store.email,
+    //           phone: this.store_data.store.phone,
+    //         };
+    //         this.generate_otp(otp_json);
+    //       } else if (
+    //         this.setting_data.is_store_sms_verification == true &&
+    //         this.store_data.store.is_phone_number_verified == false
+    //       ) {
+    //         this.generate_otp({
+    //           type: 2,
+    //           phone: this.store_data.store.phone,
+    //         });
+    //       } else if (
+    //         this.setting_data.is_store_mail_verification == true &&
+    //         this.store_data.store.is_email_verified == false
+    //       ) {
+    //         this.generate_otp({
+    //           type: 2,
+    //           email: this.store_data.store.email,
+    //         });
+    //       } else {
+    //         this.helper.setToken(this.store_data.store.server_token);
+    //         this.helper.user_cart.name = this.store_data.store.name;
+    //         this.helper.user_cart.image = this.store_data.store.image_url;
+    //         localStorage.setItem(
+    //           'store',
+    //           JSON.stringify(this.store_data.store)
+    //         );
+    //         this.helper.data.storage = {
+    //           message: this.helper.MESSAGE_CODE[this.store_data.message],
+    //           class: 'alert-info',
+    //         };
+    //         this.helper.user_cart.cart_data.cart_id = null;
+    //         this.helper.user_cart.cart_unique_token = this.utils.uuid4();
+    //         this.helper.router.navigate(['store/create_order']);
+    //         // if (this.store_data.store.is_document_uploaded) {
+    //         //   this.helper.router.navigate(['store/create_order']);
+    //         // } else {
+    //         //   this.helper.router.navigate(['store/upload_document']);
+    //         // }
+    //       }
+    //     }
+    //   },
+    //   (error: any) => {
+    //     this.myLoading = false;
+    //     this.helper.http_status(error);
+    //   }
+    // );
   }
 
   generate_otp(otp_json) {

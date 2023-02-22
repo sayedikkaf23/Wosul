@@ -3,8 +3,7 @@ import {
   Component,
   OnInit,
   ViewChild,
-  ViewContainerRef,
-  ViewEncapsulation,
+  ViewContainerRef
 } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
@@ -189,6 +188,9 @@ export class AdminOrderComponent implements OnInit {
   }
 
   ngOnInit() {
+    const bodyElement = document.body;
+    bodyElement.classList.remove('add-order-page');
+
     this.checkAdminTyp();
     this.getDeliveryBoy();
     this.getSettingDetails();
@@ -380,7 +382,7 @@ export class AdminOrderComponent implements OnInit {
     this.myLoading = true;
 
     url = url ? url : '/api/admin/admin_update_order';
-    
+
     if (new_status == this.ORDER_STATE.OREDER_READY) {
       let checkout_amount = Number(
         prompt('Please Enter Checkout Amount in AED : ')
@@ -1950,8 +1952,4 @@ export class AdminOrderComponent implements OnInit {
     this.isShowFilters = !this.isShowFilters;
   }
 
-  updateOrderStatus(order, order_status) {
-    console.log('order: ', order);
-    console.log('order_status: ', order_status);
-  }
 }

@@ -12,9 +12,14 @@
 
   <div class="sidebar-inner-content" data-simplebar>
     <ul class="menu-navigation">
-      <li class="">
+      <li
+        class=""
+        (click)="toggleActive()"
+        [ngClass]="isActive === false ? '' : 'active'"
+      >
         <a
-          href="dashboard.html"
+          routerLink="/admin/dashboard"
+          routerLinkActive="active"
           data-bs-toggle="tooltip"
           data-bs-placement="right"
           data-bs-title="Dashboard"
@@ -40,9 +45,13 @@
         </a>
       </li>
 
-      <li class="active">
+      <li
+        (click)="toggleActive()"
+        [ngClass]="isActive === true ? '' : 'active'"
+      >
         <a
-          href="purchase-order-list.html"
+          routerLink="/admin/orders"
+          routerLinkActive="active"
           data-bs-toggle="tooltip"
           data-bs-placement="right"
           data-bs-title="Purchase"

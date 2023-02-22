@@ -54,6 +54,10 @@ export class AuthService {
     return this.http.post(`${this.url}/login`, payload);
   }
 
+  storeLogin(payload) {
+    return this.http.post(`${this.url}/api/store/login`, payload);
+  }
+
   logOut() {
     localStorage.clear();
     this.router.navigate(['/']);

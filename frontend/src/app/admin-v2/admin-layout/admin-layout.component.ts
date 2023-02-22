@@ -8,6 +8,7 @@ import { ActivatedRoute, Router } from '@angular/router';
   encapsulation: ViewEncapsulation.None,
 })
 export class AdminLayoutComponent implements OnInit {
+  isActive: boolean = false;
   constructor(private router: Router) {}
 
   ngOnInit(): void {
@@ -22,6 +23,10 @@ export class AdminLayoutComponent implements OnInit {
     } else {
       bodyElement.classList.remove('sidebar-collapsein');
     }
+  }
+
+  toggleActive() {
+    this.isActive = !this.isActive;
   }
 
   logout() {

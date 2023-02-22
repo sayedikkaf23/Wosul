@@ -11,11 +11,8 @@
         </div>
         <div class="col-auto">
           <div class="row align-items-center">
-            <div class="col-auto">
-              <a
-                href="purchase-order-add.html"
-                class="btn btn-sm btn-light-primary"
-              >
+            <div class="col-auto" (click)="order_export_csv(1)">
+              <a class="btn btn-sm btn-light-primary">
                 <svg
                   width="15"
                   height="15"
@@ -70,10 +67,11 @@
                   data-bs-toggle="dropdown"
                   aria-expanded="false"
                   data-bs-auto-close="outside"
+                  (click)="toggleFilter()"
                 >
                   <i class="fa-solid fa-filter"></i>
                 </button>
-                <div class="dropdown-menu p-3 w-365">
+                <div class="dropdown-menu p-3 w-365" *ngIf="isShowFilters">
                   <form>
                     <div class="row g-3">
                       <div class="col-6">
@@ -169,292 +167,177 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td><b>10700</b></td>
-            <td>06 Feb 2023 02:49 PM</td>
-            <td>Sandy Chandiramani</td>
+          <tr
+            *ngFor="let order of order_list; let index = index; let last = last"
+            [class.selected_tr]="order._id == order_detail._id"
+            (click)="get_order_detail(index)"
+          >
             <td>
-              <span class="badge badge-danger">Inprogress</span>
+              <b>{{ order.unique_id }}</b>
             </td>
+            <td *ngIf="order.is_schedule_order == false">
+              {{ order.created_at | date : DATE_FORMAT.DD_MMM_YYYY_HH_MM_A }}
+            </td>
+            <td
+              *ngIf="
+                order.is_schedule_order == true &&
+                order.schedule_order_start_at !== null
+              "
+            >
+              {{ order.schedule_order_start_at }}
+            </td>
+
             <td>
-              <span class="badge badge-success">Accepted</span>
+              {{ order.user_detail.first_name }}
+              {{ order.user_detail.last_name }}
             </td>
-            <td>Al Maya Supermarket</td>
-            <td>00.00</td>
-            <td>39.24</td>
-            <td>0</td>
-            <td>
-              <span class="badge badge-success">Cash</span>
-            </td>
-            <td>0</td>
-            <td>0</td>
-            <td>0</td>
-            <td class="text-end">
-              <div class="dropdown">
-                <button
-                  class="btn btn-icon btn-sm btn-light dropdown-toggle arrow-none"
-                  type="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  <i class="fa-solid fa-ellipsis-vertical"></i>
-                </button>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#">Edit</a></li>
-                  <li><a class="dropdown-item" href="#">View</a></li>
-                  <li><a class="dropdown-item" href="#">Delete</a></li>
-                </ul>
+
+            <td *ngIf="order.order_status == 3" class="cursor-pointer">
+              <div
+                (click)="
+                  changeOrderstatus(order, ORDER_STATE.STORE_PREPARING_ORDER)
+                "
+              >
+                <span class="badge badge-danger">{{
+                  status.start_preparing_order1
+                }}</span>
               </div>
             </td>
-          </tr>
-          <tr>
-            <td><b>10700</b></td>
-            <td>06 Feb 2023 02:49 PM</td>
-            <td>Sandy Chandiramani</td>
-            <td>
-              <span class="badge badge-danger">Inprogress</span>
-            </td>
-            <td>
-              <span class="badge badge-success">Accepted</span>
-            </td>
-            <td>Al Maya Supermarket</td>
-            <td>00.00</td>
-            <td>39.24</td>
-            <td>0</td>
-            <td>
-              <span class="badge badge-success">Cash</span>
-            </td>
-            <td>0</td>
-            <td>0</td>
-            <td>0</td>
-            <td class="text-end">
-              <div class="dropdown">
-                <button
-                  class="btn btn-icon btn-sm btn-light dropdown-toggle arrow-none"
-                  type="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  <i class="fa-solid fa-ellipsis-vertical"></i>
-                </button>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#">Edit</a></li>
-                  <li><a class="dropdown-item" href="#">View</a></li>
-                  <li><a class="dropdown-item" href="#">Delete</a></li>
-                </ul>
+
+            <td *ngIf="order.order_status == 5" class="cursor-pointer">
+              <div (click)="changeOrderstatus(order, ORDER_STATE.OREDER_READY)">
+                <span class="badge badge-danger">{{
+                  status.order_ready1
+                }}</span>
               </div>
             </td>
-          </tr>
-          <tr>
-            <td><b>10700</b></td>
-            <td>06 Feb 2023 02:49 PM</td>
-            <td>Sandy Chandiramani</td>
-            <td>
-              <span class="badge badge-danger">Inprogress</span>
-            </td>
-            <td>
-              <span class="badge badge-success">Accepted</span>
-            </td>
-            <td>Al Maya Supermarket</td>
-            <td>00.00</td>
-            <td>39.24</td>
-            <td>0</td>
-            <td>
-              <span class="badge badge-success">Cash</span>
-            </td>
-            <td>0</td>
-            <td>0</td>
-            <td>0</td>
-            <td class="text-end">
-              <div class="dropdown">
-                <button
-                  class="btn btn-icon btn-sm btn-light dropdown-toggle arrow-none"
-                  type="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  <i class="fa-solid fa-ellipsis-vertical"></i>
-                </button>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#">Edit</a></li>
-                  <li><a class="dropdown-item" href="#">View</a></li>
-                  <li><a class="dropdown-item" href="#">Delete</a></li>
-                </ul>
+
+            <td *ngIf="order.order_status == 7" class="cursor-pointer">
+              <div>
+                <span class="badge badge-danger">{{
+                  status.delivered_ordered1
+                }}</span>
               </div>
             </td>
-          </tr>
-          <tr>
-            <td><b>10700</b></td>
-            <td>06 Feb 2023 02:49 PM</td>
-            <td>Sandy Chandiramani</td>
-            <td>
-              <span class="badge badge-danger">Inprogress</span>
-            </td>
-            <td>
-              <span class="badge badge-success">Accepted</span>
-            </td>
-            <td>Al Maya Supermarket</td>
-            <td>00.00</td>
-            <td>39.24</td>
-            <td>0</td>
-            <td>
-              <span class="badge badge-success">Cash</span>
-            </td>
-            <td>0</td>
-            <td>0</td>
-            <td>0</td>
-            <td class="text-end">
-              <div class="dropdown">
-                <button
-                  class="btn btn-icon btn-sm btn-light dropdown-toggle arrow-none"
-                  type="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  <i class="fa-solid fa-ellipsis-vertical"></i>
-                </button>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#">Edit</a></li>
-                  <li><a class="dropdown-item" href="#">View</a></li>
-                  <li><a class="dropdown-item" href="#">Delete</a></li>
-                </ul>
+
+            <!-- <td [ngSwitch]="order.order_status">
+              <div
+                *ngSwitchCase="ORDER_STATE.WAITING_FOR_ACCEPT_STORE"
+                (click)="
+                  updateOrderStatus(order, ORDER_STATE.WAITING_FOR_ACCEPT_STORE)
+                "
+              >
+                <span class="badge badge-danger">{{
+                  status.waiting_for_accept1
+                }}</span>
+              </div>
+              <div
+                *ngSwitchCase="ORDER_STATE.STORE_ACCEPTED"
+                (click)="updateOrderStatus(order, ORDER_STATE.STORE_ACCEPTED)"
+                u
+              >
+                <span class="badge badge-success">{{ status.accepted1 }}</span>
+              </div>
+              <div
+                *ngSwitchCase="ORDER_STATE.STORE_PREPARING_ORDER"
+                (click)="
+                  updateOrderStatus(order, ORDER_STATE.STORE_PREPARING_ORDER)
+                "
+              >
+                <span class="badge badge-danger">{{
+                  status.start_preparing_order1
+                }}</span>
+              </div>
+              <div
+                *ngSwitchCase="ORDER_STATE.OREDER_READY"
+                (click)="updateOrderStatus(order, ORDER_STATE.OREDER_READY)"
+              >
+                <span class="badge badge-danger">{{
+                  status.order_ready1
+                }}</span>
+              </div>
+            </td> -->
+
+            <td [ngSwitch]="order.order_status">
+              <div *ngSwitchCase="ORDER_STATE.WAITING_FOR_ACCEPT_STORE">
+                <span class="badge badge-success">{{
+                  status.waiting_for_accept1
+                }}</span>
+              </div>
+              <div *ngSwitchCase="ORDER_STATE.STORE_ACCEPTED">
+                <span class="badge badge-success">{{ status.accepted1 }}</span>
+              </div>
+              <div *ngSwitchCase="ORDER_STATE.STORE_PREPARING_ORDER">
+                <span class="badge badge-success">{{
+                  status.start_preparing_order1
+                }}</span>
+              </div>
+              <div *ngSwitchCase="ORDER_STATE.OREDER_READY">
+                <span class="badge badge-success">{{
+                  status.order_ready1
+                }}</span>
               </div>
             </td>
-          </tr>
-          <tr>
-            <td><b>10700</b></td>
-            <td>06 Feb 2023 02:49 PM</td>
-            <td>Sandy Chandiramani</td>
+
             <td>
-              <span class="badge badge-danger">Inprogress</span>
+              <span *ngIf="order.store_detail">{{
+                order.store_detail.name
+              }}</span>
             </td>
             <td>
-              <span class="badge badge-success">Accepted</span>
+              {{ order.order_payment_detail.bill_amount | number : "2.2-2" }}
             </td>
-            <td>Al Maya Supermarket</td>
-            <td>00.00</td>
-            <td>39.24</td>
-            <td>0</td>
             <td>
-              <span class="badge badge-success">Cash</span>
+              {{
+                order.order_payment_detail.user_pay_payment | number : "2.2-2"
+              }}
             </td>
-            <td>0</td>
-            <td>0</td>
-            <td>0</td>
-            <td class="text-end">
-              <div class="dropdown">
-                <button
-                  class="btn btn-icon btn-sm btn-light dropdown-toggle arrow-none"
-                  type="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  <i class="fa-solid fa-ellipsis-vertical"></i>
-                </button>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#">Edit</a></li>
-                  <li><a class="dropdown-item" href="#">View</a></li>
-                  <li><a class="dropdown-item" href="#">Delete</a></li>
-                </ul>
+            <td>{{ order.order_payment_detail.checkout_amount }}</td>
+
+            <td [ngSwitch]="order.order_payment_detail.is_payment_mode_cash">
+              <div *ngIf="!order.order_payment_detail.is_paid_from_wallet">
+                <div *ngSwitchCase="true">
+                  <span class="badge badge-success">{{ title.cash }}</span>
+                </div>
+                <div *ngSwitchCase="false">
+                  <span
+                    class="badge badge-danger"
+                    *ngIf="order.payment_gateway_detail.length > 0"
+                    >{{ order.payment_gateway_detail[0].name }}
+                  </span>
+                </div>
+              </div>
+              <div *ngIf="order.order_payment_detail.is_paid_from_wallet">
+                <span class="badge badge-success"> + {{ title.wallet }}</span>
+              </div>
+              <div
+                *ngIf="
+                  order.order_payment_detail.is_payment_mode_online_payment
+                "
+              >
+                <span class="badge badge-success"> Online Payment</span>
+              </div>
+              <div
+                *ngIf="
+                  order.order_payment_detail.is_payment_mode_card_on_delivery
+                "
+              >
+                <span class="badge badge-success"> Card On Delivery</span>
               </div>
             </td>
-          </tr>
-          <tr>
-            <td><b>10700</b></td>
-            <td>06 Feb 2023 02:49 PM</td>
-            <td>Sandy Chandiramani</td>
+
             <td>
-              <span class="badge badge-danger">Inprogress</span>
+              <span *ngIf="order?.promo_code_detail?.promo_code_name">{{
+                order?.promo_code_detail?.promo_code_name
+              }}</span>
             </td>
             <td>
-              <span class="badge badge-success">Accepted</span>
-            </td>
-            <td>Al Maya Supermarket</td>
-            <td>00.00</td>
-            <td>39.24</td>
-            <td>0</td>
-            <td>
-              <span class="badge badge-success">Cash</span>
-            </td>
-            <td>0</td>
-            <td>0</td>
-            <td>0</td>
-            <td class="text-end">
-              <div class="dropdown">
-                <button
-                  class="btn btn-icon btn-sm btn-light dropdown-toggle arrow-none"
-                  type="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  <i class="fa-solid fa-ellipsis-vertical"></i>
-                </button>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#">Edit</a></li>
-                  <li><a class="dropdown-item" href="#">View</a></li>
-                  <li><a class="dropdown-item" href="#">Delete</a></li>
-                </ul>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td><b>10700</b></td>
-            <td>06 Feb 2023 02:49 PM</td>
-            <td>Sandy Chandiramani</td>
-            <td>
-              <span class="badge badge-danger">Inprogress</span>
+              {{ order?.order_payment_detail?.promo_payment }}
             </td>
             <td>
-              <span class="badge badge-success">Accepted</span>
+              {{ order?.order_payment_detail?.loyalty_payment }}
             </td>
-            <td>Al Maya Supermarket</td>
-            <td>00.00</td>
-            <td>39.24</td>
-            <td>0</td>
-            <td>
-              <span class="badge badge-success">Cash</span>
-            </td>
-            <td>0</td>
-            <td>0</td>
-            <td>0</td>
-            <td class="text-end">
-              <div class="dropdown">
-                <button
-                  class="btn btn-icon btn-sm btn-light dropdown-toggle arrow-none"
-                  type="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  <i class="fa-solid fa-ellipsis-vertical"></i>
-                </button>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#">Edit</a></li>
-                  <li><a class="dropdown-item" href="#">View</a></li>
-                  <li><a class="dropdown-item" href="#">Delete</a></li>
-                </ul>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td><b>10700</b></td>
-            <td>06 Feb 2023 02:49 PM</td>
-            <td>Sandy Chandiramani</td>
-            <td>
-              <span class="badge badge-danger">Inprogress</span>
-            </td>
-            <td>
-              <span class="badge badge-success">Accepted</span>
-            </td>
-            <td>Al Maya Supermarket</td>
-            <td>00.00</td>
-            <td>39.24</td>
-            <td>0</td>
-            <td>
-              <span class="badge badge-success">Cash</span>
-            </td>
-            <td>0</td>
-            <td>0</td>
-            <td>0</td>
+
             <td class="text-end">
               <div class="dropdown">
                 <button
@@ -495,7 +378,7 @@
           </div>
         </div>
         <div class="col-auto">
-          <ul class="pagination">
+          <!-- <ul class="pagination">
             <li class="page-item">
               <a class="page-link" href="#" aria-label="Previous">
                 <span aria-hidden="true"
@@ -515,6 +398,53 @@
                   ><i class="fa-solid fa-chevron-right"></i
                 ></span>
               </a>
+            </li>
+          </ul> -->
+
+          <ul class="pagination">
+            <li class="page-item" *ngIf="page !== 1">
+              <a class="page-link" (click)="admin_history(page - 1)">
+                <span aria-hidden="true"
+                  ><i class="fa-solid fa-chevron-left"></i></span
+              ></a>
+            </li>
+            <li
+              class="page-item"
+              *ngFor="let index of total_pages"
+              [class.active]="page == index"
+            >
+              <a
+                *ngIf="
+                  index == 1 ||
+                  index == total_page ||
+                  index == page ||
+                  index == page - 1 ||
+                  index == page + 1
+                "
+                (click)="admin_history(index)"
+                class="page-link"
+                >{{ index }}</a
+              >
+              <a
+                *ngIf="
+                  (index == 1 && page !== 1 && page !== 2 && page !== 3) ||
+                  (index == total_page - 1 &&
+                    page !== total_page &&
+                    page !== total_page - 1 &&
+                    page !== total_page - 2)
+                "
+                class="page-link"
+                >...</a
+              >
+            </li>
+            <li
+              class="page-item"
+              *ngIf="page !== total_page && order_list.length !== 0"
+            >
+              <a class="page-link" (click)="admin_history(page + 1)">
+                <span aria-hidden="true"
+                  ><i class="fa-solid fa-chevron-right"></i></span
+              ></a>
             </li>
           </ul>
         </div>
