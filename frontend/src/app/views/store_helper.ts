@@ -13,6 +13,7 @@ import {
   MONTH,
   WEEK,
   DAY,
+  DATE_FORMAT,
   PROMO_FOR_ID,
   PROMO_FOR_STRING,
   PROMO_FOR,
@@ -82,6 +83,8 @@ export class Helper {
   public WEEK: any = WEEK;
   public MONTH: any = MONTH;
   public DAY: any = DAY;
+
+  public DATE_FORMAT: any = DATE_FORMAT;
 
   public IMPORT_STORE_DATA: any = IMPORT_STORE_DATA;
 

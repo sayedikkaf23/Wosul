@@ -1,29 +1,34 @@
 import {
-  ChangeDetectorRef,
   Component,
   OnInit,
-  ViewChild,
   ViewContainerRef,
-  ViewEncapsulation,
-  OnDestroy,
+  ViewChild,
+  ChangeDetectorRef,
 } from '@angular/core';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import jQuery from 'jquery';
+import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import * as moment from 'moment';
+
+import { Helper } from 'src/app/views/store_helper';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { ToastrService } from 'ngx-toastr';
+import { AuthService } from 'src/app/services/auth.service';
 import { OrderService } from 'src/app/services/order.service';
 import { SocketService } from 'src/app/services/socket.service';
-import { Helper } from 'src/app/views/helper';
-import jQuery from 'jquery';
-import * as htmlToImage from 'html-to-image';
-import * as moment from 'moment';
-import { AuthService } from 'src/app/services/auth.service';
-
+import { StoreService } from 'src/app/services/store.service';
 declare var swal: any;
+
+export interface subStitute {
+  main_item_id: Object;
+  sub_item_id: Array<string>;
+  cart_id: Object;
+}
 
 @Component({
   selector: 'app-store-order-list',
   templateUrl: './store-order-list.component.html',
   styleUrls: ['./store-order-list.component.css'],
+  providers: [Helper],
 })
 export class StoreOrderListComponent implements OnInit {
   @ViewChild('order_detail_modal')
@@ -47,10 +52,12 @@ export class StoreOrderListComponent implements OnInit {
   order_detail: any = {};
   admin_detail: any = {};
   order_status: any = 'all';
-  pickup_type: any = 'both';
+  // pickup_type: any = 'both';
   created_by: any = 'both';
   payment_status: any = 'all';
-  order_type: any = 'both';
+  // order_type: any = 'both';
+  order_type: string = '';
+  pickup_type: string = '';
   total_item: number = 0;
   order_total: number = 0;
   product_item_total: number = 0;
@@ -102,6 +109,20 @@ export class StoreOrderListComponent implements OnInit {
   threedigitcurrency = ['OMR', 'BHD', 'KWD'];
   calculatedAmount: any;
 
+  public substitute: subStitute;
+  substitute_item_list: any[];
+  currentItem: any;
+  currentCartId: string;
+  currentItemIndex: any = -1;
+  currentProductIndex: any = -1;
+  payment_mode: string = '';
+  store_id: Object;
+  server_token: String;
+  store_detail: any = {};
+  order_id: Object = null;
+  currency_sign: string = '';
+  is_confirmation_code_required_at_complete_delivery: Boolean = false;
+
   isShowFilters: boolean = false;
 
   constructor(
@@ -109,43 +130,16 @@ export class StoreOrderListComponent implements OnInit {
     public vcr: ViewContainerRef,
     private modalService: NgbModal,
     private orderService: OrderService,
-    private socket: SocketService,
-    private cdr: ChangeDetectorRef,
     public toastr: ToastrService,
-    private authService: AuthService
+    private authService: AuthService,
+    private storeService: StoreService
   ) {}
 
   ngAfterViewInit() {
-    jQuery('#store').chosen();
     jQuery('.chosen-select').chosen({ disable_search: true });
     setTimeout(function () {
       jQuery('.chosen-select').trigger('chosen:updated');
     }, 1000);
-  }
-  capture() {
-    try {
-      this.toastr.success('', 'Please wait...');
-      var order_detail_items = document.getElementById('order_detail_items');
-      order_detail_items.classList.remove('invoice_popup_box', 'scrollbar');
-      htmlToImage
-        .toJpeg(document.getElementById('order-detail-screen-capture'), {
-          quality: 0.95,
-          cacheBust: true,
-        })
-        .then(
-          function (dataUrl) {
-            var img = new Image();
-            img.crossOrigin = 'anonymous';
-            var a = document.createElement('a');
-            a.download = `order-detais-${this.order_detail.unique_id}.jpeg`;
-            a.href = dataUrl;
-            a.click();
-            order_detail_items.classList.add('invoice_popup_box', 'scrollbar');
-          }.bind(this)
-        );
-    } catch (error) {
-      //console.error(error);
-    }
   }
 
   getDeliveryBoy() {
@@ -189,86 +183,112 @@ export class StoreOrderListComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.checkAdminTyp();
-    this.getDeliveryBoy();
-    this.getSettingDetails();
     this.search_field = 'user_detail.first_name';
     this.search_value = '';
-    //        this.start_date = '';
-    //        this.end_date = '';
     this.page = 1;
-    this.timezone = '';
+
+    let token = this.helper.getToken();
+
+    if (!token) {
+      this.helper.router.navigate(['store/logout']);
+    }
+
+    this.substitute = {
+      sub_item_id: null,
+      main_item_id: null,
+      cart_id: null,
+    };
+
     this.helper.message();
+    var store = JSON.parse(localStorage.getItem('store'));
+    if (store !== null) {
+      this.store_id = store._id;
+      this.server_token = store.server_token;
+      this.store_detail = store;
+    }
+
+    if (
+      !JSON.parse(localStorage.getItem('store_document_ulpoaded')) &&
+      JSON.parse(localStorage.getItem('admin_store_document_ulpoaded'))
+    ) {
+      this.helper.router.navigate(['store/upload_document']);
+    }
     this.title = this.helper.title;
     this.button = this.helper.button;
     this.heading_title = this.helper.heading_title;
-    this.ORDER_STATE = this.helper.ORDER_STATE;
     this.DATE_FORMAT = this.helper.DATE_FORMAT;
+    this.ORDER_STATE = this.helper.ORDER_STATE;
     this.status = this.helper.status;
-    this.title = this.helper.title;
     this.order_list = [];
-    this.socket.onEvent('newOrder').subscribe((socket) => {
-      console.log('new order :>> ');
-      this.orderDetail();
-    });
-    this.admin_token = localStorage.getItem('admin_token');
-    // setTimeout(() => {
-    //   this.orderDetail();
-    // }, 500)
+    //this.filter(1);
+    this.orderDetail();
     // this.interval = setInterval(() => {
     //   this.orderDetail();
     // }, this.helper.TIMEOUT.NEW_ORDER_REQUEST);
-    // this.admin_history(1);
-    jQuery(document.body)
-      .find('#store')
-      .on('change', (evnt, res_data) => {
-        console.log('res_data.selected :>> ', res_data.selected);
-        this.ab.store_id = res_data.selected;
-      });
-    this.get_store_list('');
-    jQuery(document.body)
-      .find('#order_status')
-      .on('change', (evnt, res_data) => {
-        console.log('res_data.selected :>> ', res_data.selected);
-        this.order_status = res_data.selected;
-      });
 
-    jQuery(document.body)
-      .find('#pickup_type')
-      .on('change', (evnt, res_data) => {
-        this.pickup_type = res_data.selected;
-      });
-
-    jQuery(document.body)
-      .find('#created_by')
-      .on('change', (evnt, res_data) => {
-        this.created_by = res_data.selected;
-      });
-
-    jQuery(document.body)
-      .find('#order_type')
-      .on('change', (evnt, res_data) => {
-        this.order_type = res_data.selected;
-      });
-
-    jQuery(document.body)
-      .find('#payment_status')
-      .on('change', (evnt, res_data) => {
-        this.payment_status = res_data.selected;
-      });
+    // this.timer = setInterval(()=>{
+    //   this.order_list.forEach((order)=>{
+    //     if(order.order_status == this.ORDER_STATE.OREDER_READY){
+    //       var ct = new Date();
+    //       var updatedAt = new Date(order.updated_at)
+    //       var diff = ct.getTime() - updatedAt.getTime()
+    //       diff = Math.round((diff/ 60000));
+    //       diff = Number(diff.toFixed())
+    //       if(diff <= order.deliver_in){
+    //       if(order.deliver){
+    //           order.deliver = new Date(order.deliver.getTime()-5000)
+    //         }
+    //         else{
+    //           order.deliver = new Date();
+    //           var setmin = order.deliver_in - diff
+    //           order.deliver.setMinutes(setmin, 0);
+    //         }
+    //       }
+    //       else{
+    //         order.deliver = new Date()
+    //         order.deliver = order.deliver.setMinutes(0, 0);
+    //       }
+    //   }
+    //   })
+    // },5000)
+    // timer(e){
+    //   console.log("timer >>>",e)
+    // }
+    this.currentItem = null;
+    this.currentProductIndex = -1;
+    this.currentItemIndex = -1;
+    this.currentCartId = '';
 
     jQuery(document.body)
       .find('#search_field')
       .on('change', (evnt, res_data) => {
         this.search_field = res_data.selected;
       });
+    jQuery(document.body)
+      .find('#payment_mode')
+      .on('change', (evnt, res_data) => {
+        this.payment_mode = res_data.selected;
+      });
+    jQuery(document.body)
+      .find('#order_type')
+      .on('change', (evnt, res_data) => {
+        this.order_type = res_data.selected;
+      });
+    jQuery(document.body)
+      .find('#pickup_type')
+      .on('change', (evnt, res_data) => {
+        this.pickup_type = res_data.selected;
+      });
   }
+
   ngOnDestroy() {
     clearInterval(this.interval);
   }
+
   activeRoute(routename: string): boolean {
     return this.helper.router.url.indexOf(routename) > -1;
   }
+
   changeStore(store_id, order_id) {
     this.myLoading = true;
     console.log('value :>> ', store_id);
@@ -376,12 +396,19 @@ export class StoreOrderListComponent implements OnInit {
     this.reciept_image = files[0];
     console.log('this.reciept_image :>> ', this.reciept_image);
   }
-  orderStatus(data, new_status, url?) {
-    this.myLoading = true;
 
-    url = url ? url : '/api/admin/admin_update_order';
-
-    if (new_status == this.ORDER_STATE.OREDER_READY) {
+  orderStatus(data, new_status) {
+    console.log('data.order_id: >>>>>>', data._id);
+    var store = JSON.parse(localStorage.getItem('store'));
+    if (
+      data.order_type == 7 &&
+      new_status == this.ORDER_STATE.OREDER_READY &&
+      store.is_ask_estimated_time_for_ready_order
+      // data.request_id == null &&
+      // data.order_status === this.ORDER_STATE.STORE_PREPARING_ORDER
+      // && store.is_ask_estimated_time_for_ready_order
+    ) {
+      this.order_id = data._id;
       let checkout_amount = Number(
         prompt('Please Enter Checkout Amount in AED : ')
       );
@@ -398,91 +425,58 @@ export class StoreOrderListComponent implements OnInit {
       while (isNaN(deliver_in)) {
         deliver_in = Number(prompt('Please Enter Delivry Time in Min : '));
       }
-      var fromData = new FormData();
-      fromData.append('reciept', this.reciept_image);
-      fromData.append('store_id', data.store_id);
-      fromData.append('deliver_in', String(deliver_in));
-      fromData.append('order_id', data._id);
-      fromData.append('order_status', new_status);
-      fromData.append('checkout_amount', String(checkout_amount));
-      fromData.append('bill_amount', String(bill_amount));
-      if (deliver_in != 0 && checkout_amount) {
-        this.orderService.changeOrderStatus(fromData).subscribe(
-          (res_data: any) => {
-            this.myLoading = false;
-            if (res_data.success == false) {
-              this.helper.data.storage = {
-                code: res_data.error_code,
-                message: this.helper.ERROR_CODE[res_data.error_code],
-                class: 'alert-danger',
-              };
-              this.helper.message();
-            } else {
-              var index = this.order_list.findIndex((x) => x._id == data._id);
-              this.order_list[index].order_status = data.new_status;
-              this.order_list[index].order_payment_detail.checkout_amount =
-                checkout_amount;
-              // if(data.order_status == this.ORDER_STATE.STORE_ACCEPTED){
-              //     let index = this.helper.router_id.store.new_order_list.findIndex((x)=>x._id == data.order_id);
-              //     if(index !== -1){
-              //         this.helper.router_id.store.new_order_list.splice(index, 1);
-              //     }
-              // }
+      const payload = {
+        store_id: this.store_id,
+        server_token: this.server_token,
+        order_id: data._id,
+        order_status: this.ORDER_STATE.OREDER_READY,
+        deliver_in: deliver_in,
+        checkout_amount: checkout_amount ? checkout_amount : 0,
+      };
+      this.storeService.setOrderStatus(payload).subscribe(
+        (res_data: any) => {
+          this.myLoading = false;
+          if (res_data.success == false) {
+            this.helper.data.storage = {
+              code: res_data.error_code,
+              message: this.helper.ERROR_CODE[res_data.error_code],
+              class: 'alert-danger',
+            };
+            this.helper.message();
+          } else {
+            var index = this.order_list.findIndex(
+              (x) => x._id == data.order_id
+            );
+            this.order_list[index].order_status = data.order_status;
+            if (data.order_status == this.ORDER_STATE.STORE_ACCEPTED) {
+              let index = this.helper.router_id.store.new_order_list.findIndex(
+                (x) => x._id == data.order_id
+              );
+              if (index !== -1) {
+                this.helper.router_id.store.new_order_list.splice(index, 1);
+              }
             }
-          },
-          (error: any) => {
-            this.myLoading = false;
-            this.helper.http_status(error);
           }
-        );
+        },
+        (error: any) => {
+          this.myLoading = false;
+          this.helper.http_status(error);
+        }
+      );
 
-        // this.helper.http.post(url, fromData).subscribe(
-        //   (res_data: any) => {
-        //     this.myLoading = false;
-        //     if (res_data.success == false) {
-        //       this.helper.data.storage = {
-        //         code: res_data.error_code,
-        //         message: this.helper.ERROR_CODE[res_data.error_code],
-        //         class: 'alert-danger',
-        //       };
-        //       this.helper.message();
-        //     } else {
-        //       var index = this.order_list.findIndex((x) => x._id == data._id);
-        //       this.order_list[index].order_status = data.new_status;
-        //       this.order_list[index].order_payment_detail.checkout_amount =
-        //         checkout_amount;
-        //       // if(data.order_status == this.ORDER_STATE.STORE_ACCEPTED){
-        //       //     let index = this.helper.router_id.store.new_order_list.findIndex((x)=>x._id == data.order_id);
-        //       //     if(index !== -1){
-        //       //         this.helper.router_id.store.new_order_list.splice(index, 1);
-        //       //     }
-        //       // }
-        //     }
-        //   },
-        //   (error: any) => {
-        //     this.myLoading = false;
-        //     this.helper.http_status(error);
-        //   }
-        // );
-      } else {
-        this.helper.data.storage = {
-          message: 'Invalid Delivery Time',
-          class: 'alert-danger',
-        };
-        this.helper.message();
-      }
+      //this.modalService.open(this.estimated_time_modal);
     } else {
-      console.log('data: ', data);
-      let payload: any = {
-        store_id: data.store_id,
+      this.myLoading = true;
+      const payload = {
+        store_id: this.store_id,
+        server_token: this.server_token,
         order_id: data._id,
         order_status: new_status,
+        deliver_in: data.deliver_in ? data.deliver_in : null,
+        checkout_amount: data?.order_payment_detail?.checkout_amount,
       };
-      if (new_status === 101) {
-        payload.cancel_reason = prompt('Please provide reason to cancel?');
-        payload.user_id = data.user_id;
-      }
-      this.orderService.changeOrderStatus(payload).subscribe(
+
+      this.storeService.setOrderStatus(payload).subscribe(
         (res_data: any) => {
           this.myLoading = false;
           if (res_data.success == false) {
@@ -495,54 +489,22 @@ export class StoreOrderListComponent implements OnInit {
           } else {
             var index = this.order_list.findIndex((x) => x._id == data._id);
             this.order_list[index].order_status = data.new_status;
-            // if(data.order_status == this.ORDER_STATE.STORE_ACCEPTED){
-            //     let index = this.helper.router_id.store.new_order_list.findIndex((x)=>x._id == data.order_id);
-            //     if(index !== -1){
-            //         this.helper.router_id.store.new_order_list.splice(index, 1);
-            //     }
-            // }
+            if (data.order_status == this.ORDER_STATE.STORE_ACCEPTED) {
+              let index = this.helper.router_id.store.new_order_list.findIndex(
+                (x) => x._id == data.order_id
+              );
+              if (index !== -1) {
+                this.helper.router_id.store.new_order_list.splice(index, 1);
+              }
+            }
           }
-          setTimeout(() => {
-            this.orderDetail();
-          }, 1000);
         },
         (error: any) => {
           this.myLoading = false;
           this.helper.http_status(error);
         }
       );
-      // this.helper.http.post(url, payload).subscribe(
-      //   (res_data: any) => {
-      //     this.myLoading = false;
-      //     if (res_data.success == false) {
-      //       this.helper.data.storage = {
-      //         code: res_data.error_code,
-      //         message: this.helper.ERROR_CODE[res_data.error_code],
-      //         class: 'alert-danger',
-      //       };
-      //       this.helper.message();
-      //     } else {
-      //       var index = this.order_list.findIndex((x) => x._id == data._id);
-      //       this.order_list[index].order_status = data.new_status;
-      //     }
-      //     setTimeout(() => {
-      //       this.orderDetail();
-      //     }, 1000);
-      //   },
-      //   (error: any) => {
-      //     this.myLoading = false;
-      //     this.helper.http_status(error);
-      //   }
-      // );
     }
-
-    // var store = JSON.parse(localStorage.getItem('store'));
-    // if (data.order_type == 7 && data.order_status === this.ORDER_STATE.STORE_PREPARING_ORDER && store.is_ask_estimated_time_for_ready_order) {
-
-    //     this.order_id = data.order_id;
-    //     this.estimated_time_modal.open();
-    // } else {
-    // }
   }
   changeOrderstatus(data, new_status) {
     swal({
@@ -556,11 +518,7 @@ export class StoreOrderListComponent implements OnInit {
     })
       .then((proceed) => {
         if (proceed) {
-          this.orderStatus(
-            data,
-            new_status,
-            '/api/admin/admin_revert_completed_order'
-          );
+          this.orderStatus(data, new_status);
         }
       })
       .catch(swal.noop);
@@ -737,36 +695,26 @@ export class StoreOrderListComponent implements OnInit {
 
   orderDetail() {
     const payload = {
-      order_status: this.order_status,
-      payment_status: this.payment_status,
-      pickup_type: this.pickup_type,
-      created_by: this.created_by,
+      store_id: this.store_id,
+      server_token: this.server_token,
+      payment_mode: this.payment_mode,
       order_type: this.order_type,
+      pickup_type: this.pickup_type,
       search_field: this.search_field,
       search_value: this.search_value,
       page: this.page,
-      admin_type: this.admin_detail.admin_type,
-      main_store_id: this.admin_detail.store_id
-        ? this.admin_detail.store_id
-        : '',
     };
-
-    this.orderService.getOrderList(payload).subscribe(
+    this.storeService.getStoreOrders(payload).subscribe(
       (res_data: any) => {
         this.myLoading = false;
         if (res_data.success == false) {
           this.order_list = [];
-          this.total_page = res_data.pages;
-          this.total_pages = Array(res_data.pages)
-            .fill((x, i) => i)
-            .map((x, i) => i + 1);
         } else {
-          this.timezone = res_data.timezone;
           this.total_page = res_data.pages;
           this.total_pages = Array(res_data.pages)
             .fill((x, i) => i)
             .map((x, i) => i + 1);
-          this.checkIfOrderCanComplete();
+          this.currency_sign = res_data.currency_sign;
           this.order_list.forEach((value, index) => {
             var new_index = res_data.orders.findIndex(
               (x) => x._id == this.order_list[index]._id
@@ -780,10 +728,6 @@ export class StoreOrderListComponent implements OnInit {
                 res_data.orders[new_index].date_time;
               this.order_list[index].deliver_in =
                 res_data.orders[new_index].deliver_in;
-              this.order_list[index].store_detail =
-                res_data.orders[new_index].store_detail;
-              this.order_list[index].order_payment_detail =
-                res_data.orders[new_index].order_payment_detail;
             }
           });
 
@@ -796,11 +740,13 @@ export class StoreOrderListComponent implements OnInit {
               this.order_list.unshift(new_value);
             }
           });
-          this.deliveryTimer();
         }
-        this.cdr.detectChanges();
+        // console.log("detail>>>", res_data.orders)
+        this.deliveryTimer();
+        this.checkIfOrderCanComplete();
       },
       (error: any) => {
+        this.myLoading = false;
         this.helper.http_status(error);
       }
     );
@@ -809,19 +755,16 @@ export class StoreOrderListComponent implements OnInit {
   // order_export_csv
   order_export_csv() {
     const payload = {
-      order_status: this.order_status,
-      payment_status: this.payment_status,
-      pickup_type: this.pickup_type,
-      created_by: this.created_by,
+      store_id: this.store_id,
+      server_token: this.server_token,
+      payment_mode: this.payment_mode,
       order_type: this.order_type,
+      pickup_type: this.pickup_type,
       search_field: this.search_field,
       search_value: this.search_value,
-      admin_type: this.admin_detail.admin_type,
-      main_store_id: this.admin_detail.store_id
-        ? this.admin_detail.store_id
-        : '',
+      page: this.page,
     };
-    this.orderService.getOrderList(payload).subscribe((res_data: any) => {
+    this.storeService.getStoreOrders(payload).subscribe((res_data: any) => {
       var json2csv = require('json2csv').parse;
       console.log('res_data.orders: ', res_data.orders);
       res_data.orders.forEach((order, index) => {
@@ -839,9 +782,12 @@ export class StoreOrderListComponent implements OnInit {
 
         order.user_name =
           order.user_detail.first_name + ' ' + order.user_detail.last_name;
-        order.store_name = order.store_detail.name;
+        // order.store_name = order.store_detail.name;
 
-        order.city_name = order.city_detail.city_name;
+        order.store_name = this.store_detail?.name;
+
+        //order.city_name = order.city_detail.city_name;
+        order.city_name = order?.user_detail?.city;
         if (order.admin_notes) {
           if (order.admin_notes.length != 0) {
             order.admin_notes = order.admin_notes.join();
@@ -1152,6 +1098,49 @@ export class StoreOrderListComponent implements OnInit {
     //     let final_csv: any = csv;
     //     this.helper.downloadFile(final_csv);
     //   });
+  }
+
+  filter(page) {
+    this.myLoading = true;
+    this.page = page;
+    const payload = {
+      store_id: this.store_id,
+      server_token: this.server_token,
+      payment_mode: this.payment_mode,
+      order_type: this.order_type,
+      pickup_type: this.pickup_type,
+      search_field: this.search_field,
+      search_value: this.search_value,
+      page: this.page,
+    };
+    this.storeService.getStoreOrders(payload).subscribe(
+      (res_data: any) => {
+        this.myLoading = false;
+        if (res_data.success == false) {
+          this.order_list = [];
+          this.total_pages = [];
+        } else {
+          this.currency_sign = res_data.currency_sign;
+          this.order_list = res_data.orders;
+          this.total_page = res_data.pages;
+          this.total_pages = Array(res_data.pages)
+            .fill((x, i) => i)
+            .map((x, i) => i + 1);
+          this.is_confirmation_code_required_at_complete_delivery =
+            res_data.is_confirmation_code_required_at_complete_delivery;
+          if (this.order_list.length > 0) {
+            this.order_detail = JSON.parse(JSON.stringify(this.order_list[0]));
+          }
+          this.order_list.forEach((order) => {
+            order.is_show = false;
+          });
+        }
+      },
+      (error: any) => {
+        this.myLoading = false;
+        this.helper.http_status(error);
+      }
+    );
   }
 
   orders_export_excel() {

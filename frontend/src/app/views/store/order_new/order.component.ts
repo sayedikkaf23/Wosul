@@ -215,6 +215,7 @@ export class StoreOrderComponents implements OnInit {
         this.pickup_type = res_data.selected;
       });
   }
+  
   ngOnDestroy() {
     clearInterval(this.interval);
     // clearInterval(this.timer);

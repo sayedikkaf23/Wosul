@@ -1742,11 +1742,11 @@ exports.order_list_search_sort = function (request_data, response_data) {
                           : store.is_show_user_info;
                       orders.forEach((order) => {
                         if (!is_show_user_info) {
-                          let email = order.user_detail.email.split("@");
+                          let email = order.user_detail?.email?.split("@");
                           order.user_detail.phone =
-                            "XXXXXXX" + order.user_detail.phone.slice(6);
+                            "XXXXXXX" + order.user_detail?.phone?.slice(6);
                           order.user_detail.email =
-                            "xxxxxxx@" + email[email.length - 1];
+                            "xxxxxxx@" + email[email?.length - 1];
                           order.user_detail.first_name = Date.now();
                         }
                       });
