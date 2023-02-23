@@ -26,6 +26,7 @@
     "@fingerprintjs/fingerprintjs": "^3.4.0",
     "@metismenu/angular": "^0.0.2",
     "@ng-bootstrap/ng-bootstrap": "^9.1.2",
+    "@ng-select/ng-select": "^4.0.4",
     "@ngui/sortable": "0.4.1",
     "animate.css": "4.1.1",
     "bootstrap": "5.0.1",

@@ -9,6 +9,21 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class AdminLayoutComponent implements OnInit {
   isActive: boolean = false;
+
+  searchOptions = [
+    { id: 1, name: 'option 2' },
+    { id: 2, name: 'option 3' },
+    { id: 3, name: 'option 4' },
+    { id: 4, name: 'option 5' },
+  ];
+
+  reportOptions = [
+    { id: 1, name: 'option 2' },
+    { id: 2, name: 'option 3' },
+    { id: 3, name: 'option 4' },
+    { id: 4, name: 'option 5' },
+  ];
+
   constructor(private router: Router) {}
 
   ngOnInit(): void {

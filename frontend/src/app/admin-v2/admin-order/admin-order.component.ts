@@ -3,7 +3,7 @@ import {
   Component,
   OnInit,
   ViewChild,
-  ViewContainerRef
+  ViewContainerRef,
 } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
@@ -102,6 +102,14 @@ export class AdminOrderComponent implements OnInit {
   calculatedAmount: any;
 
   isShowFilters: boolean = false;
+
+  tableCount = [
+    { id: 1, name: '10' },
+    { id: 2, name: '20' },
+    { id: 3, name: '30' },
+    { id: 4, name: '40' },
+    { id: 5, name: '50' },
+  ];
 
   constructor(
     public helper: Helper,
@@ -1951,5 +1959,4 @@ export class AdminOrderComponent implements OnInit {
   toggleFilter() {
     this.isShowFilters = !this.isShowFilters;
   }
-
 }

@@ -228,7 +228,8 @@ import { StoreOrderListComponent } from './stores-v2/store-order-list/store-orde
 import { AdminLayoutComponent } from './admin-v2/admin-layout/admin-layout.component';
 import { AdminDashboardComponent } from './admin-v2/admin-dashboard/admin-dashboard.component';
 import { AdminOrderComponent } from './admin-v2/admin-order/admin-order.component';
-
+// ng select
+import { NgSelectModule } from '@ng-select/ng-select';
 
 @NgModule({
   declarations: [
@@ -240,7 +241,7 @@ import { AdminOrderComponent } from './admin-v2/admin-order/admin-order.componen
     StoreOrderListComponent,
     AdminLayoutComponent,
     AdminDashboardComponent,
-    AdminOrderComponent
+    AdminOrderComponent,
   ],
   imports: [
     BrowserModule,
@@ -248,6 +249,7 @@ import { AdminOrderComponent } from './admin-v2/admin-order/admin-order.componen
     FormsModule,
     ReactiveFormsModule,
     NgMultiSelectDropDownModule,
+    NgSelectModule,
     UiSwitchModule.forRoot({
       size: 'small',
       color: 'rgb(34, 34, 34)',

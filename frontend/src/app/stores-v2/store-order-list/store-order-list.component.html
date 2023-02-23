@@ -36,7 +36,9 @@
 
         <div class="col-2">
           <label></label>
-          <div class="form-field page-heading-search-field mb-0 min-width border">
+          <div
+            class="form-field page-heading-search-field mb-0 min-width border"
+          >
             <div class="field-icon">
               <input
                 type="text"
@@ -179,13 +181,14 @@
               <div class="filter-item-field ms-2">
                 <label>Show</label>
                 <div>
-                  <select class="form-select form-select-sm form-select-shadow">
-                    <option>10</option>
-                    <option>20</option>
-                    <option>30</option>
-                    <option>40</option>
-                    <option>50</option>
-                  </select>
+                  <ng-select
+                    class="custom"
+                    [items]="tableCount"
+                    bindLabel="name"
+                    placeholder="10"
+                    appendTo="body"
+                  >
+                  </ng-select>
                 </div>
               </div>
             </div>
@@ -410,13 +413,21 @@
           <div class="filter-item-field">
             <label>Show</label>
             <div>
-              <select class="form-select form-select-sm form-select-shadow">
+              <ng-select
+                class="custom"
+                [items]="tableCount"
+                bindLabel="name"
+                placeholder="10"
+                appendTo="body"
+              >
+              </ng-select>
+              <!-- <select class="form-select form-select-sm form-select-shadow">
                 <option>10</option>
                 <option>20</option>
                 <option>30</option>
                 <option>40</option>
                 <option>50</option>
-              </select>
+              </select> -->
             </div>
             <label class="me-0 ms-2">Entries</label>
             <label class="ms-4 me-0">Showing 1 to 25 of 92 entries</label>
