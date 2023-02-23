@@ -1,15 +1,204 @@
 <ng-container>
   <div class="content">
     <div class="page-heading">
-      <div class="row align-items-center justify-content-between">
-        <div class="col-auto">
+      <div class="row align-content-center">
+        <div class="col-1 m-auto">
           <div class="row align-items-center">
             <div class="col-auto">
               <h2>Orders</h2>
             </div>
           </div>
         </div>
-        <div class="col-auto">
+        <div class="col-1">
+          <div>
+            <label>{{ title.search }}</label>
+          </div>
+          <div class="form-field page-heading-search-field mb-0 min-width">
+            <div class="field-icon">
+              <select
+                chosen
+                class="chosen-select"
+                id="search_field"
+                [(ngModel)]="search_field"
+                name="search_field"
+                tabindex="4"
+              >
+                <option value="unique_id">{{ title.id }}</option>
+                <option value="user_detail.first_name">
+                  {{ title.user }}
+                </option>
+                <option value="store_detail.name">
+                  {{ title.store }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-2">
+          <label></label>
+          <div
+            class="form-field page-heading-search-field mb-0 min-width border"
+          >
+            <div class="field-icon">
+              <input
+                type="text"
+                class="form-control form-control-sm form-control-shadow search-box"
+                placeholder="Search..."
+                [(ngModel)]="search_value"
+                #store_open_time="ngModel"
+              />
+              <div class="icon search-icon">
+                <i class="fa-solid fa-magnifying-glass"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-1">
+          <div>
+            <label>{{ title.status }}</label>
+          </div>
+          <div class="form-field page-heading-search-field mb-0 min-width">
+            <div class="field-icon">
+              <select
+                chosen
+                class="chosen-select"
+                id="order_status"
+                [(ngModel)]="order_status"
+                name="order_status"
+                tabindex="4"
+              >
+                <option value="all">{{ title.all }}</option>
+                <option
+                  value="{{ helper.ORDER_STATE.WAITING_FOR_ACCEPT_STORE }}"
+                >
+                  {{ helper.status.waiting_for_accept }}
+                </option>
+                <option value="{{ helper.ORDER_STATE.STORE_ACCEPTED }}">
+                  {{ helper.status.accepted }}
+                </option>
+                <option value="{{ helper.ORDER_STATE.STORE_PREPARING_ORDER }}">
+                  {{ helper.status.start_preparing_order }}
+                </option>
+                <option value="{{ helper.ORDER_STATE.OREDER_READY }}">
+                  {{ helper.status.order_ready }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-1">
+          <div>
+            <label>{{ title.payment_mode }}</label>
+          </div>
+          <div class="form-field page-heading-search-field mb-0 min-width">
+            <div class="field-icon">
+              <select
+                chosen
+                class="chosen-select"
+                id="payment_mode"
+                [(ngModel)]="payment_mode"
+                name="payment_mode"
+                tabindex="4"
+              >
+                <option value="">{{ title.both }}</option>
+                <option value="1">{{ title.cash }}</option>
+                <option value="2">{{ title.card }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-1">
+          <div>
+            <label>{{ title.pickup }}</label>
+          </div>
+          <div class="form-field page-heading-search-field mb-0 min-width">
+            <div class="field-icon">
+              <select
+                chosen
+                class="chosen-select"
+                id="pickup_type"
+                [(ngModel)]="pickup_type"
+                name="pickup_type"
+                tabindex="4"
+              >
+                <option value="both">{{ title.both }}</option>
+                <option value="true">{{ title.user }}</option>
+                <option value="false">{{ title.provider }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-1">
+          <div>
+            <label>{{ title.order_type }}</label>
+          </div>
+          <div class="form-field page-heading-search-field mb-0 min-width">
+            <div class="field-icon">
+              <select
+                chosen
+                class="chosen-select"
+                id="order_type"
+                [(ngModel)]="order_type"
+                name="order_type"
+                tabindex="4"
+              >
+                <option value="both">{{ title.both }}</option>
+                <option value="false">{{ title.asap }}</option>
+                <option value="true">{{ title.schedule }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-1">
+          <div>
+            <label>{{ title.created_by }}</label>
+          </div>
+          <div class="form-field page-heading-search-field mb-0 min-width">
+            <div class="field-icon">
+              <select
+                chosen
+                class="chosen-select"
+                id="created_by"
+                [(ngModel)]="created_by"
+                name="created_by"
+                tabindex="4"
+              >
+                <option value="both">{{ title.both }}</option>
+                <option value="{{ helper.ADMIN_DATA_ID.USER }}">
+                  {{ title.user }}
+                </option>
+                <option value="{{ helper.ADMIN_DATA_ID.STORE }}">
+                  {{ title.store }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-1">
+          <div>
+            <label></label>
+          </div>
+          <div class="dropdown filter-dropdown">
+            <button
+              type="button"
+              class="btn btn-sm btn-icon btn-light-primary"
+              aria-expanded="false"
+              data-bs-auto-close="outside"
+              (click)="admin_history(1)"
+            >
+              <i class="fa-solid fa-filter"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="col-2 d-flex justify-content-end">
           <div class="row align-items-center">
             <div class="col-auto" (click)="order_export_csv(1)">
               <a class="btn btn-sm btn-light-primary">
@@ -44,89 +233,6 @@
                 </svg>
                 CSV
               </a>
-            </div>
-            <div class="col-auto">
-              <div class="form-field page-heading-search-field mb-0">
-                <div class="field-icon">
-                  <input
-                    type="text"
-                    class="form-control form-control-sm form-control-shadow"
-                    placeholder="Search..."
-                  />
-                  <div class="icon">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-auto">
-              <div class="dropdown filter-dropdown">
-                <button
-                  type="button"
-                  class="btn btn-sm btn-icon btn-light-primary"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                  data-bs-auto-close="outside"
-                  (click)="toggleFilter()"
-                >
-                  <i class="fa-solid fa-filter"></i>
-                </button>
-                <div class="dropdown-menu p-3 w-365" *ngIf="isShowFilters">
-                  <form>
-                    <div class="row g-3">
-                      <div class="col-6">
-                        <div class="form-field">
-                          <label for="" class="form-label">ID</label>
-                          <input
-                            type="text"
-                            class="form-control form-control-sm form-control-solid"
-                            id=""
-                            placeholder=""
-                          />
-                        </div>
-                      </div>
-                      <div class="col-6">
-                        <div class="form-field">
-                          <label for="" class="form-label">Start Date </label>
-                          <input
-                            type="date"
-                            class="form-control form-control-sm form-control-solid"
-                            id=""
-                            placeholder=""
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row g-3">
-                      <div class="col-6">
-                        <div class="form-field">
-                          <label for="" class="form-label">Final Amount </label>
-                          <input
-                            type="text"
-                            class="form-control form-control-sm form-control-solid"
-                            id=""
-                            placeholder=""
-                          />
-                        </div>
-                      </div>
-                      <div class="col-6">
-                        <div class="form-field">
-                          <label for="" class="form-label">Status</label>
-                          <select
-                            class="form-select form-select-sm form-select-solid"
-                          >
-                            <option>Accepted</option>
-                            <option>Inactive</option>
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-                    <button type="submit" class="btn btn-sm btn-primary w-100">
-                      Filter
-                    </button>
-                  </form>
-                </div>
-              </div>
             </div>
             <div class="col-auto">
               <div class="filter-item-field ms-2">

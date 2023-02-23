@@ -1,15 +1,145 @@
 <ng-container>
   <div class="content">
     <div class="page-heading">
-      <div class="row align-items-center justify-content-between">
-        <div class="col-auto">
+      <div class="row align-content-center">
+        <div class="col-1 m-auto">
           <div class="row align-items-center">
             <div class="col-auto">
               <h2>Orders</h2>
             </div>
           </div>
         </div>
-        <div class="col-auto">
+        <div class="col-2">
+          <div>
+            <label>{{ title.search }}</label>
+          </div>
+          <div class="form-field page-heading-search-field mb-0 min-width">
+            <div class="field-icon">
+              <select
+                chosen
+                class="chosen-select"
+                id="search_field"
+                [(ngModel)]="search_field"
+                name="search_field"
+                tabindex="4"
+              >
+                <option value="user_detail.first_name">
+                  {{ title.filter_user }}
+                </option>
+                <option value="order_details.product_name">
+                  {{ title.filter_product }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-2">
+          <label></label>
+          <div class="form-field page-heading-search-field mb-0 min-width border">
+            <div class="field-icon">
+              <input
+                type="text"
+                class="form-control form-control-sm form-control-shadow search-box"
+                placeholder="Search..."
+                [(ngModel)]="search_value"
+                #store_open_time="ngModel"
+              />
+              <div class="icon search-icon">
+                <i class="fa-solid fa-magnifying-glass"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-1">
+          <div>
+            <label>{{ title.payment_mode }}</label>
+          </div>
+          <div class="form-field page-heading-search-field mb-0 min-width">
+            <div class="field-icon">
+              <select
+                chosen
+                class="chosen-select"
+                id="payment_mode"
+                [(ngModel)]="payment_mode"
+                name="payment_mode"
+                tabindex="4"
+              >
+                <option value="">{{ title.both }}</option>
+                <option value="1">{{ title.cash }}</option>
+                <option value="2">{{ title.card }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-1">
+          <div>
+            <label>{{ title.order_type }}</label>
+          </div>
+          <div class="form-field page-heading-search-field mb-0 min-width">
+            <div class="field-icon">
+              <select
+                chosen
+                class="chosen-select"
+                id="order_type"
+                [(ngModel)]="order_type"
+                name="order_type"
+                tabindex="4"
+              >
+                <option value="">{{ title.both }}</option>
+                <option value="{{ helper.ADMIN_DATA_ID.USER }}">
+                  {{ title.user }}
+                </option>
+                <option value="{{ helper.ADMIN_DATA_ID.STORE }}">
+                  {{ title.store }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-1">
+          <div>
+            <label>{{ title.pickup }}</label>
+          </div>
+          <div class="form-field page-heading-search-field mb-0 min-width">
+            <div class="field-icon">
+              <select
+                chosen
+                class="chosen-select"
+                id="pickup_type"
+                [(ngModel)]="pickup_type"
+                name="pickup_type"
+                tabindex="4"
+              >
+                <option value="">{{ title.both }}</option>
+                <option value="1">{{ title.user }}</option>
+                <option value="2">{{ title.delivery_man }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-1">
+          <div>
+            <label></label>
+          </div>
+          <div class="dropdown filter-dropdown">
+            <button
+              type="button"
+              class="btn btn-sm btn-icon btn-light-primary"
+              aria-expanded="false"
+              data-bs-auto-close="outside"
+              (click)="filter(1)"
+            >
+              <i class="fa-solid fa-filter"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="col-3 d-flex justify-content-end">
           <div class="row align-items-center">
             <div class="col-auto" (click)="order_export_csv(1)">
               <a class="btn btn-sm btn-light-primary">
@@ -46,89 +176,6 @@
               </a>
             </div>
             <div class="col-auto">
-              <div class="form-field page-heading-search-field mb-0">
-                <div class="field-icon">
-                  <input
-                    type="text"
-                    class="form-control form-control-sm form-control-shadow"
-                    placeholder="Search..."
-                  />
-                  <div class="icon">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-auto">
-              <div class="dropdown filter-dropdown">
-                <button
-                  type="button"
-                  class="btn btn-sm btn-icon btn-light-primary"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                  data-bs-auto-close="outside"
-                  (click)="toggleFilter()"
-                >
-                  <i class="fa-solid fa-filter"></i>
-                </button>
-                <div class="dropdown-menu p-3 w-365" *ngIf="isShowFilters">
-                  <form>
-                    <div class="row g-3">
-                      <div class="col-6">
-                        <div class="form-field">
-                          <label for="" class="form-label">ID</label>
-                          <input
-                            type="text"
-                            class="form-control form-control-sm form-control-solid"
-                            id=""
-                            placeholder=""
-                          />
-                        </div>
-                      </div>
-                      <div class="col-6">
-                        <div class="form-field">
-                          <label for="" class="form-label">Start Date </label>
-                          <input
-                            type="date"
-                            class="form-control form-control-sm form-control-solid"
-                            id=""
-                            placeholder=""
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row g-3">
-                      <div class="col-6">
-                        <div class="form-field">
-                          <label for="" class="form-label">Final Amount </label>
-                          <input
-                            type="text"
-                            class="form-control form-control-sm form-control-solid"
-                            id=""
-                            placeholder=""
-                          />
-                        </div>
-                      </div>
-                      <div class="col-6">
-                        <div class="form-field">
-                          <label for="" class="form-label">Status</label>
-                          <select
-                            class="form-select form-select-sm form-select-solid"
-                          >
-                            <option>Accepted</option>
-                            <option>Inactive</option>
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-                    <button type="submit" class="btn btn-sm btn-primary w-100">
-                      Filter
-                    </button>
-                  </form>
-                </div>
-              </div>
-            </div>
-            <div class="col-auto">
               <div class="filter-item-field ms-2">
                 <label>Show</label>
                 <div>
@@ -145,7 +192,6 @@
           </div>
         </div>
       </div>
-      
     </div>
     <div class="table-responsive">
       <table class="table table-list-data table-hover">
