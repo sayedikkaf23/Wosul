@@ -44,6 +44,16 @@ export class AdminLayoutComponent implements OnInit {
     this.isActive = !this.isActive;
   }
 
+  order() {
+    this.isActive = !this.isActive;
+    this.router.navigate(['admin/orders']);
+  }
+
+  history() {
+    this.isActive = !this.isActive;
+    this.router.navigate(['admin/history']);
+  }
+
   logout() {
     localStorage.clear();
     this.router.navigate(['admin/login']);

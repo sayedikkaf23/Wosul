@@ -2,7 +2,7 @@
   <div class="content">
     <div class="page-heading">
       <div class="row align-content-center">
-        <div class="col-1 m-auto">
+        <div class="col-1">
           <div class="row align-items-center">
             <div class="col-auto">
               <h2>Orders</h2>
@@ -54,7 +54,7 @@
           </div>
         </div>
 
-        <div class="col-1">
+        <!-- <div class="col-1">
           <div>
             <label>{{ title.payment_mode }}</label>
           </div>
@@ -122,7 +122,7 @@
               </select>
             </div>
           </div>
-        </div>
+        </div> -->
 
         <div class="col-1">
           <div>
@@ -141,7 +141,7 @@
           </div>
         </div>
 
-        <div class="col-3 d-flex justify-content-end">
+        <div class="col-3 ms-auto d-flex justify-content-end">
           <div class="row align-items-center">
             <div class="col-auto" (click)="order_export_csv(1)">
               <a class="btn btn-sm btn-light-primary">
@@ -178,7 +178,7 @@
               </a>
             </div>
             <div class="col-auto">
-              <div class="filter-item-field ms-2">
+              <!-- <div class="filter-item-field ms-2">
                 <label>Show</label>
                 <div>
                   <ng-select
@@ -190,7 +190,7 @@
                   >
                   </ng-select>
                 </div>
-              </div>
+              </div> -->
             </div>
           </div>
         </div>
@@ -201,19 +201,19 @@
         <thead class="bg-light">
           <tr>
             <th scope="col"><b>ID</b></th>
-            <th scope="col"><b>Start Date</b></th>
-            <th scope="col"><b>User</b></th>
+            <th scope="col"><b>Date</b></th>
+            <!-- <th scope="col"><b>User</b></th> -->
             <th scope="col"><b>Update Status</b></th>
             <th scope="col"><b>Status</b></th>
             <th scope="col"><b>Store</b></th>
-            <th scope="col"><b>Bill Amount</b></th>
-            <th scope="col"><b>Final Amount</b></th>
+            <!-- <th scope="col"><b>Bill Amount</b></th>
+            <th scope="col"><b>Final Amount</b></th> -->
             <th scope="col"><b>Checkout Amount</b></th>
-            <th scope="col"><b>Payment By</b></th>
-            <th scope="col"><b>Promo</b></th>
+            <th scope="col"><b>Payment Mode</b></th>
+            <!-- <th scope="col"><b>Promo</b></th>
             <th scope="col"><b>Promo Value</b></th>
             <th scope="col"><b>Loyalty Payment</b></th>
-            <th scope="col" class="text-end"><b>Action</b></th>
+            <th scope="col" class="text-end"><b>Action</b></th> -->
           </tr>
         </thead>
         <tbody>
@@ -223,7 +223,7 @@
             (click)="get_order_detail(index)"
           >
             <td>
-              <b>{{ order.unique_id }}</b>
+              <b>{{ index + 1 }}</b>
             </td>
             <td *ngIf="order.is_schedule_order == false">
               {{ order.created_at | date : DATE_FORMAT.DD_MMM_YYYY_HH_MM_A }}
@@ -237,10 +237,10 @@
               {{ order.schedule_order_start_at }}
             </td>
 
-            <td>
+            <!-- <td>
               {{ order.user_detail.first_name }}
               {{ order.user_detail.last_name }}
-            </td>
+            </td> -->
 
             <td *ngIf="order.order_status == 3" class="cursor-pointer">
               <div
@@ -332,14 +332,14 @@
             <td>
               <span *ngIf="store_detail">{{ store_detail?.name }}</span>
             </td>
-            <td>
+            <!-- <td>
               {{ order.order_payment_detail.bill_amount | number : "2.2-2" }}
             </td>
             <td>
               {{
                 order.order_payment_detail.user_pay_payment | number : "2.2-2"
               }}
-            </td>
+            </td> -->
             <td>{{ order.order_payment_detail.checkout_amount }}</td>
 
             <td [ngSwitch]="order.order_payment_detail.is_payment_mode_cash">
@@ -374,7 +374,7 @@
               </div>
             </td>
 
-            <td>
+            <!-- <td>
               <span *ngIf="order?.promo_code_detail?.promo_code_name">{{
                 order?.promo_code_detail?.promo_code_name
               }}</span>
@@ -402,7 +402,7 @@
                   <li><a class="dropdown-item" href="#">Delete</a></li>
                 </ul>
               </div>
-            </td>
+            </td> -->
           </tr>
         </tbody>
       </table>
@@ -410,7 +410,7 @@
     <div class="data-footer">
       <div class="row align-items-center justify-content-between">
         <div class="col-auto">
-          <div class="filter-item-field">
+          <!-- <div class="filter-item-field">
             <label>Show</label>
             <div>
               <ng-select
@@ -421,17 +421,10 @@
                 appendTo="body"
               >
               </ng-select>
-              <!-- <select class="form-select form-select-sm form-select-shadow">
-                <option>10</option>
-                <option>20</option>
-                <option>30</option>
-                <option>40</option>
-                <option>50</option>
-              </select> -->
             </div>
             <label class="me-0 ms-2">Entries</label>
             <label class="ms-4 me-0">Showing 1 to 25 of 92 entries</label>
-          </div>
+          </div> -->
         </div>
         <div class="col-auto">
           <!-- <ul class="pagination">
@@ -457,7 +450,7 @@
             </li>
           </ul> -->
 
-          <ul class="pagination">
+          <ul class="pagination cursor-pointer">
             <li class="page-item" *ngIf="page !== 1">
               <a class="page-link" (click)="admin_history(page - 1)">
                 <span aria-hidden="true"

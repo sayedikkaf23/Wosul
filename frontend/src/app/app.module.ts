@@ -222,12 +222,14 @@ import { environment } from '../environments/environment';
 import { SocketService } from './services/socket.service';
 import { FtpServerComponent } from './views/admin/ftp_server/ftp_server.component';
 import { TokenInterceptor } from './services/token.interceptor';
+// store and admin new layouts
 import { CreateOrderComponent } from './stores-v2/create-order/create-order.component';
 import { StoreLayoutComponent } from './stores-v2/store-layout/store-layout.component';
 import { StoreOrderListComponent } from './stores-v2/store-order-list/store-order-list.component';
 import { AdminLayoutComponent } from './admin-v2/admin-layout/admin-layout.component';
 import { AdminDashboardComponent } from './admin-v2/admin-dashboard/admin-dashboard.component';
 import { AdminOrderComponent } from './admin-v2/admin-order/admin-order.component';
+import { AdminHistoryComponent } from './admin-v2/admin-history/admin-history.component';
 // ng select
 import { NgSelectModule } from '@ng-select/ng-select';
 
@@ -242,6 +244,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
     AdminLayoutComponent,
     AdminDashboardComponent,
     AdminOrderComponent,
+    AdminHistoryComponent,
   ],
   imports: [
     BrowserModule,

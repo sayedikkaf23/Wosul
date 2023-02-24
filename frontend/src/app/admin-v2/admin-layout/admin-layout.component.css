@@ -2,12 +2,16 @@
 @import "../../../assets/css/style.css";
 @import "../../../assets/css/theme.css";
 
-.ng-select.test-css .ng-select-single .ng-select-container .ng-value-container {
-  padding-left: 30px;
-}
-
 .ng-select.ng-select-single .ng-select-container {
   background-color: #f4f6fb;
   border-color: #f4f6fb;
   border-radius: 8px;
+}
+
+.ng-select .ng-select-container .ng-value-container .ng-placeholder {
+  padding-left: 20px;
+}
+
+.ng-select.ng-select-single .ng-select-container .ng-value-container .ng-value {
+  padding-left: 20px;
 }

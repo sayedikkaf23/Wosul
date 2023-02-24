@@ -20,4 +20,8 @@ export class StoreService {
   setOrderStatus(payload) {
     return this.http.post(`${this.url}/api/store/set_order_status`, payload);
   }
+
+  storeHistory(payload) {
+    return this.http.post(`${this.url}/api/admin/history_v2`, payload);
+  }
 }

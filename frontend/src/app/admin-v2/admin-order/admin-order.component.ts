@@ -103,6 +103,8 @@ export class AdminOrderComponent implements OnInit {
 
   isShowFilters: boolean = false;
 
+  selectedCar: any;
+
   tableCount = [
     { id: 1, name: '10' },
     { id: 2, name: '20' },
@@ -366,21 +368,8 @@ export class AdminOrderComponent implements OnInit {
           console.log('data :>> ', data);
         }
       });
-    // this.helper.http
-    //   .post('/admin/check_auth', {
-    //     admin_id: admin_id,
-    //     admin_token: admin_token,
-    //   })
-    //   .subscribe((data: any) => {
-    //     if (data.success) {
-    //       this.admin_detail = data.admin;
-    //       this.orderDetail();
-    //       this.admin_history(1);
-    //     } else {
-    //       console.log('data :>> ', data);
-    //     }
-    //   });
   }
+
   image_update($event) {
     const files = $event.target.files || $event.srcElement.files;
     this.reciept_image = files[0];
@@ -555,25 +544,27 @@ export class AdminOrderComponent implements OnInit {
     // }
   }
   changeOrderstatus(data, new_status) {
-    swal({
-      title: 'Are you sure?',
-      text: 'You know what you are doing, Right ?',
-      type: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, Update it!',
-    })
-      .then((proceed) => {
-        if (proceed) {
-          this.orderStatus(
-            data,
-            new_status,
-            '/api/admin/admin_revert_completed_order'
-          );
-        }
+    if (new_status) {
+      swal({
+        title: 'Are you sure?',
+        text: 'You know what you are doing, Right ?',
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, Update it!',
       })
-      .catch(swal.noop);
+        .then((proceed) => {
+          if (proceed) {
+            this.orderStatus(
+              data,
+              new_status,
+              '/api/admin/admin_revert_completed_order'
+            );
+          }
+        })
+        .catch(swal.noop);
+    }
   }
 
   admin_history(page) {
@@ -626,54 +617,6 @@ export class AdminOrderComponent implements OnInit {
         this.helper.http_status(error);
       }
     );
-
-    // this.helper.http
-    //   .post('/admin/orders_list', {
-    //     order_status: this.order_status,
-    //     payment_status: this.payment_status,
-    //     pickup_type: this.pickup_type,
-    //     created_by: this.created_by,
-    //     order_type: this.order_type,
-    //     search_field: this.search_field,
-    //     search_value: this.search_value,
-    //     page: this.page,
-    //     admin_type: this.admin_detail.admin_type,
-    //     main_store_id: this.admin_detail.store_id
-    //       ? this.admin_detail.store_id
-    //       : '',
-    //   })
-    //   .subscribe(
-    //     (res_data: any) => {
-    //       this.myLoading = false;
-    //       if (res_data.success == false) {
-    //         this.order_list = [];
-    //         this.total_pages = [];
-    //       } else {
-    //         this.timezone = res_data.timezone;
-    //         this.order_list = res_data.orders;
-    //         console.log(this.order_list);
-    //         this.vehicle_list = res_data.vehicles;
-    //         this.checkIfOrderCanComplete();
-    //         this.order_list.forEach((element) => {
-    //           console.log('order: ', element.order_status);
-    //         });
-    //         this.total_page = res_data.pages;
-    //         this.total_pages = Array(res_data.pages)
-    //           .fill((x, i) => i)
-    //           .map((x, i) => i + 1);
-    //         if (this.order_list.length > 0) {
-    //           this.order_detail = this.order_list[0];
-    //           this.userId = this.order_list[0]?.user_id;
-    //           this.isOnlinePaymentPaid =
-    //             this.order_list[0]?.order_payment_detail?.is_payment_mode_online_payment;
-    //         }
-    //       }
-    //     },
-    //     (error: any) => {
-    //       this.myLoading = false;
-    //       this.helper.http_status(error);
-    //     }
-    //   );
   }
 
   checkIfOrderCanComplete() {
@@ -1957,6 +1900,10 @@ export class AdminOrderComponent implements OnInit {
   }
 
   toggleFilter() {
+    this.isShowFilters = !this.isShowFilters;
+  }
+
+  toggleDp() {
     this.isShowFilters = !this.isShowFilters;
   }
 }

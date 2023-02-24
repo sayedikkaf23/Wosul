@@ -191,7 +191,7 @@
               class="btn btn-sm btn-icon btn-light-primary"
               aria-expanded="false"
               data-bs-auto-close="outside"
-              (click)="admin_history(1)"
+              (click)="store_history(1)"
             >
               <i class="fa-solid fa-filter"></i>
             </button>
@@ -200,7 +200,7 @@
 
         <div class="col-2 d-flex justify-content-end ms-auto">
           <div class="row align-items-center">
-            <div class="col-auto" (click)="order_export_csv(1)">
+            <div class="col-auto" (click)="history_export_csv(1)">
               <a class="btn btn-sm btn-light-primary">
                 <svg
                   width="15"
@@ -262,7 +262,7 @@
             <th scope="col"><b>ID</b></th>
             <th scope="col"><b>Date</b></th>
             <!-- <th scope="col"><b>User</b></th> -->
-            <th scope="col"><b>Update Status</b></th>
+            <!-- <th scope="col"><b>Update Status</b></th> -->
             <th scope="col"><b>Status</b></th>
             <th scope="col"><b>Change Status</b></th>
             <th scope="col"><b>Store</b></th>
@@ -282,113 +282,56 @@
             [class.selected_tr]="order._id == order_detail._id"
             (click)="get_order_detail(index)"
           >
+            <td>  <b>{{ index + 1 }}</b></td>
             <td>
-              <b>{{ index + 1 }}</b>
+              {{ order.completed_at | date : "d MMM yyyy, h:mm a" }}
             </td>
-            <td *ngIf="order.is_schedule_order == false">
-              {{ order.created_at | date : DATE_FORMAT.DD_MMM_YYYY_HH_MM_A }}
-            </td>
-            <td
-              *ngIf="
-                order.is_schedule_order == true &&
-                order.schedule_order_start_at !== null
-              "
-            >
-              {{ order.schedule_order_start_at }}
-            </td>
-
             <!-- <td>
               {{ order.user_detail.first_name }}
               {{ order.user_detail.last_name }}
             </td> -->
-
-            <td *ngIf="order.order_status == 3" class="cursor-pointer">
-              <div
-                (click)="
-                  changeOrderstatus(order, ORDER_STATE.STORE_PREPARING_ORDER)
-                "
-              >
-                <span class="badge badge-danger">{{
-                  status.start_preparing_order1
+            <td [ngSwitch]="order.order_status">
+              <div *ngSwitchCase="ORDER_STATE.STORE_REJECTED">
+                <span class="badge badge-success">{{ status.rejected1 }}</span>
+              </div>
+              <div *ngSwitchCase="ORDER_STATE.STORE_CANCELLED">
+                <span class="badge badge-success">{{ status.cancelled1 }}</span>
+              </div>
+              <div *ngSwitchCase="ORDER_STATE.NO_DELIVERY_MAN_FOUND">
+                <span class="badge badge-success">{{
+                  status.no_delivery_man_found1
                 }}</span>
+              </div>
+              <div *ngSwitchCase="ORDER_STATE.DELIVERY_MAN_REJECTED">
+                <span class="badge badge-success">{{
+                  status.delivery_man_rejected1
+                }}</span>
+              </div>
+              <div *ngSwitchCase="ORDER_STATE.DELIVERY_MAN_CANCELLED">
+                <span class="badge badge-success">{{
+                  status.delivery_man_cancelled1
+                }}</span>
+              </div>
+              <div *ngSwitchCase="ORDER_STATE.CANCELED_BY_USER">
+                <span class="badge badge-danger">{{
+                  status.user_cancelled
+                }}</span>
+              </div>
+              <div *ngSwitchCase="ORDER_STATE.DELIVERY_MAN_COMPLETE_DELIVERY">
+                <span class="badge badge-success">{{
+                  status.order_delivered
+                }}</span>
+              </div>
+              <div *ngSwitchCase="ORDER_STATE.ORDER_COMPLETED">
+                <span class="badge badge-success">{{ status.completed }}</span>
               </div>
             </td>
-
-            <td *ngIf="order.order_status == 5" class="cursor-pointer">
-              <div (click)="changeOrderstatus(order, ORDER_STATE.OREDER_READY)">
-                <span class="badge badge-danger">{{
-                  status.order_ready1
-                }}</span>
-              </div>
-            </td>
-
-            <td *ngIf="order.order_status == 7" class="cursor-pointer">
-              <div>
-                <span class="badge badge-danger">{{
-                  status.delivered_ordered1
-                }}</span>
-              </div>
-            </td>
-
-            <!-- <td [ngSwitch]="order.order_status">
-              <div
-                *ngSwitchCase="ORDER_STATE.WAITING_FOR_ACCEPT_STORE"
-                (click)="
-                  updateOrderStatus(order, ORDER_STATE.WAITING_FOR_ACCEPT_STORE)
-                "
-              >
-                <span class="badge badge-danger">{{
-                  status.waiting_for_accept1
-                }}</span>
-              </div>
-              <div
-                *ngSwitchCase="ORDER_STATE.STORE_ACCEPTED"
-                (click)="updateOrderStatus(order, ORDER_STATE.STORE_ACCEPTED)"
-                u
-              >
-                <span class="badge badge-success">{{ status.accepted1 }}</span>
-              </div>
-              <div
-                *ngSwitchCase="ORDER_STATE.STORE_PREPARING_ORDER"
-                (click)="
-                  updateOrderStatus(order, ORDER_STATE.STORE_PREPARING_ORDER)
-                "
-              >
-                <span class="badge badge-danger">{{
-                  status.start_preparing_order1
-                }}</span>
-              </div>
-              <div
-                *ngSwitchCase="ORDER_STATE.OREDER_READY"
-                (click)="updateOrderStatus(order, ORDER_STATE.OREDER_READY)"
-              >
-                <span class="badge badge-danger">{{
-                  status.order_ready1
-                }}</span>
+            <!-- <td>
+              <div *ngIf="order.provider_detail">
+                {{ order.provider_detail.first_name }}
+                {{ order.provider_detail.last_name }}
               </div>
             </td> -->
-
-            <td [ngSwitch]="order.order_status">
-              <div *ngSwitchCase="ORDER_STATE.WAITING_FOR_ACCEPT_STORE">
-                <span class="badge badge-success">{{
-                  status.waiting_for_accept1
-                }}</span>
-              </div>
-              <div *ngSwitchCase="ORDER_STATE.STORE_ACCEPTED">
-                <span class="badge badge-success">{{ status.accepted1 }}</span>
-              </div>
-              <div *ngSwitchCase="ORDER_STATE.STORE_PREPARING_ORDER">
-                <span class="badge badge-success">{{
-                  status.start_preparing_order1
-                }}</span>
-              </div>
-              <div *ngSwitchCase="ORDER_STATE.OREDER_READY">
-                <span class="badge badge-success">{{
-                  status.order_ready1
-                }}</span>
-              </div>
-            </td>
-
             <td>
               <ng-select
                 placeholder="Action"
@@ -410,22 +353,13 @@
                 }}</ng-option>
               </ng-select>
             </td>
-
             <td>
               <span *ngIf="order.store_detail">{{
                 order.store_detail.name
               }}</span>
             </td>
-            <!-- <td>
-              {{ order.order_payment_detail.bill_amount | number : "2.2-2" }}
-            </td>
-            <td>
-              {{
-                order.order_payment_detail.user_pay_payment | number : "2.2-2"
-              }}
-            </td> -->
-            <td>{{ order.order_payment_detail.checkout_amount }}</td>
 
+            <td>{{ order.order_payment_detail.checkout_amount }}</td>
             <td [ngSwitch]="order.order_payment_detail.is_payment_mode_cash">
               <div *ngIf="!order.order_payment_detail.is_paid_from_wallet">
                 <div *ngSwitchCase="true">
@@ -433,7 +367,7 @@
                 </div>
                 <div *ngSwitchCase="false">
                   <span
-                    class="badge badge-danger"
+                    class="badge badge-success"
                     *ngIf="order.payment_gateway_detail.length > 0"
                     >{{ order.payment_gateway_detail[0].name }}
                   </span>
@@ -454,39 +388,9 @@
                   order.order_payment_detail.is_payment_mode_card_on_delivery
                 "
               >
-                <span class="badge badge-success"> Card On Delivery</span>
+                <span class="label label-success"> Card On Delivery</span>
               </div>
             </td>
-
-            <!-- <td>
-              <span *ngIf="order?.promo_code_detail?.promo_code_name">{{
-                order?.promo_code_detail?.promo_code_name
-              }}</span>
-            </td>
-            <td>
-              {{ order?.order_payment_detail?.promo_payment }}
-            </td>
-            <td>
-              {{ order?.order_payment_detail?.loyalty_payment }}
-            </td>
-
-            <td class="text-end">
-              <div class="dropdown">
-                <button
-                  class="btn btn-icon btn-sm btn-light dropdown-toggle arrow-none"
-                  type="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  <i class="fa-solid fa-ellipsis-vertical"></i>
-                </button>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#">Edit</a></li>
-                  <li><a class="dropdown-item" href="#">View</a></li>
-                  <li><a class="dropdown-item" href="#">Delete</a></li>
-                </ul>
-              </div>
-            </td> -->
           </tr>
         </tbody>
       </table>
@@ -513,7 +417,7 @@
         <div class="col-auto">
           <ul class="pagination cursor-pointer">
             <li class="page-item" *ngIf="page !== 1">
-              <a class="page-link" (click)="admin_history(page - 1)">
+              <a class="page-link" (click)="store_history(page - 1)">
                 <span aria-hidden="true"
                   ><i class="fa-solid fa-chevron-left"></i></span
               ></a>
@@ -531,7 +435,7 @@
                   index == page - 1 ||
                   index == page + 1
                 "
-                (click)="admin_history(index)"
+                (click)="store_history(index)"
                 class="page-link"
                 >{{ index }}</a
               >
@@ -551,7 +455,7 @@
               class="page-item"
               *ngIf="page !== total_page && order_list.length !== 0"
             >
-              <a class="page-link" (click)="admin_history(page + 1)">
+              <a class="page-link" (click)="store_history(page + 1)">
                 <span aria-hidden="true"
                   ><i class="fa-solid fa-chevron-right"></i></span
               ></a>
