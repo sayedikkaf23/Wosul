@@ -44,6 +44,15 @@ export class AdminLayoutComponent implements OnInit {
     this.isActive = !this.isActive;
   }
 
+  toggleDarkMode() {
+    const bodyElement = document.body;
+    if (!bodyElement.classList.contains('dark-active')) {
+      bodyElement.classList.add('dark-active');
+    } else {
+      bodyElement.classList.remove('dark-active');
+    }
+  }
+
   order() {
     this.isActive = !this.isActive;
     this.router.navigate(['admin/orders']);

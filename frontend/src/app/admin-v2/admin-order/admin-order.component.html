@@ -69,7 +69,7 @@
                 name="order_status"
                 tabindex="4"
               >
-                <option value="all">{{ title.all }}</option>
+                <!-- <option value="all">{{ title.all }}</option> -->
                 <option
                   value="{{ helper.ORDER_STATE.WAITING_FOR_ACCEPT_STORE }}"
                 >
@@ -260,12 +260,12 @@
         <thead class="bg-light">
           <tr>
             <th scope="col"><b>ID</b></th>
+            <th scope="col"><b>Store</b></th>
             <th scope="col"><b>Date</b></th>
             <!-- <th scope="col"><b>User</b></th> -->
             <th scope="col"><b>Update Status</b></th>
             <th scope="col"><b>Status</b></th>
             <th scope="col"><b>Change Status</b></th>
-            <th scope="col"><b>Store</b></th>
             <!-- <th scope="col"><b>Bill Amount</b></th>
             <th scope="col"><b>Final Amount</b></th> -->
             <th scope="col"><b>Checkout Amount</b></th>
@@ -284,6 +284,11 @@
           >
             <td>
               <b>{{ index + 1 }}</b>
+            </td>
+            <td>
+              <span *ngIf="order.store_detail">{{
+                order.store_detail.name
+              }}</span>
             </td>
             <td *ngIf="order.is_schedule_order == false">
               {{ order.created_at | date : DATE_FORMAT.DD_MMM_YYYY_HH_MM_A }}
@@ -411,11 +416,6 @@
               </ng-select>
             </td>
 
-            <td>
-              <span *ngIf="order.store_detail">{{
-                order.store_detail.name
-              }}</span>
-            </td>
             <!-- <td>
               {{ order.order_payment_detail.bill_amount | number : "2.2-2" }}
             </td>
@@ -512,14 +512,14 @@
         </div>
         <div class="col-auto">
           <ul class="pagination cursor-pointer">
-            <li class="page-item" *ngIf="page !== 1">
+            <li class="page-item d-flex" *ngIf="page !== 1">
               <a class="page-link" (click)="admin_history(page - 1)">
                 <span aria-hidden="true"
                   ><i class="fa-solid fa-chevron-left"></i></span
               ></a>
             </li>
             <li
-              class="page-item"
+              class="page-item d-flex"
               *ngFor="let index of total_pages"
               [class.active]="page == index"
             >
@@ -548,7 +548,7 @@
               >
             </li>
             <li
-              class="page-item"
+              class="page-item d-flex"
               *ngIf="page !== total_page && order_list.length !== 0"
             >
               <a class="page-link" (click)="admin_history(page + 1)">

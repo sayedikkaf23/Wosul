@@ -69,7 +69,7 @@
                 name="order_status"
                 tabindex="4"
               >
-                <option value="all">{{ title.all }}</option>
+                <!-- <option value="all">{{ title.all }}</option> -->
                 <option
                   value="{{ helper.ORDER_STATE.WAITING_FOR_ACCEPT_STORE }}"
                 >
@@ -260,12 +260,12 @@
         <thead class="bg-light">
           <tr>
             <th scope="col"><b>ID</b></th>
+            <th scope="col"><b>Store</b></th>
             <th scope="col"><b>Date</b></th>
             <!-- <th scope="col"><b>User</b></th> -->
             <!-- <th scope="col"><b>Update Status</b></th> -->
             <th scope="col"><b>Status</b></th>
             <th scope="col"><b>Change Status</b></th>
-            <th scope="col"><b>Store</b></th>
             <!-- <th scope="col"><b>Bill Amount</b></th>
             <th scope="col"><b>Final Amount</b></th> -->
             <th scope="col"><b>Checkout Amount</b></th>
@@ -282,7 +282,14 @@
             [class.selected_tr]="order._id == order_detail._id"
             (click)="get_order_detail(index)"
           >
-            <td>  <b>{{ index + 1 }}</b></td>
+            <td>
+              <b>{{ index + 1 }}</b>
+            </td>
+            <td>
+              <span *ngIf="order.store_detail">{{
+                order.store_detail.name
+              }}</span>
+            </td>
             <td>
               {{ order.completed_at | date : "d MMM yyyy, h:mm a" }}
             </td>
@@ -353,11 +360,6 @@
                 }}</ng-option>
               </ng-select>
             </td>
-            <td>
-              <span *ngIf="order.store_detail">{{
-                order.store_detail.name
-              }}</span>
-            </td>
 
             <td>{{ order.order_payment_detail.checkout_amount }}</td>
             <td [ngSwitch]="order.order_payment_detail.is_payment_mode_cash">
@@ -396,34 +398,17 @@
       </table>
     </div>
     <div class="data-footer">
-      <div class="row align-items-center justify-content-between">
-        <div class="col-auto">
-          <!--  <div class="filter-item-field">
-            <label>Show</label>
-            <div>
-              <ng-select
-                class="custom"
-                [items]="tableCount"
-                bindLabel="name"
-                placeholder="10"
-                appendTo="body"
-              >
-              </ng-select>
-            </div>
-            <label class="me-0 ms-2">Entries</label>
-            <label class="ms-4 me-0">Showing 1 to 25 of 92 entries</label>
-          </div>  -->
-        </div>
+      <div class="row align-items-center justify-content-end">
         <div class="col-auto">
           <ul class="pagination cursor-pointer">
-            <li class="page-item" *ngIf="page !== 1">
+            <li class="page-item d-flex" *ngIf="page !== 1">
               <a class="page-link" (click)="store_history(page - 1)">
                 <span aria-hidden="true"
                   ><i class="fa-solid fa-chevron-left"></i></span
               ></a>
             </li>
             <li
-              class="page-item"
+              class="page-item d-flex"
               *ngFor="let index of total_pages"
               [class.active]="page == index"
             >
@@ -452,7 +437,7 @@
               >
             </li>
             <li
-              class="page-item"
+              class="page-item d-flex"
               *ngIf="page !== total_page && order_list.length !== 0"
             >
               <a class="page-link" (click)="store_history(page + 1)">
