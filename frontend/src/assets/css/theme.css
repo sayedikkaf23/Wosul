@@ -2877,4 +2877,19 @@ html .card.payment-chart-card h2 {
   font-weight: normal;
 }
 
+/* admin store */
+html .card {
+  background: var(--white);
+  border: 1px solid rgba(225, 232, 239, 0.8);
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.03);
+  border-radius: 8px;
+  padding: 24px;
+  margin: 0 0 24px;
+}
+html .card h2 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 20px 0;
+}
+
 @import url("responsive.css");

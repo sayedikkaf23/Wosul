@@ -1,0 +1,519 @@
+<ng-container>
+  <div class="content">
+    <div class="page-heading">
+      <div class="row align-content-center">
+        <div class="col-1">
+          <div class="row align-items-center">
+            <div class="col-auto">
+              <h2>Stores</h2>
+            </div>
+          </div>
+        </div>
+        <div class="col-2">
+          <div>
+            <label>{{ title.search }}</label>
+          </div>
+          <div class="form-field page-heading-search-field mb-0 min-width">
+            <div class="field-icon">
+              <select
+                chosen
+                class="chosen-select"
+                id="search_field"
+                [(ngModel)]="search_field"
+                name="search_field"
+                tabindex="4"
+              >
+                <option value="name">{{ title.name }}</option>
+                <option value="email">{{ title.email }}</option>
+                <option value="phone">{{ title.phone }}</option>
+                <option value="unique_id">{{ title.unique_id }}</option>
+                <option value="country_details.country_name">
+                  {{ title.country }}
+                </option>
+                <option value="city_details.city_name">
+                  {{ title.city }}
+                </option>
+                <option value="delivery_details.delivery_name">
+                  {{ title.delivery_type }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-2">
+          <label></label>
+          <div
+            class="form-field page-heading-search-field mb-0 min-width border"
+          >
+            <div class="field-icon">
+              <input
+                type="text"
+                class="form-control form-control-sm form-control-shadow search-box"
+                placeholder="Search..."
+                [(ngModel)]="search_value"
+                #store_open_time="ngModel"
+              />
+              <div class="icon search-icon">
+                <i class="fa-solid fa-magnifying-glass"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-2">
+          <div>
+            <label>{{ title.no_of_record }}</label>
+          </div>
+          <div class="form-field page-heading-search-field mb-0 min-width">
+            <div class="field-icon">
+              <select
+                chosen
+                class="chosen-select"
+                id="number_of_rec"
+                [(ngModel)]="number_of_rec"
+                name="number_of_rec"
+                tabindex="4"
+              >
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-1">
+          <div>
+            <label></label>
+          </div>
+          <div class="dropdown filter-dropdown">
+            <button
+              type="button"
+              class="btn btn-sm btn-icon btn-light-primary"
+              aria-expanded="false"
+              data-bs-auto-close="outside"
+              (click)="filter(1)"
+            >
+              <i class="fa-solid fa-filter"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="col-2 d-flex justify-content-end ms-auto">
+          <div class="row align-items-center">
+            <div class="col-auto" (click)="store_export_csv(store_page_type)">
+              <a class="btn btn-sm btn-light-primary">
+                <svg
+                  width="15"
+                  height="15"
+                  viewBox="0 0 15 15"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M13.125 9.375V11.875C13.125 12.2065 12.9933 12.5245 12.7589 12.7589C12.5245 12.9933 12.2065 13.125 11.875 13.125H3.125C2.79348 13.125 2.47554 12.9933 2.24112 12.7589C2.0067 12.5245 1.875 12.2065 1.875 11.875V9.375"
+                    stroke="currentColor"
+                    stroke-width="1.25"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></path>
+                  <path
+                    d="M4.375 6.25L7.5 9.375L10.625 6.25"
+                    stroke="currentColor"
+                    stroke-width="1.25"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></path>
+                  <path
+                    d="M7.5 9.375V1.875"
+                    stroke="currentColor"
+                    stroke-width="1.25"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></path>
+                </svg>
+                CSV
+              </a>
+            </div>
+
+            <div class="col-auto">
+              <!-- <div class="filter-item-field ms-2">
+                <label>Show</label>
+                <div>
+                  <ng-select
+                    class="custom"
+                    [items]="tableCount"
+                    bindLabel="name"
+                    placeholder="10"
+                    appendTo="body"
+                  >
+                  </ng-select>
+                  
+                </div>
+              </div> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-8">
+        <div class="table-responsive">
+          <table class="table table-list-data table-hover">
+            <thead class="bg-light">
+              <tr>
+                <th scope="col"><b>ID</b></th>
+                <th scope="col"><b>Name</b></th>
+                <th scope="col"><b>E-mail</b></th>
+                <th scope="col"><b>Phone</b></th>
+                <th scope="col"><b>Country</b></th>
+                <th scope="col"><b>City</b></th>
+                <th scope="col"><b>Delivery Type</b></th>
+                <th scope="col"><b>Wallet</b></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                *ngFor="let store of store_list; let index = index"
+                (click)="get_store_detail(store._id)"
+              >
+                <td>
+                  <b>{{ index + 1 }}</b>
+                </td>
+                <td>{{ store.name }}</td>
+                <td>{{ store.email }}</td>
+                <td>{{ store.country_phone_code }} {{ store.phone }}</td>
+                <td>{{ store.country_details.country_name }}</td>
+                <td>{{ store.city_details.city_name }}</td>
+                <td>{{ store.delivery_details.delivery_name }}</td>
+                <td>{{ store.wallet }} {{ store.wallet_currency_code }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="data-footer">
+          <div class="row align-items-center justify-content-between">
+            <div class="col-auto"></div>
+            <div class="col-auto">
+              <ul class="pagination cursor-pointer">
+                <li class="page-item d-flex" *ngIf="page !== 1">
+                  <!-- (click)="filter(page - 1)" -->
+                  <a class="page-link">
+                    <span aria-hidden="true"
+                      ><i class="fa-solid fa-chevron-left"></i></span
+                  ></a>
+                </li>
+                <li
+                  class="page-item d-flex"
+                  *ngFor="let index of total_pages"
+                  [class.active]="page == index"
+                >
+                  <a
+                    *ngIf="
+                      index == 1 ||
+                      index == total_page ||
+                      index == page ||
+                      index == page - 1 ||
+                      index == page + 1
+                    "
+                    (click)="filter(index)"
+                    class="page-link"
+                    >{{ index }}</a
+                  >
+                  <a
+                    *ngIf="
+                      (index == 1 && page !== 1 && page !== 2 && page !== 3) ||
+                      (index == total_page - 1 &&
+                        page !== total_page &&
+                        page !== total_page - 1 &&
+                        page !== total_page - 2)
+                    "
+                    class="page-link"
+                    >...</a
+                  >
+                </li>
+                <li
+                  class="page-item d-flex"
+                  *ngIf="page !== total_page && store_list.length !== 0"
+                >
+                  <!-- (click)="filter(page + 1)" -->
+                  <a class="page-link">
+                    <span aria-hidden="true"
+                      ><i class="fa-solid fa-chevron-right"></i></span
+                  ></a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card">
+          <div class="store-pacific-market">
+            <div class="image">
+              <img
+                [src]="
+                  store_detail.image_url != ''
+                    ? helper.CONSTANT.IMAGE_BASE_URL + store_detail.image_url
+                    : 'assets/images/store-profile.jpg'
+                "
+                alt=""
+              />
+            </div>
+            <div class="text">
+              <h5>{{ store_detail.name }}</h5>
+              <span>
+                <svg
+                  width="13"
+                  height="12"
+                  viewBox="0 0 13 12"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <g clip-path="url(#clip0_4930_48189)">
+                    <path
+                      d="M5.59303 0.952963C5.95143 0.181231 7.04857 0.181231 7.40697 0.952963L8.39051 3.07081C8.53621 3.38456 8.83373 3.60072 9.17716 3.64234L11.4953 3.92329C12.34 4.02567 12.679 5.06911 12.0558 5.64845L10.3456 7.2383C10.0922 7.47383 9.97854 7.82359 10.0451 8.16306L10.4942 10.4545C10.6579 11.2895 9.77028 11.9344 9.02671 11.5207L6.98618 10.3855C6.68388 10.2173 6.31612 10.2173 6.01382 10.3855L3.97329 11.5207C3.22972 11.9344 2.34212 11.2895 2.50578 10.4545L2.95492 8.16306C3.02146 7.82359 2.90782 7.47383 2.65445 7.2383L0.944186 5.64845C0.320976 5.06911 0.660012 4.02567 1.50472 3.92329L3.82284 3.64234C4.16627 3.60072 4.46379 3.38456 4.60949 3.07081L5.59303 0.952963Z"
+                      fill="currentColor"
+                    />
+                  </g>
+                  <defs>
+                    <clipPath id="clip0_4930_48189">
+                      <rect width="13" height="12" fill="white" />
+                    </clipPath>
+                  </defs>
+                </svg>
+                {{ (store_detail.provider_rate + store_detail.user_rate) / 2 }}
+              </span>
+            </div>
+            <ul class="notification">
+              <li>
+                <a href="#">
+                  <svg
+                    width="16"
+                    height="15"
+                    viewBox="0 0 16 15"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M9.23077 1.15385C9.23077 0.515625 8.68077 0 8 0C7.31923 0 6.76923 0.515625 6.76923 1.15385V6.34615H1.23077C0.55 6.34615 0 6.86178 0 7.5C0 8.13822 0.55 8.65385 1.23077 8.65385H6.76923V13.8462C6.76923 14.4844 7.31923 15 8 15C8.68077 15 9.23077 14.4844 9.23077 13.8462V8.65385H14.7692C15.45 8.65385 16 8.13822 16 7.5C16 6.86178 15.45 6.34615 14.7692 6.34615H9.23077V1.15385Z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </a>
+              </li>
+              <li>
+                <a href="#">
+                  <svg
+                    width="19"
+                    height="15"
+                    viewBox="0 0 19 15"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M6.09407 10.3125C9.46028 10.3125 12.1878 8.00391 12.1878 5.15625C12.1878 2.30859 9.46028 0 6.09407 0C2.72786 0 0.000320638 2.30859 0.000320638 5.15625C0.000320638 6.28711 0.430985 7.33301 1.16048 8.18555C1.05794 8.46094 0.905594 8.7041 0.744461 8.90918C0.603836 9.09082 0.460282 9.23145 0.354813 9.32812C0.302078 9.375 0.258133 9.41309 0.228836 9.43652C0.214188 9.44824 0.202469 9.45703 0.19661 9.45996L0.19075 9.46582C0.0296175 9.58594 -0.040695 9.79688 0.0237581 9.9873C0.0882113 10.1777 0.266922 10.3125 0.469071 10.3125C1.10774 10.3125 1.75227 10.1484 2.28841 9.94629C2.55794 9.84375 2.80989 9.72949 3.02962 9.6123C3.92903 10.0576 4.97493 10.3125 6.09407 10.3125ZM13.1253 5.15625C13.1253 8.44629 10.222 10.9248 6.78255 11.2207C7.49446 13.4004 9.85579 15 12.6566 15C13.7757 15 14.8216 14.7451 15.724 14.2998C15.9437 14.417 16.1927 14.5312 16.4622 14.6338C16.9984 14.8359 17.6429 15 18.2816 15C18.4837 15 18.6654 14.8682 18.7269 14.6748C18.7884 14.4814 18.721 14.2705 18.557 14.1504L18.5511 14.1445C18.5452 14.1387 18.5335 14.1328 18.5189 14.1211C18.4896 14.0977 18.4456 14.0625 18.3929 14.0127C18.2874 13.916 18.1439 13.7754 18.0033 13.5938C17.8421 13.3887 17.6898 13.1426 17.5872 12.8701C18.3167 12.0205 18.7474 10.9746 18.7474 9.84082C18.7474 7.12207 16.2601 4.89258 13.1048 4.69922C13.1165 4.84863 13.1224 5.00098 13.1224 5.15332L13.1253 5.15625Z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </a>
+              </li>
+              <li>
+                <a href="#">
+                  <svg
+                    width="14"
+                    height="15"
+                    viewBox="0 0 14 15"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M6.56194 0C6.04338 0 5.62444 0.418945 5.62444 0.9375V1.5C3.48577 1.93359 1.87444 3.82617 1.87444 6.09375V6.64453C1.87444 8.02148 1.3676 9.35156 0.453541 10.3828L0.236744 10.626C-0.00934985 10.9014 -0.0679436 11.2969 0.0814704 11.6338C0.230885 11.9707 0.567799 12.1875 0.936939 12.1875H12.1869C12.5561 12.1875 12.8901 11.9707 13.0424 11.6338C13.1948 11.2969 13.1332 10.9014 12.8871 10.626L12.6703 10.3828C11.7563 9.35156 11.2494 8.02441 11.2494 6.64453V6.09375C11.2494 3.82617 9.63811 1.93359 7.49944 1.5V0.9375C7.49944 0.418945 7.08049 0 6.56194 0ZM7.88909 14.4521C8.24065 14.1006 8.43694 13.623 8.43694 13.125H6.56194H4.68694C4.68694 13.623 4.88323 14.1006 5.23479 14.4521C5.58635 14.8037 6.06389 15 6.56194 15C7.05999 15 7.53753 14.8037 7.88909 14.4521Z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </a>
+              </li>
+              <li>
+                <a href="#">
+                  <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 15 15"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M10.7578 12.085L2.91504 4.24219C2.25879 5.15918 1.875 6.28418 1.875 7.5C1.875 10.6055 4.39453 13.125 7.5 13.125C8.71582 13.125 9.84082 12.7412 10.7578 12.085ZM12.085 10.7578C12.7412 9.84082 13.125 8.71582 13.125 7.5C13.125 4.39453 10.6055 1.875 7.5 1.875C6.28418 1.875 5.15918 2.25879 4.24219 2.91504L12.085 10.7578ZM0 7.5C0 5.51088 0.790176 3.60322 2.1967 2.1967C3.60322 0.790176 5.51088 0 7.5 0C9.48912 0 11.3968 0.790176 12.8033 2.1967C14.2098 3.60322 15 5.51088 15 7.5C15 9.48912 14.2098 11.3968 12.8033 12.8033C11.3968 14.2098 9.48912 15 7.5 15C5.51088 15 3.60322 14.2098 2.1967 12.8033C0.790176 11.3968 0 9.48912 0 7.5Z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </a>
+              </li>
+            </ul>
+            <div data-simplebar>
+              <ul class="nav nav-tabs category-tabs justify-content" id="myTab2" role="tablist">
+                <li class="nav-item">
+                  <button
+                    class="nav-link active"
+                    id=""
+                    data-bs-toggle="tab"
+                    data-bs-target="#category_panel_1"
+                    type="button"
+                    role="tab"
+                  >
+                    Details
+                  </button>
+                </li>
+                <li class="nav-item">
+                  <button
+                    class="nav-link"
+                    id=""
+                    data-bs-toggle="tab"
+                    data-bs-target="#category_panel_2"
+                    type="button"
+                    role="tab"
+                  >
+                    Document
+                  </button>
+                </li>
+                <li class="nav-item">
+                  <button
+                    class="nav-link"
+                    id=""
+                    data-bs-toggle="tab"
+                    data-bs-target="#category_panel_3"
+                    type="button"
+                    role="tab"
+                  >
+                    Referral
+                  </button>
+                </li>
+                <li class="nav-item">
+                  <button
+                    class="nav-link"
+                    id=""
+                    data-bs-toggle="tab"
+                    data-bs-target="#category_panel_4"
+                    type="button"
+                    role="tab"
+                  >
+                    Review
+                  </button>
+                </li>
+                <li class="nav-item">
+                  <button
+                    class="nav-link"
+                    id=""
+                    data-bs-toggle="tab"
+                    data-bs-target="#category_panel_5"
+                    type="button"
+                    role="tab"
+                  >
+                    Bank Details
+                  </button>
+                </li>
+              </ul>
+            </div>
+            <table width="100%">
+              <tr>
+                <th>App Version</th>
+                <td>:</td>
+                <td *ngIf="store_detail.device_type">
+                  {{
+                    store_detail.device_type + " - " + store_detail.app_version
+                  }}
+                </td>
+
+                <td *ngIf="!store_detail.device_type">-</td>
+              </tr>
+              <tr>
+                <th>Address</th>
+                <td>:</td>
+                <td>{{ store_detail.address }}</td>
+              </tr>
+              <tr>
+                <th>Website Url</th>
+                <td>:</td>
+                <td>{{ store_detail.website_url }}</td>
+              </tr>
+              <tr>
+                <th>Slogan</th>
+                <td>:</td>
+                <td *ngIf="store_detail.slogan">{{ store_detail.slogan }}</td>
+              </tr>
+              <tr>
+                <th>Profit Model</th>
+                <td>:</td>
+                <td
+                  *ngIf="
+                    store_detail.admin_profit_mode_on_store ==
+                    helper.ADMIN_PROFIT_ON_ORDER_ID.PERCENTAGE
+                  "
+                >
+                  {{ helper.ADMIN_PROFIT_ON_ORDER_STRING.PERCENTAGE }}
+                </td>
+                <td
+                  *ngIf="
+                    store_detail.admin_profit_mode_on_store ==
+                    helper.ADMIN_PROFIT_ON_ORDER_ID.PER_ORDER
+                  "
+                >
+                  {{ helper.ADMIN_PROFIT_ON_ORDER_STRING.PER_ORDER }}
+                </td>
+                <td
+                  *ngIf="
+                    store_detail.admin_profit_mode_on_store ==
+                    helper.ADMIN_PROFIT_ON_ORDER_ID.PER_ITEMS
+                  "
+                >
+                  {{ helper.ADMIN_PROFIT_ON_ORDER_STRING.PER_ITEMS }}
+                </td>
+              </tr>
+              <tr>
+                <th>Profit</th>
+                <td>:</td>
+                <td>{{ store_detail.admin_profit_value_on_store }}</td>
+              </tr>
+              <tr>
+                <th>Main Store</th>
+                <td>:</td>
+                <td>
+                  <div class="switch-control">
+                    <label>
+                      <input
+                        type="checkbox"
+                        id="addnote_2"
+                        name="is_store_can_add_provider"
+                        [(ngModel)]="store_detail.is_store_can_add_provider"
+                        #is_store_can_add_provider="ngModel"
+                        checked
+                      />
+                      <span></span>
+                    </label>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        <div class="row justify-content-center">
+          <div class="col-auto">
+            <a href="purchase-order-add.html" class="btn btn-primary">
+              View Setting
+            </a>
+          </div>
+          <div class="col-auto">
+            <a href="purchase-order-add.html" class="btn btn-primary">
+              View Category
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>

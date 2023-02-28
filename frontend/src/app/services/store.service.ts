@@ -24,4 +24,12 @@ export class StoreService {
   storeHistory(payload) {
     return this.http.post(`${this.url}/api/admin/history_v2`, payload);
   }
+
+  getSubStoreList(payload) {
+    return this.http.post(`${this.url}/admin/get_main_store_list`, payload);
+  }
+
+  storeListSearchSort(payload) {
+    return this.http.post(`${this.url}/admin/store_list_search_sort`, payload);
+  }
 }

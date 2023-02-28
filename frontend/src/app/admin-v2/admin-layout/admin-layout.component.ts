@@ -1,5 +1,11 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+  ViewEncapsulation,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-admin-layout',
@@ -24,7 +30,11 @@ export class AdminLayoutComponent implements OnInit {
     { id: 4, name: 'option 5' },
   ];
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    public authService: AuthService,
+    private cdRef: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     const bodyElement = document.body;
@@ -66,5 +76,13 @@ export class AdminLayoutComponent implements OnInit {
   logout() {
     localStorage.clear();
     this.router.navigate(['admin/login']);
+  }
+
+  ngAfterContentChecked(): void {
+    this.cdRef.detectChanges();
+  }
+
+  get isHeaderShow() {
+    return this.authService.isHeaderShow;
   }
 }

@@ -12,6 +12,8 @@ export class AuthService {
   url = environment.serverUrl;
   public fingerPrint;
 
+  public isHeaderShow: boolean = false;
+
   constructor(private http: HttpClient, private router: Router) {}
 
   get token() {

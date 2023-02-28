@@ -445,3 +445,131 @@ ul.size-n-value.size-n-value-combo li {
 .ng-select .ng-select-container .ng-value-container .ng-placeholder {
   color: var(--muted);
 }
+
+ul.size-n-value.size-n-value-combo li span {
+  height: 110px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+}
+ul.size-n-value.size-n-value-combo li {
+  width: 12%;
+}
+.store-pacific-market {
+  text-align: center;
+}
+.store-pacific-market .image {
+  height: 140px;
+  margin-bottom: 5px;
+}
+.store-pacific-market .image img {
+  border: 5px solid #e3eaff;
+  border-radius: 50%;
+}
+.store-pacific-market .text h5 {
+  font-size: 20px;
+  margin-bottom: 0;
+  margin-right: 12px;
+}
+.store-pacific-market .text {
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.store-pacific-market .text span {
+  color: #198754;
+  font-size: 14px;
+  font-weight: 700;
+}
+.store-pacific-market ul.notification {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+.store-pacific-market ul.notification li {
+  margin-right: 10px;
+}
+.store-pacific-market ul.notification li:last-child {
+  margin-right: 0px;
+}
+.store-pacific-market ul.notification li a {
+  height: 34px;
+  width: 34px;
+  border-radius: 50%;
+  background-color: #e3eaff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+}
+.store-pacific-market ul.notification li:hover a {
+  background-color: var(--primary);
+  color: #fff;
+}
+.store-pacific-market ul.category-tabs {
+  justify-content: center;
+}
+.store-pacific-market ul.category-tabs {
+  justify-content: center;
+  margin-bottom: 18px;
+}
+.store-pacific-market table tr {
+  border-bottom: 2px solid #e3eaff;
+}
+.store-pacific-market table tr td {
+  padding: 10px 5px;
+  width: 5%;
+}
+.store-pacific-market table tr td:last-child {
+  width: 0;
+}
+.store-pacific-market table tr th {
+  padding: 10px 5px;
+  width: 30%;
+}
+.card.edit-store-card {
+  background-color: #e3eaff;
+  height: 600px;
+  overflow: auto;
+  padding: 12px 5px 5px;
+}
+.white-card {
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 4px;
+}
+.white-card ul.size-n-value li {
+  width: 100%;
+  margin-bottom: 12px;
+  padding: 0 6px;
+  position: relative;
+}
+.white-card ul.size-n-value li label.size-wrap span {
+  padding: 10px 16px;
+  text-align: left;
+  font-size: 13px;
+}
+.white-card ul.size-n-value li .icon {
+  position: absolute;
+  top: 16px;
+  right: 24px;
+  bottom: 0;
+  margin: auto;
+}
+.white-card ul.size-n-value li .icon {
+  position: absolute;
+  top: 16px;
+  right: 24px;
+  bottom: 0;
+  margin: auto;
+}
+label.size-wrap input:checked ~ .icon {
+  color: #fff;
+}
+label.size-wrap input:checked:hover ~ .icon {
+  color: #4b5b73;
+}

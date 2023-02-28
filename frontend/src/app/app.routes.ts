@@ -199,6 +199,7 @@ import { AdminLayoutComponent } from './admin-v2/admin-layout/admin-layout.compo
 import { AdminDashboardComponent } from './admin-v2/admin-dashboard/admin-dashboard.component';
 import { AdminOrderComponent } from './admin-v2/admin-order/admin-order.component';
 import { AdminHistoryComponent } from './admin-v2/admin-history/admin-history.component';
+import { AdminStoreComponent } from './admin-v2/admin-store/admin-store.component';
 // import {HistoryCalenderComponent} from "./views/store/history_calender/history_calender.component";
 export const ROUTES: Routes = [
   // Main redirect
@@ -506,6 +507,7 @@ export const ROUTES: Routes = [
       { path: 'admin/dashboard', component: AdminDashboardComponent },
       { path: 'admin/orders', component: AdminOrderComponent },
       { path: 'admin/history', component: AdminHistoryComponent },
+      { path: 'admin/stores', component: AdminStoreComponent },
     ],
   },
   {
