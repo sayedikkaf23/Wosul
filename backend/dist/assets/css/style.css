@@ -99,7 +99,7 @@ ul.order-checking li.active a {
 }
 ul.order-checking li:hover a {
   background-color: var(--primary);
-  color: #fff;
+  color: #fff !important;
 }
 ul.order-checking li:last-child {
   border-right: 0;
@@ -572,4 +572,8 @@ label.size-wrap input:checked ~ .icon {
 }
 label.size-wrap input:checked:hover ~ .icon {
   color: #4b5b73;
+}
+
+.header-profile-tab-anchor:hover {
+  color: #fff !important;
 }
