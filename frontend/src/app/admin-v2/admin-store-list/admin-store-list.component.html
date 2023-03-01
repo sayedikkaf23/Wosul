@@ -253,7 +253,7 @@
 
       <div class="col-md-4">
         <div class="card">
-          <div class="store-pacific-market">
+          <div class="store-pacific-market mb-3">
             <div class="image">
               <img
                 [src]="
@@ -356,7 +356,11 @@
               </li>
             </ul>
             <div data-simplebar>
-              <ul class="nav nav-tabs category-tabs justify-content" id="myTab2" role="tablist">
+              <ul
+                class="nav nav-tabs category-tabs justify-content"
+                id="myTab2"
+                role="tablist"
+              >
                 <li class="nav-item">
                   <button
                     class="nav-link active"
@@ -441,7 +445,7 @@
                 <td>:</td>
                 <td>{{ store_detail.website_url }}</td>
               </tr>
-              <tr>
+              <!-- <tr>
                 <th>Slogan</th>
                 <td>:</td>
                 <td *ngIf="store_detail.slogan">{{ store_detail.slogan }}</td>
@@ -497,20 +501,21 @@
                     </label>
                   </div>
                 </td>
-              </tr>
+              </tr> -->
             </table>
           </div>
-        </div>
-        <div class="row justify-content-center">
-          <div class="col-auto">
-            <a href="purchase-order-add.html" class="btn btn-primary">
-              View Setting
-            </a>
-          </div>
-          <div class="col-auto">
-            <a href="purchase-order-add.html" class="btn btn-primary">
-              View Category
-            </a>
+
+          <div class="row justify-content-center">
+            <div class="col-auto">
+              <a href="purchase-order-add.html" class="btn btn-primary">
+                View Setting
+              </a>
+            </div>
+            <div class="col-auto">
+              <a href="purchase-order-add.html" class="btn btn-primary">
+                View Category
+              </a>
+            </div>
           </div>
         </div>
       </div>

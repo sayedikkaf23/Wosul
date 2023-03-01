@@ -18,3 +18,8 @@
   border-color: #1e40af !important;
   border-radius: 14%;
 }
+
+.header-profile {
+  border: none !important;
+  width: 160px !important;
+}
