@@ -232,6 +232,8 @@ import { AdminOrderComponent } from './admin-v2/admin-order/admin-order.componen
 import { AdminHistoryComponent } from './admin-v2/admin-history/admin-history.component';
 import { AdminStoreComponent } from './admin-v2/admin-store/admin-store.component';
 import { AdminStoreListComponent } from './admin-v2/admin-store-list/admin-store-list.component';
+import { AdminStoreProductComponent } from './admin-v2/admin-store-product/admin-store-product.component';
+
 
 // ng select
 import { NgSelectModule } from '@ng-select/ng-select';
@@ -249,7 +251,8 @@ import { NgSelectModule } from '@ng-select/ng-select';
     AdminOrderComponent,
     AdminHistoryComponent,
     AdminStoreComponent,
-    AdminStoreListComponent
+    AdminStoreListComponent,
+    AdminStoreProductComponent
   ],
   imports: [
     BrowserModule,

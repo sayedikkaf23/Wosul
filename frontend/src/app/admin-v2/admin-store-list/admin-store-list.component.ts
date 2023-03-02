@@ -230,6 +230,11 @@ export class AdminStoreListComponent implements OnInit {
       });
   }
 
+  menu() {
+    this.helper.router_id.admin.store_id = this.store_detail._id;
+    this.helper.router.navigate([`/admin/store/products`]);
+  }
+
   ngOnDestroy() {
     this.authService.isHeaderShow = false;
   }

@@ -262,6 +262,8 @@
                     : 'assets/images/store-profile.jpg'
                 "
                 alt=""
+                width="120px"
+                height="120px"
               />
             </div>
             <div class="text">
@@ -511,10 +513,8 @@
                 View Setting
               </a>
             </div>
-            <div class="col-auto">
-              <a href="purchase-order-add.html" class="btn btn-primary">
-                View Category
-              </a>
+            <div class="col-auto" (click)="menu()">
+              <a class="btn btn-primary cursor-pointer"> View Category </a>
             </div>
           </div>
         </div>

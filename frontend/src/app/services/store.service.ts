@@ -32,4 +32,58 @@ export class StoreService {
   storeListSearchSort(payload) {
     return this.http.post(`${this.url}/admin/store_list_search_sort`, payload);
   }
+
+  getAdminStoreProducts(payload) {
+    return this.http.post(`${this.url}/api/store/get_product_list`, payload);
+  }
+
+  getAdminStoreCategory(payload) {
+    return this.http.post(`${this.url}/api/store/get_category_list`, payload);
+  }
+
+  getAdminStoreSpecificationGroup(payload) {
+    return this.http.post(
+      `${this.url}/api/store/get_specification_group`,
+      payload
+    );
+  }
+
+  getAdminImageSetting(payload) {
+    return this.http.post(`${this.url}/api/admin/get_image_setting`, payload);
+  }
+
+  getAdminStoreProductItem(payload) {
+    return this.http.post(
+      `${this.url}/api/store/get_store_product_item_list`,
+      payload
+    );
+  }
+
+  addStoreProduct(payload) {
+    return this.http.post(`${this.url}/api/store/add_product`, payload);
+  }
+
+  addStoreItem(payload) {
+    return this.http.post(`${this.url}/api/store/add_item`, payload);
+  }
+
+  updateStoreItem(payload) {
+    return this.http.post(`${this.url}/api/store/update_item`, payload);
+  }
+
+  updateStoreItemImage(payload) {
+    return this.http.post(`${this.url}/api/store/update_item_image`, payload);
+  }
+
+  deleteStoreItemImage(payload) {
+    return this.http.post(`${this.url}/api/store/delete_item_image`, payload);
+  }
+
+  deleteStoreProduct(payload) {
+    return this.http.post(`${this.url}/api/store/delete_product`, payload);
+  }
+
+  deleteStoreItem(payload) {
+    return this.http.post(`${this.url}/api/store/delete_item`, payload);
+  }
 }

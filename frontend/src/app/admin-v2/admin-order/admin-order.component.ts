@@ -170,11 +170,6 @@ export class AdminOrderComponent implements OnInit {
     this.authService.getSettingDetail({}).subscribe((res_data: any) => {
       this.setting_pin = res_data.setting.payment_switch_to_online_pin;
     });
-    // this.helper.http
-    //   .post('/api/admin/get_setting_detail', {})
-    //   .subscribe((res_data: any) => {
-    //     this.setting_pin = res_data.setting.payment_switch_to_online_pin;
-    //   });
   }
 
   getCardList(user_id) {

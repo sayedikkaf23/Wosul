@@ -1,0 +1,621 @@
+<ng-container>
+  <div class="content">
+    <div class="page-heading"></div>
+    <div class="row">
+      <div class="col-md-3">
+        <div class="card edit-store-card mb-0">
+          <div class="edit-store-card-head">
+            <div class="row align-items-center justify-content-between">
+              <div class="col-auto">
+                <h2 class="mb-0">Category</h2>
+              </div>
+              <div class="col-auto">
+                <a href="#" class="btn btn-white btn-sm">View Modifiers </a>
+              </div>
+            </div>
+          </div>
+          <div class="white-card">
+            <div
+              class="row justify-content-between align-items-center mb-2 gx-2"
+            >
+              <div class="col">
+                <div class="form-field mb-0">
+                  <input
+                    class="form-control form-control-solid"
+                    type="text"
+                    placeholder="Enter Product Name"
+                    (keyup)="check_product()"
+                    [(ngModel)]="add_product.name"
+                    #name="ngModel"
+                    name="name"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="col-auto">
+                <button
+                  class="btn btn-icon btn-light-primary"
+                  (click)="addProduct()"
+                >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 14 14"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M8.07692 1.07692C8.07692 0.48125 7.59567 0 7 0C6.40433 0 5.92308 0.48125 5.92308 1.07692V5.92308H1.07692C0.48125 5.92308 0 6.40433 0 7C0 7.59567 0.48125 8.07692 1.07692 8.07692H5.92308V12.9231C5.92308 13.5188 6.40433 14 7 14C7.59567 14 8.07692 13.5188 8.07692 12.9231V8.07692H12.9231C13.5188 8.07692 14 7.59567 14 7C14 6.40433 13.5188 5.92308 12.9231 5.92308H8.07692V1.07692Z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div class="form-field mb-2">
+              <ng-select
+                class="custom-placeholder category_list"
+                placeholder="Select Category"
+                [(ngModel)]="add_product.category_id"
+                (change)="onCategoryChange(add_product.category_id)"
+                selected_category_for_product
+              >
+                <ng-option
+                  *ngFor="let category of category_list"
+                  [value]="category._id"
+                >
+                  {{ category.name }}
+                </ng-option>
+              </ng-select>
+              <label class="mt-2" *ngIf="product_already_exist">{{
+                helper.title.category_already_exist
+              }}</label>
+              <!-- <select
+                class="form-select form-select-solid select2-hidden-accessible"
+                tabindex="-1"
+                aria-hidden="true"
+              >
+                <option>Select Category</option>
+                <option>option 2</option>
+              </select> -->
+            </div>
+            <ul class="size-n-value box-size" data-simplebar>
+              <li
+                *ngFor="
+                  let product of filtered_product_list;
+                  let product_index = index
+                "
+                (click)="select_product(product._id, $event)"
+                [class.success-element]="
+                  product._id == selected_product_id &&
+                  selected_product_id_for_specification == ''
+                "
+              >
+                <label class="size-wrap">
+                  <input type="checkbox" />
+                  <span
+                    [ngClass]="
+                      product._id == selected_product_id
+                        ? 'checked-input'
+                        : 'unchecked-input'
+                    "
+                    >{{ product.name }}</span
+                  >
+                </label>
+                <div
+                  class="btn btn-sm btn-icon btn-light-primary"
+                  (click)="open_delete_product_modal(product)"
+                >
+                  <svg
+                    width="13"
+                    height="17"
+                    viewBox="0 0 13 17"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M5.00295 2.05186L5.00499 2.0477C5.03477 1.98588 5.09092 1.95459 5.14563 1.95459H8.47301C8.52772 1.95459 8.58386 1.98588 8.61364 2.0477L8.61568 2.05187L8.81465 2.45811L9.01331 2.86368H9.46239H12.1154C12.1918 2.86368 12.2776 2.93011 12.2776 3.0455C12.2776 3.16089 12.1918 3.22732 12.1154 3.22732H1.50319C1.42688 3.22732 1.34106 3.16089 1.34106 3.0455C1.34106 2.93011 1.42688 2.86368 1.50319 2.86368H4.15626H4.60534L4.80398 2.45811L5.00295 2.05186ZM2.80992 14.4494L2.27102 5.59095H11.3476L10.8087 14.4494C10.7873 14.7978 10.5106 15.0455 10.2058 15.0455H3.41285C3.10816 15.0455 2.83149 14.7976 2.80992 14.4494C2.80992 14.4495 2.80992 14.4493 2.80992 14.4494Z"
+                      fill="currentColor"
+                    />
+                    <path
+                      d="M2.80992 14.4494L2.27102 5.59095H11.3476L10.8087 14.4494C10.7873 14.7978 10.5106 15.0455 10.2058 15.0455H3.41285C3.10816 15.0455 2.83149 14.7976 2.80992 14.4494ZM2.80992 14.4494C2.80992 14.4493 2.80992 14.4495 2.80992 14.4494ZM5.00295 2.05186L5.00499 2.0477C5.03477 1.98588 5.09092 1.95459 5.14563 1.95459H8.47301C8.52772 1.95459 8.58386 1.98588 8.61364 2.0477L8.61568 2.05187L8.81465 2.45811L9.01331 2.86368H9.46239H12.1154C12.1918 2.86368 12.2776 2.93011 12.2776 3.0455C12.2776 3.16089 12.1918 3.22732 12.1154 3.22732H1.50319C1.42688 3.22732 1.34106 3.16089 1.34106 3.0455C1.34106 2.93011 1.42688 2.86368 1.50319 2.86368H4.15626H4.60534L4.80398 2.45811L5.00295 2.05186Z"
+                      stroke="currentColor"
+                    />
+                  </svg>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card edit-store-card mb-0">
+          <div class="edit-store-card-head">
+            <div class="row align-items-center justify-content-between">
+              <div class="col-auto">
+                <h2 class="mb-0">Item</h2>
+              </div>
+              <div class="col-auto"></div>
+            </div>
+          </div>
+          <div class="white-card">
+            <div
+              class="row justify-content-between align-items-center mb-2 gx-2"
+            >
+              <div class="col">
+                <div class="form-field mb-0">
+                  <input
+                    class="form-control form-control-solid"
+                    type="text"
+                    placeholder="Item Name"
+                    (keyup)="check_item()"
+                    [(ngModel)]="add_item.name"
+                    #name="ngModel"
+                    name="name"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="col-3">
+                <div class="form-field mb-0">
+                  <input
+                    class="form-control form-control-solid text-center"
+                    type="text"
+                    placeholder="0"
+                    [(ngModel)]="add_item.price"
+                    #price="ngModel"
+                    name="price"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="col-auto">
+                <button
+                  class="btn btn-icon btn-light-primary"
+                  (click)="add_item_data()"
+                >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 14 14"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M8.07692 1.07692C8.07692 0.48125 7.59567 0 7 0C6.40433 0 5.92308 0.48125 5.92308 1.07692V5.92308H1.07692C0.48125 5.92308 0 6.40433 0 7C0 7.59567 0.48125 8.07692 1.07692 8.07692H5.92308V12.9231C5.92308 13.5188 6.40433 14 7 14C7.59567 14 8.07692 13.5188 8.07692 12.9231V8.07692H12.9231C13.5188 8.07692 14 7.59567 14 7C14 6.40433 13.5188 5.92308 12.9231 5.92308H8.07692V1.07692Z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </button>
+              </div>
+              <label class="mt-2" *ngIf="item_error != ''">{{
+                item_error
+              }}</label>
+            </div>
+            <div class="form-field mb-2">
+              <div class="field-icon">
+                <input
+                  type="text"
+                  class="form-control form-control-solid"
+                  placeholder="Search..."
+                />
+                <div class="icon">
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+              </div>
+            </div>
+            <ul class="size-n-value box-size" data-simplebar>
+              <li
+                *ngFor="
+                  let item of filtered_item_temp_list;
+                  let item_index = index
+                "
+                (click)="select_item(item._id, $event)"
+                [class.success-element]="item._id == selected_item_id"
+              >
+                <label class="size-wrap">
+                  <input type="checkbox" />
+                  <span
+                    [ngClass]="
+                      item._id == selected_item_id
+                        ? 'checked-input'
+                        : 'unchecked-input'
+                    "
+                  >
+                    {{ item.name }}</span
+                  >
+                </label>
+                <div
+                  class="btn btn-sm btn-icon btn-light-primary"
+                  (click)="open_delete_item_modal(item)"
+                >
+                  <svg
+                    width="13"
+                    height="17"
+                    viewBox="0 0 13 17"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M5.00295 2.05186L5.00499 2.0477C5.03477 1.98588 5.09092 1.95459 5.14563 1.95459H8.47301C8.52772 1.95459 8.58386 1.98588 8.61364 2.0477L8.61568 2.05187L8.81465 2.45811L9.01331 2.86368H9.46239H12.1154C12.1918 2.86368 12.2776 2.93011 12.2776 3.0455C12.2776 3.16089 12.1918 3.22732 12.1154 3.22732H1.50319C1.42688 3.22732 1.34106 3.16089 1.34106 3.0455C1.34106 2.93011 1.42688 2.86368 1.50319 2.86368H4.15626H4.60534L4.80398 2.45811L5.00295 2.05186ZM2.80992 14.4494L2.27102 5.59095H11.3476L10.8087 14.4494C10.7873 14.7978 10.5106 15.0455 10.2058 15.0455H3.41285C3.10816 15.0455 2.83149 14.7976 2.80992 14.4494C2.80992 14.4495 2.80992 14.4493 2.80992 14.4494Z"
+                      fill="currentColor"
+                    />
+                    <path
+                      d="M2.80992 14.4494L2.27102 5.59095H11.3476L10.8087 14.4494C10.7873 14.7978 10.5106 15.0455 10.2058 15.0455H3.41285C3.10816 15.0455 2.83149 14.7976 2.80992 14.4494ZM2.80992 14.4494C2.80992 14.4493 2.80992 14.4495 2.80992 14.4494ZM5.00295 2.05186L5.00499 2.0477C5.03477 1.98588 5.09092 1.95459 5.14563 1.95459H8.47301C8.52772 1.95459 8.58386 1.98588 8.61364 2.0477L8.61568 2.05187L8.81465 2.45811L9.01331 2.86368H9.46239H12.1154C12.1918 2.86368 12.2776 2.93011 12.2776 3.0455C12.2776 3.16089 12.1918 3.22732 12.1154 3.22732H1.50319C1.42688 3.22732 1.34106 3.16089 1.34106 3.0455C1.34106 2.93011 1.42688 2.86368 1.50319 2.86368H4.15626H4.60534L4.80398 2.45811L5.00295 2.05186Z"
+                      stroke="currentColor"
+                    />
+                  </svg>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6" *ngIf="item_detail.name && is_product_selected">
+        <div class="card edit-store-card mb-0">
+          <div class="edit-store-card-head">
+            <div class="row align-items-center justify-content-between">
+              <div class="col-auto">
+                <h2 class="mb-0">{{ item_detail.name }}</h2>
+              </div>
+              <div class="col-auto"></div>
+            </div>
+          </div>
+          <div class="white-card">
+            <p>
+              <!-- In publishing and graphic design, Lorem ipsum is a placeholder
+              text commonly used to demonstrate the visual form -->
+              <label>{{ title.note_for_image }}: </label
+              ><span
+                >{{ title.image_note1 }} {{ image_setting.image_min_width }}x{{
+                  image_setting.image_min_height
+                }}
+                {{ title.image_note2 }}
+                {{ image_setting.image_max_width }}x{{
+                  image_setting.image_max_height
+                }}), {{ title.image_note3 }}
+                <label>{{ image_setting.image_ratio }}</label>
+                {{ title.image_note4 }}</span
+              >
+              <label
+                *ngFor="let i of image_setting.image_type; let last = last"
+              >
+                {{ i.split("/")[1] }}<label [hidden]="last">, </label>
+              </label>
+              <span>{{ title.image_note5 }}</span>
+            </p>
+
+            <div class="row justify-content-center mb-4">
+              <div
+                class="col-auto"
+                *ngIf="
+                  item_detail.image_url.length + new_image_array.length < 5
+                "
+              >
+                <div class="store-image-upload">
+                  <input
+                    type="file"
+                    #image_file
+                    accept="image/*"
+                    class="d-none"
+                    id="img_upload"
+                    (change)="image_update($event)"
+                  />
+                  <label class="product-img" for="img_upload">
+                    <svg
+                      width="46"
+                      height="46"
+                      viewBox="0 0 46 46"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M11.9782 36.591C8.90985 36.591 6.18037 34.4478 5.18926 31.2571L5.12228 31.0167C4.8885 30.1718 4.79056 29.4612 4.79056 28.7502V14.4941L0.140701 31.4264C-0.457297 33.9168 0.905506 36.4988 3.192 37.1868L32.8302 45.8454C33.2001 45.9499 33.57 46.0001 33.9343 46.0001C35.8432 46.0001 37.5874 44.618 38.0763 42.5813L39.8031 36.591H11.9782Z"
+                        fill="#DCE5F1"
+                      />
+                      <path
+                        d="M17.2493 14.6363C19.3635 14.6363 21.0825 12.7608 21.0825 10.4544C21.0825 8.14809 19.3635 6.27246 17.2493 6.27246C15.1351 6.27246 13.4158 8.14809 13.4158 10.4544C13.4158 12.7608 15.1351 14.6363 17.2493 14.6363Z"
+                        fill="#DCE5F1"
+                      />
+                      <path
+                        d="M41.2081 0H12.4574C9.81643 0 7.66577 2.3461 7.66577 5.2275V28.2271C7.66577 31.1085 9.81643 33.4546 12.4574 33.4546H41.2081C43.8494 33.4546 46.0001 31.1085 46.0001 28.2271V5.2275C46.0001 2.3461 43.8494 0 41.2081 0ZM12.4574 4.18186H41.2081C41.7373 4.18186 42.1665 4.65008 42.1665 5.2275V20.0708L36.1118 12.3635C35.4695 11.5419 34.5398 11.1027 33.5413 11.0779C32.5485 11.084 31.6171 11.5649 30.9807 12.3972L23.8619 21.7182L21.5427 19.1944C20.2319 17.7644 18.0984 17.7644 16.7893 19.1944L11.4992 24.9633V5.2275C11.4992 4.65008 11.9286 4.18186 12.4574 4.18186Z"
+                        fill="#DCE5F1"
+                      />
+                    </svg>
+                  </label>
+                  <a href="#" class="btn btn-icon">
+                    <svg
+                      width="12"
+                      height="12"
+                      viewBox="0 0 12 12"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M6.92308 0.923077C6.92308 0.4125 6.51058 0 6 0C5.48942 0 5.07692 0.4125 5.07692 0.923077V5.07692H0.923077C0.4125 5.07692 0 5.48942 0 6C0 6.51058 0.4125 6.92308 0.923077 6.92308H5.07692V11.0769C5.07692 11.5875 5.48942 12 6 12C6.51058 12 6.92308 11.5875 6.92308 11.0769V6.92308H11.0769C11.5875 6.92308 12 6.51058 12 6C12 5.48942 11.5875 5.07692 11.0769 5.07692H6.92308V0.923077Z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                  </a>
+                </div>
+              </div>
+              <div
+                class="col-auto"
+                *ngFor="let image of new_image_array; let index = index"
+              >
+                <div class="store-image-upload">
+                  <input type="file" class="d-none" id="img_upload2" />
+                  <!-- <label
+                  for="img_upload2"
+                  style="
+                    background-image: url('helper.CONSTANT.IMAGE_BASE_URL + image');
+                  "
+                ></label> -->
+                  <img class="product-img" [src]="image.base64_image" />
+                  <a
+                    (click)="remove_new_image(index)"
+                    class="btn btn-icon btn-danger"
+                  >
+                    <svg
+                      width="10"
+                      height="10"
+                      viewBox="0 0 10 10"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M1.6407 0.313476C1.27364 -0.0535839 0.680537 -0.0535838 0.313477 0.313476C-0.0535836 0.680537 -0.0535834 1.27364 0.313477 1.6407L3.29973 4.62695L0.313477 7.61321C-0.0535834 7.98027 -0.0535836 8.57337 0.313477 8.94043C0.680537 9.30749 1.27364 9.30749 1.6407 8.94043L4.62695 5.95418L7.61321 8.94043C7.98027 9.30749 8.57337 9.30749 8.94043 8.94043C9.30749 8.57337 9.30749 7.98027 8.94043 7.61321L5.95418 4.62695L8.94043 1.6407C9.30749 1.27364 9.30749 0.680537 8.94043 0.313476C8.57337 -0.0535838 7.98027 -0.0535838 7.61321 0.313477L4.62695 3.29973L1.6407 0.313476Z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                  </a>
+                </div>
+              </div>
+
+              <div
+                class="col-auto"
+                *ngFor="let image of item_detail.image_url; let index = index"
+              >
+                <div class="store-image-upload">
+                  <input type="file" class="d-none" id="img_upload2" />
+                  <!-- <label
+                    for="img_upload2"
+                    style="
+                      background-image: url('helper.CONSTANT.IMAGE_BASE_URL + image');
+                    "
+                  ></label> -->
+                  <img
+                    class="product-img"
+                    src="{{ helper.CONSTANT.IMAGE_BASE_URL + image }}"
+                  />
+                  <a
+                    (click)="delete_item_image(image, index)"
+                    class="btn btn-icon btn-danger"
+                  >
+                    <svg
+                      width="10"
+                      height="10"
+                      viewBox="0 0 10 10"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M1.6407 0.313476C1.27364 -0.0535839 0.680537 -0.0535838 0.313477 0.313476C-0.0535836 0.680537 -0.0535834 1.27364 0.313477 1.6407L3.29973 4.62695L0.313477 7.61321C-0.0535834 7.98027 -0.0535836 8.57337 0.313477 8.94043C0.680537 9.30749 1.27364 9.30749 1.6407 8.94043L4.62695 5.95418L7.61321 8.94043C7.98027 9.30749 8.57337 9.30749 8.94043 8.94043C9.30749 8.57337 9.30749 7.98027 8.94043 7.61321L5.95418 4.62695L8.94043 1.6407C9.30749 1.27364 9.30749 0.680537 8.94043 0.313476C8.57337 -0.0535838 7.98027 -0.0535838 7.61321 0.313477L4.62695 3.29973L1.6407 0.313476Z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-field">
+                  <label for="" class="form-label">Item Name</label>
+                  <input
+                    type="text"
+                    class="form-control form-control-solid"
+                    [(ngModel)]="item_detail.name"
+                    #name="ngModel"
+                    name="name"
+                    placeholder="Item Name"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-field">
+                  <label for="" class="form-label">Select Category</label>
+                  <ng-select
+                    class="custom-placeholder"
+                    [items]="filtered_product_list"
+                    bindLabel="name"
+                    bindValue="_id"
+                    placeholder="Select Category"
+                    [(ngModel)]="selectedCategory"
+                    (change)="onItemSelect($event)"
+                  >
+                  </ng-select>
+                  <!-- <ng-multiselect-dropdown
+                    [settings]="dropdownSettings"
+                    [data]="filtered_product_list"
+                    [(ngModel)]="selectedCategory"
+                    (onSelect)="onItemSelect($event)"
+                  >
+                  </ng-multiselect-dropdown> -->
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-3">
+                <div class="form-field">
+                  <label for="" class="form-label">Purchase Cost</label>
+                  <input
+                    type="text"
+                    class="form-control form-control-solid"
+                    placeholder="Splash Price"
+                    [(ngModel)]="item_detail.item_price_without_offer"
+                    #item_price_without_offer="ngModel"
+                    name="item_price_without_offer"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-field">
+                  <label for="" class="form-label">Item Price</label>
+                  <input
+                    type="text"
+                    class="form-control form-control-solid"
+                    placeholder="Item Price"
+                    [(ngModel)]="item_detail.price"
+                    #price="ngModel"
+                    name="price"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-field">
+                  <label for="" class="form-label">VAT(%)</label>
+                  <input
+                    type="text"
+                    class="form-control form-control-solid"
+                    placeholder="VAT(%)"
+                    [(ngModel)]="item_detail.tax"
+                    #tax="ngModel"
+                    name="tax"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-field">
+                  <label for="" class="form-label">Bar Code</label>
+                  <input
+                    type="text"
+                    class="form-control form-control-solid"
+                    placeholder="Bar Code"
+                    [(ngModel)]="item_detail.unique_id_for_store_data"
+                    #unique_id_for_store_data="ngModel"
+                    name="unique_id_for_store_data"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-field">
+                  <label for="" class="form-label">Description</label>
+                  <textarea
+                    class="form-control form-control-solid"
+                    placeholder="enter description"
+                    [(ngModel)]="item_detail.details"
+                    #details="ngModel"
+                    name="details"
+                    required
+                  ></textarea>
+                </div>
+              </div>
+              <!-- <div class="col-md-6">
+                <div class="form-field">
+                  <label for="" class="form-label">Flower Description</label>
+                  <textarea
+                    class="form-control form-control-solid"
+                    placeholder="enter flower description"
+                    [(ngModel)]="item_detail.details_1"
+                    #details_1="ngModel"
+                    name="details_1"
+                    required
+                  ></textarea>
+                </div>
+              </div> -->
+            </div>
+
+            <div class="row gx-5">
+              <div class="col-auto">
+                <div class="form-field">
+                  <div class="form-check form-switch">
+                    <input
+                      class="form-check-input me-2"
+                      type="checkbox"
+                      role="switch"
+                      id="VisibleInStore"
+                      [(ngModel)]="item_detail.is_visible_in_store"
+                      #is_visible_in_store="ngModel"
+                    />
+                    <label class="form-check-label" for="VisibleInStore"
+                      >Visible In Store</label
+                    >
+                  </div>
+                </div>
+              </div>
+              <div class="col-auto">
+                <div class="form-field">
+                  <div class="form-check form-switch">
+                    <input
+                      class="form-check-input me-2"
+                      type="checkbox"
+                      role="switch"
+                      id="ItemInStock"
+                      [(ngModel)]="item_detail.is_item_in_stock"
+                      #is_item_in_stock="ngModel"
+                      name="is_item_in_stock"
+                    />
+                    <label class="form-check-label" for="ItemInStock"
+                      >Item In Stock</label
+                    >
+                  </div>
+                </div>
+              </div>
+              <div class="col-auto">
+                <div class="form-field">
+                  <div class="form-check form-switch">
+                    <input
+                      class="form-check-input me-2"
+                      type="checkbox"
+                      role="switch"
+                      id="ExpressDelivery"
+                      [(ngModel)]="item_detail.is_most_popular"
+                      #is_express_in_delivery="ngModel"
+                      name="is_most_popular"
+                    />
+                    <label class="form-check-label" for="ExpressDelivery"
+                      >Express Delivery</label
+                    >
+                  </div>
+                </div>
+              </div>
+              <div class="col-auto">
+                <div class="form-field">
+                  <div class="form-check form-switch">
+                    <input
+                      class="form-check-input me-2"
+                      type="checkbox"
+                      role="switch"
+                      id="RecommendedProduct"
+                      [(ngModel)]="item_detail.is_recommend_in_store"
+                      #is_recommend_in_store="ngModel"
+                      name="is_recommend_in_store"
+                    />
+                    <label class="form-check-label" for="RecommendedProduct"
+                      >Recommended Product</label
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-2 text-end">
+      <a class="btn btn-primary" (click)="updateItem()">Save Changes</a>
+    </div>
+  </div>
+</ng-container>

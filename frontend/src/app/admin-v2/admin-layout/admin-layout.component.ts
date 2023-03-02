@@ -4,7 +4,7 @@ import {
   OnInit,
   ViewEncapsulation,
 } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
@@ -39,6 +39,26 @@ export class AdminLayoutComponent implements OnInit {
   ngOnInit(): void {
     const bodyElement = document.body;
     bodyElement.classList.remove('add-order-page');
+    this.checkAdminTyp();
+    this.getSettingDetails();
+  }
+
+  checkAdminTyp() {
+    let admin_id = localStorage.getItem('admin_id');
+    let admin_token = localStorage.getItem('admin_token');
+
+    this.authService
+      .checkAuth({ admin_id: admin_id, admin_token: admin_token })
+      .subscribe((data: any) => {
+        if (data.success) {
+        } else {
+          console.log('data :>> ', data);
+        }
+      });
+  }
+
+  getSettingDetails() {
+    this.authService.getSettingDetail({}).subscribe((res_data: any) => {});
   }
 
   toggleSideBar() {
@@ -74,7 +94,8 @@ export class AdminLayoutComponent implements OnInit {
   }
 
   logout() {
-    localStorage.clear();
+    localStorage.setItem('admin_id', '');
+    localStorage.setItem('admin_token', '');
     this.router.navigate(['admin/login']);
   }
 
