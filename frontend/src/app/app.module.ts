@@ -237,6 +237,7 @@ import { AdminStoreProductComponent } from './admin-v2/admin-store-product/admin
 
 // ng select
 import { NgSelectModule } from '@ng-select/ng-select';
+import { ManageInventoryComponent } from './stores-v2/manage-inventory/manage-inventory.component';
 
 @NgModule({
   declarations: [
@@ -252,7 +253,8 @@ import { NgSelectModule } from '@ng-select/ng-select';
     AdminHistoryComponent,
     AdminStoreComponent,
     AdminStoreListComponent,
-    AdminStoreProductComponent
+    AdminStoreProductComponent,
+    ManageInventoryComponent
   ],
   imports: [
     BrowserModule,

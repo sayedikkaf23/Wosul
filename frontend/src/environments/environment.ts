@@ -6,7 +6,7 @@ export const environment = {
   production: false,
   serverUrl: 'https://wosul.yeepeey.com',
   //serverUrl: 'https://staging.yeepeey.com',
-  url: 'http://localhost:8000',
+  //serverUrl: 'http://localhost:8000',
 };
 
 /*

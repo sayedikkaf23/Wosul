@@ -1,0 +1,843 @@
+<ng-container>
+  <div class="content">
+    <div class="content">
+      <div class="page-heading">
+        <div class="row align-items-center justify-content-between">
+          <div class="col-auto">
+            <div class="row align-items-center">
+              <div class="col-auto">
+                <h2>Add Product</h2>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row card-strash">
+        <div class="col-md-9">
+          <div class="card">
+            <h2>Product Information</h2>
+            <!-- <form> -->
+            <div class="row">
+              <div class="col-md-4">
+                <div class="form-field">
+                  <label>Item Name</label>
+                  <input
+                    class="form-control form-control-solid"
+                    type="text"
+                    placeholder="Enter Item name"
+                    [(ngModel)]="itemName"
+                  />
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-field">
+                  <label>Item Name in Arabic(Optional)</label>
+                  <input
+                    class="form-control form-control-solid"
+                    type="text"
+                    placeholder="Enter Item name in arabic"
+                    [(ngModel)]="itemNameArabic"
+                  />
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label class="d-flex align-items-center justify-content-between"
+                  >Barcode <a href="javascript:void(0)">Print Barcode</a>
+                </label>
+                <div class="input-group">
+                  <input
+                    type="text"
+                    class="form-control form-control-solid"
+                    placeholder="Enter barcode"
+                    aria-label="Recipient's username"
+                    [(ngModel)]="itemBarcode"
+                    [ngModelOptions]="{ standalone: true }"
+                  />
+                  <button
+                    class="btn btn-light-primary min-width-0"
+                    type="button"
+                    (click)="generateBarcode()"
+                  >
+                    + Generate
+                  </button>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-field">
+                  <label
+                    class="d-flex align-items-center justify-content-between"
+                    >Category
+                    <a href="javascript:void(0)" data-bs-toggle="modal">
+                      + Add Category
+                    </a>
+                  </label>
+                  <!-- [(ngModel)]="add_product.category_id"
+                    (change)="onCategoryChange(add_product.category_id)"
+                    selected_category_for_product -->
+                  <ng-select
+                    class="custom-placeholder category_list"
+                    placeholder="Choose Category"
+                    [(ngModel)]="add_product.category_id"
+                    [ngModelOptions]="{ standalone: true }"
+                    (change)="onCategoryChange(add_product.category_id)"
+                    selected_category_for_product
+                  >
+                    <ng-option
+                      *ngFor="let category of category_list"
+                      [value]="category._id"
+                    >
+                      {{ category.name }}
+                    </ng-option>
+                  </ng-select>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-field">
+                  <label
+                    class="d-flex align-items-center justify-content-between"
+                    >Sub Category
+                    <a href="javascript:void(0)" data-bs-toggle="modal">
+                      + Add Subcategory
+                    </a>
+                  </label>
+                  <ng-select
+                    class="custom-placeholder category_list"
+                    placeholder="Choose Subcategory"
+                    [(ngModel)]="selected_product_id"
+                    [ngModelOptions]="{ standalone: true }"
+                    (change)="onSubCategoryChange($event)"
+                  >
+                    <ng-option
+                      *ngFor="
+                        let product of filtered_product_list;
+                        let product_index = index
+                      "
+                      [value]="product._id"
+                    >
+                      {{ product.name }}
+                    </ng-option>
+                  </ng-select>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-field">
+                  <label>Status</label>
+                  <div class="form-check form-switch form-switch-2">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      role="switch"
+                      id="Status_id"
+                      [(ngModel)]="isItemInStock"
+                    />
+                    <!-- <label class="form-check-label" for="Status_id"
+                      >Item In Stock</label
+                    > -->
+                    <label class="form-check-label" for="Status_id"
+                      >Item In Stock</label
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- </form> -->
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card">
+            <h2 class="text-center">Item Image</h2>
+            <div class="mt-3">
+              <div class="image-upload">
+                <img
+                  [src]="
+                    base64Image ? base64Image : 'assets/images/empty-image.svg'
+                  "
+                />
+                <input
+                  type="file"
+                  #image_file
+                  accept="image/*"
+                  class="d-none"
+                  id="img_upload"
+                  (change)="image_update($event)"
+                />
+                <label
+                  (click)="$event.preventDefault(); image_file.click()"
+                  class="image-edit-btn"
+                  for="img_upload"
+                >
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 12 12"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M8.50078 0.45309C9.08671 -0.132801 10.0383 -0.132801 10.6242 0.45309L11.5477 1.37723C12.1336 1.96293 12.1336 2.91356 11.5477 3.4995L10.4133 4.63387L7.3664 1.58746L8.50078 0.45309ZM9.88359 5.16356L4.41796 10.6268C4.17421 10.8706 3.87187 11.0511 3.5414 11.1472L0.721167 11.9768C0.523823 12.0354 0.310307 11.9815 0.16476 11.8151C0.0192088 11.6909 -0.0352084 11.4776 0.0228697 11.2784L0.852417 8.45887C0.949917 8.1284 1.12874 7.82606 1.37273 7.58231L6.83671 2.11762L9.88359 5.16356Z"
+                      fill="currentColor"
+                    ></path>
+                  </svg>
+                </label>
+
+                <label
+                  *ngIf="base64Image"
+                  (click)="remove_new_image(0)"
+                  class="image-edit-btn"
+                  for="img_upload"
+                >
+                  <svg
+                    width="10"
+                    height="10"
+                    viewBox="0 0 10 10"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M1.6407 0.313476C1.27364 -0.0535839 0.680537 -0.0535838 0.313477 0.313476C-0.0535836 0.680537 -0.0535834 1.27364 0.313477 1.6407L3.29973 4.62695L0.313477 7.61321C-0.0535834 7.98027 -0.0535836 8.57337 0.313477 8.94043C0.680537 9.30749 1.27364 9.30749 1.6407 8.94043L4.62695 5.95418L7.61321 8.94043C7.98027 9.30749 8.57337 9.30749 8.94043 8.94043C9.30749 8.57337 9.30749 7.98027 8.94043 7.61321L5.95418 4.62695L8.94043 1.6407C9.30749 1.27364 9.30749 0.680537 8.94043 0.313476C8.57337 -0.0535838 7.98027 -0.0535838 7.61321 0.313477L4.62695 3.29973L1.6407 0.313476Z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </label>
+              </div>
+              <p class="text-muted text-small text-center mb-0">
+                Set the product image. Only *.png, *.jpg and *.jpeg image files
+                are accepted
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Price, Quantity and Tax Information</h2>
+
+        <div class="row">
+          <div class="col-md-3">
+            <div class="form-field">
+              <div class="d-flex justify-content-between">
+                <label>Choose Tax</label>
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    value=""
+                    id="TobacoTax"
+                  />
+                  <label class="form-check-label mb-0" for="TobacoTax">
+                    Is Taxable
+                  </label>
+                </div>
+              </div>
+              <select
+                class="form-select form-select-solid select2-hidden-accessible"
+                data-select2-id="select2-data-25-v0v5"
+                tabindex="-1"
+                aria-hidden="true"
+              >
+                <option data-select2-id="select2-data-27-2g42">
+                  choose tax
+                </option>
+                <option>option 2</option>
+                <option>option 3</option>
+                <option>option 4</option>
+                <option>option 5</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-field">
+              <label>Sale Price (Excl. Tax)</label>
+              <input
+                class="form-control form-control-solid"
+                type="text"
+                placeholder="enter sale price excluding tax"
+                [(ngModel)]="salePriceExclude"
+              />
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-field">
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  value=""
+                  id="SalePrice"
+                />
+                <label class="form-check-label" for="SalePrice">
+                  Sale Price (Incl. Tax)
+                </label>
+              </div>
+              <input
+                class="form-control form-control-solid"
+                type="text"
+                placeholder="enter sale price including tax"
+                [(ngModel)]="salePriceInculde"
+              />
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-field">
+              <label>Purchase Price (Excl. Tax)</label>
+              <input
+                class="form-control form-control-solid"
+                type="text"
+                placeholder="enter purchase price excluding tax"
+                [(ngModel)]="purchaseCost"
+              />
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-field">
+              <div class="d-flex justify-content-between">
+                <label>Quantity</label>
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    value=""
+                    id="UnlimitedQuantity"
+                  />
+                  <label class="form-check-label mb-0" for="UnlimitedQuantity">
+                    Unlimited Quantity
+                  </label>
+                </div>
+              </div>
+              <input
+                class="form-control form-control-solid"
+                type="text"
+                placeholder="enter quantity "
+                [(ngModel)]="quantity"
+              />
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-field">
+              <label>Stock Alert Quantity</label>
+              <input
+                class="form-control form-control-solid"
+                type="text"
+                placeholder="enter stock alert quantity"
+                [(ngModel)]="stockAlertQuantity"
+              />
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-field">
+              <label class="d-flex align-items-center justify-content-between"
+                >Discount
+                <a href="javascript:void(0)" data-bs-toggle="modal"
+                  >+ Add Discount</a
+                >
+              </label>
+              <ng-select
+                class="custom-placeholder category_list"
+                placeholder="Choose Discount"
+              >
+                <ng-option>option 2</ng-option>
+                <ng-option>option 3</ng-option>
+                <ng-option>option 4</ng-option>
+                <ng-option>option 5</ng-option>
+              </ng-select>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-field">
+              <label class="d-flex align-items-center justify-content-between"
+                >Measurement Category</label
+              >
+              <ng-select
+                class="custom-placeholder category_list"
+                placeholder="Choose Measurement Category"
+              >
+                <ng-option>option 2</ng-option>
+                <ng-option>option 3</ng-option>
+                <ng-option>option 4</ng-option>
+                <ng-option>option 5</ng-option>
+              </ng-select>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-field">
+              <label class="d-flex align-items-center justify-content-between"
+                >Measurement</label
+              >
+              <ng-select
+                class="custom-placeholder category_list"
+                placeholder="Choose Discount"
+              >
+                <ng-option>option 2</ng-option>
+                <ng-option>option 3</ng-option>
+                <ng-option>option 4</ng-option>
+                <ng-option>option 5</ng-option>
+              </ng-select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Search and Add Ingredients</h2>
+        <form>
+          <div class="row">
+            <div class="col-md-4">
+              <div class="form-field">
+                <label class="d-flex align-items-center justify-content-between"
+                  >Search</label
+                >
+                <ng-select
+                  class="custom-placeholder category_list"
+                  placeholder="Choose Ingredients"
+                >
+                  <ng-option>option 2</ng-option>
+                  <ng-option>option 3</ng-option>
+                  <ng-option>option 4</ng-option>
+                  <ng-option>option 5</ng-option>
+                </ng-select>
+
+                <p class="mt-1 text-small text-muted">
+                  Choose ingredients for preparing 1 Unit or Quantity if the
+                  product
+                </p>
+              </div>
+            </div>
+            <div class="col-md-8">
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  value=""
+                  id="TobacoTax"
+                />
+                <label class="form-check-label mb-0" for="TobacoTax">
+                  Set Product Price as Ingredient Cost
+                </label>
+              </div>
+              <p class="mt-1 text-small text-muted">
+                If this option is enabled, product sale price and purchase price
+                will be updated with ingredient cost.
+              </p>
+            </div>
+          </div>
+          <table class="table table-hover table-bordered mb-0">
+            <thead class="bg-light">
+              <tr>
+                <th>Name & Description</th>
+                <th>Purchase Price of 1 Unit</th>
+                <th>Sale Price of 1 Unit</th>
+                <th>Sale Price of 1 Unit</th>
+                <th>Measuring Unit</th>
+                <th width="50px"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Coffee Powder</td>
+                <td>5.00</td>
+                <td>10.0000</td>
+                <td>
+                  <input
+                    type="text"
+                    class="form-control form-control-sm form-control-solid"
+                    value="1"
+                  />
+                </td>
+                <td>
+                  <select class="form-select form-select-sm form-select-solid">
+                    <option>Choose Unit</option>
+                    <option>Choose Unit</option>
+                    <option>Choose Unit</option>
+                    <option>Choose Unit</option>
+                  </select>
+                </td>
+                <td class="text-end">
+                  <a
+                    href="javascript:void(0)"
+                    class="btn btn-icon btn-light btn-sm"
+                    ><i class="fa-solid fa-xmark"></i
+                  ></a>
+                </td>
+              </tr>
+              <tr>
+                <td>Coffee Powder</td>
+                <td>5.00</td>
+                <td>10.0000</td>
+                <td>
+                  <input
+                    type="text"
+                    class="form-control form-control-sm form-control-solid"
+                    value="1"
+                  />
+                </td>
+                <td>
+                  <select class="form-select form-select-sm form-select-solid">
+                    <option>Choose Unit</option>
+                    <option>Choose Unit</option>
+                    <option>Choose Unit</option>
+                    <option>Choose Unit</option>
+                  </select>
+                </td>
+                <td class="text-end">
+                  <a
+                    href="javascript:void(0)"
+                    class="btn btn-icon btn-light btn-sm"
+                    ><i class="fa-solid fa-xmark"></i
+                  ></a>
+                </td>
+              </tr>
+              <tr>
+                <td>Coffee Powder</td>
+                <td>5.00</td>
+                <td>10.0000</td>
+                <td>
+                  <input
+                    type="text"
+                    class="form-control form-control-sm form-control-solid"
+                    value="1"
+                  />
+                </td>
+                <td>
+                  <select class="form-select form-select-sm form-select-solid">
+                    <option>Choose Unit</option>
+                    <option>Choose Unit</option>
+                    <option>Choose Unit</option>
+                    <option>Choose Unit</option>
+                  </select>
+                </td>
+                <td class="text-end">
+                  <a
+                    href="javascript:void(0)"
+                    class="btn btn-icon btn-light btn-sm"
+                    ><i class="fa-solid fa-xmark"></i
+                  ></a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </form>
+      </div>
+      <div class="row card-strash">
+        <div class="col-md-9">
+          <div class="card">
+            <h2>Modifiers</h2>
+            <form>
+              <div class="size-n-value-wrap" data-simplebar>
+                <ul class="size-n-value">
+                  <li>
+                    <label class="size-wrap">
+                      <input type="checkbox" />
+                      <span><b>Size</b>SAR 123</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="size-wrap">
+                      <input type="checkbox" />
+                      <span><b>Size</b>SAR 123</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="size-wrap">
+                      <input type="checkbox" checked />
+                      <span><b>Size</b>SAR 123</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="size-wrap">
+                      <input type="checkbox" />
+                      <span><b>Size</b>SAR 123</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="size-wrap">
+                      <input type="checkbox" />
+                      <span><b>Size</b>SAR 123</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="size-wrap">
+                      <input type="checkbox" />
+                      <span><b>Size</b>SAR 123</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="size-wrap">
+                      <input type="checkbox" />
+                      <span><b>Size</b>SAR 123</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="size-wrap">
+                      <input type="checkbox" />
+                      <span><b>Size</b>SAR 123</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="size-wrap">
+                      <input type="checkbox" />
+                      <span><b>Size</b>SAR 123</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="size-wrap">
+                      <input type="checkbox" />
+                      <span><b>Size</b>SAR 123</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="size-wrap">
+                      <input type="checkbox" />
+                      <span><b>Size</b>SAR 123</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="size-wrap">
+                      <input type="checkbox" />
+                      <span><b>Size</b>SAR 123</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="size-wrap">
+                      <input type="checkbox" />
+                      <span><b>Size</b>SAR 123</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="size-wrap">
+                      <input type="checkbox" />
+                      <span><b>Size</b>SAR 123</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="size-wrap">
+                      <input type="checkbox" />
+                      <span><b>Size</b>SAR 123</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="size-wrap">
+                      <input type="checkbox" />
+                      <span><b>Size</b>SAR 123</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="size-wrap">
+                      <input type="checkbox" />
+                      <span><b>Size</b>SAR 123</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="size-wrap">
+                      <input type="checkbox" />
+                      <span><b>Size</b>SAR 123</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="size-wrap">
+                      <input type="checkbox" />
+                      <span><b>Size</b>SAR 123</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="size-wrap">
+                      <input type="checkbox" />
+                      <span><b>Size</b>SAR 123</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="size-wrap">
+                      <input type="checkbox" />
+                      <span><b>Size</b>SAR 123</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="size-wrap">
+                      <input type="checkbox" />
+                      <span><b>Size</b>SAR 123</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="size-wrap">
+                      <input type="checkbox" />
+                      <span><b>Size</b>SAR 123</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="size-wrap">
+                      <input type="checkbox" />
+                      <span><b>Size</b>SAR 123</span>
+                    </label>
+                  </li>
+                </ul>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card">
+            <h2>Measurments</h2>
+            <form>
+              <div class="form-field">
+                <label class="d-flex align-items-center justify-content-between"
+                  >Measurment category</label
+                >
+
+                <ng-select
+                  class="custom-placeholder category_list"
+                  placeholder="Choose Measurment Category"
+                >
+                  <ng-option>option 2</ng-option>
+                  <ng-option>option 3</ng-option>
+                  <ng-option>option 4</ng-option>
+                  <ng-option>option 5</ng-option>
+                </ng-select>
+              </div>
+              <div class="form-field">
+                <label class="d-flex align-items-center justify-content-between"
+                  >Measurement</label
+                >
+
+                <ng-select
+                  class="custom-placeholder category_list"
+                  placeholder=" Choose Measurment Option"
+                >
+                  <ng-option>option 2</ng-option>
+                  <ng-option>option 3</ng-option>
+                  <ng-option>option 4</ng-option>
+                  <ng-option>option 5</ng-option>
+                </ng-select>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="row card-strash">
+        <div class="col-md-9">
+          <div class="card">
+            <h2>Addtional Information</h2>
+
+            <div class="row">
+              <div class="col-md-4">
+                <div class="form-field">
+                  <label>Product Code</label>
+                  <input
+                    class="form-control form-control-solid"
+                    type="text"
+                    placeholder="enter product code"
+                    [(ngModel)]="productCode"
+                  />
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-field">
+                  <label
+                    class="d-flex align-items-center justify-content-between"
+                    >Supplier
+                    <a href="javascript:void(0)" data-bs-toggle="modal"
+                      >+ Add Supplier</a
+                    >
+                  </label>
+
+                  <ng-select
+                    class="custom-placeholder category_list"
+                    placeholder=" Choose Supplier"
+                  >
+                    <ng-option>option 2</ng-option>
+                    <ng-option>option 3</ng-option>
+                    <ng-option>option 4</ng-option>
+                    <ng-option>option 5</ng-option>
+                  </ng-select>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-field">
+                  <label
+                    class="d-flex align-items-center justify-content-between"
+                    >Barcode <a href="javascript:void(0)">Print Barcode</a>
+                  </label>
+                  <div class="input-group">
+                    <input
+                      type="text"
+                      class="form-control form-control-solid"
+                      placeholder="enter barcode"
+                      aria-label="Recipient's username"
+                    />
+                    <button
+                      class="btn btn-light-primary min-width-0"
+                      type="button"
+                    >
+                      Generate
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-field">
+                  <label
+                    class="d-flex align-items-center justify-content-between"
+                    >Brand
+                    <a href="javascript:void(0)" data-bs-toggle="modal">+ Add Brand</a>
+                  </label>
+                  <ng-select
+                    class="custom-placeholder category_list"
+                    placeholder=" Choose Brand"
+                  >
+                    <ng-option>option 2</ng-option>
+                    <ng-option>option 3</ng-option>
+                    <ng-option>option 4</ng-option>
+                    <ng-option>option 5</ng-option>
+                  </ng-select>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-field">
+                  <label> Manufacturer Date </label>
+                  <input
+                    class="form-control form-control-solid"
+                    type="date"
+                    placeholder="enter manufacturer date"
+                  />
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-field">
+                  <label> Expiry Date </label>
+                  <input
+                    class="form-control form-control-solid"
+                    type="date"
+                    placeholder="enter expiry date"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card">
+            <h2>Description</h2>
+
+            <div class="form-field">
+              <label> Description </label>
+              <textarea
+                class="form-control form-control-solid"
+                placeholder="enter description"
+                [(ngModel)]="itemDescription"
+              ></textarea>
+            </div>
+            <div class="form-field mb-0">
+              <label> Description (Arabic) </label>
+              <textarea
+                class="form-control form-control-solid"
+                placeholder="enter description in arabic"
+                [(ngModel)]="itemDescriptionArabic"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="text-end">
+        <a (click)="addStoreProduct()" class="btn btn-primary btn-radius"
+          >Add Product</a
+        >
+      </div>
+    </div>
+  </div>
+</ng-container>

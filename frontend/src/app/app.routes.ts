@@ -201,6 +201,7 @@ import { AdminOrderComponent } from './admin-v2/admin-order/admin-order.componen
 import { AdminHistoryComponent } from './admin-v2/admin-history/admin-history.component';
 import { AdminStoreComponent } from './admin-v2/admin-store/admin-store.component';
 import { AdminStoreProductComponent } from './admin-v2/admin-store-product/admin-store-product.component';
+import { ManageInventoryComponent } from './stores-v2/manage-inventory/manage-inventory.component';
 // import {HistoryCalenderComponent} from "./views/store/history_calender/history_calender.component";
 export const ROUTES: Routes = [
   // Main redirect
@@ -499,6 +500,7 @@ export const ROUTES: Routes = [
     children: [
       { path: 'store/create_order', component: CreateOrderComponent },
       { path: 'store/order_list', component: StoreOrderListComponent },
+      { path: 'store/manage_inventory', component: ManageInventoryComponent },
     ],
   },
   {

@@ -23,3 +23,9 @@
   border: none !important;
   width: 160px !important;
 }
+
+.ng-select.ng-select-single .ng-select-container {
+  background-color: #f4f6fb;
+  border-color: #f4f6fb;
+  border-radius: 8px;
+}

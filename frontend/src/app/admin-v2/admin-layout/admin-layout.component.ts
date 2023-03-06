@@ -96,7 +96,8 @@ export class AdminLayoutComponent implements OnInit {
   logout() {
     localStorage.setItem('admin_id', '');
     localStorage.setItem('admin_token', '');
-    this.router.navigate(['admin/login']);
+    location.href = '/admin/login';
+    //this.router.navigate(['admin/login']);
   }
 
   ngAfterContentChecked(): void {

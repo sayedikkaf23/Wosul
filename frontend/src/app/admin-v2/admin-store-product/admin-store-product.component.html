@@ -10,7 +10,7 @@
                 <h2 class="mb-0">Category</h2>
               </div>
               <div class="col-auto">
-                <a href="#" class="btn btn-white btn-sm">View Modifiers </a>
+                <a href="javascript:void(0)" class="btn btn-white btn-sm">View Modifiers </a>
               </div>
             </div>
           </div>
@@ -263,8 +263,6 @@
           </div>
           <div class="white-card">
             <p>
-              <!-- In publishing and graphic design, Lorem ipsum is a placeholder
-              text commonly used to demonstrate the visual form -->
               <label>{{ title.note_for_image }}: </label
               ><span
                 >{{ title.image_note1 }} {{ image_setting.image_min_width }}x{{
@@ -273,7 +271,7 @@
                 {{ title.image_note2 }}
                 {{ image_setting.image_max_width }}x{{
                   image_setting.image_max_height
-                }}), {{ title.image_note3 }}
+                }}, {{ title.image_note3 }}
                 <label>{{ image_setting.image_ratio }}</label>
                 {{ title.image_note4 }}</span
               >
@@ -323,7 +321,7 @@
                       />
                     </svg>
                   </label>
-                  <a href="#" class="btn btn-icon">
+                  <!-- <a href="#" class="btn btn-icon">
                     <svg
                       width="12"
                       height="12"
@@ -336,7 +334,7 @@
                         fill="currentColor"
                       />
                     </svg>
-                  </a>
+                  </a> -->
                 </div>
               </div>
               <div
@@ -539,6 +537,9 @@
             <div class="row gx-5">
               <div class="col-auto">
                 <div class="form-field">
+                  <label class="form-check-label" for="VisibleInStore"
+                    >Visible In Store</label
+                  >
                   <div class="form-check form-switch">
                     <input
                       class="form-check-input me-2"
@@ -548,14 +549,14 @@
                       [(ngModel)]="item_detail.is_visible_in_store"
                       #is_visible_in_store="ngModel"
                     />
-                    <label class="form-check-label" for="VisibleInStore"
-                      >Visible In Store</label
-                    >
                   </div>
                 </div>
               </div>
               <div class="col-auto">
                 <div class="form-field">
+                  <label class="form-check-label" for="ItemInStock"
+                    >Item In Stock</label
+                  >
                   <div class="form-check form-switch">
                     <input
                       class="form-check-input me-2"
@@ -566,14 +567,17 @@
                       #is_item_in_stock="ngModel"
                       name="is_item_in_stock"
                     />
-                    <label class="form-check-label" for="ItemInStock"
-                      >Item In Stock</label
-                    >
                   </div>
                 </div>
               </div>
+            </div>
+
+            <div class="row gx-5">
               <div class="col-auto">
                 <div class="form-field">
+                  <label class="form-check-label" for="ExpressDelivery"
+                    >Express Delivery</label
+                  >
                   <div class="form-check form-switch">
                     <input
                       class="form-check-input me-2"
@@ -584,14 +588,14 @@
                       #is_express_in_delivery="ngModel"
                       name="is_most_popular"
                     />
-                    <label class="form-check-label" for="ExpressDelivery"
-                      >Express Delivery</label
-                    >
                   </div>
                 </div>
               </div>
               <div class="col-auto">
                 <div class="form-field">
+                  <label class="form-check-label" for="RecommendedProduct"
+                    >Recommended Product</label
+                  >
                   <div class="form-check form-switch">
                     <input
                       class="form-check-input me-2"
@@ -602,9 +606,6 @@
                       #is_recommend_in_store="ngModel"
                       name="is_recommend_in_store"
                     />
-                    <label class="form-check-label" for="RecommendedProduct"
-                      >Recommended Product</label
-                    >
                   </div>
                 </div>
               </div>
