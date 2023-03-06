@@ -24,7 +24,7 @@
                   <input
                     class="form-control form-control-solid"
                     type="text"
-                    placeholder="Enter Item name"
+                    placeholder="Enter Item Name"
                     [(ngModel)]="itemName"
                   />
                 </div>
@@ -35,7 +35,7 @@
                   <input
                     class="form-control form-control-solid"
                     type="text"
-                    placeholder="Enter Item name in arabic"
+                    placeholder="Enter Item Name In Arabic"
                     [(ngModel)]="itemNameArabic"
                   />
                 </div>
@@ -48,7 +48,7 @@
                   <input
                     type="text"
                     class="form-control form-control-solid"
-                    placeholder="Enter barcode"
+                    placeholder="Enter Barcode"
                     aria-label="Recipient's username"
                     [(ngModel)]="itemBarcode"
                     [ngModelOptions]="{ standalone: true }"
@@ -130,10 +130,10 @@
                       id="Status_id"
                       [(ngModel)]="isItemInStock"
                     />
-                    <!-- <label class="form-check-label" for="Status_id"
-                      >Item In Stock</label
-                    > -->
-                    <label class="form-check-label" for="Status_id"
+                    <label
+                      [ngClass]="isItemInStock ? 'checked' : 'unchecked'"
+                      class="form-check-label"
+                      for="Status_id"
                       >Item In Stock</label
                     >
                   </div>
@@ -250,7 +250,7 @@
               <input
                 class="form-control form-control-solid"
                 type="text"
-                placeholder="enter sale price excluding tax"
+                placeholder="Enter Sale Price Excluding Tax"
                 [(ngModel)]="salePriceExclude"
               />
             </div>
@@ -271,7 +271,7 @@
               <input
                 class="form-control form-control-solid"
                 type="text"
-                placeholder="enter sale price including tax"
+                placeholder="Enter Sale Price Including Tax"
                 [(ngModel)]="salePriceInculde"
               />
             </div>
@@ -282,7 +282,7 @@
               <input
                 class="form-control form-control-solid"
                 type="text"
-                placeholder="enter purchase price excluding tax"
+                placeholder="Enter Purchase Price Excluding Tax"
                 [(ngModel)]="purchaseCost"
               />
             </div>
@@ -306,7 +306,7 @@
               <input
                 class="form-control form-control-solid"
                 type="text"
-                placeholder="enter quantity "
+                placeholder="Enter Quantity"
                 [(ngModel)]="quantity"
               />
             </div>
@@ -317,7 +317,7 @@
               <input
                 class="form-control form-control-solid"
                 type="text"
-                placeholder="enter stock alert quantity"
+                placeholder="Enter Stock Alert Quantity"
                 [(ngModel)]="stockAlertQuantity"
               />
             </div>
@@ -721,7 +721,7 @@
                   <input
                     class="form-control form-control-solid"
                     type="text"
-                    placeholder="enter product code"
+                    placeholder="Enter Product Code"
                     [(ngModel)]="productCode"
                   />
                 </div>
@@ -757,12 +757,14 @@
                     <input
                       type="text"
                       class="form-control form-control-solid"
-                      placeholder="enter barcode"
+                      placeholder="Enter Barcode"
                       aria-label="Recipient's username"
+                      [(ngModel)]="itemBarcode"
                     />
                     <button
                       class="btn btn-light-primary min-width-0"
                       type="button"
+                      (click)="generateBarcode()"
                     >
                       Generate
                     </button>
@@ -774,7 +776,9 @@
                   <label
                     class="d-flex align-items-center justify-content-between"
                     >Brand
-                    <a href="javascript:void(0)" data-bs-toggle="modal">+ Add Brand</a>
+                    <a href="javascript:void(0)" data-bs-toggle="modal"
+                      >+ Add Brand</a
+                    >
                   </label>
                   <ng-select
                     class="custom-placeholder category_list"
@@ -818,7 +822,7 @@
               <label> Description </label>
               <textarea
                 class="form-control form-control-solid"
-                placeholder="enter description"
+                placeholder="Enter Description"
                 [(ngModel)]="itemDescription"
               ></textarea>
             </div>
@@ -826,7 +830,7 @@
               <label> Description (Arabic) </label>
               <textarea
                 class="form-control form-control-solid"
-                placeholder="enter description in arabic"
+                placeholder="Enter Description in Arabic"
                 [(ngModel)]="itemDescriptionArabic"
               ></textarea>
             </div>

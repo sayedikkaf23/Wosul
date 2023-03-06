@@ -179,6 +179,7 @@ export class ManageInventoryComponent implements OnInit {
   itemDescription: any;
   itemDescriptionArabic: any;
   productCode: any;
+  itemAdditionalBarcode: any;
 
   constructor(
     public helper: Helper,
@@ -2102,6 +2103,10 @@ export class ManageInventoryComponent implements OnInit {
         this.helper.message();
       }
     });
+  }
+
+  generateBarcodeAdditional() {
+    this.itemAdditionalBarcode = Date.now();
   }
 
   clearFields() {

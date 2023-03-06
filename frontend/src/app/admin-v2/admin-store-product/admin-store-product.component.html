@@ -10,7 +10,9 @@
                 <h2 class="mb-0">Category</h2>
               </div>
               <div class="col-auto">
-                <a href="javascript:void(0)" class="btn btn-white btn-sm">View Modifiers </a>
+                <a href="javascript:void(0)" class="btn btn-white btn-sm"
+                  >View Modifiers
+                </a>
               </div>
             </div>
           </div>
@@ -447,13 +449,15 @@
             </div>
 
             <div class="row">
-              <div class="col-md-3">
+              <div class="col-md-4">
                 <div class="form-field">
-                  <label for="" class="form-label">Purchase Cost</label>
+                  <label for="" class="form-label"
+                    >Purchase Price</label
+                  >
                   <input
                     type="text"
                     class="form-control form-control-solid"
-                    placeholder="Splash Price"
+                    placeholder="Purchase Price (Excl. Tax)"
                     [(ngModel)]="item_detail.item_price_without_offer"
                     #item_price_without_offer="ngModel"
                     name="item_price_without_offer"
@@ -461,7 +465,7 @@
                   />
                 </div>
               </div>
-              <div class="col-md-3">
+              <!-- <div class="col-md-4">
                 <div class="form-field">
                   <label for="" class="form-label">Item Price</label>
                   <input
@@ -474,22 +478,8 @@
                     required
                   />
                 </div>
-              </div>
-              <div class="col-md-3">
-                <div class="form-field">
-                  <label for="" class="form-label">VAT(%)</label>
-                  <input
-                    type="text"
-                    class="form-control form-control-solid"
-                    placeholder="VAT(%)"
-                    [(ngModel)]="item_detail.tax"
-                    #tax="ngModel"
-                    name="tax"
-                    required
-                  />
-                </div>
-              </div>
-              <div class="col-md-3">
+              </div> -->
+              <div class="col-md-4">
                 <div class="form-field">
                   <label for="" class="form-label">Bar Code</label>
                   <input
@@ -503,6 +493,63 @@
                   />
                 </div>
               </div>
+              <div class="col-md-4">
+                <div class="form-field">
+                  <label for="" class="form-label"
+                    >Sale Price (Excl. Tax)
+                  </label>
+                  <input
+                    type="text"
+                    class="form-control form-control-solid"
+                    placeholder="Sale Price (Excl. Tax)"
+                    [(ngModel)]="salePriceExclude"
+                    #tax="ngModel"
+                    name="tax"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-4">
+                <div class="form-field">
+                  <label for="" class="form-label">
+                    Sale Price (Incl. Tax)</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control form-control-solid"
+                    placeholder="Sale Price (Incl. Tax)"
+                    [(ngModel)]="salePriceInculde"
+                    name="item_price_without_offer"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-field">
+                  <label for="" class="form-label">Quantity</label>
+                  <input
+                    type="text"
+                    class="form-control form-control-solid"
+                    placeholder="Quantity "
+                    [(ngModel)]="quantity"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-field">
+                  <label for="" class="form-label">Stock Alert Quantity</label>
+                  <input
+                    type="text"
+                    class="form-control form-control-solid"
+                    placeholder="Stock Alert Qty"
+                    [(ngModel)]="stockAlertQuantity"
+                  />
+                </div>
+              </div>
             </div>
 
             <div class="row">
@@ -511,7 +558,7 @@
                   <label for="" class="form-label">Description</label>
                   <textarea
                     class="form-control form-control-solid"
-                    placeholder="enter description"
+                    placeholder="Description"
                     [(ngModel)]="item_detail.details"
                     #details="ngModel"
                     name="details"

@@ -164,6 +164,23 @@ export class AdminStoreProductComponent implements OnInit {
   search_value: string;
   search_item_value: string;
 
+  base64Image: any;
+  itemBarcode: any;
+  itemName: any;
+  itemNameArabic: any;
+  purchaseCost: any;
+  isItemInStock: Boolean = false;
+  salePriceExclude: Number;
+  salePriceInculde: Number;
+  purchasePrice: Number;
+  quantity: Number;
+  stockAlertQuantity: Number;
+  discount: any;
+  itemDescription: any;
+  itemDescriptionArabic: any;
+  productCode: any;
+  itemAdditionalBarcode: any;
+
   constructor(
     public helper: Helper,
     public vcr: ViewContainerRef,
@@ -309,6 +326,7 @@ export class AdminStoreProductComponent implements OnInit {
         } else {
           this.category_list = data.category;
           this.add_product.category_id = this.category_list?.[0]?._id;
+          this.selected_category_for_product = this.category_list?.[0]?._id;
         }
 
         // setTimeout(() => {
