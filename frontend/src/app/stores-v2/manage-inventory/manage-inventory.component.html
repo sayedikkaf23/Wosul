@@ -67,9 +67,9 @@
                   <label
                     class="d-flex align-items-center justify-content-between"
                     >Category
-                    <a href="javascript:void(0)" data-bs-toggle="modal">
+                    <!-- <a href="javascript:void(0)" data-bs-toggle="modal">
                       + Add Category
-                    </a>
+                    </a> -->
                   </label>
                   <!-- [(ngModel)]="add_product.category_id"
                     (change)="onCategoryChange(add_product.category_id)"
@@ -91,14 +91,12 @@
                   </ng-select>
                 </div>
               </div>
-              <div class="col-md-4">
+              <!-- <div class="col-md-4">
                 <div class="form-field">
                   <label
                     class="d-flex align-items-center justify-content-between"
                     >Sub Category
-                    <a href="javascript:void(0)" data-bs-toggle="modal">
-                      + Add Subcategory
-                    </a>
+                   
                   </label>
                   <ng-select
                     class="custom-placeholder category_list"
@@ -118,7 +116,7 @@
                     </ng-option>
                   </ng-select>
                 </div>
-              </div>
+              </div> -->
               <div class="col-md-4">
                 <div class="form-field">
                   <label>Status</label>
@@ -147,58 +145,62 @@
           <div class="card">
             <h2 class="text-center">Item Image</h2>
             <div class="mt-3">
-              <div class="image-upload">
-                <img
-                  [src]="
-                    base64Image ? base64Image : 'assets/images/empty-image.svg'
-                  "
-                />
-                <input
-                  type="file"
-                  #image_file
-                  accept="image/*"
-                  class="d-none"
-                  id="img_upload"
-                  (change)="image_update($event)"
-                />
-                <label
-                  (click)="$event.preventDefault(); image_file.click()"
-                  class="image-edit-btn"
-                  for="img_upload"
-                >
-                  <svg
-                    width="12"
-                    height="12"
-                    viewBox="0 0 12 12"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
+              <div>
+                <div class="image-upload">
+                  <img
+                    [src]="
+                      base64Image
+                        ? base64Image
+                        : 'assets/images/empty-image.svg'
+                    "
+                  />
+                  <input
+                    type="file"
+                    #image_file
+                    accept="image/*"
+                    class="d-none"
+                    id="img_upload"
+                    (change)="image_update($event)"
+                  />
+                  <label
+                    (click)="$event.preventDefault(); image_file.click()"
+                    class="image-edit-btn"
+                    for="img_upload"
                   >
-                    <path
-                      d="M8.50078 0.45309C9.08671 -0.132801 10.0383 -0.132801 10.6242 0.45309L11.5477 1.37723C12.1336 1.96293 12.1336 2.91356 11.5477 3.4995L10.4133 4.63387L7.3664 1.58746L8.50078 0.45309ZM9.88359 5.16356L4.41796 10.6268C4.17421 10.8706 3.87187 11.0511 3.5414 11.1472L0.721167 11.9768C0.523823 12.0354 0.310307 11.9815 0.16476 11.8151C0.0192088 11.6909 -0.0352084 11.4776 0.0228697 11.2784L0.852417 8.45887C0.949917 8.1284 1.12874 7.82606 1.37273 7.58231L6.83671 2.11762L9.88359 5.16356Z"
-                      fill="currentColor"
-                    ></path>
-                  </svg>
-                </label>
+                    <svg
+                      width="12"
+                      height="12"
+                      viewBox="0 0 12 12"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M8.50078 0.45309C9.08671 -0.132801 10.0383 -0.132801 10.6242 0.45309L11.5477 1.37723C12.1336 1.96293 12.1336 2.91356 11.5477 3.4995L10.4133 4.63387L7.3664 1.58746L8.50078 0.45309ZM9.88359 5.16356L4.41796 10.6268C4.17421 10.8706 3.87187 11.0511 3.5414 11.1472L0.721167 11.9768C0.523823 12.0354 0.310307 11.9815 0.16476 11.8151C0.0192088 11.6909 -0.0352084 11.4776 0.0228697 11.2784L0.852417 8.45887C0.949917 8.1284 1.12874 7.82606 1.37273 7.58231L6.83671 2.11762L9.88359 5.16356Z"
+                        fill="currentColor"
+                      ></path>
+                    </svg>
+                  </label>
 
-                <label
-                  *ngIf="base64Image"
-                  (click)="remove_new_image(0)"
-                  class="image-edit-btn"
-                  for="img_upload"
-                >
-                  <svg
-                    width="10"
-                    height="10"
-                    viewBox="0 0 10 10"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
+                  <label
+                    *ngIf="base64Image"
+                    (click)="remove_new_image(0)"
+                    class="image-edit-btn"
+                    for="img_upload"
                   >
-                    <path
-                      d="M1.6407 0.313476C1.27364 -0.0535839 0.680537 -0.0535838 0.313477 0.313476C-0.0535836 0.680537 -0.0535834 1.27364 0.313477 1.6407L3.29973 4.62695L0.313477 7.61321C-0.0535834 7.98027 -0.0535836 8.57337 0.313477 8.94043C0.680537 9.30749 1.27364 9.30749 1.6407 8.94043L4.62695 5.95418L7.61321 8.94043C7.98027 9.30749 8.57337 9.30749 8.94043 8.94043C9.30749 8.57337 9.30749 7.98027 8.94043 7.61321L5.95418 4.62695L8.94043 1.6407C9.30749 1.27364 9.30749 0.680537 8.94043 0.313476C8.57337 -0.0535838 7.98027 -0.0535838 7.61321 0.313477L4.62695 3.29973L1.6407 0.313476Z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                </label>
+                    <svg
+                      width="10"
+                      height="10"
+                      viewBox="0 0 10 10"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M1.6407 0.313476C1.27364 -0.0535839 0.680537 -0.0535838 0.313477 0.313476C-0.0535836 0.680537 -0.0535834 1.27364 0.313477 1.6407L3.29973 4.62695L0.313477 7.61321C-0.0535834 7.98027 -0.0535836 8.57337 0.313477 8.94043C0.680537 9.30749 1.27364 9.30749 1.6407 8.94043L4.62695 5.95418L7.61321 8.94043C7.98027 9.30749 8.57337 9.30749 8.94043 8.94043C9.30749 8.57337 9.30749 7.98027 8.94043 7.61321L5.95418 4.62695L8.94043 1.6407C9.30749 1.27364 9.30749 0.680537 8.94043 0.313476C8.57337 -0.0535838 7.98027 -0.0535838 7.61321 0.313477L4.62695 3.29973L1.6407 0.313476Z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                  </label>
+                </div>
               </div>
               <p class="text-muted text-small text-center mb-0">
                 Set the product image. Only *.png, *.jpg and *.jpeg image files
@@ -212,7 +214,7 @@
         <h2>Price, Quantity and Tax Information</h2>
 
         <div class="row">
-          <div class="col-md-3">
+          <!-- <div class="col-md-3">
             <div class="form-field">
               <div class="d-flex justify-content-between">
                 <label>Choose Tax</label>
@@ -243,7 +245,7 @@
                 <option>option 5</option>
               </select>
             </div>
-          </div>
+          </div> -->
           <div class="col-md-3">
             <div class="form-field">
               <label>Sale Price (Excl. Tax)</label>
@@ -326,9 +328,9 @@
             <div class="form-field">
               <label class="d-flex align-items-center justify-content-between"
                 >Discount
-                <a href="javascript:void(0)" data-bs-toggle="modal"
+                <!-- <a href="javascript:void(0)" data-bs-toggle="modal"
                   >+ Add Discount</a
-                >
+                > -->
               </label>
               <ng-select
                 class="custom-placeholder category_list"
@@ -731,9 +733,9 @@
                   <label
                     class="d-flex align-items-center justify-content-between"
                     >Supplier
-                    <a href="javascript:void(0)" data-bs-toggle="modal"
+                    <!-- <a href="javascript:void(0)" data-bs-toggle="modal"
                       >+ Add Supplier</a
-                    >
+                    > -->
                   </label>
 
                   <ng-select
@@ -776,9 +778,9 @@
                   <label
                     class="d-flex align-items-center justify-content-between"
                     >Brand
-                    <a href="javascript:void(0)" data-bs-toggle="modal"
+                    <!-- <a href="javascript:void(0)" data-bs-toggle="modal"
                       >+ Add Brand</a
-                    >
+                    > -->
                   </label>
                   <ng-select
                     class="custom-placeholder category_list"

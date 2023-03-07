@@ -22,4 +22,14 @@ module.exports = function (app) {
   app
     .route("/api/get_product_item_detail")
     .post(product.get_product_item_detail);
+
+  app.post(
+    "/api/store/get_product_list_by_category",
+    product.get_product_list_by_category
+  );
+
+  app.post(
+    "/api/store/add_product_by_category",
+    product.add_product_by_category
+  );
 };

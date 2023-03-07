@@ -86,4 +86,18 @@ export class StoreService {
   deleteStoreItem(payload) {
     return this.http.post(`${this.url}/api/store/delete_item`, payload);
   }
+
+  getProductByCategory(payload) {
+    return this.http.post(
+      `${this.url}/api/store/get_product_list_by_category`,
+      payload
+    );
+  }
+
+  addProductByCategory(payload) {
+    return this.http.post(
+      `${this.url}/api/store/add_product_by_category`,
+      payload
+    );
+  }
 }

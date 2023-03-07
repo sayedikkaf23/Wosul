@@ -2,6 +2,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from 'src/app/services/auth.service';
 import { ProductService } from 'src/app/services/product.service';
+import { StoreService } from 'src/app/services/store.service';
 
 export const itemsKeysToRemove = [
   '__v',
@@ -46,12 +47,14 @@ export class CreateOrderComponent implements OnInit {
   selectedServiceId = null;
   itemPage = 1;
   itemsKeysToRemove = itemsKeysToRemove;
+  selected_product_id: any = '';
 
   constructor(
     private productService: ProductService,
     private modalService: NgbModal,
     private activeModal: NgbActiveModal,
-    private authService: AuthService
+    private authService: AuthService,
+    private storeService: StoreService
   ) {}
 
   async ngOnInit() {
@@ -66,16 +69,31 @@ export class CreateOrderComponent implements OnInit {
 
   set categoryId(id) {
     this.selectedCategoryId = id;
-    this.getStoreProductItemList();
   }
 
   async getCartToken() {
     this.cartToken = await this.authService.cartToken;
   }
 
+  getProductByCategory() {
+    const payload = {
+      category_id: this.selectedCategoryId,
+      store_id: this.storeId,
+    };
+    this.storeService.getProductByCategory(payload).subscribe((res: any) => {
+      if (res.product) {
+        this.selectedProductId = res?.product?._id;
+        this.getUserItems();
+      } else {
+        this.items = [];
+      }
+    });
+  }
+
   setCategory(category) {
     this.selectedCategory = category;
     this.categoryId = category?._id;
+    this.getProductByCategory();
   }
 
   setProduct(product) {
@@ -114,12 +132,16 @@ export class CreateOrderComponent implements OnInit {
       store_id: this.storeId,
       // user_id: this.auth.user?._id,
       category_id: this.selectedCategoryId,
+      search_value: '',
     };
-    this.productService.getStoreProductItemList(payload).subscribe({
+    this.storeService.getAdminStoreProducts(payload).subscribe({
       next: (res: any) => {
-        this.product = res.product;
-        const [product] = this.product;
-        this.setProduct(product);
+        if (res.success) {
+          this.product = res.products;
+
+          //const [product] = this.product;
+          //this.setProduct(product);
+        }
       },
     });
   }
@@ -128,11 +150,12 @@ export class CreateOrderComponent implements OnInit {
     const payload = {
       store_id: this.storeId,
     };
-    this.productService.getCategoryList(payload).subscribe({
+    this.storeService.getAdminStoreCategory(payload).subscribe({
       next: (res: any) => {
         this.category = res.category;
         const [category] = this.category;
         this.setCategory(category);
+        this.getProductByCategory();
       },
     });
   }

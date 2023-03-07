@@ -9,6 +9,7 @@ var Product = require("mongoose").model("product");
 var Store = require("mongoose").model("store");
 var Item = require("mongoose").model("item");
 var jwt = require("jsonwebtoken");
+const { addItems } = require("../../services/item.service");
 
 // add product api
 exports.add_product = function (request_data, response_data) {
@@ -229,6 +230,57 @@ exports.get_product_list = function (request_data, response_data) {
       response_data.json(response);
     }
   });
+};
+
+//get_product_list_by_category
+exports.get_product_list_by_category = async function (
+  request_data,
+  response_data
+) {
+  var request_data_body = request_data.body;
+  const store = await Store.findOne({ _id: request_data_body.store_id });
+  if (store) {
+    const product = await Product.find({
+      category_id: mongoose.Types.ObjectId(request_data_body.category_id),
+      store_id: mongoose.Types.ObjectId(request_data_body.store_id),
+    });
+    if (product.length > 0) {
+      response_data.json({
+        success: true,
+        product: product[0],
+      });
+    } else {
+      response_data.json({
+        success: false,
+        message: "Data Not Found!",
+      });
+    }
+  } else {
+    response_data.json({
+      success: false,
+      message: "Store Not Found!",
+    });
+  }
+};
+
+// add_product_by_category
+exports.add_product_by_category = async function (request_data, response_data) {
+  try {
+    const request_data_body = request_data.body;
+    if (request_data_body?.category_id) {
+      const product = await Product.create(request_data_body);
+      if (product) {
+        response_data.json({
+          success: true,
+          product: product,
+        });
+      }
+    }
+  } catch (error) {
+    response_data.json({
+      success: false,
+    });
+  }
 };
 
 //get_product_data

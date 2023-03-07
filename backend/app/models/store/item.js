@@ -47,10 +47,10 @@ var item = new schema(
     tags: { type: String, default: "" },
     item_name_arabic: { type: String, default: "" },
     item_description_arabic: { type: String, default: "" },
-    sale_price_exclude: { type: Number, default: 0 },
+    sale_price_exclusive_tax: { type: Number, default: 0 },
     product_code: { type: String, default: "" },
     stock_alert_quantity: { type: Number, default: 0 },
-    sale_price_include: { type: Number, default: 0 },
+    sale_price_inclusive_tax: { type: Number, default: 0 },
 
     created_at: {
       type: Date,

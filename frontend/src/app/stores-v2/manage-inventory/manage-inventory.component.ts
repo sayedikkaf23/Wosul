@@ -323,6 +323,8 @@ export class ManageInventoryComponent implements OnInit {
         } else {
           this.category_list = data.category;
           this.add_product.category_id = this.category_list?.[0]?._id;
+          this.selectedCategory = this.category_list?.[0]?._id;
+          this.getProductByCategory();
         }
 
         // setTimeout(() => {
@@ -337,6 +339,31 @@ export class ManageInventoryComponent implements OnInit {
         //     });
         // }, 1000);
       });
+  }
+
+  getProductByCategory() {
+    const payload = {
+      category_id: this.selectedCategory,
+      store_id: this.helper.router_id.admin.store_id,
+    };
+    this.storeService.getProductByCategory(payload).subscribe((res: any) => {
+      if (res.product) {
+        this.selected_product_id = res?.product?._id;
+      } else {
+        const payload = {
+          category_id: this.selectedCategory,
+          store_id: this.helper.router_id.admin.store_id,
+          name: 'Exclusive',
+        };
+        this.storeService
+          .addProductByCategory(payload)
+          .subscribe((res: any) => {
+            if (res.product) {
+              this.selected_product_id = res?.product?._id;
+            }
+          });
+      }
+    });
   }
 
   onItemSelect(event) {
@@ -397,6 +424,10 @@ export class ManageInventoryComponent implements OnInit {
             if (this.filtered_product_list.length > 0) {
               this.is_product_selected = true;
               this.selected_product_id = this.filtered_product_list[0]._id;
+              console.log(
+                ' this.selected_product_id: ',
+                this.selected_product_id
+              );
               this.get_item_list();
               this.item_specification_group_list =
                 this.filtered_product_list[0].specifications_details;
@@ -2069,11 +2100,13 @@ export class ManageInventoryComponent implements OnInit {
       item_description_arabic: this.itemDescriptionArabic,
       details: this.itemDescription,
       total_quantity: this.quantity,
-      sale_price_exclude: this.salePriceExclude,
-      sale_price_include: this.salePriceInculde,
+      sale_price_exclusive_tax: this.salePriceExclude,
+      sale_price_inclusive_tax: this.salePriceInculde,
       purchase_cost: this.purchaseCost,
       product_code: this.productCode,
       stock_alert_quantity: this.stockAlertQuantity,
+      is_visible_in_store: true,
+      price: 10,
       //image_url: this.base64Image,
     };
 
@@ -2108,6 +2141,17 @@ export class ManageInventoryComponent implements OnInit {
   generateBarcodeAdditional() {
     this.itemAdditionalBarcode = Date.now();
   }
+
+  triggerFalseClick() {
+    this.image_file.nativeElement.click();
+    // el.click();
+  }
+
+  // onItemImageClick(event) {
+  //   console.log('event: ', event);
+  //   this.image_file.nativeElement.click();
+  //   event.preventDefault();
+  // }
 
   clearFields() {
     this.itemName = '';
