@@ -52,6 +52,10 @@ var item = new schema(
     stock_alert_quantity: { type: Number, default: 0 },
     sale_price_inclusive_tax: { type: Number, default: 0 },
 
+    modifiers: { type: Array, default: [] },
+
+    ingrediants: { type: Array, default: [] },
+
     created_at: {
       type: Date,
       default: Date.now,

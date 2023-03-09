@@ -83,4 +83,24 @@ module.exports = function (app) {
     .route("/api/store/update_sequence_number")
     .post(item.update_sequence_number);
   app.route("/api/get_item_by_barcode").post(item.get_item_by_barcode);
+
+  app.get("/api/store/get_ingrediant", authMiddleware, item.get_ingrediant);
+
+  app.post(
+    "/api/store/get_ingrediant_by_id",
+    authMiddleware,
+    item.get_ingrediant_by_id
+  );
+
+  app.get(
+    "/api/store/get_measuring_unit",
+    authMiddleware,
+    item.get_measuring_unit
+  );
+
+  app.get(
+    "/api/store/get_modifier",
+    authMiddleware,
+    item.get_modifier
+  );
 };

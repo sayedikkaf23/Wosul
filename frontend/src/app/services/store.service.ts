@@ -100,4 +100,23 @@ export class StoreService {
       payload
     );
   }
+
+  getIngrediants() {
+    return this.http.get(`${this.url}/api/store/get_ingrediant`);
+  }
+
+  getIngrediantById(payload) {
+    return this.http.post(
+      `${this.url}/api/store/get_ingrediant_by_id`,
+      payload
+    );
+  }
+
+  getMeasuringUnit() {
+    return this.http.get(`${this.url}/api/store/get_measuring_unit`);
+  }
+
+  getModifiers() {
+    return this.http.get(`${this.url}/api/store/get_modifier`);
+  }
 }

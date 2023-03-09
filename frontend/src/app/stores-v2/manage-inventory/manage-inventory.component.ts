@@ -181,6 +181,18 @@ export class ManageInventoryComponent implements OnInit {
   productCode: any;
   itemAdditionalBarcode: any;
 
+  //ingrediant
+  ingrediants: any = [];
+  selectedIngrediant: any;
+  ingrediantList: any = [];
+
+  //measuringUnit
+  measuringUnit: any = [];
+  selectedMeasuringUnit: any;
+
+  //modifier
+  modifiers: any = [];
+
   constructor(
     public helper: Helper,
     public vcr: ViewContainerRef,
@@ -229,6 +241,10 @@ export class ManageInventoryComponent implements OnInit {
       sequence_number: null,
     };
     this.helper.message();
+
+    this.getIngrediants();
+
+    this.getModifiers();
 
     this.add_item = {
       store_id: '',
@@ -2089,6 +2105,10 @@ export class ManageInventoryComponent implements OnInit {
   }
 
   addStoreProduct() {
+    const modifiers = this.modifiers.filter(
+      (modifier) => modifier.checked == true
+    );
+
     const payload = {
       product_id: this.selected_product_id,
       store_id: this.add_product.store_id,
@@ -2101,12 +2121,14 @@ export class ManageInventoryComponent implements OnInit {
       details: this.itemDescription,
       total_quantity: this.quantity,
       sale_price_exclusive_tax: this.salePriceExclude,
-      sale_price_inclusive_tax: this.salePriceInculde,
+      // sale_price_inclusive_tax: this.salePriceInculde,
       purchase_cost: this.purchaseCost,
       product_code: this.productCode,
       stock_alert_quantity: this.stockAlertQuantity,
       is_visible_in_store: true,
-      price: 10,
+      price: this.salePriceInculde,
+      ingrediants: this.ingrediantList,
+      modifiers: modifiers,
       //image_url: this.base64Image,
     };
 
@@ -2121,6 +2143,7 @@ export class ManageInventoryComponent implements OnInit {
         this.selected_item_id = res_data.item._id;
         this.item_detail = JSON.parse(JSON.stringify(res_data.item));
         this.clearFields();
+        this.getModifiers();
         if (this.new_image_array.length > 0) {
           this.add_image_service();
         } else if (this.delete_item_image.length > 0) {
@@ -2166,5 +2189,58 @@ export class ManageInventoryComponent implements OnInit {
     this.itemDescription = '';
     this.itemDescriptionArabic = '';
     this.productCode = '';
+    this.ingrediantList = [];
+  }
+
+  getIngrediants() {
+    this.storeService.getIngrediants().subscribe((res: any) => {
+      if (res.success) {
+        this.ingrediants = res?.ingrediant;
+      }
+    });
+  }
+
+  onIngrediantChange(ingrediant_id) {
+    if (ingrediant_id) {
+      this.getIngrediantById(ingrediant_id);
+    }
+  }
+
+  getIngrediantById(ingrediant_id) {
+    this.storeService
+      .getIngrediantById({ ingrediant_id })
+      .subscribe((res: any) => {
+        if (res.success) {
+          this.ingrediantList = res?.ingrediant;
+          this.getMeasuringUnit();
+        }
+      });
+  }
+
+  getMeasuringUnit() {
+    this.storeService.getMeasuringUnit().subscribe((res: any) => {
+      if (res.success) {
+        this.measuringUnit = res?.measuring_unit;
+      }
+    });
+  }
+
+  onMeasuringUnitChange(measuring_unit_id) {
+    this.selectedMeasuringUnit = measuring_unit_id;
+  }
+
+  getModifiers() {
+    this.storeService.getModifiers().subscribe((res: any) => {
+      if (res.success) {
+        this.modifiers = res?.modifier;
+        this.modifiers = this.modifiers.map((s) => ({
+          _id: s._id,
+          name: s.name,
+          price: s.price,
+          description: s.description,
+          checked: false,
+        }));
+      }
+    });
   }
 }

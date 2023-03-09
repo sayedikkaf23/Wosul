@@ -17,6 +17,10 @@ var User = require("mongoose").model("user");
 var Promo_code = require("mongoose").model("promo_code");
 var Order_payment = require("mongoose").model("order_payment");
 var Notification = require("mongoose").model("notifications");
+const Ingrediant = require("../../models/store/ingrediant");
+const MeasuringUnit = require("../../models/store/measuring_unit");
+const Modifier = require("../../models/store/modifier");
+
 var jwt = require("jsonwebtoken");
 const {
   remove_loyalty_and_promo_both,
@@ -2737,4 +2741,64 @@ exports.get_substitute_by_barcode = async function (req, res) {
     res.json(data1);
   }
   // res.json(data);
+};
+
+//get ingrediant
+exports.get_ingrediant = async function (req, res) {
+  const ingrediant = await Ingrediant.find({});
+  if (ingrediant) {
+    res.json({ success: true, ingrediant: ingrediant });
+  } else {
+    res.json({
+      success: false,
+      message: "No ingrediant found in the database.",
+    });
+  }
+};
+
+//get ingrediant by id
+exports.get_ingrediant_by_id = async function (req, res) {
+  const { ingrediant_id } = req.body;
+  if (!ingrediant_id) {
+    res.json({
+      success: false,
+      message: "Please pass ingrediant_id.",
+    });
+    return;
+  }
+  const ingrediant = await Ingrediant.find({ _id: ingrediant_id });
+  if (ingrediant) {
+    res.json({ success: true, ingrediant: ingrediant });
+  } else {
+    res.json({
+      success: false,
+      message: "No ingrediant found in the database.",
+    });
+  }
+};
+
+//get measuring unit
+exports.get_measuring_unit = async function (req, res) {
+  const measuring_unit = await MeasuringUnit.find({});
+  if (measuring_unit) {
+    res.json({ success: true, measuring_unit: measuring_unit });
+  } else {
+    res.json({
+      success: false,
+      message: "No measuring unit found in the database.",
+    });
+  }
+};
+
+//get modifier
+exports.get_modifier = async function (req, res) {
+  const modifier = await Modifier.find({});
+  if (modifier) {
+    res.json({ success: true, modifier: modifier });
+  } else {
+    res.json({
+      success: false,
+      message: "No modifier found in the database.",
+    });
+  }
 };

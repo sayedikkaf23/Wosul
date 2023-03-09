@@ -379,298 +379,155 @@
       </div>
       <div class="card">
         <h2>Search and Add Ingredients</h2>
-        <form>
-          <div class="row">
-            <div class="col-md-4">
-              <div class="form-field">
-                <label class="d-flex align-items-center justify-content-between"
-                  >Search</label
-                >
-                <ng-select
-                  class="custom-placeholder category_list"
-                  placeholder="Choose Ingredients"
-                >
-                  <ng-option>option 2</ng-option>
-                  <ng-option>option 3</ng-option>
-                  <ng-option>option 4</ng-option>
-                  <ng-option>option 5</ng-option>
-                </ng-select>
 
-                <p class="mt-1 text-small text-muted">
-                  Choose ingredients for preparing 1 Unit or Quantity if the
-                  product
-                </p>
-              </div>
-            </div>
-            <div class="col-md-8">
-              <div class="form-check">
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  value=""
-                  id="TobacoTax"
-                />
-                <label class="form-check-label mb-0" for="TobacoTax">
-                  Set Product Price as Ingredient Cost
-                </label>
-              </div>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-field">
+              <label class="d-flex align-items-center justify-content-between"
+                >Search</label
+              >
+              <ng-select
+                class="custom-placeholder category_list"
+                placeholder="Choose Ingredients"
+                [(ngModel)]="selectedIngrediant"
+                (change)="onIngrediantChange($event)"
+              >
+                <ng-option
+                  *ngFor="let ingrediant of ingrediants"
+                  [value]="ingrediant._id"
+                >
+                  {{ ingrediant.name }}
+                </ng-option>
+              </ng-select>
+
               <p class="mt-1 text-small text-muted">
-                If this option is enabled, product sale price and purchase price
-                will be updated with ingredient cost.
+                Choose ingredients for preparing 1 Unit or Quantity if the
+                product
               </p>
             </div>
           </div>
-          <table class="table table-hover table-bordered mb-0">
-            <thead class="bg-light">
-              <tr>
-                <th>Name & Description</th>
-                <th>Purchase Price of 1 Unit</th>
-                <th>Sale Price of 1 Unit</th>
-                <th>Sale Price of 1 Unit</th>
-                <th>Measuring Unit</th>
-                <th width="50px"></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Coffee Powder</td>
-                <td>5.00</td>
-                <td>10.0000</td>
-                <td>
-                  <input
-                    type="text"
-                    class="form-control form-control-sm form-control-solid"
-                    value="1"
-                  />
-                </td>
-                <td>
-                  <select class="form-select form-select-sm form-select-solid">
-                    <option>Choose Unit</option>
-                    <option>Choose Unit</option>
-                    <option>Choose Unit</option>
-                    <option>Choose Unit</option>
-                  </select>
-                </td>
-                <td class="text-end">
-                  <a
-                    href="javascript:void(0)"
-                    class="btn btn-icon btn-light btn-sm"
-                    ><i class="fa-solid fa-xmark"></i
-                  ></a>
-                </td>
-              </tr>
-              <tr>
-                <td>Coffee Powder</td>
-                <td>5.00</td>
-                <td>10.0000</td>
-                <td>
-                  <input
-                    type="text"
-                    class="form-control form-control-sm form-control-solid"
-                    value="1"
-                  />
-                </td>
-                <td>
-                  <select class="form-select form-select-sm form-select-solid">
-                    <option>Choose Unit</option>
-                    <option>Choose Unit</option>
-                    <option>Choose Unit</option>
-                    <option>Choose Unit</option>
-                  </select>
-                </td>
-                <td class="text-end">
-                  <a
-                    href="javascript:void(0)"
-                    class="btn btn-icon btn-light btn-sm"
-                    ><i class="fa-solid fa-xmark"></i
-                  ></a>
-                </td>
-              </tr>
-              <tr>
-                <td>Coffee Powder</td>
-                <td>5.00</td>
-                <td>10.0000</td>
-                <td>
-                  <input
-                    type="text"
-                    class="form-control form-control-sm form-control-solid"
-                    value="1"
-                  />
-                </td>
-                <td>
-                  <select class="form-select form-select-sm form-select-solid">
-                    <option>Choose Unit</option>
-                    <option>Choose Unit</option>
-                    <option>Choose Unit</option>
-                    <option>Choose Unit</option>
-                  </select>
-                </td>
-                <td class="text-end">
-                  <a
-                    href="javascript:void(0)"
-                    class="btn btn-icon btn-light btn-sm"
-                    ><i class="fa-solid fa-xmark"></i
-                  ></a>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </form>
+          <div class="col-md-8">
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                value=""
+                id="TobacoTax"
+              />
+              <label class="form-check-label mb-0" for="TobacoTax">
+                Set Product Price as Ingredient Cost
+              </label>
+            </div>
+            <p class="mt-1 text-small text-muted">
+              If this option is enabled, product sale price and purchase price
+              will be updated with ingredient cost.
+            </p>
+          </div>
+        </div>
+        <table
+          class="table table-hover table-bordered mb-0"
+          *ngIf="ingrediantList.length"
+        >
+          <thead class="bg-light">
+            <tr>
+              <th>Name & Description</th>
+              <th>Purchase Price of 1 Unit</th>
+              <th>Sale Price of 1 Unit</th>
+              <th>Sale Price of 1 Unit</th>
+              <th>Measuring Unit</th>
+              <th width="50px"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="
+                let item of ingrediantList;
+                let index = index;
+                let last = last
+              "
+            >
+              <td>{{ item?.name }}</td>
+              <td>{{ item?.purchase_price }}</td>
+              <td>{{ item?.sale_price }}</td>
+              <td>
+                <input
+                  type="text"
+                  class="form-control form-control-sm form-control-solid"
+                  value="{{ item.default_sale_price }}"
+                  [(ngModel)]="item.default_sale_price"
+                />
+              </td>
+              <td>
+                <ng-select
+                  class="custom-placeholder category_list"
+                  placeholder="Choose Unit"
+                  [(ngModel)]="item.measuringUnit"
+                  (change)="onMeasuringUnitChange($event)"
+                >
+                  <ng-option
+                    *ngFor="let measure of measuringUnit"
+                    [value]="measure.name"
+                  >
+                    {{ measure.name }}
+                  </ng-option>
+                </ng-select>
+              </td>
+              <td class="text-end">
+                <a
+                  href="javascript:void(0)"
+                  class="btn btn-icon btn-light btn-sm"
+                  ><i class="fa-solid fa-xmark"></i
+                ></a>
+              </td>
+            </tr>
+            <!-- <tr>
+              <td>Coffee Powder</td>
+              <td>5.00</td>
+              <td>10.0000</td>
+              <td>
+                <input
+                  type="text"
+                  class="form-control form-control-sm form-control-solid"
+                  value="1"
+                />
+              </td>
+              <td>
+                <select class="form-select form-select-sm form-select-solid">
+                  <option>Choose Unit</option>
+                  <option>Choose Unit</option>
+                  <option>Choose Unit</option>
+                  <option>Choose Unit</option>
+                </select>
+              </td>
+              <td class="text-end">
+                <a
+                  href="javascript:void(0)"
+                  class="btn btn-icon btn-light btn-sm"
+                  ><i class="fa-solid fa-xmark"></i
+                ></a>
+              </td>
+            </tr> -->
+          </tbody>
+        </table>
       </div>
       <div class="row card-strash">
         <div class="col-md-9">
           <div class="card">
             <h2>Modifiers</h2>
-            <form>
-              <div class="size-n-value-wrap" data-simplebar>
-                <ul class="size-n-value">
-                  <li>
-                    <label class="size-wrap">
-                      <input type="checkbox" />
-                      <span><b>Size</b>SAR 123</span>
-                    </label>
-                  </li>
-                  <li>
-                    <label class="size-wrap">
-                      <input type="checkbox" />
-                      <span><b>Size</b>SAR 123</span>
-                    </label>
-                  </li>
-                  <li>
-                    <label class="size-wrap">
-                      <input type="checkbox" checked />
-                      <span><b>Size</b>SAR 123</span>
-                    </label>
-                  </li>
-                  <li>
-                    <label class="size-wrap">
-                      <input type="checkbox" />
-                      <span><b>Size</b>SAR 123</span>
-                    </label>
-                  </li>
-                  <li>
-                    <label class="size-wrap">
-                      <input type="checkbox" />
-                      <span><b>Size</b>SAR 123</span>
-                    </label>
-                  </li>
-                  <li>
-                    <label class="size-wrap">
-                      <input type="checkbox" />
-                      <span><b>Size</b>SAR 123</span>
-                    </label>
-                  </li>
-                  <li>
-                    <label class="size-wrap">
-                      <input type="checkbox" />
-                      <span><b>Size</b>SAR 123</span>
-                    </label>
-                  </li>
-                  <li>
-                    <label class="size-wrap">
-                      <input type="checkbox" />
-                      <span><b>Size</b>SAR 123</span>
-                    </label>
-                  </li>
-                  <li>
-                    <label class="size-wrap">
-                      <input type="checkbox" />
-                      <span><b>Size</b>SAR 123</span>
-                    </label>
-                  </li>
-                  <li>
-                    <label class="size-wrap">
-                      <input type="checkbox" />
-                      <span><b>Size</b>SAR 123</span>
-                    </label>
-                  </li>
-                  <li>
-                    <label class="size-wrap">
-                      <input type="checkbox" />
-                      <span><b>Size</b>SAR 123</span>
-                    </label>
-                  </li>
-                  <li>
-                    <label class="size-wrap">
-                      <input type="checkbox" />
-                      <span><b>Size</b>SAR 123</span>
-                    </label>
-                  </li>
-                  <li>
-                    <label class="size-wrap">
-                      <input type="checkbox" />
-                      <span><b>Size</b>SAR 123</span>
-                    </label>
-                  </li>
-                  <li>
-                    <label class="size-wrap">
-                      <input type="checkbox" />
-                      <span><b>Size</b>SAR 123</span>
-                    </label>
-                  </li>
-                  <li>
-                    <label class="size-wrap">
-                      <input type="checkbox" />
-                      <span><b>Size</b>SAR 123</span>
-                    </label>
-                  </li>
-                  <li>
-                    <label class="size-wrap">
-                      <input type="checkbox" />
-                      <span><b>Size</b>SAR 123</span>
-                    </label>
-                  </li>
-                  <li>
-                    <label class="size-wrap">
-                      <input type="checkbox" />
-                      <span><b>Size</b>SAR 123</span>
-                    </label>
-                  </li>
-                  <li>
-                    <label class="size-wrap">
-                      <input type="checkbox" />
-                      <span><b>Size</b>SAR 123</span>
-                    </label>
-                  </li>
-                  <li>
-                    <label class="size-wrap">
-                      <input type="checkbox" />
-                      <span><b>Size</b>SAR 123</span>
-                    </label>
-                  </li>
-                  <li>
-                    <label class="size-wrap">
-                      <input type="checkbox" />
-                      <span><b>Size</b>SAR 123</span>
-                    </label>
-                  </li>
-                  <li>
-                    <label class="size-wrap">
-                      <input type="checkbox" />
-                      <span><b>Size</b>SAR 123</span>
-                    </label>
-                  </li>
-                  <li>
-                    <label class="size-wrap">
-                      <input type="checkbox" />
-                      <span><b>Size</b>SAR 123</span>
-                    </label>
-                  </li>
-                  <li>
-                    <label class="size-wrap">
-                      <input type="checkbox" />
-                      <span><b>Size</b>SAR 123</span>
-                    </label>
-                  </li>
-                  <li>
-                    <label class="size-wrap">
-                      <input type="checkbox" />
-                      <span><b>Size</b>SAR 123</span>
-                    </label>
-                  </li>
-                </ul>
-              </div>
-            </form>
+
+            <div class="size-n-value-wrap" data-simplebar>
+              <ul class="size-n-value">
+                <li *ngFor="let modifier of modifiers">
+                  <label class="size-wrap">
+                    <input type="checkbox" [(ngModel)]="modifier.checked" />
+                    <span
+                      ><b>{{ modifier?.name }}</b
+                      >{{ modifier?.price }}</span
+                    >
+                  </label>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
         <div class="col-md-3">
