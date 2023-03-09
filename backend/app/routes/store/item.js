@@ -98,9 +98,20 @@ module.exports = function (app) {
     item.get_measuring_unit
   );
 
+  app.get("/api/store/get_modifier", authMiddleware, item.get_modifier);
+
+  app.get("/api/store/get_discount", authMiddleware, item.get_discount);
+
   app.get(
-    "/api/store/get_modifier",
+    "/api/store/get_measurement_category",
     authMiddleware,
-    item.get_modifier
+    item.get_measurement_category
   );
+
+  app.get("/api/store/get_measurement", authMiddleware, item.get_measurement);
+
+  app.get("/api/store/get_supplier", authMiddleware, item.get_supplier);
+
+  app.get("/api/store/get_brand", authMiddleware, item.get_brand);
+
 };

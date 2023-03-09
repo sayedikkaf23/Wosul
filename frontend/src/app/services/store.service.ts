@@ -119,4 +119,24 @@ export class StoreService {
   getModifiers() {
     return this.http.get(`${this.url}/api/store/get_modifier`);
   }
+
+  getDiscount() {
+    return this.http.get(`${this.url}/api/store/get_discount`);
+  }
+
+  getMeasurementCategory() {
+    return this.http.get(`${this.url}/api/store/get_measurement_category`);
+  }
+
+  getMeasurement() {
+    return this.http.get(`${this.url}/api/store/get_measurement`);
+  }
+
+  getSupplier() {
+    return this.http.get(`${this.url}/api/store/get_supplier`);
+  }
+
+  getBrand() {
+    return this.http.get(`${this.url}/api/store/get_brand`);
+  }
 }

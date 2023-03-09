@@ -20,6 +20,11 @@ var Notification = require("mongoose").model("notifications");
 const Ingrediant = require("../../models/store/ingrediant");
 const MeasuringUnit = require("../../models/store/measuring_unit");
 const Modifier = require("../../models/store/modifier");
+const Discount = require("../../models/store/discount");
+const MeasurementCategory = require("../../models/store/measurement_category");
+const Measurement = require("../../models/store/measurement");
+const Supplier = require("../../models/store/supplier");
+const Brand = require("../../models/store/brand");
 
 var jwt = require("jsonwebtoken");
 const {
@@ -2766,7 +2771,7 @@ exports.get_ingrediant_by_id = async function (req, res) {
     });
     return;
   }
-  const ingrediant = await Ingrediant.find({ _id: ingrediant_id });
+  const ingrediant = await Ingrediant.findOne({ _id: ingrediant_id });
   if (ingrediant) {
     res.json({ success: true, ingrediant: ingrediant });
   } else {
@@ -2799,6 +2804,71 @@ exports.get_modifier = async function (req, res) {
     res.json({
       success: false,
       message: "No modifier found in the database.",
+    });
+  }
+};
+
+//get discount
+exports.get_discount = async function (req, res) {
+  const discount = await Discount.find({});
+  if (discount) {
+    res.json({ success: true, discount: discount });
+  } else {
+    res.json({
+      success: false,
+      message: "No discount found in the database.",
+    });
+  }
+};
+
+//get measurement category
+exports.get_measurement_category = async function (req, res) {
+  const measurment_category = await MeasurementCategory.find({});
+  if (measurment_category) {
+    res.json({ success: true, measurment_category: measurment_category });
+  } else {
+    res.json({
+      success: false,
+      message: "No measurement category found in the database.",
+    });
+  }
+};
+
+//get measurement
+exports.get_measurement = async function (req, res) {
+  const measurment = await Measurement.find({});
+  if (measurment) {
+    res.json({ success: true, measurment: measurment });
+  } else {
+    res.json({
+      success: false,
+      message: "No measurement found in the database.",
+    });
+  }
+};
+
+//get supplier
+exports.get_supplier = async function (req, res) {
+  const supplier = await Supplier.find({});
+  if (supplier) {
+    res.json({ success: true, supplier: supplier });
+  } else {
+    res.json({
+      success: false,
+      message: "No supplier found in the database.",
+    });
+  }
+};
+
+//get brand
+exports.get_brand = async function (req, res) {
+  const brand = await Brand.find({});
+  if (brand) {
+    res.json({ success: true, brand: brand });
+  } else {
+    res.json({
+      success: false,
+      message: "No brand found in the database.",
     });
   }
 };

@@ -143,6 +143,9 @@ export class ManageInventoryComponent implements OnInit {
   @ViewChild('image_file')
   image_file: ElementRef | any;
 
+  @ViewChild('test')
+  test_1: ElementRef | any;
+
   category_list: any[];
   category_for_product: string;
   selected_category_for_product: string = '';
@@ -192,6 +195,26 @@ export class ManageInventoryComponent implements OnInit {
 
   //modifier
   modifiers: any = [];
+
+  //discount
+  discounts: any = [];
+  selectedDiscount: any;
+
+  //measurment_category
+  measurment_category: any = [];
+  selectedMeasurmentCategory: any;
+
+  //measurment
+  measurments: any = [];
+  selectedMeasurment: any;
+
+  //supplier
+  suppliers: any = [];
+  selectedSupplier: any;
+
+  //brand
+  brands: any = [];
+  selectedBrand: any;
 
   constructor(
     public helper: Helper,
@@ -245,6 +268,16 @@ export class ManageInventoryComponent implements OnInit {
     this.getIngrediants();
 
     this.getModifiers();
+
+    this.getDiscount();
+
+    this.getMeasurementCategory();
+
+    this.getMeasurement();
+
+    this.getSupplier();
+
+    this.getBrand();
 
     this.add_item = {
       store_id: '',
@@ -2211,7 +2244,8 @@ export class ManageInventoryComponent implements OnInit {
       .getIngrediantById({ ingrediant_id })
       .subscribe((res: any) => {
         if (res.success) {
-          this.ingrediantList = res?.ingrediant;
+          const ingrediants = res?.ingrediant;
+          this.ingrediantList.push(ingrediants);
           this.getMeasuringUnit();
         }
       });
@@ -2243,4 +2277,53 @@ export class ManageInventoryComponent implements OnInit {
       }
     });
   }
+
+  removeIngredient(index) {
+    this.ingrediantList.splice(index, 1);
+  }
+
+  getDiscount() {
+    this.storeService.getDiscount().subscribe((res: any) => {
+      if (res.success) {
+        this.discounts = res?.discount;
+      }
+    });
+  }
+
+  getMeasurementCategory() {
+    this.storeService.getMeasurementCategory().subscribe((res: any) => {
+      if (res.success) {
+        this.measurment_category = res?.measurment_category;
+      }
+    });
+  }
+
+  getMeasurement() {
+    this.storeService.getMeasurement().subscribe((res: any) => {
+      if (res.success) {
+        this.measurments = res?.measurment;
+      }
+    });
+  }
+
+  getSupplier() {
+    this.storeService.getSupplier().subscribe((res: any) => {
+      if (res.success) {
+        this.suppliers = res?.supplier;
+      }
+    });
+  }
+
+  getBrand() {
+    this.storeService.getBrand().subscribe((res: any) => {
+      if (res.success) {
+        this.brands = res?.brand;
+      }
+    });
+  }
+
+  onImageLabelClick() {
+    this.image_file.nativeElement.click();
+  }
+
 }
