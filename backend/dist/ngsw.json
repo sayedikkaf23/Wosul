@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1678437745101,
+  "timestamp": 1678456284425,
   "index": "/index.html",
   "assetGroups": [
     {
@@ -380,7 +380,7 @@
     "/assets/css/select2.min.css": "913f9f7b9535aec790ca3ce9d6e35acfaf369993",
     "/assets/css/simplebar.min.css": "393c58cca7889217fc0c528e7902fd5178314e50",
     "/assets/css/style.css": "b17dbed84fe4dbb68322f4f41e92b5fc74e17d86",
-    "/assets/css/theme.css": "6f3a064fd93ad199b5973fe11013247656e48e9a",
+    "/assets/css/theme.css": "e116bca3908dbe477a019f93581cda200c5ad918",
     "/assets/dashboard_graphics/order_details/cancelled.png": "544bbc5b0e737032ac005fa2e5d1d0dceb4e24e6",
     "/assets/dashboard_graphics/order_details/completed.png": "f623973c7ae18eca1b942e08294daf480585aadf",
     "/assets/dashboard_graphics/order_details/deliveries.png": "65767c0f57c99a468b6d4f43fa893394b36b0942",
