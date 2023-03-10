@@ -13,10 +13,38 @@ import '../../../assets/js/custom.js';
 })
 export class StoreLayoutComponent implements OnInit {
   isLogoutShow: boolean = false;
+  isActive: boolean = false;
+
 
   constructor(private router: Router, public helper: Helper) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    const bodyElement = document.body;
+    bodyElement.classList.remove('add-order-page');
+  }
+
+  toggleSideBar() {
+    const bodyElement = document.body;
+    if (!bodyElement.classList.contains('sidebar-collapsein')) {
+      bodyElement.classList.add('sidebar-collapsein');
+    } else {
+      bodyElement.classList.remove('sidebar-collapsein');
+    }
+  }
+
+  toggleActive() {
+    this.isActive = !this.isActive;
+  }
+
+  toggleDarkMode() {
+    const bodyElement = document.body;
+    if (!bodyElement.classList.contains('dark-active')) {
+      bodyElement.classList.add('dark-active');
+    } else {
+      bodyElement.classList.remove('dark-active');
+    }
+  }
+
 
   logout() {
     // localStorage.clear();
