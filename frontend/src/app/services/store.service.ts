@@ -139,4 +139,11 @@ export class StoreService {
   getBrand() {
     return this.http.get(`${this.url}/api/store/get_brand`);
   }
+
+  getStoreProductItemList(payload) {
+    return this.http.post(
+      `${this.url}/api/store/get_store_product_item_list`,
+      payload
+    );
+  }
 }

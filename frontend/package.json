@@ -41,6 +41,7 @@
     "ng2-charts": "2.2.3",
     "ng2-dropdown": "0.0.21",
     "ng2-validation": "4.2.0",
+    "ngb-modal": "^2.0.3",
     "ngx-facebook": "3.0.0-0",
     "ngx-google-places-autocomplete": "2.0.5",
     "ngx-img-cropper": "11.0.0",

@@ -16,7 +16,7 @@
         <div class="col-md-9">
           <div class="card">
             <h2>Product Information</h2>
-            <!-- <form> -->
+
             <div class="row">
               <div class="col-md-4">
                 <div class="form-field">
@@ -138,7 +138,6 @@
                 </div>
               </div>
             </div>
-            <!-- </form> -->
           </div>
         </div>
         <div class="col-md-3">
@@ -544,44 +543,43 @@
         <div class="col-md-3">
           <div class="card">
             <h2>Measurments</h2>
-            <form>
-              <div class="form-field">
-                <label class="d-flex align-items-center justify-content-between"
-                  >Measurment category</label
-                >
 
-                <ng-select
-                  class="custom-placeholder category_list"
-                  placeholder="Choose Measurement Category"
-                  [(ngModel)]="selectedMeasurmentCategory"
-                >
-                  <ng-option
-                    *ngFor="let measurment_cat of measurment_category"
-                    [value]="measurment_cat.name"
-                  >
-                    {{ measurment_cat.name }}
-                  </ng-option>
-                </ng-select>
-              </div>
-              <div class="form-field">
-                <label class="d-flex align-items-center justify-content-between"
-                  >Measurement</label
-                >
+            <div class="form-field">
+              <label class="d-flex align-items-center justify-content-between"
+                >Measurment category</label
+              >
 
-                <ng-select
-                  class="custom-placeholder category_list"
-                  placeholder="Choose Measurement Option"
-                  [(ngModel)]="selectedMeasurment"
+              <ng-select
+                class="custom-placeholder category_list"
+                placeholder="Choose Measurement Category"
+                [(ngModel)]="selectedMeasurmentCategory"
+              >
+                <ng-option
+                  *ngFor="let measurment_cat of measurment_category"
+                  [value]="measurment_cat.name"
                 >
-                  <ng-option
-                    *ngFor="let measurement of measurments"
-                    [value]="measurement.name"
-                  >
-                    {{ measurement.name }}
-                  </ng-option>
-                </ng-select>
-              </div>
-            </form>
+                  {{ measurment_cat.name }}
+                </ng-option>
+              </ng-select>
+            </div>
+            <div class="form-field">
+              <label class="d-flex align-items-center justify-content-between"
+                >Measurement</label
+              >
+
+              <ng-select
+                class="custom-placeholder category_list"
+                placeholder="Choose Measurement Option"
+                [(ngModel)]="selectedMeasurment"
+              >
+                <ng-option
+                  *ngFor="let measurement of measurments"
+                  [value]="measurement.name"
+                >
+                  {{ measurement.name }}
+                </ng-option>
+              </ng-select>
+            </div>
           </div>
         </div>
       </div>

@@ -14,7 +14,7 @@
     <ul class="menu-navigation">
       <li routerLinkActive="active">
         <a
-          href="javascript:void(0)"
+          routerLink="/store/create_order"
           data-bs-toggle="tooltip"
           data-bs-placement="right"
           data-bs-title="Dashboard"
@@ -42,7 +42,7 @@
 
       <li routerLinkActive="active">
         <a
-          href="javascript:void(0)"
+          routerLink="/store/product_list"
           data-bs-toggle="tooltip"
           data-bs-placement="right"
           data-bs-title="Inventory"
@@ -510,7 +510,14 @@
           <nav>
             <ul>
               <li routerLinkActive="active">
-                <a class="cursor-pointer">Products</a>
+                <a class="cursor-pointer" routerLink="/store/category_list"
+                  >Categories</a
+                >
+              </li>
+              <li routerLinkActive="active">
+                <a class="cursor-pointer" routerLink="/store/product_list"
+                  >Products</a
+                >
               </li>
 
               <li routerLinkActive="active">

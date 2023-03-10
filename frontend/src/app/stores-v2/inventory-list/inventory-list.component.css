@@ -1,0 +1,3 @@
+.ng-select.custom-background ::ng-deep .ng-select-container {
+  background-color: #fff;
+}

@@ -56,6 +56,8 @@ var item = new schema(
 
     ingrediants: { type: Array, default: [] },
 
+    supplier: { type: String, default: "" },
+
     created_at: {
       type: Date,
       default: Date.now,

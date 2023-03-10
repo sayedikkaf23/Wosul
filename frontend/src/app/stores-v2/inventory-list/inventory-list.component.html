@@ -1,0 +1,468 @@
+<div class="content">
+  <div class="page-heading">
+    <div class="row align-items-center justify-content-between">
+      <div class="col-auto">
+        <div class="row align-items-center">
+          <div class="col-auto">
+            <h2>Our Products</h2>
+          </div>
+          <div class="col-auto">
+            <div class="form-feild mb-0">
+              <ng-select
+                class="custom-background category_list"
+                placeholder="Choose Category"
+                [(ngModel)]="selected_category"
+                (change)="onCategoryChange($event)"
+              >
+                <ng-option
+                  *ngFor="let category of category_list"
+                  [value]="category._id"
+                >
+                  {{ category.name }}
+                </ng-option>
+              </ng-select>
+            </div>
+          </div>
+          <div class="col-auto">
+            <a
+              [routerLink]="['/store/manage_inventory']"
+              routerLinkActive="active"
+              class="btn btn-sm btn-light-primary"
+              ><i class="fa-solid fa-plus"></i>Add Product</a
+            >
+          </div>
+          <div class="col-auto">
+            <a
+              href="product-add-ingredient.html"
+              class="btn btn-sm btn-light-primary"
+              ><i class="fa-solid fa-plus"></i>Add Ingredient</a
+            >
+          </div>
+        </div>
+      </div>
+      <div class="col-auto">
+        <div class="row align-items-center">
+          <div class="col-auto">
+            <div class="form-feild page-heading-search-field mb-0">
+              <div class="field-icon">
+                <input
+                  type="text"
+                  class="form-control form-control-sm form-control-shadow"
+                  placeholder="Search..."
+                />
+                <div class="icon">
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-auto">
+            <div class="dropdown filter-dropdown">
+              <button
+                type="button"
+                class="btn btn-sm btn-icon btn-light-primary"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+                data-bs-auto-close="outside"
+              >
+                <i class="fa-solid fa-filter"></i>
+              </button>
+              <div class="dropdown-menu">
+                <form>
+                  <div class="row gx-3">
+                    <div class="col-6">
+                      <div class="form-feild">
+                        <label for="" class="form-label">Product Code</label>
+                        <input
+                          type="text"
+                          class="form-control form-control-sm form-control-solid"
+                          id=""
+                          placeholder=""
+                        />
+                      </div>
+                    </div>
+                    <div class="col-6">
+                      <div class="form-feild">
+                        <label for="" class="form-label">Category</label>
+                        <select
+                          class="form-select form-select-sm form-select-solid select2-hidden-accessible"
+                          data-select2-id="select2-data-10-jihl"
+                          tabindex="-1"
+                          aria-hidden="true"
+                        >
+                          <option data-select2-id="select2-data-12-czzg">
+                            Category
+                          </option>
+                          <option>1</option>
+                          <option>2</option>
+                          <option>3</option>
+                          <option>4</option></select
+                        ><span
+                          class="select2 select2-container select2-container--default"
+                          dir="ltr"
+                          data-select2-id="select2-data-11-ijdm"
+                          style="width: 100px"
+                          ><span class="selection"
+                            ><span
+                              class="select2-selection select2-selection--single"
+                              role="combobox"
+                              aria-haspopup="true"
+                              aria-expanded="false"
+                              tabindex="0"
+                              aria-disabled="false"
+                              aria-labelledby="select2-aw4a-container"
+                              aria-controls="select2-aw4a-container"
+                              ><span
+                                class="select2-selection__rendered"
+                                id="select2-aw4a-container"
+                                role="textbox"
+                                aria-readonly="true"
+                                title="Category"
+                                >Category</span
+                              ><span
+                                class="select2-selection__arrow"
+                                role="presentation"
+                                ><b role="presentation"></b></span></span></span
+                          ><span
+                            class="dropdown-wrapper"
+                            aria-hidden="true"
+                          ></span
+                        ></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row gx-3">
+                    <div class="col-6">
+                      <div class="form-feild">
+                        <label for="" class="form-label">Quantity</label>
+                        <input
+                          type="text"
+                          class="form-control form-control-sm form-control-solid"
+                          id=""
+                          placeholder=""
+                        />
+                      </div>
+                    </div>
+                    <div class="col-6">
+                      <div class="form-feild">
+                        <label for="" class="form-label">Status</label>
+                        <select
+                          class="form-select form-select-sm form-select-solid select2-hidden-accessible"
+                          data-select2-id="select2-data-13-e1ht"
+                          tabindex="-1"
+                          aria-hidden="true"
+                        >
+                          <option data-select2-id="select2-data-15-92hx">
+                            Active
+                          </option>
+                          <option>Inactive</option></select
+                        ><span
+                          class="select2 select2-container select2-container--default"
+                          dir="ltr"
+                          data-select2-id="select2-data-14-92mi"
+                          style="width: 100px"
+                          ><span class="selection"
+                            ><span
+                              class="select2-selection select2-selection--single"
+                              role="combobox"
+                              aria-haspopup="true"
+                              aria-expanded="false"
+                              tabindex="0"
+                              aria-disabled="false"
+                              aria-labelledby="select2-m3yy-container"
+                              aria-controls="select2-m3yy-container"
+                              ><span
+                                class="select2-selection__rendered"
+                                id="select2-m3yy-container"
+                                role="textbox"
+                                aria-readonly="true"
+                                title="Active"
+                                >Active</span
+                              ><span
+                                class="select2-selection__arrow"
+                                role="presentation"
+                                ><b role="presentation"></b></span></span></span
+                          ><span
+                            class="dropdown-wrapper"
+                            aria-hidden="true"
+                          ></span
+                        ></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row gx-3">
+                    <div class="col-6">
+                      <div class="form-feild">
+                        <label for="" class="form-label">Created On</label>
+                        <input
+                          type="date"
+                          class="form-control form-control-sm form-control-solid"
+                          id=""
+                          placeholder=""
+                        />
+                      </div>
+                    </div>
+                    <div class="col-6">
+                      <div class="form-feild">
+                        <label for="" class="form-label">Create By</label>
+                        <select
+                          class="form-select form-select-sm form-select-solid select2-hidden-accessible"
+                          data-select2-id="select2-data-16-ittj"
+                          tabindex="-1"
+                          aria-hidden="true"
+                        >
+                          <option data-select2-id="select2-data-18-kuti">
+                            Administrator
+                          </option>
+                          <option>1</option>
+                          <option>2</option>
+                          <option>3</option>
+                          <option>4</option></select
+                        ><span
+                          class="select2 select2-container select2-container--default"
+                          dir="ltr"
+                          data-select2-id="select2-data-17-kprm"
+                          style="width: 100px"
+                          ><span class="selection"
+                            ><span
+                              class="select2-selection select2-selection--single"
+                              role="combobox"
+                              aria-haspopup="true"
+                              aria-expanded="false"
+                              tabindex="0"
+                              aria-disabled="false"
+                              aria-labelledby="select2-31dj-container"
+                              aria-controls="select2-31dj-container"
+                              ><span
+                                class="select2-selection__rendered"
+                                id="select2-31dj-container"
+                                role="textbox"
+                                aria-readonly="true"
+                                title="Administrator"
+                                >Administrator</span
+                              ><span
+                                class="select2-selection__arrow"
+                                role="presentation"
+                                ><b role="presentation"></b></span></span></span
+                          ><span
+                            class="dropdown-wrapper"
+                            aria-hidden="true"
+                          ></span
+                        ></span>
+                      </div>
+                    </div>
+                  </div>
+                  <button type="submit" class="btn btn-sm btn-primary w-100">
+                    Filter
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+          <!-- <div class="col-auto">
+            <div class="filter-item-field ms-2">
+              <label>Show</label>
+              <div>
+                <select
+                  class="form-select form-select-sm form-select-shadow select2-hidden-accessible"
+                  data-select2-id="select2-data-19-ng6r"
+                  tabindex="-1"
+                  aria-hidden="true"
+                >
+                  <option data-select2-id="select2-data-21-dzbm">10</option>
+                  <option>20</option>
+                  <option>30</option>
+                  <option>40</option>
+                  <option>50</option></select
+                ><span
+                  class="select2 select2-container select2-container--default"
+                  dir="ltr"
+                  data-select2-id="select2-data-20-qeu8"
+                  style="width: 49px"
+                  ><span class="selection"
+                    ><span
+                      class="select2-selection select2-selection--single"
+                      role="combobox"
+                      aria-haspopup="true"
+                      aria-expanded="false"
+                      tabindex="0"
+                      aria-disabled="false"
+                      aria-labelledby="select2-5472-container"
+                      aria-controls="select2-5472-container"
+                      ><span
+                        class="select2-selection__rendered"
+                        id="select2-5472-container"
+                        role="textbox"
+                        aria-readonly="true"
+                        title="10"
+                        >10</span
+                      ><span
+                        class="select2-selection__arrow"
+                        role="presentation"
+                        ><b role="presentation"></b></span></span></span
+                  ><span class="dropdown-wrapper" aria-hidden="true"></span
+                ></span>
+              </div>
+            </div>
+          </div> -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-responsive" *ngIf="product_item_list.length">
+    <table class="table table-list-data table-hover">
+      <thead class="bg-light">
+        <tr>
+          <th scope="col">Product Code</th>
+          <th scope="col">Thumbnail</th>
+          <th scope="col">Name</th>
+          <th scope="col">Supplier</th>
+          <th scope="col">Category</th>
+          <th scope="col">Discount</th>
+          <th scope="col">Quantity</th>
+          <th scope="col">Amount</th>
+          <th scope="col">Is Taxable</th>
+          <th scope="col">Status</th>
+          <th scope="col">Created On</th>
+          <th scope="col">Updated On</th>
+          <!-- <th scope="col">Create By</th>
+          <th scope="col" class="text-end">Action</th> -->
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let product of product_item_list; let index = index">
+          <td>
+            <b>{{ product.product_code }}</b>
+          </td>
+          <td>
+            <div class="table-thumbnail">
+              <img
+                [src]="
+                  product.image_url?.length !== 0
+                    ? product.image_url[0]
+                    : 'assets/images/product-thumbnail.jpg'
+                "
+              />
+            </div>
+          </td>
+          <td>{{ product.name }}</td>
+          <td>{{ product.supplier }}</td>
+          <td>{{ category_name }}</td>
+          <td>{{ product.discount_percentage }}</td>
+          <td>{{ product.total_quantity }}</td>
+          <td>{{ product.price }}</td>
+          <td>
+            <span class="text-success"><b>YES</b></span>
+          </td>
+          <td>
+            <span class="badge badge-success">Active</span>
+          </td>
+          <td>{{ product.created_at }}</td>
+          <td>{{ product.updated_at }}</td>
+          <!-- <td>Administrator</td>
+          <td class="text-end">
+            <div class="dropdown">
+              <button
+                class="btn btn-icon btn-sm btn-light dropdown-toggle arrow-none"
+                type="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <i class="fa-solid fa-ellipsis-vertical"></i>
+              </button>
+              <ul class="dropdown-menu">
+                <li>
+                  <a class="dropdown-item" href="product-add.html">Edit</a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="product-view.html">View</a>
+                </li>
+                <li>
+                  <a
+                    class="dropdown-item"
+                    href="#delete_infomodal"
+                    data-bs-toggle="modal"
+                    >Delete</a
+                  >
+                </li>
+              </ul>
+            </div>
+          </td> -->
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <!-- <div class="data-footer">
+    <div class="row align-items-center justify-content-between">
+      <div class="col-auto">
+        <div class="filter-item-field">
+          <label>Show</label>
+          <div>
+            <select
+              class="form-select form-select-sm form-select-shadow select2-hidden-accessible"
+              data-select2-id="select2-data-22-xl1e"
+              tabindex="-1"
+              aria-hidden="true"
+            >
+              <option data-select2-id="select2-data-24-ep1i">10</option>
+              <option>20</option>
+              <option>30</option>
+              <option>40</option>
+              <option>50</option></select
+            ><span
+              class="select2 select2-container select2-container--default"
+              dir="ltr"
+              data-select2-id="select2-data-23-nldw"
+              style="width: 49px"
+              ><span class="selection"
+                ><span
+                  class="select2-selection select2-selection--single"
+                  role="combobox"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                  tabindex="0"
+                  aria-disabled="false"
+                  aria-labelledby="select2-rpwf-container"
+                  aria-controls="select2-rpwf-container"
+                  ><span
+                    class="select2-selection__rendered"
+                    id="select2-rpwf-container"
+                    role="textbox"
+                    aria-readonly="true"
+                    title="10"
+                    >10</span
+                  ><span class="select2-selection__arrow" role="presentation"
+                    ><b role="presentation"></b></span></span></span
+              ><span class="dropdown-wrapper" aria-hidden="true"></span
+            ></span>
+          </div>
+          <label class="me-0 ms-3">Entries</label>
+          <label class="me-0 ms-3">Showing 1 to 25 of 92 entries</label>
+        </div>
+      </div>
+      <div class="col-auto">
+        <ul class="pagination">
+          <li class="page-item">
+            <a class="page-link" href="#" aria-label="Previous">
+              <span aria-hidden="true"
+                ><i class="fa-solid fa-chevron-left"></i
+              ></span>
+            </a>
+          </li>
+          <li class="page-item active"><a class="page-link" href="#">1</a></li>
+          <li class="page-item"><a class="page-link" href="#">2</a></li>
+          <li class="page-item"><a class="page-link" href="#">3</a></li>
+          <li class="page-item"><a class="page-link" href="#">4</a></li>
+          <li class="page-item">
+            <a class="page-link" href="#" aria-label="Next">
+              <span aria-hidden="true"
+                ><i class="fa-solid fa-chevron-right"></i
+              ></span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div> -->
+</div>

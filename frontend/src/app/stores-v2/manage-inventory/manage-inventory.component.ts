@@ -2162,6 +2162,7 @@ export class ManageInventoryComponent implements OnInit {
       price: this.salePriceInculde,
       ingrediants: this.ingrediantList,
       modifiers: modifiers,
+      supplier: this.selectedSupplier,
       //image_url: this.base64Image,
     };
 
@@ -2325,5 +2326,4 @@ export class ManageInventoryComponent implements OnInit {
   onImageLabelClick() {
     this.image_file.nativeElement.click();
   }
-
 }

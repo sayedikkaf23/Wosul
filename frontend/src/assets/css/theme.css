@@ -2892,4 +2892,29 @@ html .card h2 {
   margin: 0 0 20px 0;
 }
 
+.form-feild {
+  margin: 0 0 18px;
+  line-height: 120%;
+}
+
+.form-feild label {
+  font-size: var(--body-font-size);
+  color: var(--dark);
+  font-weight: 500;
+  margin-bottom: 3px;
+  display: inline-block;
+  vertical-align: top;
+  line-height: 18px;
+}
+
+.form-feild textarea:last-child {
+  margin-bottom: 0;
+}
+
+.form-feild textarea.form-control {
+  resize: none;
+  height: 85px;
+  padding: 10px 15px;
+}
+
 @import url("responsive.css");

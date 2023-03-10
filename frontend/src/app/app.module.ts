@@ -238,6 +238,11 @@ import { AdminStoreProductComponent } from './admin-v2/admin-store-product/admin
 // ng select
 import { NgSelectModule } from '@ng-select/ng-select';
 import { ManageInventoryComponent } from './stores-v2/manage-inventory/manage-inventory.component';
+import { InventoryListComponent } from './stores-v2/inventory-list/inventory-list.component';
+import { CategoryListComponent } from './stores-v2/category-list/category-list.component';
+
+//ngbmodule
+import { ModalModule } from 'ngb-modal';
 
 @NgModule({
   declarations: [
@@ -254,7 +259,9 @@ import { ManageInventoryComponent } from './stores-v2/manage-inventory/manage-in
     AdminStoreComponent,
     AdminStoreListComponent,
     AdminStoreProductComponent,
-    ManageInventoryComponent
+    ManageInventoryComponent,
+    InventoryListComponent,
+    CategoryListComponent
   ],
   imports: [
     BrowserModule,
@@ -281,6 +288,7 @@ import { ManageInventoryComponent } from './stores-v2/manage-inventory/manage-in
     MassNotificationModule,
     NotificationSettingsModule,
     GroupNotificationModule,
+    ModalModule,
     // Views
     AdvertiseModule,
     admin_LoginModule,

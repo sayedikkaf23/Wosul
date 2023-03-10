@@ -15,7 +15,13 @@ var category = new schema(
     sequence_number: { type: Number, default: 0 },
     image_url: { type: String, default: "" },
     //show Items in home page based on store selection
-    show_items_home_page : { type: Boolean, default: false },
+    show_items_home_page: { type: Boolean, default: false },
+    category_type: { type: String, default: "" },
+    category_code: { type: String, default: "" },
+    description: { type: String, default: "" },
+    category_arabic_description: { type: String, default: "" },
+    category_arabic_name: { type: String, default: "" },
+
     created_at: {
       type: Date,
       default: Date.now,
