@@ -13,6 +13,7 @@ export class InventoryListComponent implements OnInit {
   product_item_list: any = [];
   category_name: any;
   isNoDataFound: boolean = false;
+  isCategorySelect: boolean = false;
   constructor(private storeService: StoreService) {}
 
   ngOnInit(): void {
@@ -42,11 +43,17 @@ export class InventoryListComponent implements OnInit {
       next: (res: any) => {
         if (res.success) {
           this.product_item_list = res.products[0]?.items;
-          if (!this.product_item_list.length) {
+          if (this.product_item_list.length === 0) {
             this.isNoDataFound = true;
           }
+          if (this.product_item_list.length > 0) {
+            this.isNoDataFound = false;
+            this.isCategorySelect = true;
+          }
         } else {
+          this.product_item_list = [];
           this.isNoDataFound = true;
+          this.isCategorySelect = true;
         }
       },
     });
@@ -68,5 +75,6 @@ export class InventoryListComponent implements OnInit {
   onCategoryClear() {
     this.product_item_list = [];
     this.isNoDataFound = false;
+    this.isCategorySelect = false;
   }
 }
