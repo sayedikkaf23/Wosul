@@ -114,4 +114,14 @@ module.exports = function (app) {
 
   app.get("/api/store/get_brand", authMiddleware, item.get_brand);
 
+  app.post("/api/store/add_ingredient", authMiddleware, item.add_ingredient);
+
+  app
+    .route("/api/store/update_ingredient_image")
+    .post(item.update_ingredient_image);
+  app.post(
+    "/api/store/delete_ingredient_image",
+    authMiddleware,
+    item.delete_ingredient_image
+  );
 };

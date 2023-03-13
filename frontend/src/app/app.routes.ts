@@ -204,6 +204,15 @@ import { AdminStoreProductComponent } from './admin-v2/admin-store-product/admin
 import { ManageInventoryComponent } from './stores-v2/manage-inventory/manage-inventory.component';
 import { InventoryListComponent } from './stores-v2/inventory-list/inventory-list.component';
 import { CategoryListComponent } from './stores-v2/category-list/category-list.component';
+import { AddIngredientComponent } from './stores-v2/add-ingredient/add-ingredient.component';
+import { BrandListComponent } from './stores-v2/brand-list/brand-list.component';
+import { MeasurementListComponent } from './stores-v2/measurement-list/measurement-list.component';
+import { ModifierListComponent } from './stores-v2/modifier-list/modifier-list.component';
+import { StockReturnListComponent } from './stores-v2/stock-return-list/stock-return-list.component';
+import { ComboListComponent } from './stores-v2/combo-list/combo-list.component';
+import { PriceListComponent } from './stores-v2/price-list/price-list.component';
+import { StockTransferListComponent } from './stores-v2/stock-transfer-list/stock-transfer-list.component';
+import { DiscountListComponent } from './stores-v2/discount-list/discount-list.component';
 // import {HistoryCalenderComponent} from "./views/store/history_calender/history_calender.component";
 export const ROUTES: Routes = [
   // Main redirect
@@ -505,7 +514,22 @@ export const ROUTES: Routes = [
       { path: 'store/manage_inventory', component: ManageInventoryComponent },
       { path: 'store/product_list', component: InventoryListComponent },
       { path: 'store/category_list', component: CategoryListComponent },
+      { path: 'store/brand_list', component: BrandListComponent },
+      { path: 'store/measurement_list', component: MeasurementListComponent },
+      { path: 'store/modifier_list', component: ModifierListComponent },
+      { path: 'store/stock_return_list', component: StockReturnListComponent },
+      {
+        path: 'store/stock_transfer_list',
+        component: StockTransferListComponent,
+      },
+      { path: 'store/combo_list', component: ComboListComponent },
+      { path: 'store/price_list', component: PriceListComponent },
+      { path: 'store/discount_list', component: DiscountListComponent },
 
+      {
+        path: 'store/product_add_ingredient',
+        component: AddIngredientComponent,
+      },
     ],
   },
   {

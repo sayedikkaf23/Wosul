@@ -58,6 +58,18 @@ var item = new schema(
 
     supplier: { type: String, default: "" },
 
+    discount: { type: String, default: "" },
+
+    measurement_category: { type: String, default: "" },
+
+    measurement: { type: String, default: "" },
+
+    brand: { type: String, default: "" },
+
+    manufacturer_date: { type: Date, default: Date.now },
+
+    expiry_date: { type: Date, default: Date.now },
+
     created_at: {
       type: Date,
       default: Date.now,

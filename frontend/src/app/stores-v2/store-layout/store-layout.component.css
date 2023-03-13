@@ -29,3 +29,8 @@
   border-color: #f4f6fb;
   border-radius: 8px;
 }
+
+.disabled {
+  pointer-events: none;
+  opacity: 0.6;
+}

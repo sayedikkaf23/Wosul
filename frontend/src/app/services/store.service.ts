@@ -146,4 +146,26 @@ export class StoreService {
       payload
     );
   }
+
+  addStoreCategory(payload) {
+    return this.http.post(`${this.url}/api/store/add_category`, payload);
+  }
+
+  addStoreIngredient(payload) {
+    return this.http.post(`${this.url}/api/store/add_ingredient`, payload);
+  }
+
+  updateStoreIngredientImage(payload) {
+    return this.http.post(
+      `${this.url}/api/store/update_ingredient_image`,
+      payload
+    );
+  }
+
+  deleteStoreIngredientImage(payload) {
+    return this.http.post(
+      `${this.url}/api/store/delete_ingredient_image`,
+      payload
+    );
+  }
 }

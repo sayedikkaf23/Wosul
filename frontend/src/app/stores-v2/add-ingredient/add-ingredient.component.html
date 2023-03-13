@@ -6,7 +6,7 @@
           <div class="col-auto">
             <div class="row align-items-center">
               <div class="col-auto">
-                <h2>Add Product</h2>
+                <h2>Add Ingredient</h2>
               </div>
             </div>
           </div>
@@ -15,65 +15,44 @@
       <div class="row card-strash">
         <div class="col-md-9">
           <div class="card">
-            <h2>Product Information</h2>
+            <h2>Ingredient Information</h2>
 
             <div class="row">
               <div class="col-md-4">
                 <div class="form-field">
-                  <label>Item Name</label>
+                  <label>Name</label>
                   <input
                     class="form-control form-control-solid"
                     type="text"
-                    placeholder="Enter Item Name"
+                    placeholder="Enter Ingredient Name"
                     [(ngModel)]="itemName"
                   />
                 </div>
               </div>
               <div class="col-md-4">
                 <div class="form-field">
-                  <label>Item Name in Arabic(Optional)</label>
+                  <label>Product Code</label>
                   <input
                     class="form-control form-control-solid"
                     type="text"
-                    placeholder="Enter Item Name In Arabic"
-                    [(ngModel)]="itemNameArabic"
+                    placeholder="Enter Product Code"
+                    [(ngModel)]="productCode"
                   />
                 </div>
               </div>
-              <div class="col-md-4">
-                <label class="d-flex align-items-center justify-content-between"
-                  >Barcode <a href="javascript:void(0)">Print Barcode</a>
-                </label>
-                <div class="input-group">
-                  <input
-                    type="text"
-                    class="form-control form-control-solid"
-                    placeholder="Enter Barcode"
-                    aria-label="Recipient's username"
-                    [(ngModel)]="itemBarcode"
-                    [ngModelOptions]="{ standalone: true }"
-                  />
-                  <button
-                    class="btn btn-light-primary min-width-0"
-                    type="button"
-                    (click)="generateBarcode()"
-                  >
-                    + Generate
-                  </button>
-                </div>
-              </div>
+
               <div class="col-md-4">
                 <div class="form-field">
                   <label
                     class="d-flex align-items-center justify-content-between"
                     >Category
                     <!-- <a href="javascript:void(0)" data-bs-toggle="modal">
-                      + Add Category
-                    </a> -->
+                        + Add Category
+                      </a> -->
                   </label>
                   <!-- [(ngModel)]="add_product.category_id"
-                    (change)="onCategoryChange(add_product.category_id)"
-                    selected_category_for_product -->
+                      (change)="onCategoryChange(add_product.category_id)"
+                      selected_category_for_product -->
                   <ng-select
                     class="custom-placeholder category_list"
                     placeholder="Choose Category"
@@ -92,31 +71,31 @@
                 </div>
               </div>
               <!-- <div class="col-md-4">
-                <div class="form-field">
-                  <label
-                    class="d-flex align-items-center justify-content-between"
-                    >Sub Category
-                   
-                  </label>
-                  <ng-select
-                    class="custom-placeholder category_list"
-                    placeholder="Choose Subcategory"
-                    [(ngModel)]="selected_product_id"
-                    [ngModelOptions]="{ standalone: true }"
-                    (change)="onSubCategoryChange($event)"
-                  >
-                    <ng-option
-                      *ngFor="
-                        let product of filtered_product_list;
-                        let product_index = index
-                      "
-                      [value]="product._id"
+                  <div class="form-field">
+                    <label
+                      class="d-flex align-items-center justify-content-between"
+                      >Sub Category
+                     
+                    </label>
+                    <ng-select
+                      class="custom-placeholder category_list"
+                      placeholder="Choose Subcategory"
+                      [(ngModel)]="selected_product_id"
+                      [ngModelOptions]="{ standalone: true }"
+                      (change)="onSubCategoryChange($event)"
                     >
-                      {{ product.name }}
-                    </ng-option>
-                  </ng-select>
-                </div>
-              </div> -->
+                      <ng-option
+                        *ngFor="
+                          let product of filtered_product_list;
+                          let product_index = index
+                        "
+                        [value]="product._id"
+                      >
+                        {{ product.name }}
+                      </ng-option>
+                    </ng-select>
+                  </div>
+                </div> -->
               <div class="col-md-4">
                 <div class="form-field">
                   <label>Status</label>
@@ -142,7 +121,7 @@
         </div>
         <div class="col-md-3">
           <div class="card">
-            <h2 class="text-center">Item Image</h2>
+            <h2 class="text-center">Ingredient Thumb Image</h2>
             <div class="mt-3">
               <input
                 type="file"
@@ -215,37 +194,37 @@
 
         <div class="row">
           <!-- <div class="col-md-3">
-            <div class="form-field">
-              <div class="d-flex justify-content-between">
-                <label>Choose Tax</label>
-                <div class="form-check">
-                  <input
-                    class="form-check-input"
-                    type="checkbox"
-                    value=""
-                    id="TobacoTax"
-                  />
-                  <label class="form-check-label mb-0" for="TobacoTax">
-                    Is Taxable
-                  </label>
+              <div class="form-field">
+                <div class="d-flex justify-content-between">
+                  <label>Choose Tax</label>
+                  <div class="form-check">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      value=""
+                      id="TobacoTax"
+                    />
+                    <label class="form-check-label mb-0" for="TobacoTax">
+                      Is Taxable
+                    </label>
+                  </div>
                 </div>
+                <select
+                  class="form-select form-select-solid select2-hidden-accessible"
+                  data-select2-id="select2-data-25-v0v5"
+                  tabindex="-1"
+                  aria-hidden="true"
+                >
+                  <option data-select2-id="select2-data-27-2g42">
+                    choose tax
+                  </option>
+                  <option>option 2</option>
+                  <option>option 3</option>
+                  <option>option 4</option>
+                  <option>option 5</option>
+                </select>
               </div>
-              <select
-                class="form-select form-select-solid select2-hidden-accessible"
-                data-select2-id="select2-data-25-v0v5"
-                tabindex="-1"
-                aria-hidden="true"
-              >
-                <option data-select2-id="select2-data-27-2g42">
-                  choose tax
-                </option>
-                <option>option 2</option>
-                <option>option 3</option>
-                <option>option 4</option>
-                <option>option 5</option>
-              </select>
-            </div>
-          </div> -->
+            </div> -->
           <div class="col-md-3">
             <div class="form-field">
               <label>Sale Price (Excl. Tax)</label>
@@ -329,8 +308,8 @@
               <label class="d-flex align-items-center justify-content-between"
                 >Discount
                 <!-- <a href="javascript:void(0)" data-bs-toggle="modal"
-                  >+ Add Discount</a
-                > -->
+                    >+ Add Discount</a
+                  > -->
               </label>
               <ng-select
                 class="custom-placeholder category_list"
@@ -387,202 +366,7 @@
           </div>
         </div>
       </div>
-      <div class="card">
-        <h2>Search and Add Ingredients</h2>
 
-        <div class="row">
-          <div class="col-md-4">
-            <div class="form-field">
-              <label class="d-flex align-items-center justify-content-between"
-                >Search</label
-              >
-              <ng-select
-                class="custom-placeholder category_list"
-                placeholder="Choose Ingredients"
-                [(ngModel)]="selectedIngrediant"
-                (change)="onIngrediantChange($event)"
-              >
-                <ng-option
-                  *ngFor="let ingrediant of ingrediants"
-                  [value]="ingrediant._id"
-                >
-                  {{ ingrediant.name }}
-                </ng-option>
-              </ng-select>
-
-              <p class="mt-1 text-small text-muted">
-                Choose ingredients for preparing 1 Unit or Quantity if the
-                product
-              </p>
-            </div>
-          </div>
-          <div class="col-md-8">
-            <div class="form-check">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                value=""
-                id="TobacoTax"
-              />
-              <label class="form-check-label mb-0" for="TobacoTax">
-                Set Product Price as Ingredient Cost
-              </label>
-            </div>
-            <p class="mt-1 text-small text-muted">
-              If this option is enabled, product sale price and purchase price
-              will be updated with ingredient cost.
-            </p>
-          </div>
-        </div>
-        <table
-          class="table table-hover table-bordered mb-0"
-          *ngIf="ingrediantList.length"
-        >
-          <thead class="bg-light">
-            <tr>
-              <th>Name & Description</th>
-              <th>Purchase Price of 1 Unit</th>
-              <th>Sale Price of 1 Unit</th>
-              <th>Sale Price of 1 Unit</th>
-              <th>Measuring Unit</th>
-              <th width="50px"></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              *ngFor="
-                let item of ingrediantList;
-                let index = index;
-                let last = last
-              "
-            >
-              <td>{{ item?.name }}</td>
-              <td>{{ item?.purchase_price }}</td>
-              <td>{{ item?.sale_price }}</td>
-              <td>
-                <input
-                  type="text"
-                  class="form-control form-control-sm form-control-solid"
-                  value="{{ item.default_sale_price }}"
-                  [(ngModel)]="item.default_sale_price"
-                />
-              </td>
-              <td>
-                <ng-select
-                  class="custom-placeholder category_list"
-                  placeholder="Choose Unit"
-                  [(ngModel)]="item.measuringUnit"
-                  (change)="onMeasuringUnitChange($event)"
-                >
-                  <ng-option
-                    *ngFor="let measure of measuringUnit"
-                    [value]="measure.name"
-                  >
-                    {{ measure.name }}
-                  </ng-option>
-                </ng-select>
-              </td>
-              <td class="text-end">
-                <a
-                  (click)="removeIngredient(index)"
-                  class="btn btn-icon btn-light btn-sm cursor-pointer"
-                  ><i class="fa-solid fa-xmark"></i
-                ></a>
-              </td>
-            </tr>
-            <!-- <tr>
-              <td>Coffee Powder</td>
-              <td>5.00</td>
-              <td>10.0000</td>
-              <td>
-                <input
-                  type="text"
-                  class="form-control form-control-sm form-control-solid"
-                  value="1"
-                />
-              </td>
-              <td>
-                <select class="form-select form-select-sm form-select-solid">
-                  <option>Choose Unit</option>
-                  <option>Choose Unit</option>
-                  <option>Choose Unit</option>
-                  <option>Choose Unit</option>
-                </select>
-              </td>
-              <td class="text-end">
-                <a
-                  href="javascript:void(0)"
-                  class="btn btn-icon btn-light btn-sm"
-                  ><i class="fa-solid fa-xmark"></i
-                ></a>
-              </td>
-            </tr> -->
-          </tbody>
-        </table>
-      </div>
-      <div class="row card-strash">
-        <div class="col-md-9">
-          <div class="card">
-            <h2>Modifiers</h2>
-
-            <div class="size-n-value-wrap" data-simplebar>
-              <ul class="size-n-value">
-                <li *ngFor="let modifier of modifiers">
-                  <label class="size-wrap">
-                    <input type="checkbox" [(ngModel)]="modifier.checked" />
-                    <span
-                      ><b>{{ modifier?.name }}</b
-                      >{{ modifier?.price }}</span
-                    >
-                  </label>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="card">
-            <h2>Measurments</h2>
-
-            <div class="form-field">
-              <label class="d-flex align-items-center justify-content-between"
-                >Measurment category</label
-              >
-
-              <ng-select
-                class="custom-placeholder category_list"
-                placeholder="Choose Measurement Category"
-                [(ngModel)]="selectedMeasurmentCategory"
-              >
-                <ng-option
-                  *ngFor="let measurment_cat of measurment_category"
-                  [value]="measurment_cat.name"
-                >
-                  {{ measurment_cat.name }}
-                </ng-option>
-              </ng-select>
-            </div>
-            <div class="form-field">
-              <label class="d-flex align-items-center justify-content-between"
-                >Measurement</label
-              >
-
-              <ng-select
-                class="custom-placeholder category_list"
-                placeholder="Choose Measurement Option"
-                [(ngModel)]="selectedMeasurment"
-              >
-                <ng-option
-                  *ngFor="let measurement of measurments"
-                  [value]="measurement.name"
-                >
-                  {{ measurement.name }}
-                </ng-option>
-              </ng-select>
-            </div>
-          </div>
-        </div>
-      </div>
       <div class="row card-strash">
         <div class="col-md-9">
           <div class="card">
@@ -591,23 +375,12 @@
             <div class="row">
               <div class="col-md-4">
                 <div class="form-field">
-                  <label>Product Code</label>
-                  <input
-                    class="form-control form-control-solid"
-                    type="text"
-                    placeholder="Enter Product Code"
-                    [(ngModel)]="productCode"
-                  />
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="form-field">
                   <label
                     class="d-flex align-items-center justify-content-between"
                     >Supplier
                     <!-- <a href="javascript:void(0)" data-bs-toggle="modal"
-                      >+ Add Supplier</a
-                    > -->
+                        >+ Add Supplier</a
+                      > -->
                   </label>
 
                   <ng-select
@@ -654,8 +427,8 @@
                     class="d-flex align-items-center justify-content-between"
                     >Brand
                     <!-- <a href="javascript:void(0)" data-bs-toggle="modal"
-                      >+ Add Brand</a
-                    > -->
+                        >+ Add Brand</a
+                      > -->
                   </label>
                   <ng-select
                     class="custom-placeholder category_list"
@@ -720,8 +493,8 @@
         </div>
       </div>
       <div class="text-end">
-        <a (click)="addStoreProduct()" class="btn btn-primary btn-radius"
-          >Add Product</a
+        <a (click)="addStoreIngredient()" class="btn btn-primary btn-radius"
+          >Add Ingredient</a
         >
       </div>
     </div>

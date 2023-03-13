@@ -2872,3 +2872,256 @@ exports.get_brand = async function (req, res) {
     });
   }
 };
+
+// add ingredient api
+exports.add_ingredient = function (request_data, response_data) {
+  utils.check_request_params(
+    request_data.body,
+    [
+      { name: "product_id", type: "string" },
+      { name: "name", type: "string" },
+    ],
+    function (response) {
+      if (response.success) {
+        var request_data_body = request_data.body;
+        var name = request_data_body.name.trim();
+        name = name.charAt(0).toUpperCase() + name.slice(1);
+        request_data_body.name = name;
+        request_data_body.tags = name;
+        var price = request_data_body.price;
+        var item_price_without_offer =
+          request_data_body.item_price_without_offer;
+        if (item_price_without_offer > price) {
+          request_data_body.discount_value = item_price_without_offer - price;
+          var discount_percentage =
+            ((item_price_without_offer - price) / item_price_without_offer) *
+            100;
+          request_data_body.discount_percentage = Number(
+            discount_percentage.toFixed()
+          );
+        } else {
+          request_data_body.discount_value = 0;
+          request_data_body.discount_percentage = 0;
+        }
+        Store.findOne({ _id: request_data_body.store_id }).then(
+          (store_detail) => {
+            if (store_detail) {
+              Ingrediant.findOne({
+                store_id: request_data_body.store_id,
+                product_id: request_data_body.product_id,
+                name: { $regex: request_data_body.name, $options: "i" },
+              }).then(
+                (item_data) => {
+                  if (item_data) {
+                    response_data.json({
+                      success: false,
+                      error_code: "Ingredient already exist.",
+                    });
+                  } else {
+                    var ingredient = new Ingrediant(request_data_body);
+                    ingredient.save().then(
+                      () => {
+                        response_data.json({
+                          success: true,
+                          message: "Ingredient add successfully.",
+                          ingredient: ingredient,
+                        });
+                      },
+                      (error) => {
+                        response_data.json({
+                          success: false,
+                          error_code: "Something went wrong.",
+                        });
+                      }
+                    );
+                  }
+                },
+                (error) => {
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
+            } else {
+              response_data.json({
+                success: false,
+                error_code: STORE_ERROR_CODE.STORE_DATA_NOT_FOUND,
+              });
+            }
+          },
+          (error) => {
+            response_data.json({
+              success: false,
+              error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+            });
+          }
+        );
+      } else {
+        response_data.json(response);
+      }
+    }
+  );
+};
+
+//update_ingredient_image
+exports.update_ingredient_image = function (request_data, response_data) {
+  utils.check_request_params(
+    request_data.body,
+    [{ name: "item_id", type: "string" }],
+    function (response) {
+      if (response.success) {
+        var request_data_body = request_data.body;
+
+        console.log(
+          "update_ingredient_image :>> " + JSON.stringify(request_data_body)
+        );
+        var query = {};
+        if (request_data_body.item_id == "") {
+          query.unique_id_for_store_data = request_data_body.barcode;
+        } else {
+          query._id = request_data_body.item_id;
+        }
+        Ingrediant.findOne(query).then(
+          (item) => {
+            if (item) {
+              var image_file = request_data.files;
+              var file_list_size = 0;
+              console.log("image_file :>> ", image_file);
+
+              if (image_file != undefined && image_file.length > 0) {
+                file_list_size = image_file.length;
+
+                for (i = 0; i < file_list_size; i++) {
+                  image_file[i];
+                  var image_name = item._id + utils.generateServerToken(4);
+                  var url =
+                    utils.getStoreImageFolderPath(FOLDER_NAME.STORE_ITEMS) +
+                    item.store_id +
+                    "/" +
+                    image_name +
+                    FILE_EXTENSION.ITEM;
+
+                  item.image_url.push(url);
+                  utils.storeImageToFolder(
+                    image_file[i].path,
+                    item.store_id + "/" + image_name + FILE_EXTENSION.ITEM,
+                    FOLDER_NAME.STORE_ITEMS
+                  );
+                }
+                console.log("url :>> ", url);
+              }
+              item.save().then(
+                () => {
+                  response_data.json({
+                    success: true,
+                    message: "Ingredient image update succesfully.",
+                    item: item,
+                  });
+                },
+                (error) => {
+                  response_data.json({
+                    success: false,
+                    error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                  });
+                }
+              );
+            } else {
+              response_data.json({
+                success: false,
+                error_code: ITEM_ERROR_CODE.ITEM_NOT_FOUND,
+              });
+            }
+          },
+          (error) => {
+            response_data.json({
+              success: false,
+              error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+            });
+          }
+        );
+      } else {
+        response_data.json(response);
+      }
+    }
+  );
+};
+
+////// delete_ingredient_image
+exports.delete_ingredient_image = function (request_data, response_data) {
+  utils.check_request_params(request_data.body, [], function (response) {
+    if (response.success) {
+      var request_data_body = request_data.body;
+      Store.findOne({ _id: request_data_body.store_id }).then(
+        (store_detail) => {
+          if (store_detail) {
+            Ingrediant.findOne({ _id: request_data_body._id }).then(
+              (item) => {
+                if (item) {
+                  var image_file = request_data_body.image_url;
+                  var file_list_size = 0;
+                  if (image_file != undefined && image_file.length > 0) {
+                    file_list_size = image_file.length;
+                    for (i = 0; i < file_list_size; i++) {
+                      image_file[i];
+                      var image_url = item.image_url;
+                      var index = image_url.indexOf(image_file[i]);
+                      if (index != -1) {
+                        image_url.splice(index, 1);
+                      }
+                      item.image_url = image_url;
+                      utils.deleteImageFromFolder(
+                        image_file[i],
+                        FOLDER_NAME.STORE_ITEMS
+                      );
+                    }
+                  }
+
+                  item.save().then(
+                    () => {
+                      response_data.json({
+                        success: true,
+                        message: "Ingredient image update successfully.",
+                        item: item,
+                      });
+                    },
+                    (error) => {
+                      response_data.json({
+                        success: false,
+                        error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                      });
+                    }
+                  );
+                } else {
+                  response_data.json({
+                    success: false,
+                    error_code: "Ingredient not found.",
+                  });
+                }
+              },
+              (error) => {
+                response_data.json({
+                  success: false,
+                  error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+                });
+              }
+            );
+          } else {
+            response_data.json({
+              success: false,
+              error_code: STORE_ERROR_CODE.STORE_DATA_NOT_FOUND,
+            });
+          }
+        },
+        (error) => {
+          response_data.json({
+            success: false,
+            error_code: ERROR_CODE.SOMETHING_WENT_WRONG,
+          });
+        }
+      );
+    } else {
+      response_data.json(response);
+    }
+  });
+};

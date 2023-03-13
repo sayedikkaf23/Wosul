@@ -234,7 +234,6 @@ import { AdminStoreComponent } from './admin-v2/admin-store/admin-store.componen
 import { AdminStoreListComponent } from './admin-v2/admin-store-list/admin-store-list.component';
 import { AdminStoreProductComponent } from './admin-v2/admin-store-product/admin-store-product.component';
 
-
 // ng select
 import { NgSelectModule } from '@ng-select/ng-select';
 import { ManageInventoryComponent } from './stores-v2/manage-inventory/manage-inventory.component';
@@ -243,6 +242,15 @@ import { CategoryListComponent } from './stores-v2/category-list/category-list.c
 
 //ngbmodule
 import { ModalModule } from 'ngb-modal';
+import { AddIngredientComponent } from './stores-v2/add-ingredient/add-ingredient.component';
+import { BrandListComponent } from './stores-v2/brand-list/brand-list.component';
+import { MeasurementListComponent } from './stores-v2/measurement-list/measurement-list.component';
+import { ModifierListComponent } from './stores-v2/modifier-list/modifier-list.component';
+import { StockReturnListComponent } from './stores-v2/stock-return-list/stock-return-list.component';
+import { ComboListComponent } from './stores-v2/combo-list/combo-list.component';
+import { PriceListComponent } from './stores-v2/price-list/price-list.component';
+import { StockTransferListComponent } from './stores-v2/stock-transfer-list/stock-transfer-list.component';
+import { DiscountListComponent } from './stores-v2/discount-list/discount-list.component';
 
 @NgModule({
   declarations: [
@@ -261,7 +269,16 @@ import { ModalModule } from 'ngb-modal';
     AdminStoreProductComponent,
     ManageInventoryComponent,
     InventoryListComponent,
-    CategoryListComponent
+    CategoryListComponent,
+    AddIngredientComponent,
+    BrandListComponent,
+    MeasurementListComponent,
+    ModifierListComponent,
+    StockReturnListComponent,
+    ComboListComponent,
+    PriceListComponent,
+    StockTransferListComponent,
+    DiscountListComponent,
   ],
   imports: [
     BrowserModule,

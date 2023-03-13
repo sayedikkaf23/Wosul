@@ -398,6 +398,9 @@
             class="form-control form-control-solid"
             type="text"
             placeholder="Enter Category Name"
+            [(ngModel)]="add_category.name"
+            [ngModelOptions]="{ standalone: true }"
+            #name="ngModel"
           />
         </div>
       </div>
@@ -408,6 +411,9 @@
             class="form-control form-control-solid"
             type="text"
             placeholder="Enter Category Name (Arabic)"
+            [(ngModel)]="add_category.category_arabic_name"
+            [ngModelOptions]="{ standalone: true }"
+            #name="ngModel"
           />
         </div>
       </div>
@@ -417,6 +423,9 @@
           <textarea
             class="form-control form-control-solid"
             placeholder="Enter Description"
+            [(ngModel)]="add_category.description"
+            [ngModelOptions]="{ standalone: true }"
+            #name="ngModel"
           ></textarea>
         </div>
       </div>
@@ -426,6 +435,9 @@
           <textarea
             class="form-control form-control-solid"
             placeholder="Enter Description (Arabic)"
+            [(ngModel)]="add_category.category_arabic_description"
+            [ngModelOptions]="{ standalone: true }"
+            #name="ngModel"
           ></textarea>
         </div>
       </div>
@@ -434,8 +446,20 @@
           <h4>Product Image</h4>
           <div class="mt-3">
             <div class="image-upload">
-              <img src="assets/images/empty-image.svg" />
-              <input type="file" class="d-none" id="img_upload" />
+              <img
+                src="{{
+                  helper.CONSTANT.IMAGE_BASE_URL + add_category.image_url != ''
+                    ? add_category.image_url
+                    : 'assets/images/empty-image.svg'
+                }}"
+              />
+              <input
+                type="file"
+                class="d-none"
+                accept="image/*"
+                (change)="main_image_update($event)"
+                id="img_upload"
+              />
               <label class="image-edit-btn" for="img_upload">
                 <svg
                   width="12"
@@ -524,48 +548,30 @@
         </div> -->
         <div class="form-feild">
           <label> Status </label>
-          <select
-            class="form-select form-select-solid select2-hidden-accessible"
-            data-select2-id="select2-data-16-ktoxp"
-            tabindex="-1"
-            aria-hidden="true"
-          >
-            <option data-select2-id="select2-data-16-ktoxp">Active</option>
-            <option>option 2</option>
-            <option>option 3</option>
-            <option>option 4</option>
-            <option>option 5</option></select
-          ><span
-            class="select2 select2-container select2-container--default"
-            dir="ltr"
-            data-select2-id="select2-data-24-xm7q"
-            style="width: 1px"
-            ><span class="selection"
-              ><span
-                class="select2-selection select2-selection--single"
-                role="combobox"
-                aria-haspopup="true"
-                aria-expanded="false"
-                tabindex="-1"
-                aria-disabled="false"
-                aria-labelledby="select2-j32o-container"
-                aria-controls="select2-j32o-container"
-                ><span
-                  class="select2-selection__rendered"
-                  id="select2-j32o-container"
-                  role="textbox"
-                  aria-readonly="true"
-                  title="Active"
-                  >Active</span
-                ><span class="select2-selection__arrow" role="presentation"
-                  ><b role="presentation"></b></span></span></span
-            ><span class="dropdown-wrapper" aria-hidden="true"></span
-          ></span>
+          <div class="form-check form-switch form-switch-2">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              role="switch"
+              id="Status_id"
+              [(ngModel)]="add_category.is_visible_in_store"
+              #is_visible_in_store="ngModel"
+              [ngModelOptions]="{ standalone: true }"
+            />
+            <label
+              [ngClass]="isItemInStock ? 'checked' : 'unchecked'"
+              class="form-check-label"
+              for="Status_id"
+              >Item In Stock</label
+            >
+          </div>
         </div>
       </div>
     </div>
   </modal-content>
   <modal-footer>
-    <a href="#" class="btn btn-primary btn-radius">Add Category</a>.
+    <button (click)="addCategoryData(add_category)" class="btn btn-primary btn-radius">
+      Add Category
+    </button>
   </modal-footer>
 </modal>

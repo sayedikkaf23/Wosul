@@ -51,13 +51,12 @@ export interface imageSetting {
   image_max_height: number;
   image_type: any[];
 }
-
 @Component({
-  selector: 'app-manage-inventory',
-  templateUrl: './manage-inventory.component.html',
-  styleUrls: ['./manage-inventory.component.css'],
+  selector: 'app-add-ingredient',
+  templateUrl: './add-ingredient.component.html',
+  styleUrls: ['./add-ingredient.component.css'],
 })
-export class ManageInventoryComponent implements OnInit {
+export class AddIngredientComponent implements OnInit {
   @ViewChild('add_specification_modal')
   add_specification_modal: any;
 
@@ -1993,7 +1992,7 @@ export class ManageInventoryComponent implements OnInit {
     });
     this.formData.append('item_id', this.selected_item_id);
     this.formData.append('type', this.helper.ADMIN_DATA_ID.ADMIN);
-    this.storeService.updateStoreItemImage(this.formData).subscribe(
+    this.storeService.updateStoreIngredientImage(this.formData).subscribe(
       (res_data: any) => {
         this.new_image_array = [];
         // let index = this.filtered_item_list.findIndex(
@@ -2025,7 +2024,7 @@ export class ManageInventoryComponent implements OnInit {
   }
   delete_image_service() {
     this.storeService
-      .deleteStoreItemImage({
+      .deleteStoreIngredientImage({
         type: this.helper.ADMIN_DATA_ID.ADMIN,
         store_id: this.add_product.store_id,
         server_token: this.add_product.server_token,
@@ -2140,11 +2139,7 @@ export class ManageInventoryComponent implements OnInit {
     this.itemBarcode = Date.now();
   }
 
-  addStoreProduct() {
-    const modifiers = this.modifiers.filter(
-      (modifier) => modifier.checked == true
-    );
-
+  addStoreIngredient() {
     const payload = {
       product_id: this.selected_product_id,
       store_id: this.add_product.store_id,
@@ -2163,8 +2158,6 @@ export class ManageInventoryComponent implements OnInit {
       stock_alert_quantity: this.stockAlertQuantity,
       is_visible_in_store: true,
       price: this.salePriceInculde,
-      ingrediants: this.ingrediantList,
-      modifiers: modifiers,
       supplier: this.selectedSupplier,
       discount: this.selectedDiscount,
       measurement_category: this.selectedMeasurmentCategory,
@@ -2174,20 +2167,21 @@ export class ManageInventoryComponent implements OnInit {
       expiry_date: this.expiryDate,
     };
 
-    this.storeService.addStoreItem(payload).subscribe((res_data: any) => {
+    this.storeService.addStoreIngredient(payload).subscribe((res_data: any) => {
       this.myLoading = false;
       if (res_data.success == true) {
         this.helper.data.storage = {
-          message: this.helper.MESSAGE_CODE[res_data.message],
+          message: res_data.message,
           class: 'alert-info',
         };
         this.helper.message();
-        this.selected_item_id = res_data.item._id;
-        this.item_detail = JSON.parse(JSON.stringify(res_data.item));
+        this.selected_item_id = res_data.ingredient._id;
+        this.item_detail = JSON.parse(JSON.stringify(res_data.ingredient));
         this.clearFields();
-        this.getModifiers();
+
         if (this.new_image_array.length > 0) {
           this.add_image_service();
+          this.base64Image = null;
         } else if (this.delete_item_image.length > 0) {
           this.delete_image_service();
         } else {
@@ -2231,7 +2225,6 @@ export class ManageInventoryComponent implements OnInit {
     this.itemDescription = '';
     this.itemDescriptionArabic = '';
     this.productCode = '';
-    this.ingrediantList = [];
   }
 
   getIngrediants() {

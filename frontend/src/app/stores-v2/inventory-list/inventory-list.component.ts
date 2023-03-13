@@ -12,6 +12,7 @@ export class InventoryListComponent implements OnInit {
   selected_category: any;
   product_item_list: any = [];
   category_name: any;
+  isNoDataFound: boolean = false;
   constructor(private storeService: StoreService) {}
 
   ngOnInit(): void {
@@ -41,19 +42,31 @@ export class InventoryListComponent implements OnInit {
       next: (res: any) => {
         if (res.success) {
           this.product_item_list = res.products[0]?.items;
+          if (!this.product_item_list.length) {
+            this.isNoDataFound = true;
+          }
+        } else {
+          this.isNoDataFound = true;
         }
       },
     });
   }
 
   onCategoryChange(category_id) {
-    this.selected_category = category_id;
-    if (this.category_list.length) {
-      const category = this.category_list.filter(
-        (cat) => cat._id == category_id
-      );
-      this.category_name = category[0]?.name;
+    if (category_id) {
+      this.selected_category = category_id;
+      if (this.category_list.length) {
+        const category = this.category_list.filter(
+          (cat) => cat._id == category_id
+        );
+        this.category_name = category[0]?.name;
+      }
+      this.getStoreProductItem();
     }
-    this.getStoreProductItem();
+  }
+
+  onCategoryClear() {
+    this.product_item_list = [];
+    this.isNoDataFound = false;
   }
 }

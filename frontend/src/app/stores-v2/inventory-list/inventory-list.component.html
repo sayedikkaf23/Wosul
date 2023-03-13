@@ -13,6 +13,7 @@
                 placeholder="Choose Category"
                 [(ngModel)]="selected_category"
                 (change)="onCategoryChange($event)"
+                (clear)="onCategoryClear()"
               >
                 <ng-option
                   *ngFor="let category of category_list"
@@ -33,7 +34,8 @@
           </div>
           <div class="col-auto">
             <a
-              href="product-add-ingredient.html"
+              [routerLink]="['/store/product_add_ingredient']"
+              routerLinkActive="active"
               class="btn btn-sm btn-light-primary"
               ><i class="fa-solid fa-plus"></i>Add Ingredient</a
             >
@@ -310,7 +312,7 @@
     </div>
   </div>
 
-  <div class="table-responsive" *ngIf="product_item_list.length">
+  <div class="table-responsive">
     <table class="table table-list-data table-hover">
       <thead class="bg-light">
         <tr>
@@ -330,7 +332,7 @@
           <th scope="col" class="text-end">Action</th> -->
         </tr>
       </thead>
-      <tbody>
+      <tbody *ngIf="product_item_list.length">
         <tr *ngFor="let product of product_item_list; let index = index">
           <td>
             <b>{{ product.product_code }}</b>
@@ -389,6 +391,20 @@
               </ul>
             </div>
           </td> -->
+        </tr>
+      </tbody>
+
+      <tbody *ngIf="!isNoDataFound">
+        <tr class="no-data">
+          <td colspan="12" class="text-center">
+            Please choose category to show it's data.
+          </td>
+        </tr>
+      </tbody>
+
+      <tbody *ngIf="isNoDataFound">
+        <tr>
+          <td colspan="12" class="text-center">No data available.</td>
         </tr>
       </tbody>
     </table>
